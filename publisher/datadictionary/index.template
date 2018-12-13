@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link type="text/css" href="../../fibo/edmcouncil.css" rel="stylesheet"/>
+    <title>EDM Council FIBO Vocabulary</title>
+    <link rel="Shortcut Icon" href="favicon.ico"/>
+  </head>
+  <body>
+    <img src="../../../../static/image/EDM-coucil-RGB.png" />
+    <h1>
+EDM Council FIBO Data Dictionary
+    </h1>
+<b>NOTE: The Data Dictionary underwent a complete overhaul from Q32017 to Q42017.  The product that was formerly called "Data Dictionary" is still available, as part of the <a href="../../../../static/glossary">FIBO Glossary</a>.</b>
+
+    <p>For selected classes in FIBO, we generate a spreadsheet that describes the class as if it were a table in a relational database.  This includes definitions of all properties (fields) that are relevant to that class (table), as well as the allowable types for those fields.  English language defintions for the tables and fields are also included.  Each spreadsheet includes defintions for all referenced types, thereby providing a snapshot that includes everything FIBO knows about the target class.   </p>
+
+<p>An <a href="https://spec.edmcouncil.org/static/datadictionary/master_data_dictionary_unabridged.xlsx">unabridged data dictionary</a> is available for all of FIBO (including development)</p>
+
+<p>Like all FIBO products, the FIBO unabridged data dictionary is built out
+of FIBO sources from a FIBO GitHub Repository. FIBO sources are all in OWL and
+have three levels of maturity,Informative, Provisional and Release. There is a column in
+the spreadsheet stating the maturity level of each ontology as follows:
+<ul>
+  <li><b>Informative</b> -  Informative ontologies are ones that have been considered by a FIBO content team, but have
+been explicitly rejected. They are included in FIBO sources because they include information,
+without which FIBO would fail basic referential consistency tests. Casual users should usually
+ignore them. Developers should consider these for information only, to determine the detailed
+meaning of the things that reference them.</li>
+<li><b>Provisional</b> -  Provisional ontologies were developed in the early days of FIBO, or have been developed by
+FIBO Content Teams, but have not been vetted or tested to the level of Release.
+Release </li>
+<li><b>Release</b> ontologies have undergone unit and integration testing, and have passed the most
+rigorous tests for completeness, consistency and correctness.</li>
+</ul>
+
+
+
+<p>Topic-specific data dictionaries are available for the Production release of FIBO. </p>
+
+<!-- index of dictionaries goes here -->
+
+
+Release Notes:  
+<ul>
+  <li><b>2018 Q1</b>
+    <ul>
+      <li>Improved spreadsheet generation so that the output is more compatible with Excel.</li>
+    </ul>
+  </li>
+
+  <li><b>2017 Q4</b>
+    <ul><li>Initial release</li></ul>
+  </li>
+
+</ul>
+
+  </body>
+</html>

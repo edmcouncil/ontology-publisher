@@ -1,0 +1,18 @@
+Open MagicDraw
+Create a new project, Concept Modeling
+Download prod and dev from the branch you will be working with, and unzip them. 
+Options>Project>General>Concept Modeling>OWL Import Catalog, navigate to the catalog for prod resp. dev
+File>Import From>OWL, select the About file for prod resp. dev
+Options>Project>General>Concept Modeling>Preferred Annotation Property>defintion
+Options>Project>General>Concept Modeling>Annotation Property List>synonym
+Options>Project>General>Concept Modeling>Include property definitions=true
+
+Tools>Report Wizard>NLG>FIBO Production resp Development, Imported Ontologies> Generate
+In emacs, search for Unnamed Classes.  Back one <dt>, mark, C-c right, delete.    mark, C-c right, delete.   (again)
+(setq last-kbd-macro
+   [?\C-s ?U ?n ?n ?a ?m ?e ?\C-m ?\C-r ?< ?d ?t ?\C-m ?\C-  ?\C-c right ?\C-w ?\C-  ?\C-c right ?\C-w ?\C-x ?\C-s])
+
+Replace first img with https://spec.edmcouncil.org/static/image/edmc-logo.jpg
+
+
+

@@ -1,0 +1,12 @@
+.gitignore
+docker-*.sh
+.idea/
+*@tmp
+.git
+.dockerignore
+Jenkinsfile
+Jenkinsfile.fibo
+Dockerfile
+Dockerfile.dev
+LICENSE
+README.md

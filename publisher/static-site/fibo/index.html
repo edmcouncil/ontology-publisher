@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EDM Council - FIBO Specifications</title>
+    <link rel="Shortcut Icon" href="/favicon.ico"/>
+    <link type="text/css" href="edmcouncil.css" rel="stylesheet"/>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script src='https://www.google.com/recaptcha/api.js' async defer></script>
+    <script src="emailform.js" type="text/javascript" async defer></script>
+  </head>
+  <body>
+    <img src="../static/image/EDM-coucil-RGB.png" height="75"/>
+    <h1>
+      EDM Council - FIBO
+    </h1>
+    <h2>Products</h2>
+    <p>
+FIBO is being developed in a continuous process by FIBO Content Teams (FCT) according to the FIBO <a href="doc/20170930_FIBO_BTDM.pdf">Build-Test-Deploy-Maintain Methodology</a>. 
+All of FIBO is continuously published with the maturity level indicated as <b>Development</b>. This is all of FIBO. 
+In addition, the parts of FIBO that have been substantially vetted and tested are published at the end of each calendar quarter in a maturity level indicated as <b>Production</b>.  
+All other content, including parts of these domains in published FIBO Development, are for information only, and should not be relied upon except as raw material. </p>
+
+<p><b>Release Notes</b> See FIBO <a href="release.html">Release Notes</a> for a listing of specific content at this time.</p>
+
+<p><b>Using FIBO</b> Please see <a href="../static/ontology/index.html#Using">Using FIBO</a> for instructions on how to use FIBO. 
+You may also want to look at the <a href="doc/20180331_FIBO_Primer.pdf">FIBO Primer</a> for a layman's description of what FIBO is and how to use its content. 
+</p>
+<p><b>OMG Spec</b> Some FIBO domains are also available as <a href="https://www.omg.org/hot-topics/finance.htm">OMG specifications</a> for FND, FBC, BE and IND.
+</p>
+
+<p><b>FIBO Products</b> Today, FIBO is available as the products below, with more soon to follow. All FIBO products are generated or derived from the W3C OWL System of Record. Be aware that flaws in the OWL will be reflected in all other products. 
+We are making all of FIBO available now because we have already seen amazing work done with FIBO and we welcome, almost demand, your feedback.
+<a href="mailto:dwisnosky@edmcouncil.org">dwisnosky@edmcouncil.org</a>.
+    </p>
+    <table>
+      <tr>
+       <td><a href="../static/fibopedia/FIBOpedia.html">fibopedia</a></td>
+        <td>
+          Annotated structure of FIBO ontologies and modules. 
+       </td>
+	<td>Includes web navigation as well as a <a href="../static/fibopedia/modules-clean.rdf">machine-readable module structure</a> (in RDF) (this product is in beta test, and might not be comprehensive).
+	</td>
+      </tr>
+      <tr>
+       <td><a href="../static/glossary/">glossary</a></td>
+        <td>
+          Web searchable, downloadable in CSV and/or Excel
+       </td>
+	<td>Includes web-searchable people and machine generated definitions, and as a spreadsheet that may be downloaded and worked with offline
+	</td>
+      </tr>
+      <tr>
+       <td><a href="../../fibo/datadictionary/master/2018Q2/">data dictionary</a></td>
+        <td>data dictionary searchable from
+the Web and down loadable in  csv or .xls</td>
+        <td>
+          A summary of each operational class in FIBO, with its properties, presented in the form of tables and fields for viewers familiar with relational data dictionaries. 
+        </td>
+      </tr>
+      
+      <tr>
+        <td><a href="../static/vocabulary/">vocabulary</a></td>
+        <td>The FIBO Vocabulary in SKOS</td>
+        <td>FIBO rendered using the W3C <a href="https://www.w3.org/2004/02/skos/intro">SKOS</a> standard, using extensions to represent FIBO relationships. 
+        </td>
+      </tr>
+      <tr>
+        <td><a href="../static/smif/Production SMIF UML Diagrams-new links.html">smif</a></td>
+        <td>Sample UML Diagrams of FIBO.</td>
+        <td>The Semantic Modeling for Information Federation (SMIF) specification allows round tripping between UML and OWL</td>
+      </tr>
+      <tr>
+        <td><a href="../static/widoco">VOWL</a></td>
+        <td>Visual Ontology (VOWL) Web Pages</td>
+        <td>
+One document per ontology generated using <a href="https://github.com/dgarijo/Widoco">WIzard for DOCumenting Ontologies (WIDOCO)</a> software, which includes a graphical visualization of the ontology and related elements in a 
+force-directed graph layout using <a href="http://vowl.visualdataweb.org/v2/">Visual Notation for OWL Ontologies (VOWL)</a>.
+        </td>
+      </tr>
+      <tr>
+        <td><a href="../static/ontology">ontology</a></td>
+        <td>The FIBO Ontologies</td>
+        <td>
+          These are the ontologies for the FIBO Domains developed by the FIBO Team for nearly a
+          decade. They are in W3C OWL and can be opened with any RDF-compliant tool. 
+          FIBO is published in multiple RDF serializations, including <a href="https://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML</a>, <a href="https://www.w3.org/TR/turtle/">Turtle</a>, <a href="https://json-ld.org/spec/latest/json-ld/">JSON-LD</a> and <a href="https://www.w3.org/TR/n-quads/">N-Quads<a>. 
+          See the <a href="#allformats">Supported Formats table</a> below to access FIBO in these forms. 
+          To see individual FIBO ontology files, please see the <a href="./ontology/master/latest/tree.html">FIBO Ontology File Directory</a>
+        </td>
+      </tr>
+      <tr>
+        <td style="white-space:nowrap;"><a href="../static/ldf/">linked data fragments</a></td>
+        <td style="white-space:nowrap;">The FIBO Linked Data Fragments</td>
+        <td>
+	  This provides a dynamic query interface to the FIBO content using  <a href="http://linkeddatafragments.org/">Linked Data Fragments</a>. 
+        </td>
+      </tr>
+      <tr>
+        <td><a href="http://schema.org/docs/financial.html">schema.org</a></td>
+        <td>The FIBO schema.org files</td>
+        <td>This page provides background information on the use of <a href="http://schema.org/">schema.org</a> for marking up banks and their products.</td>
+      </tr>
+    </table>
+<h2><a name="developers">I want to contribute!</a></h2>
+<p>FIBO is a community effort - we want to get many well-informed people from the Finance Industry involved. This includes subject matter experts, 
+architects, ontologists and even the "just curious". In the style of collaborative, open source projects, FIBO collaboration is managed through GitHub, Jenkins 
+and by our use of Atlassian JIRA and Confluence. The FIBO Team has developed many tools and practices to help your contributions work well with FIBO.  
+For information on how to get them, please see the <a href="../static/developers.html">Developers' Guide</a>. 
+
+
+<h2><a name="allformats">All supported formats</a></h2>
+<p>FIBO and FIBO-V are available in a number of RDF formats. These are available for offline use (i.e., download all of FIBO as a zip), or online use. 
+Each FIBO ontology file is available for <i>follow your nose</i> treatment, a general description of which is available <a href="http://patterns.dataincubator.org/book/follow-your-nose.html">here</a>. 
+<table>
+<tr><th>Product/Level</th><th>RDF-XML</th><th>Turtle</th><th>JSON-LD</th><th>N-Quads</th></tr>
+
+<tr><td>FIBO (Production) (zip)</td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/2018Q2/prod.rdf.zip">prod.rdf.zip</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/2018Q2/prod.ttl.zip">prod.ttl.zip</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/2018Q2/prod.jsonld.zip">prod.jsonld.zip</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/2018Q2/prod.fibo.nq">prod.fibo.nq</a> (<a href="https://spec.edmcouncil.org/fibo/ontology/master/2018Q2/prod.fibo.nq.zip">prod.fibo.nq.zip</a>)</td></tr>
+
+<tr><td>FIBO (Development) (zip)</td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/CURRENT/dev.rdf.zip">dev.rdf.zip</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/CURRENT/dev.ttl.zip">dev.ttl.zip</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/CURRENT/dev.jsonld.zip">dev.jsonld.zip</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/CURRENT/dev.fibo.nq">dev.fibo.nq</a> (<a href="https://spec.edmcouncil.org/fibo/ontology/master/CURRENT/dev.fibo.nq.zip">dev.fibo.nq.zip</a>)</td></tr>
+
+<tr><td>FIBO (Production) (<a href="http://patterns.dataincubator.org/book/follow-your-nose.html">follow-your-nose</a> starting point)</td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/2018Q2/AboutFIBOProd.rdf">AboutFIBOProd.rdf</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/2018Q2/AboutFIBOProd.ttl">AboutFIBOProd.ttl</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/2018Q2/AboutFIBOProd.jsonld">AboutFIBOProd.jsonld</a></td><td>N/A</td></tr>
+
+<tr><td>FIBO (Development) (<a href="http://patterns.dataincubator.org/book/follow-your-nose.html">follow your nose</a> starting point)</td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/latest/AboutFIBODev.rdf">AboutFIBODev.rdf</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/latest/AboutFIBODev.ttl">AboutFIBODev.ttl</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/latest/AboutFIBODev.jsonld">AboutFIBODev.jsonld</a></td><td>N/A</td></tr>
+
+<tr><td>FIBO-V (Development)</td><td><a href="http://spec.edmcouncil.org/fibo/vocabulary/master/CURRENT/fibo-vD.rdf">fibo-vD.rdf</a> (<a href="http://spec.edmcouncil.org/fibo/vocabulary/master/CURRENT/fibo-vD.rdf.zip">zip</a>)</td><td><a href="http://spec.edmcouncil.org/fibo/vocabulary/master/CURRENT/fibo-vD.ttl">fibo-vD.ttl</a> (<a href="http://spec.edmcouncil.org/fibo/vocabulary/master/CURRENT/fibo-vD.ttl.zip">zip</a>)</td><td><a href="http://spec.edmcouncil.org/fibo/vocabulary/master/CURRENT/fibo-vD.jsonld">fibo-vD.jsonld</a> (<a href="http://spec.edmcouncil.org/fibo/vocabulary/master/CURRENT/fibo-vD.jsonld.zip">zip</a>)</td><td>N/A</td></tr>
+
+<tr><td>FIBO-V (Production)</td><td><a href="http://spec.edmcouncil.org/fibo/vocabulary/master/2018Q2/fibo-vP.rdf">fibo-vP.rdf</a> <a href="http://spec.edmcouncil.org/fibo/vocabulary/master/2018Q2/fibo-vP.rdf.zip">(zip)</a></td><td><a href="http://spec.edmcouncil.org/fibo/vocabulary/master/2018Q2/fibo-vP.ttl">fibo-vP.ttl</a> <a href="http://spec.edmcouncil.org/fibo/vocabulary/master/2018Q2/fibo-vP.ttl.zip">(zip)</a></td><td><a href="http://spec.edmcouncil.org/fibo/vocabulary/master/2018Q2/fibo-vP.jsonld">fibo-vP.jsonld</a> <a href="http://spec.edmcouncil.org/fibo/vocabulary/master/2018Q2/fibo-vP.jsonld.zip">(zip)</a></td><td>N/A</td></tr>
+
+</table>
+
+
+
+
+</body>
+</html>

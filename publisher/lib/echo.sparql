@@ -1,0 +1,4 @@
+#
+# Echo SPARQL, used to merge 2 or more RDF files together with Jena
+#
+CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}

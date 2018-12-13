@@ -1,5 +1,22 @@
-# Created by .ignore support plugin (hsz.mobi)
+#
+# IntelliJ editor files that we don't need to commit
+#
+.idea/
+
+#
+# Test directories that the scripts make
+#
 test-workspace/
 log
 ont-policy.rdf
 target/
+tmp/
+
+#
+# Other rubbish
+#
+Dockerfile.dev
+dev_toolkit.zip
+Jenkinsfile.fibo
+.vscode/
+
