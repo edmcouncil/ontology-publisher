@@ -947,9 +947,7 @@ __HERE__
         ${SED} 's!"/>!!; s!^.*/!!; s/.rdf:.*resource=".*utl-av;/,/' |\
         ${SED} 's/,Release$/,Production/; s/,Provisional/,Development/; s/,Informative/,Development/' >> OntologyIndex.csv
 
-   chmod a+x "${SCRIPT_DIR}/csv-to-xlsx.py"
-
-   ${SCRIPT_DIR}/csv-to-xlsx.py  OntologyIndex.csv  OntologyIndex.xlsx "${index_script_dir}/csvconfig"
+   ${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py OntologyIndex.csv OntologyIndex.xlsx "${index_script_dir}/csvconfig"
  )
 
  return $?
@@ -1399,7 +1397,7 @@ __HERE__
       --target-format json-ld \
       --infer-base-iri \
       --use-dtd-subset -ibn \
-      > "${WORKSPACE}/rdf-toolkit-glossary-test.log" 2>&1
+      > "${glossary_product_tag_root}/rdf-toolkit-glossary-test.log" 2>&1
     )
   else
     log "Convert ${TMPDIR/${WORKSPACE}/}/glossary-prod-nolabel.ttl to ${glossary_product_tag_root/${WORKSPACE}/}/glossary-prod.jsonld"
@@ -1414,7 +1412,7 @@ __HERE__
       --target-format json-ld \
       --infer-base-iri \
       --use-dtd-subset -ibn \
-      > "${WORKSPACE}/rdf-toolkit-glossary-prod.log" 2>&1
+      > "${glossary_product_tag_root}/rdf-toolkit-glossary-prod.log" 2>&1
     log "Convert ${TMPDIR/${WORKSPACE}/}/glossary-dev-nolabel.ttl to ${glossary_product_tag_root/${WORKSPACE}/}/glossary-dev.jsonld"
     java \
       -Xmx4G \
@@ -1427,7 +1425,7 @@ __HERE__
       --target-format json-ld \
       --infer-base-iri \
       --use-dtd-subset -ibn \
-      > "${WORKSPACE}/rdf-toolkit-glossary-dev.log" 2>&1
+      > "${glossary_product_tag_root}/rdf-toolkit-glossary-dev.log" 2>&1
     log "Convert ${TMPDIR/${WORKSPACE}/}/glossary-test-nolabel.ttl to ${glossary_product_tag_root/${WORKSPACE}/}/glossary-test.jsonld"
     java \
       -Xmx4G \
@@ -1440,7 +1438,7 @@ __HERE__
       --target-format json-ld \
       --infer-base-iri \
       --use-dtd-subset -ibn \
-      > "${WORKSPACE}/rdf-toolkit-glossary-test.log" 2>&1
+      > "${glossary_product_tag_root}/rdf-toolkit-glossary-test.log" 2>&1
   fi
 
   if ((debug)) ; then
@@ -1558,8 +1556,10 @@ EOF
   ${SED} 's/"\t"/","/g' "${glossaryBaseName}.tsv" > "${glossaryBaseName}.csv"
   ${SED} -i '1s/\t[?]/,/g;1s/^[?]//' "${glossaryBaseName}.csv"
   
-  #chmod a+x "${SCRIPT_DIR}/csv-to-xlsx.py"
-  ${PYTHON3} ${SCRIPT_DIR}/csv-to-xlsx.py  "${glossaryBaseName}.csv" "${glossaryBaseName}.xlsx" "${glossary_script_dir}/csvconfig"
+  ${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py \
+    "${glossaryBaseName}.csv" \
+    "${glossaryBaseName}.xlsx" \
+    "${glossary_script_dir}/csvconfig"
 
   return 0
 }
@@ -1795,8 +1795,10 @@ EOF
 
   ${SED} 's/"\t"/","/g; s/^\t"/,"/' "${TMPDIR}/output.tsv" >> "${datadictionary_product_tag_root}/${fname}.csv"
 
-  chmod a+x "${SCRIPT_DIR}/csv-to-xlsx.py"
-  ${SCRIPT_DIR}/csv-to-xlsx.py  "${datadictionary_product_tag_root}/${fname}.csv" "${datadictionary_product_tag_root}/${fname}.xlsx"  "${datadictionary_script_dir}/csvconfig"
+  ${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py \
+    "${datadictionary_product_tag_root}/${fname}.csv" \
+    "${datadictionary_product_tag_root}/${fname}.xlsx" \
+    "${datadictionary_script_dir}/csvconfig"
 
   return 0
 }
