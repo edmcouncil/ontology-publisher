@@ -8,6 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)" || exit 1
 
 export family="${FAMILY:-fibo}"
 export FAMILY="${family}"
+export spec_host="${spec_host:-spec.edmcouncil.org}"
 
 if [ -f ${SCRIPT_DIR}/publisher/lib/_functions.sh ] ; then
   # shellcheck source=publisher/lib/_functions.sh
@@ -107,6 +108,8 @@ function run() {
   if ((run_clean)) ; then
     log "Cleaning ${outputDirectory}"
     rm -rf "${outputDirectory:?}/"*
+    log "Cleaning ${temporaryFilesDirectory}"
+    rm -rf "${temporaryFilesDirectory:?}/"*
   else
     log "Not cleaning ${outputDirectory}"
   fi
@@ -116,6 +119,10 @@ function run() {
   opts+=('run')
   opts+=('--rm')
   opts+=('--tty')
+  opts+=('--network')
+  opts+=('none')
+  opts+=('--name')
+  opts+=('ontology-publisher')
 
   logVar family
   log "Mounted:"

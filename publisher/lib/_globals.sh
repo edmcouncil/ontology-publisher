@@ -21,6 +21,7 @@ export debug=${debug:-1}
 # ontology has to come before vocabulary because vocabulary depends on it.
 #
 export family="${FAMILY:-${family:-fibo}}"
+export spec_host="${spec_host:-spec.edmcouncil.org}"
 #
 # DA>Removed for speedier testing
 # JG>It's not really relevant anymore what products are mentioned here

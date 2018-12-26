@@ -17,7 +17,12 @@ fi
 
 function generateLog4jConfig() {
 
-  cat > /tmp/jena-log4j.properties << __HERE__
+  #
+  # Don't overwrite an existing one created by a previous (or parallel) run of this script
+  #
+  [ -f ${TMPDIR}/jena-log4j.properties ] && return 0
+
+  cat > ${TMPDIR}/jena-log4j.properties << __HERE__
 log4j.rootLogger=INFO, stdlog
 
 log4j.appender.stdlog=org.apache.log4j.ConsoleAppender
@@ -30,23 +35,30 @@ log4j.appender.stdout.Threshold=INFO
 log4j.logger.org.apache.jena.arq.info=INFO
 log4j.logger.org.apache.jena.arq.exec=INFO
 
-##
-## FileManager and LocationManager logging, see
-## https://jena.apache.org/documentation/notes/file-manager.html
-##
-org.apache.jena.util.FileManager=ALL
-org.apache.jena.util.LocationManager=ALL
-
 ## TDB loader
 log4j.logger.org.apache.jena.tdb.loader=INFO
 ## TDB syslog.
 log4j.logger.TDB=INFO
 
 ## Everything else in Jena
+log4j.logger.org.apache.jena.riot=INFO
 log4j.logger.org.apache.jena=INFO
+log4j.logger.org.apache.jena.util=INFO
 log4j.logger.org.openjena=INFO
 log4j.logger.org.openjena.riot=INFO
 log4j.logger.org.apache.jena.util.FileManager=INFO
+
+##
+## FileManager and LocationManager logging, see
+## https://jena.apache.org/documentation/notes/file-manager.html
+##
+log4j.logger.org.apache.jena.util.FileManager=INFO
+log4j.logger.org.apache.jena.util.LocatorFile=INFO
+log4j.logger.org.apache.jena.util.LocationManager=INFO
+log4j.logger.org.apache.jena.riot.adapters.AdapterFileManager=TRACE
+log4j.logger.org.apache.jena.riot.system.stream=INFO
+log4j.logger.org.apache.jena.riot=INFO
+#
 __HERE__
 }
 
@@ -112,22 +124,27 @@ function spinRunInferences() {
     error "Could not find ${ontologyPolicyFile}"
   fi
 
+  log "Run SPIN inferences on ${inputFile/${WORKSPACE}/}"
+  logItem "Current Directory" "$(pwd)"
+
   #
   # There's no other way to tell jena where to find the ont-policy.rdf file
   # so we have to copy it into the local directory (and remove it afterwards
   # so that we don't publish it here.
   #
-  cp "${locationMappingFile}" .
-  cp "${ontologyPolicyFile}" .
+  cp "${locationMappingFile}" "$(pwd)"
+  cp "${ontologyPolicyFile}" "$(pwd)"
 
-  log "Run SPIN inferences on ${inputFile/${WORKSPACE}/}"
+  cat "${ontologyPolicyFile}"
+
   java \
     --add-opens java.base/java.lang=ALL-UNNAMED \
     -Dxxx=spin \
     -Xms2g \
     -Xmx9g \
     -Dfile.encoding=UTF-8 \
-    -Dlog4j.configuration="file:/tmp/jena-log4j.properties" \
+    -Dlog4j.debug=true \
+    -Dlog4j.configuration="file:${TMPDIR}/jena-log4j.properties" \
     -cp "${jars}" \
     org.topbraid.spin.tools.RunInferences \
     http://example.org/example \
@@ -137,8 +154,6 @@ function spinRunInferences() {
   if ((rc > 0)) ; then
     error "Could not run spin on ${inputFile}"
   fi
-
-  rm -f location-mapping.n3 ont-policy.rdf
 
   return ${rc}
 }

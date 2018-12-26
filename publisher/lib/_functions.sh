@@ -581,6 +581,7 @@ function initWorkspaceVars() {
   require INPUT || return $?
   require OUTPUT || return $?
   require family || return $?
+  require spec_host || return $?
 
   #
   # source_family_root: the root directory of the ${family} repo
@@ -608,7 +609,7 @@ function initWorkspaceVars() {
   #
   # TODO: Make URL configurable
   #
-  export spec_root_url="https://spec.edmcouncil.org"
+  export spec_root_url="https://${spec_host}"
   export spec_family_root_url="${spec_root_url}/${family}"
   export product_root_url=""
   export branch_root_url=""

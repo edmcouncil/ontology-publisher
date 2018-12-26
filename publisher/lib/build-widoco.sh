@@ -36,7 +36,7 @@ function publishProductWidoco() {
 
 function generateWidocoLog4jConfig() {
 
-  cat > /tmp/widoco-log4j2.xml << __HERE__
+  cat > ${TMPDIR}/widoco-log4j2.xml << __HERE__
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration status="warn" name="Widoco" packages="">
   <appenders>
@@ -133,7 +133,7 @@ function generateWidocoDocumentationForFile() {
     -Xmx4g \
     -Xms4g \
     -Dfile.encoding=UTF-8 \
-    -Dlog4j.configurationFile=/tmp/widoco-log4j2.xml \
+    -Dlog4j.configurationFile=${TMPDIR}/widoco-log4j2.xml \
     -Dorg.apache.logging.log4j.simplelog.StatusLogger.level=TRACE \
     -jar "${widocoJar}" \
     -ontFile "${turtleFile}" \

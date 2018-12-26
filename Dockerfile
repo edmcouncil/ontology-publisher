@@ -28,6 +28,7 @@ LABEL owner="Enterprise Data Management Council"
 # with any number of "--build-arg" options on the "docker build" command line.
 #
 ARG FAMILY
+ARG spec_host
 
 #
 # TODO: Move the FAMILY env to ARGS so that this can be used for other ontologies than FIBO
@@ -51,7 +52,7 @@ RUN \
     bash curl git grep sed findutils coreutils tree jq \
     zip tar \
     python python3 py3-setuptools \
-    gcc linux-headers libc-dev \
+    gcc linux-headers libc-dev texlive \
   && \
   #
   # Clean up
@@ -71,10 +72,10 @@ RUN \
   targz="pandoc-${pandoc_version}-linux.tar.gz" ; \
   url="https://github.com/jgm/pandoc/releases/download/${pandoc_version}/${targz}" ; \
   echo "Downloading ${url}:" >&2 ; \
-  curl --location --silent --show-error --output /tmp/${targz} --url "${url}" && \
+  curl --location --silent --show-error --output /var/tmp/${targz} --url "${url}" && \
   mkdir -p /usr/share/pandoc && \
   cd /usr/share/pandoc && \
-  tar xzf /tmp/${targz} --strip-components 1 -C . && \
+  tar xzf /var/tmp/${targz} --strip-components 1 -C . && \
   cd bin && \
   mv * .. && \
   cd .. && \
@@ -95,8 +96,8 @@ RUN \
   tarbz2="${name}.tar.bz2" ; \
   url="http://download.drobilla.net/${tarbz2}" ; \
   ( \
-    mkdir -p /tmp/build-serd ; \
-    cd /tmp/build-serd ; \
+    mkdir -p /var/tmp/build-serd ; \
+    cd /var/tmp/build-serd ; \
     curl --location --silent --show-error --output "${tarbz2}" --url "${url}" ; \
     cat "${tarbz2}" | tar -xj ; \
     cd "${name}" ; \
@@ -104,7 +105,7 @@ RUN \
     ./waf ; \
     ./waf install ; \
   ) && \
-  rm -rf /tmp/build-serd && \
+  rm -rf /var/tmp/build-serd && \
   test "$(which serdi)" == "${SERD}"
 
 #
@@ -131,11 +132,11 @@ RUN \
   targz="${name}.tar.gz" ; \
   url="http://www-us.apache.org/dist/jena/binaries/${targz}" ; \
   echo "Downloading ${url}:" >&2 ; \
-  curl --location --silent --show-error --output /tmp/${targz} --url "${url}" && \
+  curl --location --silent --show-error --output /var/tmp/${targz} --url "${url}" && \
   (mkdir -p /usr/share/java/jena || true) && \
   cd /usr/share/java/jena && \
-  tar xzf /tmp/${targz} && \
-  rm -f /tmp/${targz} && \
+  tar xzf /var/tmp/${targz} && \
+  rm -f /var/tmp/${targz} && \
   mv ${name} ${JENA_VERSION} && \
   ln -s ${JENA_VERSION} latest && \
   ln -s /usr/share/java/jena/latest/bin/riot /usr/local/bin/riot && \
@@ -155,11 +156,11 @@ RUN \
   targz="${name}.tar.gz" ; \
   url="http://archive.apache.org/dist/jena/binaries/${targz}" ; \
   echo "Downloading ${url}:" >&2 ; \
-  curl --location --silent --show-error --output /tmp/${targz} --url "${url}" && \
+  curl --location --silent --show-error --output /var/tmp/${targz} --url "${url}" && \
   (mkdir -p /usr/share/java/jena || true) && \
   cd /usr/share/java/jena && \
-  tar xzf /tmp/${targz} && \
-  rm -f /tmp/${targz} && \
+  tar xzf /var/tmp/${targz} && \
+  rm -f /var/tmp/${targz} && \
   mv ${name} ${JENA_OLD_VERSION} && \
   ln -s ${JENA_OLD_VERSION} jena-old && \
   cd ${JENA_OLD_VERSION} && \
@@ -176,11 +177,11 @@ RUN \
   zip="${name}-distribution.zip" ; \
   url="https://www.topquadrant.com/repository/spin/org/topbraid/spin/${SPIN_VERSION}/${zip}" ; \
   echo "Downloading ${url}:" >&2 ; \
-  curl --location --silent --show-error --output /tmp/${zip} --url "${url}" && \
+  curl --location --silent --show-error --output /var/tmp/${zip} --url "${url}" && \
   (mkdir -p /usr/share/java/spin || true) && \
   cd /usr/share/java/spin && \
-  unzip -q /tmp/${zip} && \
-  rm -f /tmp/${zip} && \
+  unzip -q /var/tmp/${zip} && \
+  rm -f /var/tmp/${zip} && \
   cd src-tools && \
   find . -name '*.java' | \
   xargs javac -cp "/usr/share/java/jena/jena-old/lib/*:/usr/share/java/spin/spin-${SPIN_VERSION}.jar" && \

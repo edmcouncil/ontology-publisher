@@ -1,0 +1,3360 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:spin="http://spinrdf.org/spin#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:sml="http://topbraid.org/sparqlmotionlib#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:composite="http://www.topbraid.org/2007/05/composite.owl#"
+    xmlns:sm="http://topbraid.org/sparqlmotion#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:spl="http://spinrdf.org/spl#"
+    xmlns:json="http://topbraid.org/json#"
+  xml:base="http://topbraid.org/sparqlmotionlib">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://uispin.org/ui"/>
+    <owl:imports rdf:resource="http://topbraid.org/email"/>
+    <owl:imports rdf:resource="http://topbraid.org/sparqlmotion"/>
+    <rdfs:comment>The standard library of SPARQLMotion modules. This library may be split into multiple physical files in the future, but the URIs of the module types and properties will be stable.</rdfs:comment>
+    <owl:imports rdf:resource="http://spinrdf.org/spr"/>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >2.2.3</owl:versionInfo>
+  </owl:Ontology>
+  <rdfs:Class rdf:ID="RDFSerialization">
+    <rdfs:subClassOf rdf:resource="http://topbraid.org/sparqlmotion#ValueType"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Serialization</rdfs:label>
+    <rdfs:comment>The various serialization formats of RDF/OWL files, including RDF/XML and N3.</rdfs:comment>
+  </rdfs:Class>
+  <rdfs:Class rdf:ID="DatabaseType">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Database type</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The class of database configurations used by Jena SDB (and possibly other databases).</rdfs:comment>
+  </rdfs:Class>
+  <rdfs:Class rdf:ID="OracleExportMode">
+    <rdfs:comment>The export modes supported by Oracle RDF.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Oracle export mode</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <sml:OracleExportMode rdf:ID="ExportBatch">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >ExportBatch</rdfs:label>
+          </sml:OracleExportMode>
+          <sml:OracleExportMode rdf:ID="ExportBulk">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >ExportBulk</rdfs:label>
+          </sml:OracleExportMode>
+          <sml:OracleExportMode rdf:ID="ExportIncremental">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >ExportIncremental</rdfs:label>
+          </sml:OracleExportMode>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </rdfs:Class>
+  <rdfs:Class rdf:ID="JenaInferencingMode">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <sml:JenaInferencingMode rdf:ID="OWL_MEM">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >OWL_MEM</rdfs:label>
+          </sml:JenaInferencingMode>
+          <sml:JenaInferencingMode rdf:ID="OWL_MEM_MICRO_RULE_INF">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >OWL_MEM_MICRO_RULE_INF</rdfs:label>
+          </sml:JenaInferencingMode>
+          <sml:JenaInferencingMode rdf:ID="OWL_MEM_MINI_RULE_INF">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >OWL_MEM_MINI_RULE_INF</rdfs:label>
+          </sml:JenaInferencingMode>
+          <sml:JenaInferencingMode rdf:ID="OWL_MEM_RDFS_INF">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >OWL_MEM_RDFS_INF</rdfs:label>
+          </sml:JenaInferencingMode>
+          <sml:JenaInferencingMode rdf:ID="OWL_MEM_RULE_INF">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >OWL_MEM_RULE_INF</rdfs:label>
+          </sml:JenaInferencingMode>
+          <sml:JenaInferencingMode rdf:ID="OWL_MEM_TRANS_INF">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >OWL_MEM_TRANS_INF</rdfs:label>
+          </sml:JenaInferencingMode>
+          <sml:JenaInferencingMode rdf:ID="OWL_DL_MEM">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >OWL_DL_MEM</rdfs:label>
+          </sml:JenaInferencingMode>
+          <sml:JenaInferencingMode rdf:ID="OWL_DL_MEM_RDFS_INF">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >OWL_DL_MEM_RDFS_INF</rdfs:label>
+          </sml:JenaInferencingMode>
+          <sml:JenaInferencingMode rdf:ID="OWL_DL_MEM_RULE_INF">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >OWL_DL_MEM_RULE_INF</rdfs:label>
+          </sml:JenaInferencingMode>
+          <sml:JenaInferencingMode rdf:ID="OWL_DL_MEM_TRANS_INF">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >OWL_DL_MEM_TRANS_INF</rdfs:label>
+          </sml:JenaInferencingMode>
+          <sml:JenaInferencingMode rdf:ID="RDFS_MEM_RDFS_INF">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >RDFS_MEM_RDFS_INF</rdfs:label>
+          </sml:JenaInferencingMode>
+          <sml:JenaInferencingMode rdf:ID="RDFS_MEM_TRANS_INF">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >RDFS_MEM_TRANS_INF</rdfs:label>
+          </sml:JenaInferencingMode>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Jena inferencing mode</rdfs:label>
+    <rdfs:comment>The inferencing types supported by Jena.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+  </rdfs:Class>
+  <rdf:Property rdf:ID="sql">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sql</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="className">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >className</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="instancePattern">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >instancePattern</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="askQuery">
+    <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#query"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >askQuery</rdfs:label>
+    <rdfs:range rdf:resource="http://spinrdf.org/sp#Ask"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="xpath">
+    <rdfs:comment>An XPath expression.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >xpath</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="separator">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >separator</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="bindVariables">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >bind variables</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="useUnderscore">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >useUnderscore</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="class">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >class</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="predicate">
+    <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >predicate</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="view">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >view</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="xml">
+    <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >xml</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="text">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >text</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="smtpServer">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >smtpServer</rdfs:label>
+    <rdfs:range rdf:resource="http://topbraid.org/email#Server"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="iterationVariable">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The name of a variable that shall contain the iteration index in a loop, starting at zero.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >iteration variable</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="importToInputGraph">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >import to input graph</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="singlePass">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >single pass</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="datatype">
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >datatype</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="graphName">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >graph name</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="filterGraph">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >filterGraph</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Links a filter module with a predecessor module to mark the predecessor module graph to be used for filtering in the filter module.</rdfs:comment>
+    <rdfs:range rdf:resource="http://spinrdf.org/spin#Modules"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="value">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >value</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="hidden">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >hidden</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="url">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >url</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="addedPrefix">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >addedPrefix</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="rowQuery">
+    <rdfs:range rdf:resource="http://spinrdf.org/sp#Select"/>
+    <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#query"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >rowQuery</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="selectInstanceClass">
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >selectInstanceClass</rdfs:label>
+    <rdfs:domain>
+      <sm:Module rdf:ID="SelectInstance">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Prompts the user to select an instance by class, and binds the selected resource into the specified output variable. If not selectInstanceClass is specified, then the selection would start at the root class.</rdfs:comment>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+            <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            <spl:predicate>
+              <rdf:Property rdf:ID="title"/>
+            </spl:predicate>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >the title of the selection window</rdfs:comment>
+          </spl:Argument>
+        </spin:constraint>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+            <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            <spl:predicate>
+              <rdf:Property rdf:ID="buttonLabel"/>
+            </spl:predicate>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >the label of the button to continue</rdfs:comment>
+          </spl:Argument>
+        </spin:constraint>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Select instance</rdfs:label>
+        <spin:constraint>
+          <spl:Argument>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The name of the variable that shall contain the selected resource.</rdfs:comment>
+            <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+          </spl:Argument>
+        </spin:constraint>
+        <rdfs:subClassOf>
+          <sm:Module rdf:ID="ImportFromVariousModules">
+            <rdfs:subClassOf>
+              <sm:Module rdf:ID="ImportModules">
+                <rdfs:comment>Modules that import information from some data source. Examples include modules to load files, to get XML from web sources and to take user input.</rdfs:comment>
+                <rdfs:subClassOf rdf:resource="http://topbraid.org/sparqlmotion#Modules"/>
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Import</rdfs:label>
+                <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+                >true</spin:abstract>
+                <composite:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >0</composite:index>
+              </sm:Module>
+            </rdfs:subClassOf>
+            <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spin:abstract>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Import from Various</rdfs:label>
+          </sm:Module>
+        </rdfs:subClassOf>
+        <spin:constraint>
+          <spl:Argument>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The (optional) class that shall be used as root of a class/instance selection box.</rdfs:comment>
+            <spl:predicate rdf:resource="#selectInstanceClass"/>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+          </spl:Argument>
+        </spin:constraint>
+      </sm:Module>
+    </rdfs:domain>
+  </rdf:Property>
+  <rdf:Property rdf:ID="schemaNamespace">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >schemaNamespace</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="selectedResource">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >selected resource</rdfs:label>
+    <rdfs:comment>The suggested default property to use in conjunction with sml:SelectedResourceArgument.</rdfs:comment>
+  </rdf:Property>
+  <rdf:Property rdf:ID="calendarProperty">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >calendarProperty</rdfs:label>
+    <rdfs:domain>
+      <sm:Module rdf:ID="CreateCalendar">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Creates a calendar view showing resources from one or more SPARQL select queries. Currently only supported within TBC.</rdfs:comment>
+        <spin:constraint>
+          <spl:Argument>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The property that hold the relevant xsd:date and xsd:dateTime values.</rdfs:comment>
+            <spl:predicate rdf:resource="#calendarProperty"/>
+          </spl:Argument>
+        </spin:constraint>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Create calendar</rdfs:label>
+        <rdfs:subClassOf>
+          <sm:Module rdf:ID="ExportToVariousModules">
+            <rdfs:subClassOf>
+              <sm:Module rdf:ID="ExportModules">
+                <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+                >true</spin:abstract>
+                <rdfs:comment>Modules that create some output, such as files or UI components.</rdfs:comment>
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >Export</rdfs:label>
+                <rdfs:subClassOf rdf:resource="http://topbraid.org/sparqlmotion#Modules"/>
+                <composite:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                >2</composite:index>
+              </sm:Module>
+            </rdfs:subClassOf>
+            <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spin:abstract>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Export to Various</rdfs:label>
+          </sm:Module>
+        </rdfs:subClassOf>
+        <spin:constraint>
+          <spl:Attribute>
+            <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >1</spl:minCount>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >A SPARQL Select query that returns the subjects that shall be displayed in the calendar. In a typical use case, this query would bind a single result variable that iterates over all "events", where each event has an xsd:date/time value attached to it using sml:calendarProperty.</rdfs:comment>
+            <spl:predicate>
+              <rdf:Property rdf:ID="selectQuery"/>
+            </spl:predicate>
+          </spl:Attribute>
+        </spin:constraint>
+      </sm:Module>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:comment>The properties that shall be shown in the calendar.</rdfs:comment>
+  </rdf:Property>
+  <rdf:Property rdf:ID="oldGraph">
+    <rdfs:range rdf:resource="http://spinrdf.org/spin#Modules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >old graph</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="result">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >result</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="databaseType">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >database type</rdfs:label>
+    <rdfs:range rdf:resource="#DatabaseType"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="newGraph">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >new graph</rdfs:label>
+    <rdfs:range rdf:resource="http://spinrdf.org/spin#Modules"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="columnQuery">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >columnQuery</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#query"/>
+    <rdfs:range rdf:resource="http://spinrdf.org/sp#Select"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="propertyPrefix">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >propertyPrefix</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="replace">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >replace</rdfs:label>
+    <rdfs:comment>Specifies whether a module shall overwrite all triples from its predecessors. If set to true (default is false), then the triples from the predecessors shall not be passed through.</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </rdf:Property>
+  <rdf:Property rdf:about="#title">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >title</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="variable">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >variable</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="template">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >template</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="constructQuery">
+    <rdfs:range rdf:resource="http://spinrdf.org/sp#Construct"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >constructQuery</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#query"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="javaClass">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >java class</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="targetFilePath">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >targetFilePath</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="inferencingMode">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >inferencingMode</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="updateQuery">
+    <rdfs:comment>A SPARQL UPDATE query (can be used to insert or delete triples from a graph).</rdfs:comment>
+    <rdfs:range rdf:resource="http://spinrdf.org/sp#Update"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >update query</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="password">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >password</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="serialization">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >serialization</rdfs:label>
+    <rdfs:range rdf:resource="#RDFSerialization"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="emailAccount">
+    <rdfs:range rdf:resource="http://topbraid.org/email#Address"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >emailAccount</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="snippet">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >snippet</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="useVerbatim">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >useVerbatim</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="inputVariable">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >input variable</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="path">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >path</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:comment>Can be used to represent path expressions such as /INBOX/TBC-MailingList</rdfs:comment>
+  </rdf:Property>
+  <rdf:Property rdf:ID="dataPath">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >data path</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="encoding">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >encoding</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="userName">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >userName</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="loadBodies">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >loadBodies</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="modelName">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >modelName</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="cellQuery">
+    <rdfs:range rdf:resource="http://spinrdf.org/sp#Select"/>
+    <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#query"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >cellQuery</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="deletedPrefix">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >deletedPrefix</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="sourceFilePath">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sourceFilePath</rdfs:label>
+    <rdfs:comment>The path to a file relative in the execution context (workspace). Values can be relative to the currently executing script (e.g., subFolder/file.txt) or absolute to the workspace root (starting with /).</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="needsTidy">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >needs tidy</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="onCommit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >on commit</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="cached">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >cached</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="uri">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >uri</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Property>
+  <rdf:Property rdf:about="#buttonLabel">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >button label</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="mimeType">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:comment>(Reserved for future use.)</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >mimeType</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="ignoreImports">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >ignore imports</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </rdf:Property>
+  <rdf:Property rdf:about="#selectQuery">
+    <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#query"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >select query</rdfs:label>
+    <rdfs:range rdf:resource="http://spinrdf.org/sp#Select"/>
+  </rdf:Property>
+  <rdf:Property rdf:ID="xmlType">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >xmlType</rdfs:label>
+    <rdfs:range>
+      <owl:DataRange>
+        <owl:oneOf rdf:parseType="Resource">
+          <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+          <rdf:first rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >XHTML</rdf:first>
+        </owl:oneOf>
+      </owl:DataRange>
+    </rdfs:range>
+  </rdf:Property>
+  <rdf:Property rdf:ID="baseURI">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:comment>The base URI of an RDF model.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >baseURI</rdfs:label>
+  </rdf:Property>
+  <rdf:Property rdf:ID="ruleBaseName">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >ruleBaseName</rdfs:label>
+  </rdf:Property>
+  <sm:Module rdf:ID="ImportXHTML">
+    <rdfs:subClassOf>
+      <sm:Module rdf:ID="ImportFromRemoteModules">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Import from Remote</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#ImportModules"/>
+        <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spin:abstract>
+      </sm:Module>
+    </rdfs:subClassOf>
+    <rdfs:comment>Opens an HTML document from a URI, using Tidy to convert it to XHTML (XML). The url must point to the URL of the file. The URL may contain variables from the input modules. The resulting XML will be assigned to the specified output variable.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the variable that will contain the XHTML as an XML document. Default: xml.</rdfs:comment>
+        <spl:defaultValue>xml</spl:defaultValue>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Import XHTML</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#url"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The URL of the HTML page. May contain variables such as {?varName}.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="ReturnXML">
+    <rdfs:comment>Represents the exit point of a function that returns XML. The function can be referenced from the outside (e.g., as a web service) by its URI or local name.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Return XML</rdfs:label>
+    <rdfs:subClassOf>
+      <sm:Module rdf:ID="ExportToRemoteModules">
+        <rdfs:subClassOf rdf:resource="#ExportModules"/>
+        <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spin:abstract>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Export to Remote</rdfs:label>
+      </sm:Module>
+    </rdfs:subClassOf>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The XML document that shall be returned.</rdfs:comment>
+        <spl:predicate rdf:resource="#xml"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The (optional) mime type of the result stream.</rdfs:comment>
+        <spl:predicate rdf:resource="#mimeType"/>
+        <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >text/xml</spl:defaultValue>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="ReturnText">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Represents the exit point of a function that returns text (mimetype: text). The function can be referenced from the outside (e.g., as a web service) by its URI or local name. When called from TBE, the resulting text will be displayed to the user in a pop-up dialog.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#ExportToRemoteModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Return text</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The (optional) mime type of the result stream.</rdfs:comment>
+        <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >text</spl:defaultValue>
+        <spl:predicate rdf:resource="#mimeType"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The text that shall be returned.</rdfs:comment>
+        <spl:predicate rdf:resource="#text"/>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="ImportRDFFromURL">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Gets RDF data from a given URL. The URL may just point to an RDF/XML file on the web, or call a web service with REST-style parameters to receive RDF/XML back. No other format beside RDF/XML is supported by this module - use sml:ImportRDFFromWorkspace instead.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#url"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The URL of the RDF source. May contain variable bindings such as {?varName}.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Import RDF from URL</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ImportFromRemoteModules"/>
+  </sm:Module>
+  <sm:Module rdf:ID="ReturnSPARQLResults">
+    <rdfs:comment>Runs a SPARQL Select query and returns its result in the standard SPARQL output format.</rdfs:comment>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:predicate rdf:resource="#selectQuery"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The SELECT query to execute.</rdfs:comment>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+      </spl:Attribute>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Return SPARQL results</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ExportToRemoteModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://topbraid.org/sparqlmotion#ValueType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the serialization format such as XML or JSON</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#serialization"/>
+        <spl:defaultValue rdf:resource="http://topbraid.org/sparqlmotion#XML"/>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="BindBySelect">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Bind by select</rdfs:label>
+    <rdfs:subClassOf>
+      <sm:Module rdf:ID="ControlFlowModules">
+        <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spin:abstract>
+        <rdfs:subClassOf>
+          <sm:Module rdf:ID="ProcessingModules">
+            <composite:index rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+            >1</composite:index>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Processing</rdfs:label>
+            <rdfs:subClassOf rdf:resource="http://topbraid.org/sparqlmotion#Modules"/>
+            <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spin:abstract>
+            <rdfs:comment>Modules that process data, e.g. to transform, filter and map it.</rdfs:comment>
+          </sm:Module>
+        </rdfs:subClassOf>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Control Flow</rdfs:label>
+      </sm:Module>
+    </rdfs:subClassOf>
+    <rdfs:comment>Runs a SPARQL select query and binds all result variables of the first matching result set. The input RDF is simply passed through to the next module. For example, if you run SELECT ?name ?age WHERE { my:Person my:name ?name ; my:age ?age } then the variables name and age will be bound as output variables.</rdfs:comment>
+    <spin:constraint>
+      <spl:Attribute>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >A SPARQL Select query that is executed over the input triples. The result variables of the first result row will be bound in the succeeding modules.</rdfs:comment>
+        <spl:predicate rdf:resource="#selectQuery"/>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+      </spl:Attribute>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="SerializeSPARQLResults">
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the output variable that will contain the result.</rdfs:comment>
+        <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >text</spl:defaultValue>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:defaultValue rdf:resource="http://topbraid.org/sparqlmotion#XML"/>
+        <spl:predicate rdf:resource="#serialization"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The serialization format.</rdfs:comment>
+        <spl:valueType rdf:resource="http://topbraid.org/sparqlmotion#ValueType"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Serialize SPARQLResults</rdfs:label>
+    <rdfs:subClassOf>
+      <sm:Module rdf:ID="TextProcessingModules">
+        <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spin:abstract>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Text Processing</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#ProcessingModules"/>
+      </sm:Module>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Executes a SPARQL SELECT query and serializes its result to either XML or JSON format.</rdfs:comment>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The SELECT query to execute.</rdfs:comment>
+        <spl:valueType rdf:resource="http://spinrdf.org/sp#Select"/>
+        <spl:predicate rdf:resource="#selectQuery"/>
+      </spl:Attribute>
+    </spin:constraint>
+  </sm:Module>
+  <sml:DatabaseType rdf:ID="Oracle">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Oracle</rdfs:label>
+  </sml:DatabaseType>
+  <sm:Module rdf:ID="Merge">
+    <rdfs:subClassOf rdf:resource="#ControlFlowModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Merge</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This module type can be used to merge the variables and RDF triples from multiple input modules. The same is done by any other SPARQLMotion script that has multiple input modules. So while the sml:Merge module basically does not do anything at all, it can be useful to create a clean structure in your script, particularly if you have a case when you want to merge multiple graphs and then have multiple outgoing sm:next links from the merged graph.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="ImportXMLFromURL">
+    <rdfs:subClassOf rdf:resource="#ImportFromRemoteModules"/>
+    <rdfs:comment>Gets XML from a given URL and binds the resulting XML document to a specified output variable. Note that this could either be used to load static XML files from the web, or to call web services that return XML.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Import XML from URL</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The URL to the XML file. May contain variables such as {?varName}.</rdfs:comment>
+        <spl:predicate rdf:resource="#url"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:defaultValue>xml</spl:defaultValue>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The output variable that will hold the loaded XML. Default: xml.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="ConvertTextToRDFList">
+    <rdfs:comment>Takes a comma-separated list of URIs as input and creates an rdf:List from it which is then visible to all modules downstream. The rdf:List will be a blank node (or rdf:nil) and the provided output variable will point to it. Note that the RDF output of this module consists of the rdf:List triples only, i.e. the input triples are not passed through.
+Among others, this module can be used by web services that take lists as input.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Convert text to RDFList</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+        <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >list</spl:defaultValue>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the name of the output variable that will contain the rdf:List</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the comma-separated list of URIs</rdfs:comment>
+        <spl:predicate rdf:resource="#text"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#TextProcessingModules"/>
+  </sm:Module>
+  <sm:Module rdf:ID="ConvertTextToRDF">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Convert text to RDF</rdfs:label>
+    <rdfs:comment>Converts a text in one of the RDF serializations into an RDF graph. In a typical scenario, the text would be passed into the script as external (web service) input. The result of this module are the input RDF triples plus the parsed triples.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#TextProcessingModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="#RDFSerialization"/>
+        <spl:predicate rdf:resource="#serialization"/>
+        <spl:defaultValue>
+          <sml:RDFSerialization rdf:ID="N3">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >N3</rdfs:label>
+          </sml:RDFSerialization>
+        </spl:defaultValue>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The (optional) serialization format, e.g. N3, XML, Turtle or NTriple. Default: N3.</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#text"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The text to parse.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="SelectResource">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Prompts the user to select one resource out of a list of resources delivered from a SPARQL query. The selected resource will be bound to the specified variable. Any RDF triples that come in as input are forwarded as output.
+
+This module is currently not supported by TopBraid Ensemble.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#ImportFromVariousModules"/>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:predicate rdf:resource="#selectQuery"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >A SPARQL Select query that delivers the resources that shall be selectable in the UI box.</rdfs:comment>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+      </spl:Attribute>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the title of the selection window</rdfs:comment>
+        <spl:predicate rdf:resource="#title"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Select resource</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the label of the button to continue</rdfs:comment>
+        <spl:predicate rdf:resource="#buttonLabel"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the variable that shall hold the selected resource.</rdfs:comment>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="BindLiteralVariable">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Bind literal variable</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the output variable.</rdfs:comment>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#ControlFlowModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:defaultValue rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The target datatype, e.g. xsd:string or xsd:int. Default: xsd:string.</rdfs:comment>
+        <spl:predicate rdf:resource="#datatype"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment>Binds the output variable with a constant of a given datatype, or with a value derived from one or more other input variable values. The template could be as simple as {?varName} to insert the variable's value or more complex such as {?firstName} {?lastName}. This module can also be used to convert the datatype, e.g. to convert a xsd:string into a xsd:float.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the template string</rdfs:comment>
+        <spl:predicate rdf:resource="#template"/>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="CloneVariable">
+    <rdfs:subClassOf rdf:resource="#ControlFlowModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Clone variable</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#inputVariable"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the input variable that shall be cloned.</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the output variable that will be created.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Clones a given variable value and assigns it to a new output variable. The input variable will keep its value.
+
+This module can be useful to "rename" an existing variable so that it has a matching name that is expected by modules downstream in the script. For example, if you have a variable ?xmlFile but a next module expects an input argument ?xml (via an argument sml:xml), then you can use sml:CloneVariable to bind ?xml with the value of ?xmlFile. Note that in many (most?) cases, you can achieve the same by using inline SPARQL expressions: in TBC use "Add SPARQL expression" from the context menu of the property name and enter an expression such as ?xmlFile at the sml:xml property.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="ExportToSDB">
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="#DatabaseType"/>
+        <spl:predicate rdf:resource="#databaseType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The database type, e.g. Oracle.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <spl:predicate rdf:resource="#replace"/>
+        <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:defaultValue>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Indicates whether all existing content of the SDB shall be overwritten.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the named graph URI</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#graphName"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The user name to log in with.</rdfs:comment>
+        <spl:predicate rdf:resource="#userName"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The URL of the database.</rdfs:comment>
+        <spl:predicate rdf:resource="#url"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#password"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The password to log in with.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The base URI of the target SDB database. This will serve as a unique identifier of the triple store in TopBraid, and is typically also represented by an owl:Ontology.</rdfs:comment>
+        <spl:predicate rdf:resource="#baseURI"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#targetFilePath"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The (optional) path to a .sdb file that can later be opened from within TopBraid.</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#ExportToRemoteModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Export to SDB</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Writes the input triples to a specified Jena SDB database.
+
+Note: This is a low-level system module. The preferred way of writing to databases is using sml:PerformUpdate.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="BranchByAsk">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Runs a SPARQL Ask query and, depending on the resulting boolean, either continues with the sm:if or the sm:else branch. Both branches can be sub-scripts, and the sm:if and sm:else should point to the entry points of those sub-scripts. Those entry modules will be passed the same RDF triples and variable bindings as passed to theBranchByAsk module itself. The result of the execution will be the target module (last module in the sub-script) of the selected branch. All variable bindings of the result module will also be passed on as output to the next module(s). Both branches must have exactly one target module. If a branch is empty then the module's input will be passed on unchanged.</rdfs:comment>
+    <spin:constraint>
+      <spl:Attribute>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The start of the child script that shall be executed if the ask query evaluates to true.</rdfs:comment>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >0</spl:minCount>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#if"/>
+      </spl:Attribute>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#ControlFlowModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Branch by ask</rdfs:label>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The start of the child script that shall be executed if the ask query evaluates to false.</rdfs:comment>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >0</spl:minCount>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#else"/>
+      </spl:Attribute>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Attribute>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The SPARQL Ask query that delivers true (sm:if) or false (sm:else) to determine the branching condition.</rdfs:comment>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <spl:predicate rdf:resource="#askQuery"/>
+      </spl:Attribute>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="ImportSystemTriples">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Imports the RDF Schema and OWL system triples, including the definitions of owl:Class, rdf:type, rdfs:label, rdfs:seeAlso etc. An example use case where this is needed is if you want to query for the rdfs:label of any property including system properties. Another use case is if you want to walk the class hierarchy (using rdfs:subClassOf) including metaclasses and other system classes.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Import system triples</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ImportFromVariousModules"/>
+  </sm:Module>
+  <sm:Module rdf:ID="CheckConstraints">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Check constraints</rdfs:label>
+    <rdfs:subClassOf>
+      <sm:Module rdf:ID="RDFProcessingModules">
+        <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spin:abstract>
+        <rdfs:subClassOf rdf:resource="#ProcessingModules"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >RDF Processing</rdfs:label>
+      </sm:Module>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Runs all SPIN constraints defined in the current input graph. The output of this module will be a new RDF graph that only contains the spin:ConstraintViolation instances. If the SELECT query is specified, then only the selected resources will be checked, not the whole model.</rdfs:comment>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:predicate rdf:resource="#selectQuery"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >An (optional) SPARQL SELECT query that delivers the resources that shall be checked.</rdfs:comment>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >0</spl:minCount>
+        <spl:valueType rdf:resource="http://spinrdf.org/sp#Select"/>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+      </spl:Attribute>
+    </spin:constraint>
+  </sm:Module>
+  <spin:Template rdf:ID="SelectedResourceArgument">
+    <rdfs:subClassOf>
+      <rdf:Description rdf:about="http://spinrdf.org/spl#Argument">
+        <spin:constraint>
+          <spl:Argument>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Indicates whether this is a "hidden" argument. Hidden arguments will not be presented to the user in input dialogs but instead always have their defaultValue.</rdfs:comment>
+            <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+            <spl:predicate rdf:resource="#hidden"/>
+          </spl:Argument>
+        </spin:constraint>
+      </rdf:Description>
+    </rdfs:subClassOf>
+    <rdfs:comment>A system argument representing the "selected" resource. This can be used to implement services that operate on the currently selected resource in TopBraid Composer or Ensemble. The value of this argument will be set automatically by the engine in TBC. In TBE the selected resource's URI needs to be passed in.
+Note: this replaces sml:BindWithSelectedResource from older TBC versions.</rdfs:comment>
+    <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Selected Resource {?predicate}</spin:labelTemplate>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Selected resource argument</rdfs:label>
+  </spin:Template>
+  <sm:Module rdf:ID="ImportTDB">
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The path to the TBD data files. This is usually the .tdb connector file name plus .data.</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="#dataPath"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Import TDB</rdfs:label>
+    <rdfs:subClassOf>
+      <sm:Module rdf:ID="ImportFromLocalModules">
+        <rdfs:comment>Modules that import data from a data source on the user's local machine.</rdfs:comment>
+        <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spin:abstract>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Import from Local</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#ImportModules"/>
+      </sm:Module>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Opens a Jena TDB database stored in the workspace at a given path.
+
+Note: This is a low-level system module. The preferred way of operating on existing TDBs is using sml:ImportRDFFromWorkspace.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="ApplyJenaInferencing">
+    <rdfs:comment>Applies one of the Jena inference engines on the input triples.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Apply Jena inferencing</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#RDFProcessingModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="#JenaInferencingMode"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Specifies the Jena inferencing mode that shall be applied. The permitted values must be instances of sml:JenaInferencingSpec. Default spec is RDFS_MEM_TRANS_INF.</rdfs:comment>
+        <spl:predicate rdf:resource="#inferencingMode"/>
+        <spl:defaultValue>sml:RDFS_MEM_TRANS_INF</spl:defaultValue>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="TrackChanges">
+    <rdfs:comment>Can be used to implement services that shall be executed as a side effect of a change to an RDF model. In TopBraid, any script containing an instance of this class will be executed as part of each change. The output of this module is using the http://topbraid.org/change ontology, with triples describing the changes that have happened.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Can be used (in TopBraid Live only) to specify that a script shall be executed after commits, and not after edits. In TBC this is ignored, and script will always be executed after edits.</rdfs:comment>
+        <spl:predicate rdf:resource="#onCommit"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Track changes</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ImportFromVariousModules"/>
+  </sm:Module>
+  <sm:Module rdf:ID="ApplyOWLIM">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Runs the OWLIM inferencer over the input triples, adding the inferred triples.
+
+Note that this SPARQLMotion module does not (yet) support the various settings of OWLIM that are accessible through TBC. Let us know if you need any of them!</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#RDFProcessingModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <spl:predicate rdf:resource="#replace"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Specifies whether the resulting infererred triples shall replace the input. If false, the union of inferred triples and old triples are returned.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Apply OWLIM</rdfs:label>
+  </sm:Module>
+  <sm:Module rdf:ID="FilterByFilterGraph">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Filter by filter graph</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Filters input graphs with filter graphs. This module is linked to filter graph modules by sml:filterGraph property.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#RDFProcessingModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#filterGraph"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The module that contains the triples that shall be filtered out. Must be one of the predecessors of this module, to make sure that it has been executed before.</rdfs:comment>
+        <spl:valueType rdf:resource="http://topbraid.org/sparqlmotion#Modules"/>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="ImportEMails">
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#loadBodies"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Indicates whether the bodies of the email should also be downloaded. Note that the value of true will be significantly slower than the (default value) false.</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#emailAccount"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The address to load the emails from. The address must have valid values for email:userName, email:protocol, email:password, email:server.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#baseURI"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The base URI of the RDF objects created from the emails.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >An (optional) path to those folders the headers of which shall be loaded. For example /INBOX/TBC-MailingList will load the emails from the TBC-MailingList folder inside of the INBOX folder.</rdfs:comment>
+        <spl:predicate rdf:resource="#path"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Import emails</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ImportFromRemoteModules"/>
+    <rdfs:comment>Imports email messages from an account. This feature is based on the TopBraid email ontology (http://topbraid.org/email). The property sml:emailAccount must point to one email:Address instance. The system will connect to the account and import its emails into OWL instances of the email ontology.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="IterateOverSelect">
+    <spin:constraint>
+      <spl:Attribute>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The body of the iteration loop.</rdfs:comment>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#body"/>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+      </spl:Attribute>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#ControlFlowModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Iterate over select</rdfs:label>
+    <spin:constraint>
+      <spl:Attribute>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >A SPARQL Select query that determines the variable bindings for the body in each iteration.</rdfs:comment>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <spl:predicate rdf:resource="#selectQuery"/>
+      </spl:Attribute>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="#iterationVariable"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of a variable which will contain the iteration index in each loop, starting with 0.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Repeats a given sub-script for each matching result set for the SPARQL Select query in the module's selectQuery property.
+
+The start of the sub-script is specified by the body property. There can only be one body property that invokes a single sub-script.  The sub-script must have one target module -- that is, the sub-script cannot have multiple termination points.
+
+The input RDF for each iteration is the same as the input of the iteration module itself. The result variables of the Select query will be bound inside the body in each iteration of the sub-script. Also, if the sml:IterateOverSelect module itself receives input variable bindings, and the value of these variables are changed inside the body sub-script (e.g. using sml:AppendText or sml:BindLiteralVariable), then the end value of each iteration will be used in the sub-script itself, and thus also passed into the next iteration's body. This allows scripts to incrementally modify variables.  The property sml:iterationVariable can be used to name a variable that will keep an iteration count.
+
+The result of this module are the accumulated triples from the end node of the body sub-script. No internal variable bindings of the body will be used outside of the body, unless they have had values before (see above).
+
+In many cases, a better alternative to creating "loops" is to use SPARQL directly, and embed some of the control logic into the WHERE clause, possibly through a CONSTRUCT or UPDATE query.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="PerformUpdate">
+    <rdfs:subClassOf rdf:resource="#RDFProcessingModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Perform update</rdfs:label>
+    <spin:constraint>
+      <spl:Attribute>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The SPARQL UPDATE query to perform. The supported syntax is explained here: http://jena.hpl.hp.com/~afs/SPARQL-Update.html</rdfs:comment>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</spl:maxCount>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</spl:minCount>
+        <spl:valueType rdf:resource="http://spinrdf.org/sp#Update"/>
+        <spl:predicate rdf:resource="#updateQuery"/>
+      </spl:Attribute>
+    </spin:constraint>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Performs a SPARQL UPDATE call to insert and/or delete triples.  This module differs from sml:ApplyConstruct (and other module types) by making persistent changes when the script runs.  Therefore this module should be used carefully.
+
+The default graph of the WHERE clause is the input graph of the module, i.e. the result of its predecessors. However, these cannot be modified using INSERT or DELETE. Instead, a named graph needs to be provided there, e.g. using MODIFY GRAPH, INSERT INTO or DELETE FROM. In order to manipulate the currently open model in TopBraid, there is a special named graph with the URI &lt;urn:x-tb:session&gt; (formerly called &lt;http://tb-session&gt;). Another special graph is &lt;urn:x-tb:sessionbase&gt; that is mapped to the unbuffered version of the base graph of the current session. In the context of an editing application such as Ensemble, this means that any uncommitted changes are bypassed and instead writes are directly done against the database.
+
+SPARQL does not support the use of variables as target graphs, e.g. INSERT INTO ?var is not allowed. In some cases it is necessary to dynamically determine the target graph though. In those cases, the special named graphs &lt;urn:x-var:VARNAME&gt; can be used. VARNAME must be a bound variable pointing to a URI. These URIs must be specific files in the workspace, and it is not valid to redirect to other special URIs such as &lt;urn:x-tb:session&gt;.
+
+If this module is used within a TBE script, then the updates to urn:x-tb:session will be applied like other changes by the user, i.e. they are added to the change history without committing them. Changes are committed when the user selects "Save Data".  All other named graphs will be committed immediately to the underlying data store.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="ExportToSesameRemoteRepository">
+    <spin:constraint>
+      <spl:Argument>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#userName"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The user name if required to log into the repository.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Export to Sesame remote repository</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ExportToRemoteModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >true clears the repository before writing into it.</rdfs:comment>
+        <spl:predicate rdf:resource="#replace"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#url"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The URL of the Sesame server.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the graph name URI</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#graphName"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The id of the model on the server, if necessary.</rdfs:comment>
+        <spl:predicate rdf:resource="#modelName"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Writes the input triples into a Sesame remote repository.
+
+Note: This is a low-level system module. The preferred way of writing to databases is using sml:PerformUpdate.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >An (optional) path to a connection metadata file that will be created so that tools can connect to the repository later. This path is relative to the workspace root, e.g. "/myProject/myFolder/myFile.s2r". Must be used in conjunction with sml:baseURI.</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#targetFilePath"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The base URI of the target repository. Must be specified if a connection file (*.s2r) shall be created.</rdfs:comment>
+        <spl:predicate rdf:resource="#baseURI"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#password"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The password if required to log into the repository.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="CreateSpreadsheet">
+    <rdfs:subClassOf rdf:resource="#TextProcessingModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+        <spl:defaultValue>text</spl:defaultValue>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the variable that will hold the resulting spreadsheet string. Default: text.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The separator between each column. Default is the tab character, but a typical alternative is ",".</rdfs:comment>
+        <spl:predicate rdf:resource="#separator"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Create spreadsheet</rdfs:label>
+    <spin:constraint>
+      <spl:Attribute>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The SPARQL Select query that delivers the rows of the spreadsheet. The columns will be the result variables of the query.</rdfs:comment>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+        <spl:predicate rdf:resource="#selectQuery"/>
+      </spl:Attribute>
+    </spin:constraint>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Creates a spreadsheet text from all bindings of a SPARQL SELECT query. The resulting text will be bound to a variable and can then be saved to a file or further processed.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="ExportToTextFile">
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The path to the file that shall be created. The path can be relative to the current script's folder (e.g., myFolder/test.txt) or absolute to the workspace root /myProject/myFolder/test.txt.</rdfs:comment>
+        <spl:predicate rdf:resource="#targetFilePath"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment>Saves text to a file. The text must be the value of the specified input variable.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#text"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The text that shall be written into the file.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Export to text file</rdfs:label>
+    <rdfs:subClassOf>
+      <sm:Module rdf:ID="ExportToLocalModules">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Export to Local</rdfs:label>
+        <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spin:abstract>
+        <rdfs:subClassOf rdf:resource="#ExportModules"/>
+      </sm:Module>
+    </rdfs:subClassOf>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Specifies whether this will overwrite a file with the same name (true) or whether it will append to an existing file (false).</rdfs:comment>
+        <spl:predicate rdf:resource="#replace"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="CreateTextFromJSP">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Runs a JSP (with embedded SPARQL) template over the input triples and binds the resulting text as a new string variable.  For more see Help &gt; Import and Export &gt; Generating XML/HTML documents with Semantic Java Server Pages.
+
+Note that UISPIN is often a good alternative to JSPs.</rdfs:comment>
+    <rdfs:seeAlso>
+      <sm:Module rdf:ID="CreateUISPINDocument">
+        <spin:constraint>
+          <spl:Argument>
+            <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >True to only create a UISPIN snippet, e.g. without head/body.</rdfs:comment>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+            <spl:predicate rdf:resource="#snippet"/>
+          </spl:Argument>
+        </spin:constraint>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The name of the output variable that will contain the resulting document (as a string).</rdfs:comment>
+            <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >doc</spl:defaultValue>
+            <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+          </spl:Argument>
+        </spin:constraint>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:valueType rdf:resource="http://uispin.org/ui#Node"/>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The UISPIN snippet to evaluate.</rdfs:comment>
+            <spl:predicate rdf:resource="#view"/>
+          </spl:Argument>
+        </spin:constraint>
+        <rdfs:subClassOf rdf:resource="#TextProcessingModules"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Create UISPIN document</rdfs:label>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Evaluates a given UISPIN document (sml:view) and assigns the resulting XML document to a given string variable (sm:outputVariable). The new variable can then be saved to a file or processed otherwise. All incoming variables of this SM module will be bound in the UISPIN expression.
+
+Note that in order to insert a UISPIN view for a given resource (using ui:instanceView etc), you can use the snippet &lt;ui:resourceView ui:resource="{= ?varName }" /&gt;.
+
+Also note that in order to use HTML or SVG tags in the sml:view, you will need to import the html.rdf or svg.rdf from the UISPIN ontologies into the script.</rdfs:comment>
+      </sm:Module>
+    </rdfs:seeAlso>
+    <rdfs:subClassOf rdf:resource="#TextProcessingModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the variable that will hold the output of the JSP as an xsd:string. Default: text.</rdfs:comment>
+        <spl:defaultValue>text</spl:defaultValue>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >false</spl:defaultValue>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >If set to true then all currently visible variables of the SM script will be pre-bound in the SPARQL queries in the JSP. Default is false, and users can access the script variables using a construct such as &lt;sparql:select var="rs" cls="${param.rsc}"&gt; where ?rsc is a variable in the SPARQLMotion script.</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#bindVariables"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Create text from JSP</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The Semantic JSP template, typically the content of a JSP file that was loaded in a previous step.</rdfs:comment>
+        <spl:predicate rdf:resource="#template"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:seeAlso rdf:resource="http://composing-the-semantic-web.blogspot.com/2007/11/creating-documents-with-sparql-and-jsp.html"/>
+  </sm:Module>
+  <sml:DatabaseType rdf:ID="PostgreSQL">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >PostgreSQL</rdfs:label>
+  </sml:DatabaseType>
+  <sm:Module rdf:ID="FilterByConstruct">
+    <rdfs:comment>Uses SPARQL CONSTRUCT queries to enumerate triples that shall be dropped from the input triple stream. The output triples of this module contain all input triples except those enumerated by the construct query. For example, if you want to drop all rdfs:comment triples from the input graph, then use a query such as CONSTRUCT {?s rdfs:comment ?o} WHERE {?s rdfs:comment ?o}.</rdfs:comment>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:predicate rdf:resource="#constructQuery"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >A SPARQL Construct query delivering the triples that shall be dropped.</rdfs:comment>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</spl:minCount>
+      </spl:Attribute>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#RDFProcessingModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Filter by construct</rdfs:label>
+  </sm:Module>
+  <sm:Module rdf:ID="BindByXPath">
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the variable to bind.</rdfs:comment>
+        <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >value</spl:defaultValue>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#xml"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The XML document or node to operate on.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment>Evaluates an XPath on a given XML node (or document) and binds the first result to a given variable.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:defaultValue rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#datatype"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The datatype of the result variable (xsd:string if left blank).</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:subClassOf>
+      <sm:Module rdf:ID="XMLProcessingModules">
+        <rdfs:subClassOf rdf:resource="#ProcessingModules"/>
+        <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spin:abstract>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >XML Processing</rdfs:label>
+      </sm:Module>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Bind by XPath</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#xpath"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The XPath to process.</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="ExportToRDFFile">
+    <rdfs:subClassOf rdf:resource="#ExportToLocalModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#targetFilePath"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The path of the file to create. The path can be relative to the current script's folder (e.g., myFolder/test.rdf) or absolute to the workspace root /myProject/myFolder/test.rdf. Can be left blank if the base URI already has a representation in the workspace. In that case, the primary file in the workspace will be overwritten.</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#baseURI"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The base URI under which the resulting file will be registered in the workspace.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Export to RDF file</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Creates a new RDF file at the specified path inside the workspace and with the specified base URI. The serialization is derived from the file name according to TopBraid's conventions, e.g. files ending with .ttl will be written in Turtle format.
+
+Note that if an existing file is overwritten (with matching base URI), and the graph of this file has already been loaded, then the system will not reload the new graph. I.e. if the URI specified in sml:baseURI is the same baseURI of a graph currently open in TBC or TBL, the old graph will remain open and the export will only have an effect after closing the other copies.  A consequence of this is that you cannot overwrite a file and reload its new content within the same session, e.g. sml:ImportRDFFromWorkspace will still deliver the old graph. In order to modify an existing graph, the recommended approach is to use sml:PerformUpdate.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="IterateWhile">
+    <rdfs:subClassOf rdf:resource="#ControlFlowModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Iterate while</rdfs:label>
+    <rdfs:comment>Repeats a sub-script (specified as body) as long as a SPARQL ASK query returns true. The output of each iteration is the input to the next. The output of the whole module is the result of the last iteration. No variable bindings are passed into or out of the body.</rdfs:comment>
+    <spin:constraint>
+      <spl:Attribute>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The start of the script that shall be executed as body in each iteration. The body must end with a single target module.</rdfs:comment>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#body"/>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+      </spl:Attribute>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:predicate rdf:resource="#askQuery"/>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >An ASK query that is executed prior to each iteration. If the query returns false, the iteration stops and the most recent result graph will be returned.</rdfs:comment>
+      </spl:Attribute>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="ConvertStringToSPINRDF">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Converts a SPARQL query (in textual form) to a SPIN RDF syntax resource. The resulting output graph will contain exactly the triples of the SPIN query. These triples can then be used, for example, to analyze the structure of a SPARQL query dynamically. The inverse operation can be achieved using the SPARQL function smf:convertSPINRDFToString.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#text"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the SPARQL query in textual form; with or without namespace prefixes</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#TextProcessingModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Convert string to SPIN RDF</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://topbraid.org/sparqlmotionfunctions#convertSPINRDFToString"/>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the URI of the query to create (either xsd:string or resource)</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#uri"/>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="ConvertDatatype">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Convert datatype</rdfs:label>
+    <rdfs:comment>Replaces all triples that have a given property as predicate (specified by sml:predicate) by converting its object literals into a different RDF datatype (specified as sml:datatype).</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#RDFProcessingModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The predicate of the triples that shall be replaced.</rdfs:comment>
+        <spl:predicate rdf:resource="#predicate"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Datatype"/>
+        <spl:predicate rdf:resource="#datatype"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The datatype (e.g. xsd:string) of the new triples. If the datatype is rdfs:Resource and the lexical form of the old value is a valid URI, then the resulting triple will point to a resource with that URI.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="ModifyPrefixes">
+    <rdfs:comment>Can be used to add or delete namespace prefix declarations from the input RDF stream so that these new prefixes are visible down stream of this module.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Modify prefixes</rdfs:label>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >0</spl:minCount>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Namespaces to add, in the format "prefix namespace", i.e. the prefix must be followed by a space. Example: "my http://my.com#".</rdfs:comment>
+        <spl:predicate rdf:resource="#addedPrefix"/>
+      </spl:Attribute>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#RDFProcessingModules"/>
+    <spin:constraint>
+      <spl:Attribute>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The prefix(es) to delete, e.g. "my".</rdfs:comment>
+        <spl:predicate rdf:resource="#deletedPrefix"/>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >0</spl:minCount>
+      </spl:Attribute>
+    </spin:constraint>
+  </sm:Module>
+  <sml:RDFSerialization rdf:ID="Turtle">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Turtle</rdfs:label>
+  </sml:RDFSerialization>
+  <sm:Module rdf:ID="CommitChanges">
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >An (optional) comment that is only used in teamwork mode, to attach a comment to a Change object. This comment can be collected from the user in earlier steps of a SM script.</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="http://www.w3.org/2000/01/rdf-schema#comment"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Commit changes</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ExportToVariousModules"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This module can be used in conjunction with TBE sessions to commit changes from the session's buffers into the underlying data stores. This is comparable to the "Save Data" button in TBE.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="ImportTextFile">
+    <rdfs:comment>Imports a text file into the xsd:string variable sm:outputVariable.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >text</spl:defaultValue>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the variable that will contain the text of the file as an xsd:string literal. Default: text.</rdfs:comment>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#sourceFilePath"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The path to a text file. The path can be relative to the current script's folder (e.g., myFolder/test.txt) or absolute to the workspace root /myProject/myFolder/test.txt.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#ImportFromLocalModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Import text file</rdfs:label>
+  </sm:Module>
+  <sm:Module rdf:ID="ImportJavaObjectsFromEMFFile">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Loads an EMF file from the workspace and makes it possible to process the resulting Java objects further down in the script (e.g., with sml:ConvertJavaObjectsToRDF).</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the output variable that will contain the reference to the Java objects.</rdfs:comment>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+        <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >java</spl:defaultValue>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The path to the EMF file.</rdfs:comment>
+        <spl:predicate rdf:resource="#sourceFilePath"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Import java objects from EMF file</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ImportFromLocalModules"/>
+  </sm:Module>
+  <sm:Module rdf:ID="IterateOverArguments">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >In scripts that are called as web service, this module can be used to iterate over all arguments of the web service. In each iteration, the body will be executed with two variable bindings: the argument name (?argName) and argument value (?argValue), both as xsd:string literals. The result of the module itself will be the union of the results of all body iterations, comparable to sml:IterateOverSelect. In a typical scenario, the body would consist of sml:ApplyConstruct modules that turn the raw arguments into some more meaningful data structure, that is then further processed by the rest of the script.</rdfs:comment>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The body to execute with the two variable bindings (?argName and ?argValue).</rdfs:comment>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#body"/>
+      </spl:Attribute>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Iterate over arguments</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ControlFlowModules"/>
+  </sm:Module>
+  <sm:Module rdf:ID="ConvertJSONToRDF">
+    <rdfs:subClassOf rdf:resource="#TextProcessingModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Convert JSON to RDF</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+        <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >root</spl:defaultValue>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the result variable (defaults to "root") that will contain the root object of the converted JSON code.</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#text"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The JSON input text, either a JSON object or array.</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Takes a JSON object or array (represented as text) and converts it to RDF triples with the same structure. The result graph will only contain the generated triples - the input graph will be ignored and may need to be passed on with a separate sm:next relationship. The graph uses the namespace prefix "json" for http://topbraid.org/json#.
+
+The conversion will start at the JSON root and does a recursive walk through of the JSON objects and arrays. Each JSON object becomes a blank node of type json:Object. Each attribute of the JSON object is mapped into a property from the json namespace, e.g. attribute "firstName" becomes a property json:firstName. No types are generated for those properties (but a simple CONSTRUCT could be used). The values of those properties depend on the JSON attribute value. Arrays are converted to rdf:Lists, JSON objects recursively become new blank nodes. Numbers, booleans and strings become corresponding RDF literals.
+
+Optionally, the module can bind a new variable pointing at the root object of the new JSON data structure in RDF.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="ImportOracleRDFDatabase">
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#modelName"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The internal Oracle database name.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The URL of the database.</rdfs:comment>
+        <spl:predicate rdf:resource="#url"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Import Oracle RDF database</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Connects to an Oracle 11g RDF database.
+
+Note: This is a low-level system module. The preferred way of operating on existing databases is using sml:ImportRDFFromWorkspace.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <spl:predicate rdf:resource="#cached"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Indicates whether the Oracle database shall be wrapped with a local cache for optimized performance.</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#password"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The (optional) password to log into the database.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#ImportFromRemoteModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#userName"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The (optional) user name to log into the database.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:predicate rdf:resource="#ruleBaseName"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name(s) of rule bases that shall be used for server-side inferencing. The standard inferences are RDFS, RDFS++, OWLSIF and OWLPRIME.</rdfs:comment>
+      </spl:Attribute>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="ReturnRDF">
+    <rdfs:comment>Represents the exit point of a function that returns RDF. The function can be referenced from the outside (e.g., as a web service) by its URI or local name. The RDF triples will be serialized into either RDF/XML or JSON.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#ExportToRemoteModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://topbraid.org/sparqlmotion#ValueType"/>
+        <spl:defaultValue>
+          <sml:RDFSerialization rdf:ID="RDFXML">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >RDF/XML-ABBREV</rdfs:label>
+          </sml:RDFSerialization>
+        </spl:defaultValue>
+        <spl:predicate rdf:resource="#serialization"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the serialization format</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Return RDF</rdfs:label>
+  </sm:Module>
+  <sm:Module rdf:ID="ImportSesameRemoteRepository">
+    <rdfs:subClassOf rdf:resource="#ImportFromRemoteModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#userName"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The user name if required to log into the repository.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The password if required to log into the repository.</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#password"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#modelName"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The id of the model on the server, if necessary.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the named graph URI</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="#graphName"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Import Sesame remote repository</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The URL of the Sesame server.</rdfs:comment>
+        <spl:predicate rdf:resource="#url"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Connects to a remote Sesame 2 repository.
+
+Note: This is a low-level system module. The preferred way of operating on existing databases is using sml:ImportRDFFromWorkspace.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="ImportRDFa">
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#url"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The URL of the RDFa file (typically HTML).</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Import RDFa</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ImportFromRemoteModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#needsTidy"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >If set to true, the engine will attempt to clean up the HTML so that it becomes well-formed XHTML.</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Imports the RDF triples from a given RDFa page with a given URL.
+
+Depending on the file format, other kinds of pre-processing may be needed to tidy up the HTML into proper XHTML. This can be specified with an option. By default, well-formed XHTML is assumed.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="EnterLiteral">
+    <rdfs:subClassOf rdf:resource="#ImportFromVariousModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Enter literal</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the text that will appear at the prompt</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#text"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#datatype"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The type of the value to enter (e.g. xsd:int). Default: xsd:string.</rdfs:comment>
+        <spl:defaultValue rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment>Prompts the user to enter a literal. The resulting value will be bound as literal to the variable specified as sm:outputVariable.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the variable that will contain the entered literal.</rdfs:comment>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sml:DatabaseType rdf:ID="MySQL">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >MySQL</rdfs:label>
+  </sml:DatabaseType>
+  <sm:Module rdf:ID="ApplyConstruct">
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#replace"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >If set to true, the output triples will only contain the constructed triples. If no values or false are specified, the output will be the union of the input triples and the constructed triples.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Attribute>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The SPARQL Construct queries that deliver the triples that shall be added.</rdfs:comment>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+        <spl:predicate rdf:resource="#constructQuery"/>
+      </spl:Attribute>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#RDFProcessingModules"/>
+    <rdfs:comment>Runs one or more SPARQL Construct queries on the input triples. The output RDF will consist of the constructed triples and (unless sml:replace is true) the input triples.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Apply Construct</rdfs:label>
+  </sm:Module>
+  <sm:Module rdf:ID="ApplyTopSPIN">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Applies the TopSPIN rules inference engine on the input graph. This assumes that the input graph contains one or more SPIN rules (stored using the property specified under sml:predicate, which defaults to spin:rule).</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#RDFProcessingModules"/>
+    <rdfs:label>Apply TopSPIN</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The predicate to get the rules from. Usually spin:rule, but can be any SPIN property (subPropertyOf spin:query)</rdfs:comment>
+        <spl:defaultValue rdf:resource="http://spinrdf.org/spin#rule"/>
+        <spl:valueType rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#predicate"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Specifies whether only a single pass over all rules shall be made. By default (false), TopSPIN will iterate until no further inferences have been made.</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <spl:predicate rdf:resource="#singlePass"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#replace"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Specifies whether the resulting infererred triples shall replace the input. If false, the union of inferred triples and old triples are returned.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="ConvertJavaObjectsToRDF">
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The names of the Java classes in scope of the conversion. All (indirect) instances of those classes will be included in the conversion. The names may end with .* to indicate packages.</rdfs:comment>
+        <spl:predicate rdf:resource="#javaClass"/>
+      </spl:Attribute>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the variable that is currently pointing to the Java objects to convert.</rdfs:comment>
+        <spl:predicate rdf:resource="#inputVariable"/>
+        <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >java</spl:defaultValue>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of an output variable that will contain the root object (in RDF).</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Converts Java objects (e.g. loaded using sml:ImportJavaObjectsFromEMFFile) into RDF classes, properties and instances that have the same structure. The module will start at a root object and traverse all properties of that object (using JavaBeans-like getter methods), converting each instance into RDF blank nodes. The traversal into adjacent objects only continues if the object has one of the types specified by this module.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#RDFProcessingModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Convert Java objects to RDF</rdfs:label>
+  </sm:Module>
+  <sm:Module rdf:ID="CheckSpelling">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Runs a SPARQL select query and binds result variables for each matching result set.  Strings bound to variables in the SELECT clause will be passed to a TBL spellchecker, which will parse the string into individual words and return triples representing each word from the string not in the dictionary.  Each word returned is represented as an instance of the class http://topbraid.org/spellcheckresults#SpellResult with properties inputString, foundError, mispelledWords, and suggestions, all with the same prefix as SpellResult, http://topbraid.org/spellcheckresults#. The value of the suggestions property is an rdf:Bag with five suggested replacements for the word. In the checked content, terms in all upper-case such as acronyms are ignored.
+
+The spellcheck dictionary is included with TopBraid Live (both Personal and Enterprise Server).  Words can be added to the dictionary through the sml:UpdateUserWordDictionary module.</rdfs:comment>
+    <rdfs:label>Check spelling</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#RDFProcessingModules"/>
+    <spin:constraint>
+      <spl:Attribute>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The SELECT query that delivers all the literals that shall be spell checked.</rdfs:comment>
+        <spl:valueType rdf:resource="http://spinrdf.org/sp#Select"/>
+        <spl:predicate rdf:resource="#selectQuery"/>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+      </spl:Attribute>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="BindWithConstant">
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the variable that will hold the constant. Default: text.</rdfs:comment>
+        <spl:defaultValue>text</spl:defaultValue>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#value"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The constant value (either a resource or a literal).</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment>Binds a variable with a given RDF node.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Bind with constant</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ControlFlowModules"/>
+  </sm:Module>
+  <sm:Module rdf:ID="ConcatenateText">
+    <rdfs:subClassOf rdf:resource="#TextProcessingModules"/>
+    <rdfs:comment>Executes a SPARQL Select query and creates a single long text string by concatenating all result variable bindings. This can be used, for example, to create a single "fullName" value from "firstName" and "lastName" properties (in which case the order of variables in the SELECT clause is relevant. Another use case is to build a single long string from multiple property values of the same kind, e.g. to concatenate all text bodies of all RSS items in a newsfeed. The resulting text can then be further processed by text processing modules such as text miners.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:defaultValue>text</spl:defaultValue>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the output variable that will contain the concatenated text string. Default: text.</rdfs:comment>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >An optional separator that will be inserted between the text units.</rdfs:comment>
+        <spl:predicate rdf:resource="#separator"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:predicate rdf:resource="#selectQuery"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The SPARQL Select query that will deliver the individual values that shall be concatenated.</rdfs:comment>
+      </spl:Attribute>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Concatenate text</rdfs:label>
+  </sm:Module>
+  <rdf:Description rdf:about="http://topbraid.org/sparqlmotion#FunctionModule">
+    <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</spin:abstract>
+  </rdf:Description>
+  <sm:Module rdf:ID="UpdateUserWordDictionary">
+    <rdfs:label>Update user word dictionary</rdfs:label>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:valueType rdf:resource="http://spinrdf.org/sp#Select"/>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <spl:predicate rdf:resource="#selectQuery"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The SELECT query that delivers action (remove / add) and the literal that shall be removed / added from / to the dictionary of user specified words. &lt;http://topbraid.org/spellcheckresults#removeWord&gt; is used to specify remove action and &lt;http://topbraid.org/spellcheckresults#addWord&gt; is used to specify add action.</rdfs:comment>
+      </spl:Attribute>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#RDFProcessingModules"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >SM Module for adding and removing words from the dictionary of user specified words. Words in the dictionary of user specified words are ignored by the CheckSpelling module.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="ImportNewsFeed">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Import news feed</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ImportFromRemoteModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#url"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The URL of the newsfeed.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment>Connects to a newsfeed specified by a URL and returns its content as RDF triples. Supported formats are Atom 0.3, Atom 1.0, RSS 0.91, 0.92, 1.0, 2.0. The url string may contain variable placeholders such as {?keyword} to insert variable bindings.</rdfs:comment>
+  </sm:Module>
+  <sml:DatabaseType rdf:ID="SQLServer">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Microsoft SQL Server</rdfs:label>
+  </sml:DatabaseType>
+  <sm:Module rdf:ID="CreateMap">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Creates a geographical map displaying resources from one or more given SPARQL queries. Resources can be displayed on a map if they have geo:lat/long values as objects. Currently only supported within TBC.</rdfs:comment>
+    <spin:constraint>
+      <spl:Attribute>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >A SPARQL Select query delivering the subjects that shall be displayed. If empty, all subject with a value for geo:lat will be displayed.</rdfs:comment>
+        <spl:predicate rdf:resource="#selectQuery"/>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >0</spl:minCount>
+      </spl:Attribute>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Create map</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ExportToVariousModules"/>
+  </sm:Module>
+  <sm:Module rdf:ID="AppendText">
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="#template"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The (template) string to append to the variable value.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#TextProcessingModules"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Appends a given text (possibly containing template expressions, sml:template) to the value of a given variable (sml:variable) and binds the concatenation of the old value plus the new text to the same variable. This can be used to incrementally build up a string.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the variable to append to.</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >text</spl:defaultValue>
+        <spl:predicate rdf:resource="#variable"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Append text</rdfs:label>
+  </sm:Module>
+  <sm:Module rdf:ID="CatchExceptions">
+    <spin:constraint>
+      <spl:Argument>
+        <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >error</spl:defaultValue>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the output variable that shall hold the error message.</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <spl:valueType rdf:resource="http://topbraid.org/sparqlmotion#Modules"/>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The head of the script to execute. Must have a single end module.</rdfs:comment>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#body"/>
+      </spl:Attribute>
+    </spin:constraint>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Runs a sub-script (sm:body) and catches any errors (Java Exceptions) that happened within it. Normally, the SPARQLMotion engine exits on hitting any Exception, but this module provides a level of error handling. If an error occurs, then the result variable (sm:outputVariable) will contain the error message, and the result graph will be the same as the input of the module itself. Otherwise, the output graph will be the last module of the nested body script, and any variable bindings from the body will be applied to the next modules.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Catch exceptions</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ControlFlowModules"/>
+  </sm:Module>
+  <sm:Module rdf:ID="ExportToOracleRDFDatabase">
+    <rdfs:subClassOf rdf:resource="#ExportToRemoteModules"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Connects to an Oracle 11g RDF database and writes the input triples into it.
+
+Note: This is a low-level system module. The preferred way of writing to databases is using sml:PerformUpdate.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#url"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The URL of the database.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the mode of export to use</rdfs:comment>
+        <spl:defaultValue rdf:resource="#ExportBulk"/>
+        <spl:valueType rdf:resource="#OracleExportMode"/>
+        <spl:predicate rdf:resource="#exportMode"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Export to Oracle RDF database</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#userName"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The user name to log in with.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#password"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The password to log in with.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >true to replace all triples currently in the database.</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#replace"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The internal Oracle name of the database.</rdfs:comment>
+        <spl:predicate rdf:resource="#modelName"/>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="DisplayEditForm">
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#buttonLabel"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the label of the button under the form</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#title"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the title of the edit form</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#class"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the class of the instance to edit</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Display edit form</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Displays a form that enables end-users to edit an instance of a given class. The new triples will be added to a run-time RDF graph and can then be queried by the next modules in the script. Note that the output RDF graph may contain other triples (such as imports or form declarations) which should be ignored - the only "save" triples to get are the direct property values of the resource specified by outputVariable.
+
+This module is currently supported by TBC and TBE.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#RDFProcessingModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the name of the variable that can be used to access the edited instance in the next modules</rdfs:comment>
+        <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >instance</spl:defaultValue>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="CreateSPINResultSet">
+    <rdfs:seeAlso rdf:resource="http://spinrdf.org/spr.html"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Create SPIN Result Set</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The SELECT query to evaluate.</rdfs:comment>
+        <spl:predicate rdf:resource="#selectQuery"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the output variable that will point to the new spr:Table resource.</rdfs:comment>
+        <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >table</spl:defaultValue>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Converts the result set of a given SPARQL SELECT query (sml:selectQuery) to an SPIN result set (SPR table resource). The resulting resource can then be queried using the SPR functions. The output graph of this module contains only table triples.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#RDFProcessingModules"/>
+  </sm:Module>
+  <sm:Module rdf:ID="BindWithSelectedResource">
+    <rdfs:subClassOf rdf:resource="#ControlFlowModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Bind with selected resource</rdfs:label>
+    <rdfs:comment>Deprecated since 2.0.0/TopBraid 3.0: use sml:SelectedResourceArgument in a function definition instead.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:defaultValue>resource</spl:defaultValue>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the variable that will point to the currently selected resource. Default: resource.</rdfs:comment>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <spl:predicate rdf:resource="#askQuery"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >An optional ASK query that can be used to determine whether this input is assigned for the given resource. The query will be executed with the outputVariable (default: ?resource) already bound. For example, if this returns true for the selected resource, then TopBraid Composer would display the sml:ReturnXY nodes in drop down menus for the resource.</rdfs:comment>
+      </spl:Attribute>
+    </spin:constraint>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DeprecatedClass"/>
+  </sm:Module>
+  <sm:Module rdf:ID="AssertTrue">
+    <rdfs:comment>Evaluates an ASK condition and stops the execution of the script and reports an error if the condition is false. This module is particularly useful for web services that simply cannot execute if unexpected situations are encountered. The module will simply pass through all variable bindings and RDF triples if no errors are found.</rdfs:comment>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:valueType rdf:resource="http://spinrdf.org/sp#Ask"/>
+        <spl:predicate rdf:resource="#askQuery"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The ASK query that must return true.</rdfs:comment>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+      </spl:Attribute>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#ControlFlowModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the error message</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="#text"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Assert true</rdfs:label>
+  </sm:Module>
+  <sm:Module rdf:ID="ImportCurrentRDF">
+    <rdfs:subClassOf rdf:resource="#ImportFromVariousModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Import current RDF</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Depending on the context, this module delivers different results.
+
+When called from a TBE session, this will return the session's RDF graph.
+
+When called from TBC, this will also return the RDF graph of the currently open file. In many use cases this will include the script itself, unless the script is a background service such as an sml:TrackChanges script.
+
+When called from a user-defined SPARQLMotion/SPIN Function, this module will return the context graph, which is the graph that the surrounding SPARQL query will currently operate on.
+
+When called as a TopBraid Live (stand-alone) web service, this module will throw an exception because there is no current graph available.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="ImportXMLFile">
+    <rdfs:seeAlso>
+      <sm:Module rdf:ID="IterateOverXPath">
+        <spin:constraint>
+          <spl:Argument>
+            <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+            <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >xml</spl:defaultValue>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The name of the variable that will be bound in each iteration.</rdfs:comment>
+          </spl:Argument>
+        </spin:constraint>
+        <spin:constraint>
+          <spl:Attribute>
+            <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#body"/>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The body to execute in each iteration.</rdfs:comment>
+            <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >1</spl:maxCount>
+            <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >1</spl:minCount>
+          </spl:Attribute>
+        </spin:constraint>
+        <rdfs:comment>Evaluates an XPath on a given XML document (or node) and executes a given body for each binding. The outputVariable will be bound in each iteration of the loop, bound to the XML node. The main use case of this module is in combination with sml:BindByXPath: IterateOverXPath walks through a list of top-level nodes and sml:BindByXPath is then used to extract individual values in each iteration.</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Iterate over XPath</rdfs:label>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:predicate rdf:resource="#xml"/>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The XML node (document or element) to operate on.</rdfs:comment>
+          </spl:Argument>
+        </spin:constraint>
+        <rdfs:subClassOf rdf:resource="#XMLProcessingModules"/>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:predicate rdf:resource="#xpath"/>
+            <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The XPath to evaluate.</rdfs:comment>
+          </spl:Argument>
+        </spin:constraint>
+      </sm:Module>
+    </rdfs:seeAlso>
+    <rdfs:seeAlso>
+      <sm:Module rdf:ID="ExportToXMLFile">
+        <rdfs:subClassOf rdf:resource="#ExportToLocalModules"/>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:predicate rdf:resource="#targetFilePath"/>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The path to the output file. The path can be relative to the current script's folder (e.g., myFolder/test.xml) or absolute to the workspace root /myProject/myFolder/test.xml.</rdfs:comment>
+          </spl:Argument>
+        </spin:constraint>
+        <rdfs:comment>Creates an XML file from the value of the input variable.</rdfs:comment>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:predicate rdf:resource="#xml"/>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The XML document that shall be written to the file.</rdfs:comment>
+          </spl:Argument>
+        </spin:constraint>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Export to XML file</rdfs:label>
+      </sm:Module>
+    </rdfs:seeAlso>
+    <rdfs:seeAlso>
+      <sm:Module rdf:ID="ConvertXMLByXSLT">
+        <spin:constraint>
+          <spl:Argument>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The source XML variable</rdfs:comment>
+            <spl:predicate rdf:resource="#xml"/>
+          </spl:Argument>
+        </spin:constraint>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Convert XML by XSLT</rdfs:label>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+            <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >xml</spl:defaultValue>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The generated XML string variable. The recommended module to export or return the value of this variable is sml:ExportToXMLFile or sml:ReturnXML.</rdfs:comment>
+          </spl:Argument>
+        </spin:constraint>
+        <spin:constraint>
+          <spl:Argument>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The string variable holding the XSLT script</rdfs:comment>
+            <spl:predicate rdf:resource="#template"/>
+          </spl:Argument>
+        </spin:constraint>
+        <rdfs:subClassOf rdf:resource="#XMLProcessingModules"/>
+        <rdfs:comment>Converts an XML document into another XML document using XSLT. The source XML document is either a XML or string variable. The target XML document is a string variable. XSLT script is provided as a string.</rdfs:comment>
+      </sm:Module>
+    </rdfs:seeAlso>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Loads an XML file, specified by a file path and binds the resulting document as an XML DOM tree to the specified output variable. This module is often the starting point of XML processing steps such as XSLT transformations or XPath queries.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="#sourceFilePath"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The path to the XML file in the workspace. The path can be relative to the current script's folder (e.g., myFolder/test.xml) or absolute to the workspace root /myProject/myFolder/test.xml.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+        <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >xml</spl:defaultValue>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the variable containing the XML data. Default: xml.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Import XML file</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ImportFromLocalModules"/>
+  </sm:Module>
+  <sm:Module rdf:ID="ApplyPellet">
+    <rdfs:subClassOf rdf:resource="#RDFProcessingModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Apply Pellet</rdfs:label>
+    <rdfs:comment>Applies the Pellet inference engine on the input triples.</rdfs:comment>
+  </sm:Module>
+  <owl:DeprecatedClass rdf:ID="BindWithParameter">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Bind with parameter</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ControlFlowModules"/>
+    <rdfs:comment>Deprecated since 2.0.0: Web Services are now defined like user-defined functions and SPIN functions, and the parameters are instances of spl:Argument.</rdfs:comment>
+    <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+    >true</spin:abstract>
+    <rdf:type>
+      <rdf:Description rdf:about="http://topbraid.org/sparqlmotion#Module">
+        <spin:abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spin:abstract>
+      </rdf:Description>
+    </rdf:type>
+  </owl:DeprecatedClass>
+  <sm:Module rdf:ID="ApplyJenaRules">
+    <rdfs:subClassOf rdf:resource="#RDFProcessingModules"/>
+    <rdfs:comment>Applies the rules specified as values of the jena:rule property in the source ontologies. Furthermore, all SWRL rules (swrl:Imp) will be converted to Jena rules before execution. The inferred triples will be added to the input.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Apply Jena rules</rdfs:label>
+  </sm:Module>
+  <sm:Module rdf:ID="ReturnUISPINDocument">
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#view"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >A UISPIN document to render. This document may reference the bound variables of this module.</rdfs:comment>
+        <spl:valueType rdf:resource="http://uispin.org/ui#Node"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Return UISPIN document</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ExportToRemoteModules"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Creates a UISPIN document using the current variable bindings and returns the resulting document as XHTML or SVG to the caller of the web service.
+
+Note that in order to insert a UISPIN view for a given resource (using ui:instanceView etc), you can use the snippet &lt;ui:resourceView ui:resource="{= ?varName }" /&gt;.
+
+Also note that in order to use HTML or SVG tags in the sml:view, you will need to import the html.rdf or svg.rdf from the UISPIN ontologies into the script.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#mimeType"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Overrides the default mime type returned by the UISPIN engine.</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#snippet"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >True to only create a UISPIN snippet, e.g. without head/body.</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="IterateOverSQL">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Iterate over SQL</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The password for the database.</rdfs:comment>
+        <spl:predicate rdf:resource="#password"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Repeats a given sub-script for each matching result set of a given SQL Select query. The system will do a mapping of SQL values to suitable XSD datatypes.
+
+The start of the sub-script is specified by the body property, and the input RDF of the body is the same as the input of the iteration module itself. The result variables of the Select query will be bound in each iteration of the loop.
+
+The result of this module are the accumulated triples from the end nodes of the body scripts. No internal variable bindings of the body will be used outside of the body.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#ControlFlowModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="#sql"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The SQL SELECT query to send to the database.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#body"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The body of the iteration loop.</rdfs:comment>
+      </spl:Attribute>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The user name for the database.</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="#userName"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#url"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The URL of the database.</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#databaseType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The type of the database.</rdfs:comment>
+        <spl:valueType rdf:resource="#DatabaseType"/>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="PostRequest">
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The URL to post to.</rdfs:comment>
+        <spl:predicate rdf:resource="#url"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Post request</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ExportToRemoteModules"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Sends a POST request to a web server and binds the result stream with the outputVariable. By default, the request will not include any variable bindings. In order to pass in any other parameters, you need to subclass the sml:PostRequest class and declare the additional arguments as spin:constraints. The system will then iterate over all arguments (other than url and outputVariable) that are declared for this type.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the output variable to bind the result with.</rdfs:comment>
+        <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >response</spl:defaultValue>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="ReturnNode">
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the result, usually passed in from a previous module</rdfs:comment>
+        <spl:predicate rdf:resource="#result"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Return node</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ExportToRemoteModules"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Returns an RDF node as a result of a script. This module is typically used as exit point of a user-defined SPIN function and web service. The sm:returnModule of the function will point to this.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="CollectGarbage">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Collect garbage</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The base URI of the RDF model to "forget".</rdfs:comment>
+        <spl:predicate rdf:resource="#baseURI"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Collects "garbage" to clean up memory from RDF models that are no longer used. Currently, this requires specifying the base URI of a graph that has been previously loaded. Note that the use of this module is not safe in a multi-user setting, and should only be used if you know what you are doing.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#ControlFlowModules"/>
+  </sm:Module>
+  <sm:Module rdf:ID="TrackEMails">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Serves as an entry point for scripts that are triggered by incoming emails. If a new message has been detected for the provided account, then this module will produce triple representing the new message as an anonymous instance of the email:Message class.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Track EMails</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The email account to track messages at.</rdfs:comment>
+        <spl:predicate rdf:resource="#emailAccount"/>
+        <spl:valueType rdf:resource="http://topbraid.org/email#Address"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The path to the folder to get (e.g. "INBOX")</rdfs:comment>
+        <spl:predicate rdf:resource="#path"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#ImportFromVariousModules"/>
+  </sm:Module>
+  <sm:Module rdf:ID="ImportGRDDL">
+    <rdfs:subClassOf rdf:resource="#ImportFromRemoteModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Import GRDDL</rdfs:label>
+    <rdfs:comment>Imports RDF triples from a GRDDL-enabled web page.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#url"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The URL of the GRDDL source document.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="ImportSDB">
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >the named graph URI</rdfs:comment>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#graphName"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#url"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The database URL.</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Import SDB</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#password"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The password of the connection.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:predicate rdf:resource="#userName"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The user name of the connection.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#ImportFromRemoteModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="#DatabaseType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The database type, such as Oracle.</rdfs:comment>
+        <spl:predicate rdf:resource="#databaseType"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Connects to an existing Jena SDB database.
+
+Note: This is a low-level system module. The preferred way of operating on existing SDBs is using sml:ImportRDFFromWorkspace.</rdfs:comment>
+  </sm:Module>
+  <sml:RDFSerialization rdf:ID="NTriple">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >NTriple</rdfs:label>
+  </sml:RDFSerialization>
+  <sm:Module rdf:ID="Diff">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Diff</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#RDFProcessingModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#oldGraph"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The module representing the old graph. Must be a predecessor of the current module to ensure that the module has been executed before.</rdfs:comment>
+        <spl:valueType rdf:resource="http://topbraid.org/sparqlmotion#Modules"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Returns a diff graph between an old graph and a new graph. This module is related to the old graph with sml:oldGraph and the new graph with sml:newGraph properties.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The module representing the new graph. Must be a predecessor of the current module to ensure that the module has been executed before.</rdfs:comment>
+        <spl:valueType rdf:resource="http://topbraid.org/sparqlmotion#Modules"/>
+        <spl:predicate rdf:resource="#newGraph"/>
+      </spl:Argument>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="CreateMatrix">
+    <spin:constraint>
+      <spl:Argument>
+        <spl:defaultValue>text</spl:defaultValue>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The variable that will contain the resulting matrix as an xsd:string literal. Default: text.</rdfs:comment>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >A SPARQL Select query that delivers the resources or literals that define the rows. The query should have a single result variable, and this variable should be used in the cell query.</rdfs:comment>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <spl:predicate rdf:resource="#rowQuery"/>
+      </spl:Attribute>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Attribute>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >A SPARQL Select query that is executed for each cell in the matrix. The query should reference the result variables of column and row queries (these will be bound automatically by the engine).</rdfs:comment>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <spl:predicate rdf:resource="#cellQuery"/>
+      </spl:Attribute>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#TextProcessingModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Create matrix</rdfs:label>
+    <rdfs:comment>Creates a matrix (spreadsheet) and binds it as a text value to a given output variable.
+
+The rows and columns of the matrix are specified by two SPARQL queries. These queries must deliver variable bindings to enumerate the resources that shall be used as rows and columns. The cell values are then computed using a third query (cellQuery) that should reference the bound variable names from the row and column queries.</rdfs:comment>
+    <spin:constraint>
+      <spl:Attribute>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >A SPARQL Select query that delivers the resources or literals that define the colums. The query should have a single result variable, and this variable should be used in the cell query.</rdfs:comment>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:maxCount>
+        <spl:predicate rdf:resource="#columnQuery"/>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >1</spl:minCount>
+      </spl:Attribute>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="SendEMails">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Send emails</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ExportToRemoteModules"/>
+    <rdfs:comment>Sends one or more emails. In a typical scenario, previous steps such as sml:ApplyConstruct have created instances of email:Message. The body of the emails could be created using sml:CreateTextFromJSP. A SPARQL Select query is then used to select those messages that shall be sent out, based on the given server parameters.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#smtpServer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The SMTP server that shall be used to send the emails from.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Attribute>
+        <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</spl:minCount>
+        <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</spl:maxCount>
+        <spl:predicate rdf:resource="#selectQuery"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >A SPARQL Select query that binds instances of email:Message to send out.</rdfs:comment>
+      </spl:Attribute>
+    </spin:constraint>
+  </sm:Module>
+  <sm:Module rdf:ID="ExportToTDB">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Export to TDB</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ExportToLocalModules"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+        >true</spl:optional>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <spl:predicate rdf:resource="#replace"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >True to overwrite any pre-existing database at this location.</rdfs:comment>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="#targetFilePath"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The path to the TDB database.</rdfs:comment>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The base URI for the TDB repository.</rdfs:comment>
+        <spl:predicate rdf:resource="#baseURI"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Export the input RDF triples to a given Jena TDB database.
+
+Note: This is a low-level system module. The preferred way of writing to databases is using sml:PerformUpdate.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="CallCalais">
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The text that shall be sent to the Calais service.</rdfs:comment>
+        <spl:predicate rdf:resource="#text"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:comment>Runs the OpenCalais web service to extract RDF entities from text. The result will be the input triples plus the extracted triples (instances of the Calais ontology classes).</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="#TextProcessingModules"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Call Calais</rdfs:label>
+  </sm:Module>
+  <sm:Module rdf:ID="RequestLock">
+    <rdfs:seeAlso>
+      <sm:Module rdf:ID="ReleaseLock">
+        <rdfs:seeAlso rdf:resource="#RequestLock"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Release lock</rdfs:label>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Releases any exclusive system lock previously received using sml:RequestLock.</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="#ControlFlowModules"/>
+      </sm:Module>
+    </rdfs:seeAlso>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Request lock</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#ControlFlowModules"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Requests a lock to get exclusive access to the TopBraid platform. This will make sure that no other thread is executing, so that the following modules in the script can proceed without risking interrupts or concurrent modification exceptions. When reached, the module will wait until all other threads have finished, then continue execution. The lock will be released if the script terminates or sml:ReleaseLock is reached.
+
+Please use this module with care and release the lock as quickly as possible to avoid contention issues. Other concurrent requests may need to wait until the script has been finished.</rdfs:comment>
+  </sm:Module>
+  <sm:Module rdf:ID="ImportExcelCellInstances">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Loads an Excel file into instances of the TopBraid spreadsheets ontology - each non-empty cell becomes an instance of ss:Cell. In a typical scenario, the resulting cell instances are passed into other modules (such as sml:ApplyConstruct) to convert the raw data into a more useful format. This module provides the functionality that is accessible from TBC, as described in Help &gt; Import &gt; Import Excel File into Spreadsheet Ontology.
+
+This module is distinct from the Semantic Tables importer, which can be used with sml:ImportRDFFormWorkspace to also import Excel files. The latter is better suited for spreadsheets consisting of regular tables, while this module here is optimized for cases in which the Excel file is not well-structured and each individual cell has a different meaning or role.</rdfs:comment>
+    <rdfs:seeAlso>
+      <sm:Module rdf:ID="ConvertSpreadsheetToRDF">
+        <spin:constraint>
+          <spl:Argument>
+            <spl:predicate rdf:resource="#instancePattern"/>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The naming pattern for the generated instances. This can contain static characters or placeholders for columns. For example Person-%1 will create names that consist of the static string "Person-" and then the value of the first column.</rdfs:comment>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+          </spl:Argument>
+        </spin:constraint>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Creates an RDF graph from a tab-separated spreadsheet which is specified from a given string variable. In a typical use case, this will be used after sml:ImportTextFile, which binds the variable text which is also the default input variable of this module. For very large files that cannot be loaded into memory, the module provides the option to specify a file directly using sml:sourceFilePath.
+
+Note that TopBraid supports multiple spreadsheet importer algorithms, including Semantic Tables and the Excel cell importer (sml:ImportExcelCellInstances). This module provides the functionality that is accessible through the TopBraid Composer Spreadsheet import wizard (Help &gt; Import &gt; Import Tab-Delimited Spreadsheet File).</rdfs:comment>
+        <spin:constraint>
+          <spl:Argument>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The prefix that shall be used for the generated property names. Only used if no qname is specified for a column property and if a new graph is created from the spreadsheet, i.e. importToInputGraph value is false.</rdfs:comment>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+            <spl:predicate rdf:resource="#propertyPrefix"/>
+          </spl:Argument>
+        </spin:constraint>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The spreadsheet's text that shall be converted. If sml:sourceFilePath is set then this value is ignored.</rdfs:comment>
+            <spl:predicate rdf:resource="#text"/>
+          </spl:Argument>
+        </spin:constraint>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >An optional file path to the spreadsheet. If this is specified then the module will directly do streaming loading from the given file. This should make it possible to handle files of arbitrary size.</rdfs:comment>
+            <spl:predicate rdf:resource="#sourceFilePath"/>
+          </spl:Argument>
+        </spin:constraint>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:predicate rdf:resource="#schemaNamespace"/>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The base namespace of the target schema.</rdfs:comment>
+          </spl:Argument>
+        </spin:constraint>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+            <spl:predicate rdf:resource="#useUnderscore"/>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >If true, it replaces special characters, i.e. characters that cannot be imported by default to create a resource URI, with an underscore. If false, these characters are ignored during import.</rdfs:comment>
+          </spl:Argument>
+        </spin:constraint>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Convert spreadsheet to RDF</rdfs:label>
+        <spin:constraint>
+          <spl:Argument>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The canonical name of the text encoding of the spreadsheet file. If no value for this property is given, then the default JRE encoding is used. If an encoding value is given for this property, then the spreadsheet file will be evaluated using this value. The supported encodings can be found at the website: &lt;http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html&gt;</rdfs:comment>
+            <spl:predicate rdf:resource="#encoding"/>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+          </spl:Argument>
+        </spin:constraint>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:predicate rdf:resource="#useVerbatim"/>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >If true, it imports special characters, i.e. characters that cannot be imported by default to create a resource URI. If false, these characters are ignored during import.</rdfs:comment>
+          </spl:Argument>
+        </spin:constraint>
+        <rdfs:seeAlso rdf:resource="#ImportExcelCellInstances"/>
+        <spin:constraint>
+          <spl:Argument>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The optional name of the target class. If this value is unspecified, then cell (0, 0) of the spreadsheet is used instead. This value can be a localname, a qname or a URI string. If it doesn't exist, then it is created.</rdfs:comment>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+            <spl:predicate rdf:resource="#className"/>
+          </spl:Argument>
+        </spin:constraint>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+            <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+            <spl:predicate rdf:resource="#importToInputGraph"/>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >If set to true, then the import will attempt to reuse properties defined in the input RDF graph for the column-to-property mapping.</rdfs:comment>
+          </spl:Argument>
+        </spin:constraint>
+        <rdfs:subClassOf rdf:resource="#TextProcessingModules"/>
+      </sm:Module>
+    </rdfs:seeAlso>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Import Excel cell instances</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The path to the Excel source file in the workspace. The path can be relative to the current script's folder (e.g., myFolder/test.xls) or absolute to the workspace root /myProject/myFolder/test.xls.</rdfs:comment>
+        <spl:predicate rdf:resource="#sourceFilePath"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="#ImportFromLocalModules"/>
+    <rdfs:seeAlso>
+      <sm:Module rdf:ID="ImportRDFFromWorkspace">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Loads an RDF file from the workspace, based on its base URI (or a path to the file). If the file is already open, it will reuse the currently open model (including any changes that it has compared to the persistent version). The system will use which ever physical file has been registered for the given base URI.  This is the recommended module to load any file type supported by TopBraid, including file serializations (N3, Turtle, RDF/XML and N-TRIPLE), data connectors, XML files (Semantic XML), Excel 2003 .xls files (Semantic Tables), etc.  If the file being opened is a file, the file is loaded into memory.  If it is a data connector (RDF or relational back-end), the data source is opened, but no data is loaded into memory.</rdfs:comment>
+        <spin:constraint>
+          <spl:Argument>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >An (optional) file path pointing to the file that shall be opened. The system will look up the base URI of that file and then open that base URI. This means that if the workspace contains multiple copies of that base URI then it may actually load a different file than the one specified here (it will always use the primary file).</rdfs:comment>
+            <spl:predicate rdf:resource="#sourceFilePath"/>
+            <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+          </spl:Argument>
+        </spin:constraint>
+        <rdfs:subClassOf rdf:resource="#ImportFromLocalModules"/>
+        <spin:constraint>
+          <spl:Argument>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Indicates whether owl:imports shall be ignored. If false, then the union of the base graph plus its (transitive) imports will be returned.</rdfs:comment>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+            <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+            <spl:defaultValue rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >false</spl:defaultValue>
+            <spl:predicate rdf:resource="#ignoreImports"/>
+          </spl:Argument>
+        </spin:constraint>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:predicate rdf:resource="#baseURI"/>
+            <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The (optional) base URI of the model to open. Either this baseURI must be specified or the sourceFilePath. If both are present then the baseURI has priority.</rdfs:comment>
+          </spl:Argument>
+        </spin:constraint>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Import RDF from workspace</rdfs:label>
+      </sm:Module>
+    </rdfs:seeAlso>
+  </sm:Module>
+  <sm:Module rdf:ID="ConvertRDFToXML">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Converts RDF into XML using the Semantic XML (sxml) ontology for the round-tripping. The resulting XML will be bound to the specified output variable. Note that this requires the RDF model to contain an SXML root document element - this function does not work with arbitrary RDF data!  For more, see Help &gt; Import and Export &gt; Creating, Importing, Querying, Saving XML documents with Semantic XML.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:defaultValue>xml</spl:defaultValue>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >The name of the variable that will hold the resulting XML data. Default: xml.</rdfs:comment>
+        <spl:predicate rdf:resource="http://topbraid.org/sparqlmotion#outputVariable"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Convert RDF to XML</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://composing-the-semantic-web.blogspot.com/2007/11/xmap-mapping-arbitrary-xml-documents-to.html"/>
+    <rdfs:subClassOf rdf:resource="#XMLProcessingModules"/>
+    <rdfs:seeAlso>
+      <sm:Module rdf:ID="ConvertXMLToRDF">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Converts an arbitrary XML input model into an RDF graph using the Semantic XML mapping approach. For more, see Help &gt; Import and Export &gt; Creating, Importing, Querying, Saving XML documents with Semantic XML.</rdfs:comment>
+        <rdfs:seeAlso rdf:resource="http://composing-the-semantic-web.blogspot.com/2007/11/xmap-mapping-arbitrary-xml-documents-to.html"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Convert XML to RDF</rdfs:label>
+        <rdfs:subClassOf rdf:resource="#XMLProcessingModules"/>
+        <spin:constraint>
+          <spl:Argument>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The XML document that shall be converted to RDF.</rdfs:comment>
+            <spl:predicate rdf:resource="#xml"/>
+          </spl:Argument>
+        </spin:constraint>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:predicate rdf:resource="#baseURI"/>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >The base URI of the new RDF (for the creation of the new class and property names).</rdfs:comment>
+          </spl:Argument>
+        </spin:constraint>
+        <rdfs:seeAlso rdf:resource="#ConvertRDFToXML"/>
+        <spin:constraint>
+          <spl:Argument>
+            <spl:predicate rdf:resource="#xmlType"/>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >An (optional) type indicator for the Semantic XML conversion. Current supported values are "XHTML" (treats the input as HTML source, and may run a tidy algorithm in case the HTML is not well-formed XHTML).</rdfs:comment>
+            <spl:optional rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+            >true</spl:optional>
+          </spl:Argument>
+        </spin:constraint>
+      </sm:Module>
+    </rdfs:seeAlso>
+  </sm:Module>
+</rdf:RDF>
+
+<!-- Created with TopBraid -->

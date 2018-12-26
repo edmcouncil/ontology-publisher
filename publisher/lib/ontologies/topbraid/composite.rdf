@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:composite="http://www.topbraid.org/2007/05/composite.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="http://www.topbraid.org/2007/05/composite.owl">
+  <owl:Ontology rdf:about="">
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Created with TopBraid Composer by Holger Knublauch</owl:versionInfo>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A simple ontology to help representing part-of (parent/child) relationships.</rdfs:comment>
+  </owl:Ontology>
+  <owl:ObjectProperty rdf:ID="parent">
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:ID="child"/>
+    </owl:inverseOf>
+    <rdfs:comment>The object is the parent of the subject.</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#child">
+    <owl:inverseOf rdf:resource="#parent"/>
+    <rdfs:comment>The object is the child of the subject.</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:ID="index">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:comment>The index of the subject among its siblings. Note that this could in principle take arbitrary numbers (including floats). We recommend using xsd:ints starting at 0.</rdfs:comment>
+  </owl:DatatypeProperty>
+</rdf:RDF>
+
+<!-- Created with TopBraid -->

@@ -5,7 +5,7 @@
 # imports: https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/
 # prefix: owlnames
 
-@prefix afn: <http://jena.hpl.hp.com/ARQ/function#> .
+@prefix afn: <http://jena.apache.org/ARQ/function#> .
 @prefix arg: <http://spinrdf.org/arg#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix owlnames: <http://spec.edmcouncil.org/owlnames#> .
@@ -1358,7 +1358,7 @@ PREFIX  fibo-fnd-inf-tem: <https://spec.edmcouncil.org/fibo/ontology/FND/Informa
 PREFIX  fibo-fnd-arrxx-meth: <https://spec.edmcouncil.org/fibo/ontology/FND/ArrangementsExt/MethodsAndRules/>
 PREFIX  fibo-be-oacx-opx: <https://spec.edmcouncil.org/fibo/ontology/BE/OwnershipAndControlExt/OwnershipPartiesExtras/>
 PREFIX  fibo-fnd-gao-gl: <https://spec.edmcouncil.org/fibo/ontology/FND/GoalsAndObjectives/Goals/>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  fibo-ind-mkt-cri: <https://spec.edmcouncil.org/fibo/ontology/IND/MarketIndices/CreditIndices/>
 PREFIX  fibo-fnd-utl-val: <https://spec.edmcouncil.org/fibo/ontology/FND/UtilitiesExt/Values/>
 PREFIX  fibo-fnd-accx-dtt: <https://spec.edmcouncil.org/fibo/ontology/FND/AccountingExt/DebtTerms/>
@@ -1492,7 +1492,7 @@ PREFIX  fibo-be-ge-caj: <https://spec.edmcouncil.org/fibo/ontology/BE/Government
 PREFIX  fibo-der-derx-swx: <https://spec.edmcouncil.org/fibo/ontology/DER/DerivativesContractsExt/SwapsExt/>
 PREFIX  fibo-fnd-inf-adrx: <https://spec.edmcouncil.org/fibo/ontology/FND/Information/AddressExtensions/>
 PREFIX  fibo-fnd-quax-qua: <https://spec.edmcouncil.org/fibo/ontology/FND/QuantitiesExt/QuantitiesExt/>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  fibo-fnd-occ-ev: <https://spec.edmcouncil.org/fibo/ontology/FND/Occurrent/Events/>
 PREFIX  lcc-cr: <http://www.omg.org/spec/LCC/Countries/CountryRepresentation/>
 PREFIX  fibo-fnd-inf-doc: <https://spec.edmcouncil.org/fibo/ontology/FND/Information/Documentation/>
@@ -2253,7 +2253,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -2262,7 +2262,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -2347,7 +2347,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -2356,7 +2356,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -4146,7 +4146,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -4155,7 +4155,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -4308,7 +4308,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -4317,7 +4317,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -4649,7 +4649,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -4658,7 +4658,7 @@ PREFIX  daml: <http://www.daml.org/2001/03/daml+oil#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -4809,7 +4809,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -4818,7 +4818,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -5180,7 +5180,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -5189,7 +5189,7 @@ PREFIX  daml: <http://www.daml.org/2001/03/daml+oil#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -5581,7 +5581,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -5590,7 +5590,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -6339,7 +6339,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -6348,7 +6348,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -7097,7 +7097,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -7106,7 +7106,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -7855,7 +7855,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -7864,7 +7864,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -8529,7 +8529,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -8538,7 +8538,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -9203,7 +9203,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -9212,7 +9212,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -9877,7 +9877,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -9886,7 +9886,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -10551,7 +10551,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -10560,7 +10560,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -11225,7 +11225,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -11234,7 +11234,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -11899,7 +11899,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -11908,7 +11908,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -12573,7 +12573,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -12582,7 +12582,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -13247,7 +13247,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -13256,7 +13256,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -13921,7 +13921,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -13930,7 +13930,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -14595,7 +14595,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -14604,7 +14604,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -15256,7 +15256,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -15265,7 +15265,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
@@ -15917,7 +15917,7 @@ PREFIX  sp:   <http://spinrdf.org/sp#>
 PREFIX  email: <http://topbraid.org/email#>
 PREFIX  raci: <http://topbraid.org/raci#>
 PREFIX  uix:  <http://topbraidlive.org/uix#>
-PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  afn:  <http://jena.apache.org/ARQ/function#>
 PREFIX  unnamed: <http://sc.workingontologist.com/unnamed#>
 PREFIX  owlnames: <http://spec.edmcouncil.org/owlnames#>
 PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
@@ -15926,7 +15926,7 @@ PREFIX  sxml: <http://topbraid.org/sxml#>
 PREFIX  teamwork: <http://topbraid.org/teamwork#>
 PREFIX  swon: <http://uispin.org/swon#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  pf:   <http://jena.apache.org/ARQ/property#>
 PREFIX  spin: <http://spinrdf.org/spin#>
 PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
 PREFIX  spra: <http://spinrdf.org/spra#>
