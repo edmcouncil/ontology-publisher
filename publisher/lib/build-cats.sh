@@ -222,7 +222,7 @@ __HERE__
       then all these external HTTP GET requests will fail, but nevertheless its important to
       understand the impact of the value below.
     -->
-    <processImports rdf:datatype="&xsd;boolean">true</processImports>
+    <processImports rdf:datatype="&xsd;boolean">false</processImports>
     <cacheModels rdf:datatype="&xsd;boolean">true</cacheModels>
   </DocumentManagerPolicy>
 

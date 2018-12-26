@@ -117,12 +117,26 @@ function publishProductGlossaryContent() {
   require ontology_product_tag_root || return $?
   require glossary_product_tag_root || return $?
 
+  local numberOfProductionLevelOntologyFiles=0
+
   export glossary_script_dir="${SCRIPT_DIR:?}/glossary"
+
+  if [ ! -d "${glossary_script_dir}" ] ; then
+    error "Could not find ${glossary_script_dir}"
+    return 1
+  fi
 
   #
   # Set the memory for ARQ
   #
-  export JVM_ARGS=${JVM_ARGS:--Xmx4G}
+  JVM_ARGS="--add-opens java.base/java.lang=ALL-UNNAMED"
+  JVM_ARGS="${JVM_ARGS} -Dxxx=arq"
+  JVM_ARGS="${JVM_ARGS} -Xms2g"
+  JVM_ARGS="${JVM_ARGS} -Xmx9g"
+  JVM_ARGS="${JVM_ARGS} -Dfile.encoding=UTF-8"
+  JVM_ARGS="${JVM_ARGS} -Djava.io.tmpdir=\"${TMPDIR}\""
+  export JVM_ARGS
+  logVar JVM_ARGS
 
   #
   # Get ontologies for Dev
@@ -148,23 +162,34 @@ function publishProductGlossaryContent() {
   #
   # Get ontologies for Prod
   #
-#  if ((debug == 0)) ; then
+# if ((debug == 0)) ; then
     verbose "Get all prod ontologies convert to one Turtle file ($(logFileName ${TMPDIR}/glossary-prod.ttl))"
-    ${JENA_ARQ} \
-      $(${GREP} -r 'utl-av[:;.]Release' "${ontology_product_tag_root}" | ${SED} 's/:.*$//;s/^/--data=/' | ${GREP} -F ".rdf") \
-      --data=${glossary_script_dir}/owlnames.ttl \
-      --query="${SCRIPT_DIR}/lib/echo.sparql" \
-      --results=Turtle > "${TMPDIR}/glossary-prod.ttl"
 
-    if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-      error "Could not get Prod ontologies"
-      return 1
+    log "All production level ontology files:"
+    while read prodOntologyFile ; do
+      log "- ${prodOntologyFile}"
+      numberOfProductionLevelOntologyFiles=$((numberOfProductionLevelOntologyFiles + 1))
+    done < <(${GREP} -r 'utl-av[:;.]Release' "${ontology_product_tag_root}")
+
+    if ((numberOfProductionLevelOntologyFiles == 0)) ; then
+      warning "There are no production level ontology files"
+    else
+      ${JENA_ARQ} \
+        $(${GREP} -r 'utl-av[:;.]Release' "${ontology_product_tag_root}" | ${SED} 's/:.*$//;s/^/--data=/' | ${GREP} -F ".rdf") \
+        --data=${glossary_script_dir}/owlnames.ttl \
+        --query="${SCRIPT_DIR}/lib/echo.sparql" \
+        --results=Turtle > "${TMPDIR}/glossary-prod.ttl"
+
+      if [ ${PIPESTATUS[0]} -ne 0 ] ; then
+        error "Could not get Prod ontologies"
+        return 1
+      fi
+      #
+      # Fast conversion of the N-Triples file to Turtle
+      #
+      #${SERDI} -b -f -i ntriples -o turtle "${TMPDIR}/glossary-prod.nt" > "${TMPDIR}/glossary-prod.ttl"
     fi
-    #
-    # Fast conversion of the N-Triples file to Turtle
-    #
-    #${SERDI} -b -f -i ntriples -o turtle "${TMPDIR}/glossary-prod.nt" > "${TMPDIR}/glossary-prod.ttl"
-#  fi
+# fi
 
   #
   # Just do "Corporations.rdf" for test purposes
@@ -195,7 +220,10 @@ function publishProductGlossaryContent() {
 #    "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-test.ttl" "${glossary_product_tag_root}/glossary-test.ttl" || return $?
 #  else
     log "debug=false so now we're generating the full prod and dev versions"
-    "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-prod.ttl" "${glossary_product_tag_root}/glossary-prod.ttl" &
+
+    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
+      "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-prod.ttl" "${glossary_product_tag_root}/glossary-prod.ttl" &
+    fi
     "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-dev.ttl" "${glossary_product_tag_root}/glossary-dev.ttl" &
     log "and on top of that also the test glossary"
     "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-test.ttl" "${glossary_product_tag_root}/glossary-test.ttl" &
@@ -234,12 +262,17 @@ __HERE__
 #  if ((debug)) ; then
 #    publishProductGlossaryRemoveWarnings "${fixFile}" test || return $?
 #  else
-    publishProductGlossaryRemoveWarnings "${fixFile}" prod || return $?
+    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
+      publishProductGlossaryRemoveWarnings "${fixFile}" prod || return $?
+    fi
     publishProductGlossaryRemoveWarnings "${fixFile}" dev || return $?
     publishProductGlossaryRemoveWarnings "${fixFile}" test || return $?
 #  fi
 
   cat > "${TMPDIR}/nolabel.sq" << __HERE__
+#
+# JG>Dean, what's going on here? Removing all the rdfs:labels? Why?
+#
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 CONSTRUCT {
@@ -251,10 +284,12 @@ WHERE {
 }
 __HERE__
 
-#  if ((debug)) ; then
-#    ${JENA_ARQ} --data="${glossary_product_tag_root}/glossary-test.ttl" --query="${TMPDIR}/nolabel.sq" > "${TMPDIR}/glossary-test-nolabel.ttl"
-#  else
-    ${JENA_ARQ} --data="${glossary_product_tag_root}/glossary-prod.ttl" --query="${TMPDIR}/nolabel.sq" > "${TMPDIR}/glossary-prod-nolabel.ttl"
+# if ((debug)) ; then
+#   ${JENA_ARQ} --data="${glossary_product_tag_root}/glossary-test.ttl" --query="${TMPDIR}/nolabel.sq" > "${TMPDIR}/glossary-test-nolabel.ttl"
+# else
+    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
+      ${JENA_ARQ} --data="${glossary_product_tag_root}/glossary-prod.ttl" --query="${TMPDIR}/nolabel.sq" > "${TMPDIR}/glossary-prod-nolabel.ttl"
+    fi
     ${JENA_ARQ} --data="${glossary_product_tag_root}/glossary-dev.ttl"  --query="${TMPDIR}/nolabel.sq" > "${TMPDIR}/glossary-dev-nolabel.ttl"
     ${JENA_ARQ} --data="${glossary_product_tag_root}/glossary-test.ttl" --query="${TMPDIR}/nolabel.sq" > "${TMPDIR}/glossary-test-nolabel.ttl"
 #  fi
@@ -279,21 +314,25 @@ __HERE__
 #      > "${glossary_product_tag_root}/rdf-toolkit-glossary-test.log" 2>&1
 #    )
 #  else
-    log "Convert ${TMPDIR/${WORKSPACE}/}/glossary-prod-nolabel.ttl to ${glossary_product_tag_root/${WORKSPACE}/}/glossary-prod.jsonld"
-    java \
-      -Xmx4G \
-      -Xms4G \
-      -Dfile.encoding=UTF-8 \
-      -jar "${RDFTOOLKIT_JAR}" \
-      --source "${TMPDIR}/glossary-prod-nolabel.ttl" \
-      --source-format turtle \
-      --target "${glossary_product_tag_root}/glossary-prod.jsonld" \
-      --target-format json-ld \
-      --infer-base-iri \
-      --use-dtd-subset -ibn \
-      > "${glossary_product_tag_root}/rdf-toolkit-glossary-prod.log" 2>&1
+    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
+      log "Convert ${TMPDIR/${WORKSPACE}/}/glossary-prod-nolabel.ttl to ${glossary_product_tag_root/${WORKSPACE}/}/glossary-prod.jsonld"
+      java \
+        --add-opens java.base/java.lang=ALL-UNNAMED \
+        -Xmx4G \
+        -Xms4G \
+        -Dfile.encoding=UTF-8 \
+        -jar "${RDFTOOLKIT_JAR}" \
+        --source "${TMPDIR}/glossary-prod-nolabel.ttl" \
+        --source-format turtle \
+        --target "${glossary_product_tag_root}/glossary-prod.jsonld" \
+        --target-format json-ld \
+        --infer-base-iri \
+        --use-dtd-subset -ibn \
+        > "${glossary_product_tag_root}/rdf-toolkit-glossary-prod.log" 2>&1
+    fi
     log "Convert ${TMPDIR/${WORKSPACE}/}/glossary-dev-nolabel.ttl to ${glossary_product_tag_root/${WORKSPACE}/}/glossary-dev.jsonld"
     java \
+      --add-opens java.base/java.lang=ALL-UNNAMED \
       -Xmx4G \
       -Xms4G \
       -Dfile.encoding=UTF-8 \
@@ -307,6 +346,7 @@ __HERE__
       > "${glossary_product_tag_root}/rdf-toolkit-glossary-dev.log" 2>&1
     log "Convert ${TMPDIR/${WORKSPACE}/}/glossary-test-nolabel.ttl to ${glossary_product_tag_root/${WORKSPACE}/}/glossary-test.jsonld"
     java \
+      --add-opens java.base/java.lang=ALL-UNNAMED \
       -Xmx4G \
       -Xms4G \
       -Dfile.encoding=UTF-8 \
@@ -320,11 +360,13 @@ __HERE__
       > "${glossary_product_tag_root}/rdf-toolkit-glossary-test.log" 2>&1
 #  fi
 
-#  if ((debug)) ; then
-#    glossaryMakeExcel "${TMPDIR}/glossary-test-nolabel.ttl" "${glossary_product_tag_root}/glossary-test"
-#  else
+# if ((debug)) ; then
+#   glossaryMakeExcel "${TMPDIR}/glossary-test-nolabel.ttl" "${glossary_product_tag_root}/glossary-test"
+# else
+    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
+      glossaryMakeExcel "${TMPDIR}/glossary-prod-nolabel.ttl" "${glossary_product_tag_root}/glossary-prod"
+    fi
     glossaryMakeExcel "${TMPDIR}/glossary-dev-nolabel.ttl"  "${glossary_product_tag_root}/glossary-dev"
-    glossaryMakeExcel "${TMPDIR}/glossary-prod-nolabel.ttl" "${glossary_product_tag_root}/glossary-prod"
     glossaryMakeExcel "${TMPDIR}/glossary-test-nolabel.ttl" "${glossary_product_tag_root}/glossary-test"
 #  fi
 
@@ -345,7 +387,9 @@ __HERE__
       rm -f glossary-prod.json
       rm -f glossary-dev.json
       ln -s "glossary-dev.jsonld" "glossary-dev.json"
-      ln -s "glossary-prod.jsonld" "glossary-prod.json"
+      if ((numberOfProductionLevelOntologyFiles > 0)) ; then
+        ln -s "glossary-prod.jsonld" "glossary-prod.json"
+      fi
       rm -f glossary-test.json
       ln -s "glossary-test.jsonld" "glossary-test.json"
     fi

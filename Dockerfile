@@ -190,18 +190,11 @@ RUN \
   cd /
 
 #
-# Installing XlsxWriter
+# Installing XlsxWriter, rdflib, PyLD
 #
 RUN \
-  echo ================================= install XlsxWriter >&2 && \
-  easy_install-3.6 XlsxWriter
-
-#
-# Installing rdflib
-#
-RUN \
-  echo ================================= install rdflib >&2 && \
-  easy_install-3.6 rdflib
+  echo ================================= install XlsxWriter, rdflib, PyLD >&2 && \
+  easy_install-3.6 XlsxWriter rdflib PyLD
 
 #
 # Installing Widoco

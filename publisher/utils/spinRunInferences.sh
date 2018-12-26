@@ -135,15 +135,13 @@ function spinRunInferences() {
   cp "${locationMappingFile}" "$(pwd)"
   cp "${ontologyPolicyFile}" "$(pwd)"
 
-  cat "${ontologyPolicyFile}"
-
   java \
     --add-opens java.base/java.lang=ALL-UNNAMED \
     -Dxxx=spin \
     -Xms2g \
     -Xmx9g \
     -Dfile.encoding=UTF-8 \
-    -Dlog4j.debug=true \
+    -Djava.io.tmpdir="${TMPDIR}" \
     -Dlog4j.configuration="file:${TMPDIR}/jena-log4j.properties" \
     -cp "${jars}" \
     org.topbraid.spin.tools.RunInferences \

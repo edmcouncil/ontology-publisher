@@ -321,16 +321,22 @@ WHERE {
 }
 __HERE__
 
-  #
-  # Set the memory for ARQ
-  #
-  export JVM_ARGS=${JVM_ARGS:--Xmx4G}
-
   local outfile ; outfile="$(mktempWithExtension outfile rdf)" || return $?
   #
   # Some configurations of the serializer create XML that Jena ARQ doesn't like. This stabilizes them.
   #
   ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${file}" "rdf-xml"
+
+  #
+  # Set the memory for ARQ
+  #
+  JVM_ARGS="--add-opens java.base/java.lang=ALL-UNNAMED"
+  JVM_ARGS="${JVM_ARGS} -Dxxx=arq"
+  JVM_ARGS="${JVM_ARGS} -Xms2g"
+  JVM_ARGS="${JVM_ARGS} -Xmx9g"
+  JVM_ARGS="${JVM_ARGS} -Dfile.encoding=UTF-8"
+  JVM_ARGS="${JVM_ARGS} -Djava.io.tmpdir=\"${TMPDIR}\""
+  export JVM_ARGS
 
   "${JENA_ARQ}" \
     --query="${sqfile}" \

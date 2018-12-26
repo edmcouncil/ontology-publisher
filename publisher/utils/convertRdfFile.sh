@@ -5,6 +5,7 @@
 SCRIPT_DIR="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd -P)"
 
 if [ -f ${SCRIPT_DIR}/../lib/_functions.sh ] ; then
+  # shellcheck source=../lib/_functions.sh
   source ${SCRIPT_DIR}/../lib/_functions.sh || exit $?
 else # This else section is to trick IntelliJ Idea to actually load _functions.sh during editing
   source ../lib/_functions.sh || exit $?
