@@ -6,7 +6,10 @@
 #
 # Looks silly but fools IntelliJ to see the functions in the included files
 #
-false && source _functions.sh
+false && source ../../lib/_functions.sh
+
+export SCRIPT_DIR="${SCRIPT_DIR}" # Yet another hack to silence IntelliJ
+export speedy="${speedy:-0}"
 
 #
 # Publish the widoco product which depends on the ontology product, so that should have been built before
@@ -24,6 +27,8 @@ function publishProductWidoco() {
   # save log space, it' ugly
   #
   logItem "Widoco Root" "${widoco_product_tag_root/${WORKSPACE}/}"
+
+  widoco_script_dir="$(cd "${SCRIPT_DIR}/product/vocabulary" && pwd)"
 
   buildVowlIndex || return $?
 
@@ -166,7 +171,7 @@ function generateWidocoDocumentationForFile() {
     #log "${contents}"
 
     mkdir -p "${outputDir}/${rdfFileNoExtension}"
-    cp "${SCRIPT_DIR}/widoco-sections/index-en.html" "${outputDir}/${rdfFileNoExtension}" || echo $?
+    cp "${widoco_script_dir}/widoco-sections/index-en.html" "${outputDir}/${rdfFileNoExtension}" || echo $?
     ${SED} -i "s/OntologyName/${rdfFileNoExtension}/g" "${outputDir}/${rdfFileNoExtension}/index-en.html" || echo $?
     #
     # JG>I commented this line below out because I do not se where the file failedOntologies is being used and
@@ -189,9 +194,9 @@ function generateWidocoDocumentationForFile() {
     #log "${contents}"
 
     log "Replacing introduction with acknowledgements section from file ${outputDir}/${rdfFileNoExtension}/index-en.html"
-    log "Contents of widoco-sections folder ${SCRIPT_DIR/${WORKSPACE}/}/widoco-sections"
-    ls -al ${SCRIPT_DIR}/widoco-sections
-    ${CP} "${SCRIPT_DIR}/widoco-sections/acknowledgements-en.html" "${outputDir}/${rdfFileNoExtension}/sections"
+    log "Contents of widoco-sections folder ${widoco_script_dir/${WORKSPACE}/}/widoco-sections"
+    ls -al ${widoco_script_dir}/widoco-sections
+    ${CP} "${widoco_script_dir}/widoco-sections/acknowledgements-en.html" "${outputDir}/${rdfFileNoExtension}/sections"
     log "Contents of folder ${outputDir}/${rdfFileNoExtension}/sections"
     ls -al "${outputDir}/${rdfFileNoExtension}/sections"
     ${SED} -i "s/#introduction/#acknowledgements/g" "${outputDir}/${rdfFileNoExtension}/index-en.html"
@@ -287,7 +292,7 @@ function buildVowlIndex () {
   logVar titleD
 
   (
-    cd ${ontology_product_tag_root}
+    cd "${ontology_product_tag_root}" || return $?
     logItem "Ontology Root" "${ontology_product_tag_root/${WORKSPACE}/}"
 
     logVar tag_root_url

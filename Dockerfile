@@ -260,6 +260,7 @@ COPY root /root
 # <skip in dev mode begin>
 #
 COPY /publisher /publisher
+
 #
 # Do some after-COPY "optimizations" to get rid of Windows CRLF's
 #

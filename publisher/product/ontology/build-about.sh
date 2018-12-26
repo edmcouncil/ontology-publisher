@@ -12,7 +12,7 @@
 #
 # Looks silly but fools IntelliJ to see the functions in the included files
 #
-false && source _functions.sh
+false && source ../../lib/_functions.sh
 
 function ontologyCreateAboutFiles () {
 
