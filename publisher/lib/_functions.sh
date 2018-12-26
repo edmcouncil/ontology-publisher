@@ -798,3 +798,8 @@ function initJiraVars() {
 
   return 0
 }
+
+function stripQuotes() {
+
+  ${SED} -e 's/^"//' -e 's/"$//' <<< "$@"
+}

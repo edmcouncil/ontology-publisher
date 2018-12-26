@@ -52,7 +52,7 @@ RUN \
     bash curl git grep sed findutils coreutils tree jq \
     zip tar \
     python python3 py3-setuptools \
-    gcc linux-headers libc-dev texlive \
+    gcc linux-headers libc-dev texlive-full \
   && \
   #
   # Clean up
