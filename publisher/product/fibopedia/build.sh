@@ -20,10 +20,9 @@ function publishProductFIBOpedia () {
 
   setProduct fibopedia || return $?
   export fibopedia_product_tag_root="${tag_root:?}"
-
   export fibopedia_script_dir="${SCRIPT_DIR}/product/fibopedia"
 
-  ls
+  logItem "Generating" "${fibopedia_product_tag_root}/modules.rdf"
 
   java \
     -cp /usr/share/java/saxon/saxon9he.jar \
@@ -32,12 +31,18 @@ function publishProductFIBOpedia () {
       -xsl:${fibopedia_script_dir}/fibomodules.xsl \
       ${ontology_product_tag_root}/MetadataFIBO.rdf \
       debug=y
+
+  logItem "Generating" "${fibopedia_product_tag_root}/modules-clean.rdf"
+
   java \
     -cp /usr/share/java/saxon/saxon9he.jar \
     net.sf.saxon.Transform \
       -o:${fibopedia_product_tag_root}/modules-clean.rdf \
       -xsl:${fibopedia_script_dir}/strip-unused-ns.xsl \
       ${fibopedia_product_tag_root}/modules.rdf
+
+  logItem "Generating" "${fibopedia_product_tag_root}/FIBOpedia.html"
+
   java \
     -cp /usr/share/java/saxon/saxon9he.jar \
     net.sf.saxon.Transform \

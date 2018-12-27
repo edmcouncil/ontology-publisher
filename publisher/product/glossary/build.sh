@@ -119,7 +119,7 @@ function publishProductGlossaryContent() {
 
   local numberOfProductionLevelOntologyFiles=0
 
-  export glossary_script_dir="${SCRIPT_DIR:?}/glossary"
+  export glossary_script_dir="${SCRIPT_DIR:?}/product/glossary"
 
   if [ ! -d "${glossary_script_dir}" ] ; then
     error "Could not find ${glossary_script_dir}"
@@ -132,7 +132,7 @@ function publishProductGlossaryContent() {
   JVM_ARGS="--add-opens java.base/java.lang=ALL-UNNAMED"
   JVM_ARGS="${JVM_ARGS} -Dxxx=arq"
   JVM_ARGS="${JVM_ARGS} -Xms2g"
-  JVM_ARGS="${JVM_ARGS} -Xmx9g"
+  JVM_ARGS="${JVM_ARGS} -Xmx2g"
   JVM_ARGS="${JVM_ARGS} -Dfile.encoding=UTF-8"
   JVM_ARGS="${JVM_ARGS} -Djava.io.tmpdir=\"${TMPDIR}\""
   export JVM_ARGS
@@ -166,7 +166,7 @@ function publishProductGlossaryContent() {
     verbose "Get all prod ontologies convert to one Turtle file ($(logFileName ${TMPDIR}/glossary-prod.ttl))"
 
     log "All production level ontology files:"
-    while read prodOntologyFile ; do
+    while IFS=: read prodOntologyFile ignore ; do
       log "- ${prodOntologyFile}"
       numberOfProductionLevelOntologyFiles=$((numberOfProductionLevelOntologyFiles + 1))
     done < <(${GREP} -r 'utl-av[:;.]Release' "${ontology_product_tag_root}")

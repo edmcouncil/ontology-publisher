@@ -139,7 +139,7 @@ function spinRunInferences() {
     --add-opens java.base/java.lang=ALL-UNNAMED \
     -Dxxx=spin \
     -Xms2g \
-    -Xmx9g \
+    -Xmx2g \
     -Dfile.encoding=UTF-8 \
     -Djava.io.tmpdir="${TMPDIR}" \
     -Dlog4j.configuration="file:${TMPDIR}/jena-log4j.properties" \

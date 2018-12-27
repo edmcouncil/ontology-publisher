@@ -344,21 +344,26 @@ function main() {
     fi
     case ${product} in
       onto*)
+        product="ontology"
         publishProductOntology || return $?
         ;;
       wido*)
+        product="widoco"
         publishProductWidoco || return $?
         ;;
       index)
 	      publishProductIndex || return $?
 	      ;;
       voca*)
+        product="vocabulary"
         publishProductVocabulary || return $?
         ;;
       glos*)
+        product="glossary"
         publishProductGlossary || return $?
         ;;
       data*)
+        product="datadictionary"
         publishProductDataDictionary || return $?
         ;;
       fibopedia)

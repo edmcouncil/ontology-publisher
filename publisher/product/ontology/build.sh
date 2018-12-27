@@ -326,7 +326,7 @@ __HERE__
   JVM_ARGS="--add-opens java.base/java.lang=ALL-UNNAMED"
   JVM_ARGS="${JVM_ARGS} -Dxxx=arq"
   JVM_ARGS="${JVM_ARGS} -Xms2g"
-  JVM_ARGS="${JVM_ARGS} -Xmx9g"
+  JVM_ARGS="${JVM_ARGS} -Xmx2g"
   JVM_ARGS="${JVM_ARGS} -Dfile.encoding=UTF-8"
   JVM_ARGS="${JVM_ARGS} -Djava.io.tmpdir=\"${TMPDIR}\""
   export JVM_ARGS
