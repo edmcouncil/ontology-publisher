@@ -8,6 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)" || exit 1
 
 export family="${FAMILY:-fibo}"
 export FAMILY="${family}"
+export spec_host="${spec_host:-spec.edmcouncil.org}"
 
 if [ -f ${SCRIPT_DIR}/publisher/lib/_functions.sh ] ; then
   # shellcheck source=publisher/lib/_functions.sh
@@ -25,7 +26,22 @@ fi
 # TODO: Make this configurable outside this script
 #
 function inputDirectory() {
+
+  # JG>Dean, to make this work from inside your shell-container we need
+  # to have a detection here whether we're running inside that container
+  # or not. When you're IN the container, we cannot check for the existence
+  # of /cygdrive/c/Users/Dean/Documents/${family}
+
+  if [ -d "${HOME}/Work/${family}" ] ; then # Used by Jacobus
+    echo -n "${HOME}/Work/${family}"
+  elif [ -d "${HOME}/${family}" ] ; then
+    echo -n "${HOME}/Work/${family}"
+  elif [ -d "/cygdrive/c/Users/Dean/Documents/${family}" ] ; then
     echo -n "c:/Users/Dean/Documents/${family}"
+  else
+    error "No ${family} root found"
+    return 1
+  fi
 
   return 0
 }
@@ -34,16 +50,25 @@ function inputDirectory() {
 # Find the "output directory" which is the directory that gets the end results of the build/publish process.
 #
 function outputDirectory() {
-  
-#  mkdir -p "c:/Users/Dean/Documents/target" >/dev/null 2>&1
-  echo -n "c:/Users/Dean/Documents/target" 
+
+  #
+  # JG>Dean, same thing here, we need to test whether we're inside your shell container
+  # or not. If inside that container, then do not execute the mkdir statement
+  #
+
+  mkdir -p "${SCRIPT_DIR}/../target" >/dev/null 2>&1
+  echo -n "$(cd ${SCRIPT_DIR}/../target && pwd -L)"
 }
 
 function temporaryFilesDirectory() {
 
-#  mkdir -p "c:/Users/Dean/Documents/target" >/dev/null 2>&1
-  echo -n "c:/Users/Dean/Documents/dockertemp" 
+  #
+  # JG>Dean, same thing here, we need to test whether we're inside your shell container
+  # or not. If inside that container, then do not execute the mkdir statement
+  #
 
+  mkdir -p "${SCRIPT_DIR}/../tmp" >/dev/null 2>&1
+  echo -n "$(cd ${SCRIPT_DIR}/../tmp && pwd -L)"
 }
 
 function build() {
@@ -98,6 +123,8 @@ function run() {
   if ((run_clean)) ; then
     log "Cleaning ${outputDirectory}"
     rm -rf "${outputDirectory:?}/"*
+    log "Cleaning ${temporaryFilesDirectory}"
+    rm -rf "${temporaryFilesDirectory:?}/"*
   else
     log "Not cleaning ${outputDirectory}"
   fi
@@ -105,9 +132,12 @@ function run() {
   local -a opts=()
 
   opts+=('run')
-  opts+=('--privileged')
   opts+=('--rm')
   opts+=('--tty')
+  opts+=('--network')
+  opts+=('none')
+  opts+=('--name')
+  opts+=('ontology-publisher')
 
   logVar family
   log "Mounted:"
@@ -153,10 +183,10 @@ function run() {
     opts+=('-l')
   fi
 
-  set -x
+#  set -x
   docker ${opts[@]}
   local rc=$?
-  set +x
+#  set +x
   return ${rc}
 }
 

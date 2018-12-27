@@ -20,30 +20,47 @@ if [ -f ${SCRIPT_DIR}/lib/_globals.sh ] ; then
 else # This else section is to trick IntelliJ Idea to actually load _functions.sh during editing
   source lib/_globals.sh || exit $?
 fi
-
-if [ -f ${SCRIPT_DIR}/lib/build-cats.sh ] ; then
-  # shellcheck source=lib/build-cats.sh
-  source ${SCRIPT_DIR}/lib/build-cats.sh
+if [ -f ${SCRIPT_DIR}/product/ontology/build.sh ] ; then
+  # shellcheck source=product/ontology/build.sh
+  source ${SCRIPT_DIR}/product/ontology/build.sh
 else
-  source lib/build-cats.sh # This line is only there to make the IntelliJ Bash plugin see build-cats.sh
+  source product/ontology/build.sh # This line is only there to make the IntelliJ Bash plugin see product/ontology/build.sh
 fi
-if [ -f ${SCRIPT_DIR}/lib/build-about.sh ] ; then
-  # shellcheck source=lib/build-about.sh
-  source ${SCRIPT_DIR}/lib/build-about.sh
+if [ -f ${SCRIPT_DIR}/product/index/build.sh ] ; then
+  # shellcheck source=product/index/build.sh
+  source ${SCRIPT_DIR}/product/index/build.sh
 else
-  source lib/build-about.sh # This line is only there to make the IntelliJ Bash plugin see build-about.sh
+  source product/index/build.sh # This line is only there to make the IntelliJ Bash plugin see product/index/build.sh
 fi
-if [ -f ${SCRIPT_DIR}/lib/build-theallfile.sh ] ; then
-  # shellcheck source=lib/build-theallfile.sh
-  source ${SCRIPT_DIR}/lib/build-theallfile.sh
+if [ -f ${SCRIPT_DIR}/product/widoco/build.sh ] ; then
+  # shellcheck source=product/widoco/build.sh
+  source ${SCRIPT_DIR}/product/widoco/build.sh
 else
-  source lib/build-theallfile.sh # This line is only there to make the IntelliJ Bash plugin see build-theallfile.sh
+  source product/widoco/build.sh # This line is only there to make the IntelliJ Bash plugin see product/widoco/build.sh
 fi
-if [ -f ${SCRIPT_DIR}/lib/build-widoco.sh ] ; then
-  # shellcheck source=lib/build-widoco.sh
-  source ${SCRIPT_DIR}/lib/build-widoco.sh
+if [ -f ${SCRIPT_DIR}/product/glossary/build.sh ] ; then
+  # shellcheck source=product/glossary/build.sh
+  source ${SCRIPT_DIR}/product/glossary/build.sh
 else
-  source lib/build-widoco.sh # This line is only there to make the IntelliJ Bash plugin see build-widoco.sh
+  source product/glossary/build.sh # This line is only there to make the IntelliJ Bash plugin see product/glossary/build.sh
+fi
+if [ -f ${SCRIPT_DIR}/product/vocabulary/build.sh ] ; then
+  # shellcheck source=product/vocabulary/build.sh
+  source ${SCRIPT_DIR}/product/vocabulary/build.sh
+else
+  source product/vocabulary/build.sh # This line is only there to make the IntelliJ Bash plugin see product/vocabulary/build.sh
+fi
+if [ -f ${SCRIPT_DIR}/product/datadictionary/build.sh ] ; then
+  # shellcheck source=product/datadictionary/build.sh
+  source ${SCRIPT_DIR}/product/datadictionary/build.sh
+else
+  source product/datadictionary/build.sh # This line is only there to make the IntelliJ Bash plugin see product/datadictionary/build.sh
+fi
+if [ -f ${SCRIPT_DIR}/product/book/build.sh ] ; then
+  # shellcheck source=product/book/build.sh
+  source ${SCRIPT_DIR}/product/book/build.sh
+else
+  source product/book/build.sh # This line is only there to make the IntelliJ Bash plugin see product/book/build.sh
 fi
 
 #
@@ -461,14 +478,13 @@ function ontologyIsInTestDomain() {
   [[ "${rdfFile}" =~ ^.*/*etc/.*$ ]] && return 0
 
 #  if [[ "${rdfFile}" =~ ^.*/*CAE/.*$ ]] ; then
-  if [[ "${rdfFile}" =~ ^.*$ ]] ; then      
 #   logItem "Ontology file is in test domain" "${rdfFile}"
     return 0
-  fi
+#  fi
 
 # logItem "Ontology file is not in test domain" "${rdfFile}"
 
-  return 1
+#  return 1
 }
 
 #
@@ -543,15 +559,14 @@ function zipWholeTagDir() {
   require spec_root || return $?
   require tag_root || return $?
 
-  local tarGzFile="${tag_root}.tar.gz"
-  local tarGzContentsFile="${tag_root}.tar.gz.log"
-  local zipttlFile="${tag_root}.ttl.zip"
-  local ziprdfFile="${tag_root}.rdf.zip"
-  local zipjsonFile="${tag_root}.jsonld.zip"
+  local -r tarGzFile="${tag_root}.tar.gz"
+  local -r tarGzContentsFile="${tag_root}.tar.gz.log"
+  local -r zipttlFile="${tag_root}.ttl.zip"
+  local -r ziprdfFile="${tag_root}.rdf.zip"
+  local -r zipjsonFile="${tag_root}.jsonld.zip"
 
   (
-    cd ${spec_root}
-    ${TAR} -czf "${tarGzFile}" "${tag_root/${spec_root}/.}"
+    cd ${spec_root} && ${TAR} -czf "${tarGzFile}" "${tag_root/${spec_root}/.}"
   )
   [ $? -ne 0 ] && return 1
 
@@ -570,7 +585,7 @@ function copySiteFiles() {
   require spec_root || return $?
 
   (
-    cd ${WORKSPACE}/static-site
+    cd "/publisher/static-site" || return $?
 
     #Replace GIT BRANCH and TAG in the glossary index html
     #
@@ -595,14 +610,15 @@ function copySiteFiles() {
 
     ${CP} -r * "${spec_root}/"
   )
-  #
-  # JG>Why is this file not in the fibo repo itself?
-  #
-  ${CP} ${WORKSPACE}/LICENSE "${spec_root}"
+
+  if [ -f /input/${family}/LICENSE ] ; then
+    ${CP} /input/${family}/LICENSE "${spec_root}"
+  else
+    warning "Could not find license: /input/${family}/LICENSE"
+  fi
 
   (
-    cd "${spec_root}"
-    chmod -R g+r,o+r .
+    cd "${spec_root}" && chmod -R g+r,o+r .
   )
 
   return 0
@@ -760,573 +776,7 @@ function vocabularyGetPrefixes() {
   ${GREP} -R --include "*.ttl" --no-filename "@prefix fibo-" >> "${TMPDIR}/prefixes.ttl"
   popd >/dev/null
 
-  #
-  # Sort and filter out duplicates
-  #
-  sort --unique --output="${TMPDIR}/prefixes.ttl" "${TMPDIR}/prefixes.ttl"
 
-  log "Found the following namespaces and prefixes:"
-  cat "${TMPDIR}/prefixes.ttl"
-
-  return 0
-}
-
-#
-# 3) Gather up all the RDF files in those modules.  Include skosify.ttl, since that has the rules
-#
-# Generates TMPDIR/temp0.ttl
-#
-function vocabularyGetOntologies() {
-
-  require vocabulary_script_dir || return $?
-  require module_directories || return $?
-
-  logRule "Step: vocabularyGetOntologies"
-
-  #
-  # Set the memory for ARQ
-  #
-  export JVM_ARGS=${JVM_ARGS:--Xmx4G}
-
-  log "Get Ontologies into merged file (temp0.ttl)"
-
-  log "Files that go into dev:"
-
-  ${FIND} "${ontology_product_tag_root}" -name "*.rdf" | ${SED} "s@^/output/@- @g"
-
-  log "Files that go into prod:"
-
-  ${GREP} -r 'utl-av[:;.]Release' "${ontology_product_tag_root}" | ${SED} 's/:.*$//;s/^${WORKSPACE}/- /' | ${GREP} -F ".rdf"
-
-  #
-  # Get ontologies for Dev
-  #
-  ${JENA_ARQ} \
-    $(${FIND}  "${ontology_product_tag_root}" -name "*.rdf" | ${SED} "s/^/--data=/") \
-    --data="${vocabulary_script_dir}/skosify.ttl" \
-    --data="${vocabulary_script_dir}/datatypes.rdf" \
-    --query="${vocabulary_script_dir}/skosecho.sparql" \
-    --results=TTL > "${TMPDIR}/temp0.ttl"
-
-  if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-    error "Could not get Dev ontologies"
-    return 1
-  fi
-
-  #
-  # Get ontologies for Prod
-  #
-  ${JENA_ARQ} \
-    $(${GREP} -r 'utl-av[:;.]Release' "${ontology_product_tag_root}" | ${SED} 's/:.*$//;s/^/--data=/' | ${GREP} -F ".rdf") \
-    --data="${vocabulary_script_dir}/skosify.ttl" \
-    --data="${vocabulary_script_dir}/datatypes.rdf" \
-    --query="${vocabulary_script_dir}/skosecho.sparql" \
-    --results=TTL > "${TMPDIR}/temp0B.ttl"
-
-  if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-    error "Could not get Prod ontologies"
-    return 1
-  fi
-
-  log "Generated ${TMPDIR/${WORKSPACE}/}/temp0.ttl:"
-
-  head -n200 "${TMPDIR}/temp0.ttl"
-
-  log "Generated ${TMPDIR/${WORKSPACE}/}/temp0B.ttl:"
-
-  head -n200 "${TMPDIR}/temp0B.ttl"
-
-  return 0
-}
-
-#
-# Run SPIN
-#
-# JG>WHat does this do?
-#
-# Generates TMPDIR/temp1.ttl
-#
-function vocabularyRunSpin() {
-
-  log "STARTING SPIN"
-
-  rm -f "${TMPDIR}/temp1.ttl" >/dev/null 2>&1
-  rm -f "${TMPDIR}/temp1B.ttl" >/dev/null 2>&1
-
-  "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/temp0.ttl" "${TMPDIR}/temp1.ttl" || return $?
-  "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/temp0B.ttl" "${TMPDIR}/temp1B.ttl" || return $?
-
-  log "Generated ${TMPDIR/${WORKSPACE}/}/temp1.ttl:"
-  log "Generated ${TMPDIR/${WORKSPACE}/}/temp1B.ttl:"
-
-  log "Printing first 50 lines of ${TMPDIR/${WORKSPACE}/}/temp1.ttl"
-  head -n50 "${TMPDIR}/temp1.ttl"
-
-  log "Printing first 50 lines of ${TMPDIR/${WORKSPACE}/}/temp1B.ttl"
-  head -n50 "${TMPDIR}/temp1B.ttl"
-
-  #The first three lines contain some WARN statements - removing it to complete the build.
-  #JC > Need to check why this happens
-  #log "Removing the first three lines from ${TMPDIR}/temp1.ttl"
-  #${SED} -i.bak -e '1,3d' "${TMPDIR}/temp1.ttl"
-  #log "Printing first 50 lines of ${TMPDIR}/temp1.ttl"
-  #head -n50 "${TMPDIR}/temp1.ttl"
-
-  #log "Removing the first three lines from ${TMPDIR}/temp1B.ttl"
-  #${SED} -i.bak -e '1,3d' "${TMPDIR}/temp1B.ttl"
-  #log "Printing first 50 lines of ${TMPDIR}/temp1B.ttl"
-  #head -n50 "${TMPDIR}/temp1B.ttl"
-
-  ### END Karthik changes
-
-  return 0
-}
-
-#
-# 4) Run the schemify rules.  This adds a ConceptScheme to the output.
-#
-function vocabularyRunSchemifyRules() {
-
-  #
-  # Set the memory for ARQ
-  #
-  export JVM_ARGS=${JVM_ARGS:--Xmx4G}
-
-  log "Run the schemify rules"
-
-  #
-  # Dev
-  #
-  ${JENA_ARQ} \
-    --data="${TMPDIR}/temp1.ttl" \
-    --data="${vocabulary_script_dir}/schemify.ttl" \
-    --query="${vocabulary_script_dir}/skosecho.sparql" \
-    --results=TTL > "${TMPDIR}/temp2.ttl"
-
-  if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-    error "Could not run the Dev schemify rules"
-    return 1
-  fi
-
-  #
-  # Prod
-  #
-  ${JENA_ARQ} \
-    --data="${TMPDIR}/temp1B.ttl" \
-    --data="${vocabulary_script_dir}/schemify.ttl" \
-    --query="${vocabulary_script_dir}/skosecho.sparql" \
-    --results=TTL > "${TMPDIR}/temp2B.ttl"
-
-  if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-    error "Could not run the Prod schemify rules"
-    return 1
-  fi
-
-  return 0
-}
-
-#
-# Publish the product called "index"
-#
-function publishProductIndex() {
-
-  setProduct ontology
-  ontology_product_tag_root="${tag_root}"
-
-  setProduct index || return $?
-  index_product_tag_root="${tag_root}"
-
-  export index_script_dir="${SCRIPT_DIR}/fibo-index"
-
-  (
-    cd "${index_product_tag_root}" || return $?
-
-    cat > OntologyIndex.csv << __HERE__
-Ontology,Maturity Level
-__HERE__
-
-   ${GREP} -r 'hasMaturityLevel' "${ontology_product_tag_root}" | \
-        ${GREP} '\.rdf' | \
-        ${SED} 's!"/>!!; s!^.*/!!; s/.rdf:.*resource=".*utl-av;/,/' |\
-        ${SED} 's/,Release$/,Production/; s/,Provisional/,Development/; s/,Informative/,Development/' >> OntologyIndex.csv
-
-   ${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py OntologyIndex.csv OntologyIndex.xlsx "${index_script_dir}/csvconfig"
- )
-
- return $?
-}
-
-#
-# Turns FIBO in to FIBO-V
-#
-# The translation proceeds with the following steps:
-#
-# 1) Start the output with the standard prefixes.  They are in a file called skosprefixes.
-# 2) Determine which modules will be included. They are kept on a property called <http://www.edmcouncil.org/skosify#module> in skosify.ttl
-# 3) Gather up all the RDF files in those modules
-# 4) Run the shemify rules.  This adds a ConceptScheme to the output.
-# 5) Merge the ConceptScheme triples with the SKOS triples
-# 6) Convert upper cases.  We have different naming standards in FIBO-V than in FIBO.
-# 7) Remove all temp files.
-#
-# The output is in .ttl form in a file called fibo-v.ttl
-#
-function publishProductVocabulary() {
-
-  #
-  # Set the memory for ARQ
-  #
-  export JVM_ARGS=${JVM_ARGS:--Xmx4G}
-
-  require JENAROOT || return $?
-
-  setProduct ontology
-  ontology_product_tag_root="${tag_root}"
-
-  setProduct vocabulary || return $?
-  vocabulary_product_tag_root="${tag_root}"
-
-  (
-    cd "${SCRIPT_DIR}/vocabulary" || return $?
-    vocabulary_script_dir="$(pwd)"
-
-    publishProductVocabularyInner
-  )
-  local rc=$?
-
-  log "Done with processing product vocabulary rc=${rc}"
-
-  return ${rc}
-}
-
-function publishProductVocabularyInner() {
-
-  #
-  # 1) Start the output with the standard prefixes.  We compute these from the files.
-  #
-  log "# baseURI: ${product_root_url}" > ${TMPDIR}/fibo-v1.ttl
-  #cat skosprefixes >> ${TMPDIR}/fibo-v1.ttl
-
-  #vocabularyGetModules || return $?
-  vocabularyGetPrefixes || return $?
-  vocabularyGetOntologies || return $?
-  vocabularyRunSpin || return $?
-  vocabularyRunSchemifyRules || return $?
-
-  log "second run of spin"
-  "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/temp2.ttl" "${TMPDIR}/tc.ttl" || return $?
-  "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/temp2B.ttl" "${TMPDIR}/tcB.ttl" || return $?
-
-  #
-  # Set the memory for ARQ
-  #
-  export JVM_ARGS=${JVM_ARGS:--Xmx4G}
-
-  log "ENDING SPIN"
-  #
-  # 5) Merge the ConceptScheme triples with the SKOS triples
-  #
-  ${JENA_ARQ}  \
-    --data="${TMPDIR}/tc.ttl" \
-    --data="${TMPDIR}/temp1.ttl" \
-    --query="${SCRIPT_DIR}/lib/echo.sparql" \
-    --results=TTL > "${TMPDIR}/fibo-uc.ttl"
-
-  ${JENA_ARQ}  \
-    --data="${TMPDIR}/tcB.ttl" \
-    --data="${TMPDIR}/temp1B.ttl" \
-    --query="${SCRIPT_DIR}/lib/echo.sparql" \
-    --results=TTL > "${TMPDIR}/fibo-ucB.ttl"
-
-  #
-  # 6) Convert upper cases.  We have different naming standards in FIBO-V than in FIBO.
-  #
-  ${SED} "s/uc(\([^)]*\))/\U\1/g" "${TMPDIR}/fibo-uc.ttl" >> ${TMPDIR}/fibo-v1.ttl
-  ${SED} "s/uc(\([^)]*\))/\U\1/g" "${TMPDIR}/fibo-ucB.ttl" >> ${TMPDIR}/fibo-v1B.ttl
-
-  ${JENA_ARQ}  \
-    --data="${TMPDIR}/fibo-v1.ttl" \
-    --query="${SCRIPT_DIR}/lib/echo.sparql" \
-    --results=TTL > "${TMPDIR}/fibo-vD.ttl"
-  ${JENA_ARQ}  \
-    --data="${TMPDIR}/fibo-v1B.ttl" \
-    --query="${SCRIPT_DIR}/lib/echo.sparql" \
-    --results=TTL > "${TMPDIR}/fibo-vP.ttl"
-
-  #
-  # Adjust namespaces
-  #
-  ${JENA_RIOT} "${TMPDIR}/fibo-vD.ttl" > "${TMPDIR}/fibo-vD.nt"
-  ${JENA_RIOT} "${TMPDIR}/fibo-vP.ttl" > "${TMPDIR}/fibo-vP.nt"
-
-  cat > "${TMPDIR}/vochelp.ttl" <<EOF
-  <https://spec.edmcouncil.org/fibo/vocabulary#hasDomain> 
-  rdf:type owl:AnnotationProperty ;
-  rdfs:label "has domain" ;
-  rdfs:range xsd:string ;
-  rdfs:subPropertyOf dct:subject .
-  <https://spec.edmcouncil.org/fibo/vocabulary#hasSubDomain>
-  rdf:type owl:AnnotationProperty ;
-  rdfs:label "has subdomain" ;
-  rdfs:range xsd:string ;
-  rdfs:subPropertyOf dct:subject .
-EOF
-
-  cat \
-    "${TMPDIR}/prefixes.ttl" \
-    "${TMPDIR}/vochelp.ttl" \
-    "${TMPDIR}/fibo-vD.nt" | \
-  ${JENA_RIOT} \
-    --syntax=turtle \
-    --output=turtle > \
-    "${tag_root}/fibo-vD.ttl"
-
-  cat \
-    "${TMPDIR}/prefixes.ttl" \
-    "${TMPDIR}/vochelp.ttl" \
-    "${TMPDIR}/fibo-vP.nt" | \
-  ${JENA_RIOT} \
-    --syntax=turtle \
-    --output=turtle > \
-    "${tag_root}/fibo-vP.ttl"
-
-  #
-  # JG>Dean I didn't find any hygiene*.sparql files anywhere
-  #
-#  log "Running tests"
-#  ${FIND} ${vocabulary_script_dir}/testing -name 'hygiene*.sparql' -print
-#  ${FIND} ${vocabulary_script_dir}/testing -name 'hygiene*.sparql' \
-#    -exec ${JENA_ARQ} --data="${tag_root}/fibo-v.ttl" --query={} \;
-
-  vocabularyConvertTurtleToAllFormats || return $?
-
-  (cd "${tag_root}"; rm -f **.zip)
-
-  #
-  # gzip --best --stdout "${tag_root}/fibo-vD.ttl" > "${tag_root}/fibo-vD.ttl.gz"
-  #
-  (cd "${tag_root}" ; zip fibo-vD.ttl.zip fibo-vD.ttl)
-  #
-  # gzip --best --stdout "${tag_root}/fibo-vD.rdf" > "${tag_root}/fibo-vD.rdf.gz"
-  #
-  (cd "${tag_root}" ; zip  fibo-vD.rdf.zip fibo-vD.rdf)
-  #
-  # gzip --best --stdout "${tag_root}/fibo-vD.jsonld" > "${tag_root}/fibo-vD.jsonld.gz"
-  #
-  (cd "${tag_root}" ; zip  fibo-vD.jsonld.zip fibo-vD.jsonld)
-  #
-  # gzip --best --stdout "${tag_root}/fibo-vB.ttl" > "${tag_root}/fibo-vP.ttl.gz"
-  #
-  (cd "${tag_root}" ; zip  fibo-vP.ttl.zip fibo-vP.ttl)
-  #
-  # gzip --best --stdout "${tag_root}/fibo-vB.rdf" > "${tag_root}/fibo-vP.rdf.gz"
-  #
-  (cd "${tag_root}" ; zip  fibo-vP.rdf.zip fibo-vP.rdf)
-  #
-  # gzip --best --stdout "${tag_root}/fibo-vB.jsonld" > "${tag_root}/fibo-vP.jsonld.gz"
-  #
-  (cd "${tag_root}" ; zip  fibo-vP.jsonld.zip fibo-vP.jsonld)
-
-  log "Finished publishing the Vocabulary Product"
-
-  return 0
-}
-
-#
-# Produce all artifacts for the glossary product
-#
-function publishProductGlossary() {
-
-  setProduct ontology || return $?
-  export ontology_product_tag_root="${tag_root}"
-
-  setProduct glossary || return $?
-  export glossary_product_tag_root="${tag_root}"
-  export glossary_product_tag_root_url="${tag_root_url}"
-
-  publishProductGlossaryContent || return $?
-  publishProductGlossaryReactApp || return $?
-
-  return 0
-}
-
-#
-# Produce all artifacts for the glossary product
-#
-function publishProductGlossaryReactApp() {
-
-  return 0
-
-  local rc
-
-  logRule "Publishing the glossary product React App"
-
-  require glossary_product_tag_root || return $?
-  require glossary_product_tag_root_url || return $?
-
-  (
-    #
-    # Go to the /app directory to build the code of the React App (which is currently
-    # just for the glossary but might soon be extended to cover the other products as well,
-    # which why the /app directory is not called /app-glossary or so)
-    #
-    cd "${SCRIPT_DIR}/../../app" || return $?
-
-    cat package.json | jq ".homepage = \"${glossary_product_tag_root_url}\"" > package2.json
-
-    cp package2.json package.json
-    rm package2.json
-    #
-    # HACK: copy the generated glossary*.jsonld files to the data directory as JSON so that it gets
-    # included in the app.
-    # (This is a terrible hack)
-    #
-    # We rename them to .json since React can then load them via "import".
-    #
-    if ((debug)) ; then
-      log "debug=true so only copying glossary-test.json into $(pwd)/data"
-      (
-      cp "${glossary_product_tag_root}/glossary-test.jsonld"  src/data/glossary-test.json
-      cp "${glossary_product_tag_root}/glossary-test.jsonld"  src/data/glossary-prod.json
-      cp "${glossary_product_tag_root}/glossary-test.jsonld"  src/data/glossary-dev.json
-      )
-    else
-      log "debug=false so copying both glossary-prod.json as well as glossary-dev.json"
-      cp "${glossary_product_tag_root}/glossary-prod.jsonld"  src/data/glossary-prod.json
-      cp "${glossary_product_tag_root}/glossary-dev.jsonld"   src/data/glossary-dev.json
-      cp "${glossary_product_tag_root}/glossary-test.jsonld"  src/data/glossary-test.json
-    fi
-
-    npm install || return $?
-
-    npm run build || return $?
-
-    ${CP} -vR publisher/* "${glossary_product_tag_root}/" > "${WORKSPACE}/glossary-build-directory.log" 2>&1
-  )
-  rc=$?
-
-  if ((rc != 0)) ; then
-    error "Could not build the react app"
-    return ${rc}
-  fi
-
-  log "Successfully built the React App for the Glossary Product"
-
-  return 0
-}
-
-function publishProductGlossaryRemoveWarnings() {
-
-  local fixFile="$1"
-  local glossaryVersion="$2"
-  local glossaryName="glossary-${glossaryVersion}"
-
-  verbose "Remove warnings from ${glossaryName}.ttl, save as ${glossaryName}-fixed.ttl"
-  ${SED} '/^@prefix/,$!d' "${glossary_product_tag_root}/${glossaryName}.ttl" > "${glossary_product_tag_root}/${glossaryName}-fixed.ttl"
-  verbose "Run ${glossaryName}-fixed.ttl through fix-sparql construct and save as ${glossaryName}.ttl"
-  ${JENA_ARQ} --data="${glossary_product_tag_root}/${glossaryName}-fixed.ttl" --query="${fixFile}" > "${glossary_product_tag_root}/${glossaryName}.ttl"
-  verbose "Remove ${glossaryName}-fixed.ttl"
-  rm "${glossary_product_tag_root}/${glossaryName}-fixed.ttl"
-
-  return 0
-}
-
-#
-# Produce all artifacts for the glossary product
-#
-function publishProductGlossaryContent() {
-
-  logRule "Publishing the content files of the glossary product"
-
-  require ontology_product_tag_root || return $?
-  require glossary_product_tag_root || return $?
-
-  export glossary_script_dir="${SCRIPT_DIR}/glossary"
-
-  #
-  # Set the memory for ARQ
-  #
-  export JVM_ARGS=${JVM_ARGS:--Xmx4G}
-
-  #
-  # Get ontologies for Dev
-  #
-  if ((debug == 0)) ; then
-    verbose "Get all dev ontologies convert to one N-Triples file (${TMPDIR/${WORKSPACE}/}/glossary-dev.nt)"
-    ${JENA_ARQ} \
-      $(${FIND} "${ontology_product_tag_root}" -name "*.rdf" | ${SED} "s/^/--data=/") \
-      --data=${glossary_script_dir}/owlnames.ttl \
-      --query="${SCRIPT_DIR}/lib/echo.sparql" \
-      --results=Turtle > "${TMPDIR}/glossary-dev.ttl"
-
-    if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-      error "Could not get Dev ontologies"
-      return 1
-    fi
-    #
-    # Fast conversion of the N-Triples file to Turtle
-    #
-    #${SERDI} -b -f -i ntriples -o turtle "${TMPDIR}/glossary-dev.nt" > "${TMPDIR}/glossary-dev.ttl"
-  fi
-
-  #
-  # Get ontologies for Prod
-  #
-  if ((debug == 0)) ; then
-    verbose "Get all prod ontologies convert to one N-Triples file (${TMPDIR/${WORKSPACE}/}/glossary-prod.nt)"
-    ${JENA_ARQ} \
-      $(${GREP} -r 'utl-av[:;.]Release' "${ontology_product_tag_root}" | ${SED} 's/:.*$//;s/^/--data=/' | ${GREP} -F ".rdf") \
-      --data=${glossary_script_dir}/owlnames.ttl \
-      --query="${SCRIPT_DIR}/lib/echo.sparql" \
-      --results=Turtle > "${TMPDIR}/glossary-prod.ttl"
-
-    if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-      error "Could not get Prod ontologies"
-      return 1
-    fi
-    #
-    # Fast conversion of the N-Triples file to Turtle
-    #
-    #${SERDI} -b -f -i ntriples -o turtle "${TMPDIR}/glossary-prod.nt" > "${TMPDIR}/glossary-prod.ttl"
-  fi
-
-  #
-  # Just do "Corporations.rdf" for test purposes
-  #
-  verbose "Get the Corporations.rdf ontology (for test purposes) and generate ${TMPDIR}/glossary-test.ttl"
-  ${JENA_ARQ} \
-    $(${FIND}  "${ontology_product_tag_root}" -name "Corporations.rdf" | ${SED} "s/^/--data=/") \
-    --data=${glossary_script_dir}/owlnames.ttl \
-    --query="${SCRIPT_DIR}/lib/echo.sparql" \
-    --results=Turtle > "${TMPDIR}/glossary-test.ttl"
-  rc=$?
-
-  if ((rc > 0)) ; then
-    error "Could not get Prod ontologies"
-    return 1
-  fi
-  if [ ! -f "${TMPDIR}/glossary-test.ttl" ] ; then
-    error "Did not generate ${TMPDIR}/glossary-test.ttl"
-    return 1
-  fi
-  #
-  # Fast conversion of the N-Triples file to Turtle
-  #
-  #${SERDI} -b -f -i ntriples -o turtle "${TMPDIR}/glossary-test.nt" > "${TMPDIR}/glossary-test.ttl"
-
-  if ((debug)) ; then
-    log "debug=true so only generating the test version of the glossary"
-    "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-test.ttl" "${glossary_product_tag_root}/glossary-test.ttl" || return $?
-  else
-    log "debug=false so now we're generating the full prod and dev versions"
-    "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-prod.ttl" "${glossary_product_tag_root}/glossary-prod.ttl" &
-    "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-dev.ttl" "${glossary_product_tag_root}/glossary-dev.ttl" &
-    log "and on top of that also the test glossary"
-    "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-test.ttl" "${glossary_product_tag_root}/glossary-test.ttl" &
-    log "Waiting for the above SPIN commands to finish"
-    wait
-    log "SPIN commands have finished"
-  fi
 
   #
   # The spin inferences can create too many explanations.  This removes redundant ones.
@@ -1461,18 +911,7 @@ __HERE__
   #    easily into their own apps.
   #
   (
-    cd "${glossary_product_tag_root}"
-    if ((debug)) ; then
-      rm -f glossary-test.json
-      ln -s "glossary-test.jsonld" "glossary-test.json"
-    else
-      rm -f glossary-prod.json
-      rm -f glossary-dev.json
-      ln -s "glossary-dev.jsonld" "glossary-dev.json"
-      ln -s "glossary-prod.jsonld" "glossary-prod.json"
-      rm -f glossary-test.json
-      ln -s "glossary-test.jsonld" "glossary-test.json"
-    fi
+    cd "${spec_root}" && chmod -R g+r,o+r .
   )
 
   return 0
@@ -1913,26 +1352,29 @@ function main() {
       logRule "Publish ${family}-product \"${product}\""
     fi
     case ${product} in
-      ontology)
+      onto*)
         publishProductOntology || return $?
         ;;
-      widoco)
+      wido*)
         publishProductWidoco || return $?
         ;;
       index)
 	      publishProductIndex || return $?
 	      ;;
-      vocabulary)
+      voca*)
         publishProductVocabulary || return $?
         ;;
-      glossary)
+      glos*)
         publishProductGlossary || return $?
         ;;
-      datadictionary)
+      data*)
         publishProductDataDictionary || return $?
         ;;
       fibopedia)
         publishProductFIBOpedia || return $?
+        ;;
+      book)
+        publishProductBook || return $?
         ;;
       publish)
         #
