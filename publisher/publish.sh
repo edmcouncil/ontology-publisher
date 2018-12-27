@@ -460,7 +460,8 @@ function ontologyIsInTestDomain() {
 
   [[ "${rdfFile}" =~ ^.*/*etc/.*$ ]] && return 0
 
-  if [[ "${rdfFile}" =~ ^.*/*CAE/.*$ ]] ; then
+#  if [[ "${rdfFile}" =~ ^.*/*CAE/.*$ ]] ; then
+  if [[ "${rdfFile}" =~ ^.*$ ]] ; then      
 #   logItem "Ontology file is in test domain" "${rdfFile}"
     return 0
   fi
@@ -479,8 +480,10 @@ function ontologyIsInTestDomain() {
 #
 function ontologyConvertRdfToAllFormats() {
 
+    # For now, leave this out.  We don't need it for testing
+    return 0
   require tag_root || return $?
-
+ 
   logRule "Step: ontologyConvertRdfToAllFormats"
 
   pushd "${tag_root:?}" >/dev/null || return $?
@@ -1803,6 +1806,29 @@ EOF
   return 0
 }
 
+function publishProductFIBOpedia () {
+
+  if [ "${NODE_NAME}" == "nomagic" ] ; then
+    echo "Skipping publication of product data dictionary since we're on node ${NODE_NAME}"
+    return 0
+  fi
+
+  logRule "Publishing the fibopedia product"
+
+  setProduct ontology || return $?
+  export ontology_product_tag_root="${tag_root}"
+
+  setProduct fibopedia || return $?
+  export fibopedia_product_tag_root="${tag_root}"
+
+  export fibopedia_script_dir="${SCRIPT_DIR}/fibopedia/"
+  ls
+  
+java -cp /usr/share/java/saxon/saxon9he.jar net.sf.saxon.Transform -o:${fibopedia_product_tag_root}/modules.rdf -xsl:${fibopedia_script_dir}/fibomodules.xsl ${ontology_product_tag_root}/MetadataFIBO.rdf debug=y
+java -cp /usr/share/java/saxon/saxon9he.jar net.sf.saxon.Transform -o:${fibopedia_product_tag_root}/modules-clean.rdf -xsl:${fibopedia_script_dir}/strip-unused-ns.xsl ${fibopedia_product_tag_root}/modules.rdf
+java -cp /usr/share/java/saxon/saxon9he.jar net.sf.saxon.Transform -o:${fibopedia_product_tag_root}/FIBOpedia.html -xsl:${fibopedia_script_dir}/format-modules.xsl ${fibopedia_product_tag_root}/modules-clean.rdf
+}
+
 #
 # Stuff for building nquads files
 #
@@ -1904,6 +1930,9 @@ function main() {
         ;;
       datadictionary)
         publishProductDataDictionary || return $?
+        ;;
+      fibopedia)
+        publishProductFIBOpedia || return $?
         ;;
       publish)
         #

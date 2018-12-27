@@ -25,17 +25,7 @@ fi
 # TODO: Make this configurable outside this script
 #
 function inputDirectory() {
-
-  if [ -d "${HOME}/Work/${family}" ] ; then # Used by Jacobus
-    echo -n "${HOME}/Work/${family}"
-  elif [ -d "${HOME}/${family}" ] ; then
-    echo -n "${HOME}/Work/${family}"
-  elif [ -d "/cygdrive/c/Users/Dean/Documents/${family}" ] ; then
     echo -n "c:/Users/Dean/Documents/${family}"
-  else
-    error "No ${family} root found"
-    return 1
-  fi
 
   return 0
 }
@@ -44,15 +34,16 @@ function inputDirectory() {
 # Find the "output directory" which is the directory that gets the end results of the build/publish process.
 #
 function outputDirectory() {
-
-  mkdir -p "${SCRIPT_DIR}/../target" >/dev/null 2>&1
-  echo -n "$(cd ${SCRIPT_DIR}/../target && pwd -L)"
+  
+#  mkdir -p "c:/Users/Dean/Documents/target" >/dev/null 2>&1
+  echo -n "c:/Users/Dean/Documents/target" 
 }
 
 function temporaryFilesDirectory() {
 
-  mkdir -p "${SCRIPT_DIR}/../tmp" >/dev/null 2>&1
-  echo -n "$(cd ${SCRIPT_DIR}/../tmp && pwd -L)"
+#  mkdir -p "c:/Users/Dean/Documents/target" >/dev/null 2>&1
+  echo -n "c:/Users/Dean/Documents/dockertemp" 
+
 }
 
 function build() {
@@ -114,6 +105,7 @@ function run() {
   local -a opts=()
 
   opts+=('run')
+  opts+=('--privileged')
   opts+=('--rm')
   opts+=('--tty')
 
@@ -123,8 +115,10 @@ function run() {
   opts+=("--mount type=bind,source=${inputDirectory},target=/input/${family},readonly,consistency=cached")
   logItem "/output" "${outputDirectory}"
   opts+=("--mount type=bind,source=${outputDirectory},target=/output,consistency=delegated")
-  logItem "/var/tmp" "${temporaryFilesDirectory}"
-  opts+=("--mount type=bind,source=${temporaryFilesDirectory},target=/var/tmp,consistency=delegated")
+#  logItem "/var/tmp" "${temporaryFilesDirectory}"
+#  opts+=("--mount type=bind,source=${temporaryFilesDirectory},target=/var/tmp,consistency=delegated")
+  logItem "/tmp" "${temporaryFilesDirectory}/../tmp2"
+  opts+=("--mount type=bind,source=${temporaryFilesDirectory}/../tmp2,target=/tmp,consistency=delegated")
   #
   # When running in dev mode we mount the ontology publisher's repo's root directory as well
   #
@@ -138,6 +132,11 @@ function run() {
     log "Type $(bold ./publish.sh) to start the build and $(bold exit) to leave this container."
     log "If you want to run the publication of just one or more \"products\" then"
     log "specify the names of these products after $(bold ./publish.sh), for instance:"
+    log ""
+    log ""
+    log ""
+    log ""
+    log ""
     log ""
     log "$(bold ./publish.sh ontology vocabulary)"
     log ""
@@ -154,10 +153,10 @@ function run() {
     opts+=('-l')
   fi
 
-#  set -x
+  set -x
   docker ${opts[@]}
   local rc=$?
-#  set +x
+  set +x
   return ${rc}
 }
 

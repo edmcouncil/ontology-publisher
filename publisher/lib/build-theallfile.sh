@@ -24,11 +24,13 @@ function ontologyCreateTheAllTtlFile() {
   fi
 
 	local rc=$?
+
+  echo "tag_root = ${tag_root}"
   if ((verbose)) ; then
     set -x
     python3 ${SCRIPT_DIR}/lib/trigify.py \
       --dir=${tag_root} \
-      --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/AboutFIBO" \
+      --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/AboutFIBODev" \
       --top="https://spec.edmcouncil.org/fibo/ontology/MetadataFIBO/" \
       --output="${tmp_dir}/all.ttl" \
       --verbose \
@@ -38,7 +40,7 @@ function ontologyCreateTheAllTtlFile() {
   else
     python3 ${SCRIPT_DIR}/lib/trigify.py \
       --dir=${tag_root} \
-      --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/AboutFIBO" \
+      --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/AboutFIBODev" \
       --top="https://spec.edmcouncil.org/fibo/ontology/MetadataFIBO/" \
       --output="${tmp_dir}/all.ttl" \
       --format=ttl
@@ -59,8 +61,9 @@ function ontologyCreateTheAllTtlFile() {
 
   cat > "${tmp_dir}/maturemodule.sq" << __HERE__
 #
-# TODO: Document this SPARQL statement, what does it do?
-#
+# Finds all the modules in FIBO that have parts that have maturily level :Release 
+# Those are the ones that should 
+# 
 # TODO: Also, why not do this in trigify.py itself? rdflib supports SPARQL. Would save the arq startup time.
 #
 PREFIX fibo-fnd-utl-av: <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/>
@@ -98,8 +101,9 @@ __HERE__
     > ${tmp_dir}/good
 
   #
-  # What should the good file show?
+  # Good file should include all the modules that include Release level ontologies
   #
+  echo "Here are all the release-level modules:"
   head ${tmp_dir}/good
 
   ${SED} -i 's/\r//' ${tmp_dir}/good
