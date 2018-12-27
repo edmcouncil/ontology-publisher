@@ -483,6 +483,9 @@ function ontologyBuildIndex () {
 #
 function ontologyConvertRdfToAllFormats() {
 
+  # Dean>For now, leave this out.  We don't need it for testing
+  return 0
+
   require tag_root || return $?
 
   logRule "Step: ontologyConvertRdfToAllFormats"
@@ -557,6 +560,32 @@ function ontologyZipFiles () {
   )
 
   log "Step: ontologyZipFiles finished"
+
+  return 0
+}
+
+function buildquads () {
+
+  local ProdQuadsFile="${tag_root}/prod.fibo.nq"
+  local DevQuadsFile="${tag_root}/dev.fibo.nq"
+
+  log "starting buildquads"
+
+  (
+    cd ${spec_root}
+
+	  ${FIND} . -name '*.rdf' -print | while read file; do quadify "$file"; done > "${DevQuadsFile}"
+
+	  ${GREP} -r 'utl-av[:;.]Release' "${family_product_branch_tag}" | \
+	    ${GREP} -F ".rdf" | \
+	    ${SED} 's/:.*$//' | \
+	    while read file ; do quadify $file ; done > ${ProdQuadsFile}
+
+	  zip ${ProdQuadsFile}.zip ${ProdQuadsFile}
+	  zip ${DevQuadsFile}.zip ${DevQuadsFile}
+  )
+
+  log "finished buildquads"
 
   return 0
 }

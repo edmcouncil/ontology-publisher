@@ -188,7 +188,7 @@ EOF
 
 function vocabularyConvertTurtleToAllFormats() {
 
-  pushd "${tag_root}" >/dev/null || return $?
+  pushd "${tag_root}" >/dev/null
 
   for ttlFile in **/*.ttl ; do
     for format in json-ld rdf-xml ; do
@@ -196,7 +196,7 @@ function vocabularyConvertTurtleToAllFormats() {
     done || return $?
   done || return $?
 
-  popd >/dev/null || return $?
+  popd >/dev/null
 
   return $?
 }

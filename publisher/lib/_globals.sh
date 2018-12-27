@@ -31,7 +31,7 @@ export spec_host="${spec_host:-spec.edmcouncil.org}"
 #
 #products="ontology widoco glossary datadictionary vocabulary"
 #products="ontology glossary datadictionary vocabulary "
-products="ontology widoco glossary"
+products="ontology widoco glossary fibopedia book"
 
 modules=""
 module_directories=""
