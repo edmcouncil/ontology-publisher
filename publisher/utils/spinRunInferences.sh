@@ -124,7 +124,8 @@ function spinRunInferences() {
     error "Could not find ${ontologyPolicyFile}"
   fi
 
-  log "Run SPIN inferences on ${inputFile/${WORKSPACE}/}"
+  logItem "Run SPIN on" "$(logFileName "${inputFile/${WORKSPACE}/}")"
+  logItem "Producing" "$(logFileName "${outputFile}")"
   logItem "Current Directory" "$(pwd)"
 
   #

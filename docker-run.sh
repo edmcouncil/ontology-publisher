@@ -32,6 +32,16 @@ function inputDirectory() {
   # or not. When you're IN the container, we cannot check for the existence
   # of /cygdrive/c/Users/Dean/Documents/${family}
 
+  if isRunningInDockerContainer ; then
+    #
+    # When we're running inside a docker container we cannot test for the existence of
+    # the windows directory that's supposed to be the input directory.
+    # That shell-container should pass the current user id through somehow. Windows has it in USERNAME env var.
+    #
+    echo -n "c:/Users/Dean/Documents/${family}"
+    return 0
+  fi
+
   if [ -d "${HOME}/Work/${family}" ] ; then # Used by Jacobus
     echo -n "${HOME}/Work/${family}"
   elif [ -d "${HOME}/${family}" ] ; then
@@ -56,6 +66,18 @@ function outputDirectory() {
   # or not. If inside that container, then do not execute the mkdir statement
   #
 
+  if isRunningInDockerContainer ; then
+    #
+    # When we're running inside a docker container we cannot test for the existence of
+    # the windows directory that's supposed to be the output directory.
+    # That shell-container should pass the current user id through somehow. Windows has it in USERNAME env var.
+    #
+    # Dean, the input and output directory should be different from each other
+    #
+    echo -n "c:/Users/Dean/Documents/${family}-output"
+    return 0
+  fi
+
   mkdir -p "${SCRIPT_DIR}/../target" >/dev/null 2>&1
   echo -n "$(cd ${SCRIPT_DIR}/../target && pwd -L)"
 }
@@ -66,6 +88,16 @@ function temporaryFilesDirectory() {
   # JG>Dean, same thing here, we need to test whether we're inside your shell container
   # or not. If inside that container, then do not execute the mkdir statement
   #
+
+  if isRunningInDockerContainer ; then
+    #
+    # When we're running inside a docker container we cannot test for the existence of
+    # the windows directory that's supposed to be the tmp directory.
+    # That shell-container should pass the current user id through somehow. Windows has it in USERNAME env var.
+    #
+    echo -n "c:/Users/Dean/Documents/${family}-tmp"
+    return 0
+  fi
 
   mkdir -p "${SCRIPT_DIR}/../tmp" >/dev/null 2>&1
   echo -n "$(cd ${SCRIPT_DIR}/../tmp && pwd -L)"

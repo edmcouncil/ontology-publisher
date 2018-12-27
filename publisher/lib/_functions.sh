@@ -792,8 +792,6 @@ function initJiraVars() {
 
   JIRA_ISSUE="$(echo ${GIT_COMMENT} | rev | ${GREP} -oP '\d+-[A-Z0-9]+(?!-?[a-zA-Z]{1,10})' | rev | sort -u)" ; export JIRA_ISSUE
 
-  logVar JIRA_ISSUE
-
   saveEnvironmentVariable JIRA_ISSUE || return $?
 
   return 0
@@ -802,4 +800,24 @@ function initJiraVars() {
 function stripQuotes() {
 
   ${SED} -e 's/^"//' -e 's/"$//' <<< "$@"
+}
+
+function escapeLaTex() {
+
+  local line="$*"
+
+  line="${line//#/\\#}"
+  line="${line//&/\\&}"
+  line="${line//$/\\$}"
+
+  printf "${line}"
+}
+
+#
+# Return true if running inside a docker container.
+# See https://stackoverflow.com/a/41559867/1110667
+#
+function isRunningInDockerContainer() {
+
+  grep docker /proc/1/cgroup -qa
 }

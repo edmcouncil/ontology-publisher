@@ -349,16 +349,6 @@ __HERE__
 
 }
 
-function escapeLaTex() {
-
-  local line="$*"
-
-  line="${line//#/\\#}"
-  line="${line//&/\\&}"
-
-  echo "${line}"
-}
-
 function bookGeneratePdf() {
 
   local -r documentClass="$1"
