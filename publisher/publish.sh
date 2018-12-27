@@ -75,14 +75,14 @@ function ontologyIsInTestDomain() {
 
   [[ "${rdfFile}" =~ ^.*/*etc/.*$ ]] && return 0
 
-  if [[ "${rdfFile}" =~ ^.*/*CAE/.*$ ]] ; then
+#  if [[ "${rdfFile}" =~ ^.*/*CAE/.*$ ]] ; then
 #   logItem "Ontology file is in test domain" "${rdfFile}"
     return 0
-  fi
+#  fi
 
 # logItem "Ontology file is not in test domain" "${rdfFile}"
 
-  return 1
+#  return 1
 }
 
 #
