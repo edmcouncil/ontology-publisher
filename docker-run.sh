@@ -27,6 +27,11 @@ fi
 #
 function inputDirectory() {
 
+  # JG>Dean, to make this work from inside your shell-container we need
+  # to have a detection here whether we're running inside that container
+  # or not. When you're IN the container, we cannot check for the existence
+  # of /cygdrive/c/Users/Dean/Documents/${family}
+
   if [ -d "${HOME}/Work/${family}" ] ; then # Used by Jacobus
     echo -n "${HOME}/Work/${family}"
   elif [ -d "${HOME}/${family}" ] ; then
@@ -46,11 +51,21 @@ function inputDirectory() {
 #
 function outputDirectory() {
 
+  #
+  # JG>Dean, same thing here, we need to test whether we're inside your shell container
+  # or not. If inside that container, then do not execute the mkdir statement
+  #
+
   mkdir -p "${SCRIPT_DIR}/../target" >/dev/null 2>&1
   echo -n "$(cd ${SCRIPT_DIR}/../target && pwd -L)"
 }
 
 function temporaryFilesDirectory() {
+
+  #
+  # JG>Dean, same thing here, we need to test whether we're inside your shell container
+  # or not. If inside that container, then do not execute the mkdir statement
+  #
 
   mkdir -p "${SCRIPT_DIR}/../tmp" >/dev/null 2>&1
   echo -n "$(cd ${SCRIPT_DIR}/../tmp && pwd -L)"
@@ -130,8 +145,10 @@ function run() {
   opts+=("--mount type=bind,source=${inputDirectory},target=/input/${family},readonly,consistency=cached")
   logItem "/output" "${outputDirectory}"
   opts+=("--mount type=bind,source=${outputDirectory},target=/output,consistency=delegated")
-  logItem "/var/tmp" "${temporaryFilesDirectory}"
-  opts+=("--mount type=bind,source=${temporaryFilesDirectory},target=/var/tmp,consistency=delegated")
+#  logItem "/var/tmp" "${temporaryFilesDirectory}"
+#  opts+=("--mount type=bind,source=${temporaryFilesDirectory},target=/var/tmp,consistency=delegated")
+  logItem "/tmp" "${temporaryFilesDirectory}/../tmp2"
+  opts+=("--mount type=bind,source=${temporaryFilesDirectory}/../tmp2,target=/tmp,consistency=delegated")
   #
   # When running in dev mode we mount the ontology publisher's repo's root directory as well
   #
@@ -145,6 +162,11 @@ function run() {
     log "Type $(bold ./publish.sh) to start the build and $(bold exit) to leave this container."
     log "If you want to run the publication of just one or more \"products\" then"
     log "specify the names of these products after $(bold ./publish.sh), for instance:"
+    log ""
+    log ""
+    log ""
+    log ""
+    log ""
     log ""
     log "$(bold ./publish.sh ontology vocabulary)"
     log ""

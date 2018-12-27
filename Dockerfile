@@ -197,6 +197,18 @@ RUN \
   easy_install-3.6 XlsxWriter rdflib PyLD
 
 #
+# Installing Saxon
+#
+ENV SAXON_VERSION="9-9-0-2J"  
+RUN \
+  curl --location --silent --show-error --output /tmp/SaxonHE${SAXON_VERSION}.zip  --url "https://sourceforge.net/projects/saxon/files/latest/download" && \
+  (mkdir -p /usr/share/java/saxon || true) && \
+  cd /usr/share/java/saxon && \
+  unzip -q /tmp/SaxonHE${SAXON_VERSION}.zip && \
+  rm /tmp/SaxonHE${SAXON_VERSION}.zip
+    
+
+#
 # Installing Widoco
 #
 RUN \

@@ -16,6 +16,8 @@ false && source ../../lib/_functions.sh
 
 function ontologyCreateAboutFiles () {
 
+    # The name of these files has been changed to "All" instead of "About"
+    
   require TMPDIR || return $?
   require tag_root || return $?
 
@@ -32,7 +34,7 @@ function ontologyCreateAboutFiles () {
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
 @prefix owl: <http://www.w3.org/2002/07/owl#> 
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-<${tag_root_url}/AboutFIBO> a owl:Ontology;
+<${tag_root_url}/AboutFIBOProd> a owl:Ontology;
 __HERE__
 
     ${GREP} -r 'utl-av[:;.]Release' . | \
@@ -63,7 +65,7 @@ __HERE__
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
 @prefix owl: <http://www.w3.org/2002/07/owl#> 
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-<${tag_root_url}/AboutFIBO> a owl:Ontology;
+<${tag_root_url}/AboutFIBODev> a owl:Ontology;
 __HERE__
 
     ${GREP} \

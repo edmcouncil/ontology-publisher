@@ -69,7 +69,7 @@ class Trigger():
 								"git" not in root and
 								# "AboutFIBO" not in name and
 								"All" not in name and
-							    "ont-policy.rdf" not in name
+								"ont-policy.rdf" not in name
 								# and ("Metadata" not in name
 								# or "SpecificationMetadata" in name)
 			])
@@ -109,6 +109,9 @@ class Trigger():
 				if self.verbose:
 					print(" - version IRI  {}".format(versionIRI))
 				self.gix.setdefault(versionIRI, set()).add(g)
+		for k, v in self.gix.items():
+			if (len(v)>1):
+				print ("key {} has more than one value. This will cause confusion.".format(k))
 		if self.verbose:
 			self.__printDict()
 
@@ -137,9 +140,10 @@ class Trigger():
 		"""
 		try:
 			g = self.gix[ontologyIRI]
-			ice = [t[2] for t in g.triples((None, OWL.imports, None))]
+			ice = [t[2] for gx in g for t in gx.triples((None, OWL.imports, None))]
 		except:
 			self.undefined.append(ontologyIRI)
+			print ("getImports failed on {}".format(ontologyIRI))
 			ice = []
 		return (ice)
 
@@ -226,7 +230,7 @@ class Trigger():
 if __name__ == "__main__":
   
 	parser = argparse.ArgumentParser(description='Flattens some ontologies into one file.')
-	parser.add_argument('--verbose', '-v', help='verbose output', default=False, action='store_false')
+	parser.add_argument('--verbose', '-v', help='verbose output', default=False, action='store_true')
 	parser.add_argument('--format', '-f', help='Specify either ttl for Turtle or nq for NQuads')
 	parser.add_argument(
 		'--dir', help='The root directory where to find ontology files', metavar='DIR')
@@ -236,7 +240,7 @@ if __name__ == "__main__":
 		'--output', help='???', metavar='FILE')
 	args = parser.parse_args()
 
-	verbose = 'verbose' in args
+	verbose = '--verbose' in args
 	print("verbose is {}\n{}".format(args.verbose, args))
 
 	#
