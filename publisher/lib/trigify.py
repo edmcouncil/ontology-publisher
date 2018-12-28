@@ -171,6 +171,8 @@ class Trigger():
 		"""
 			JG>Dean, not sure what happens here, trying to understand, should it try to get the
 			rdfs:label or dct:abstract from the About ontology or from the actual ontology?
+
+                        JG: Nothing is happening here.  It should be deleted.  
 		"""
 		print(" - fix graph {}".format(g.identifier))
 		print("   - ontology IRIs {}".format([
@@ -199,7 +201,7 @@ class Trigger():
 				print(" - Processing key {}".format(key))
 				graphs = self.gix[key]
 				for graph in graphs:
-					self.__fixgraph(graph)
+#					self.__fixgraph(graph)
 					for prefix, namespace in NamespaceManager(graph).namespaces():
 						NamespaceManager(cg).bind(prefix, namespace)
 					for trip in graph.triples((None, None, None)):
@@ -217,7 +219,7 @@ class Trigger():
 				print(" - Processing key {}".format(key))
 				graphs = self.gix[key]
 				for graph in graphs:
-					self.__fixgraph(graph)
+#					self.__fixgraph(graph)
 					for prefix, namespace in NamespaceManager(graph).namespaces():
 						NamespaceManager(cg).bind(prefix, namespace)
 					for trip in graph.triples((None, None, None)):
