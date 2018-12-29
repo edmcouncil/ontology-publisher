@@ -33,14 +33,34 @@ function bookGenerateTdb2Database() {
     $(${FIND} "${ontology_product_tag_root}" -name "*.rdf")
 }
 
+function bookGeneratePrefixesAsSparqlValues() {
+
+  [ -f "${TMPDIR}/book-prefixes.txt" ] && return 0
+
+  grep --no-filename -r '<!ENTITY' /input/* | \
+  sort -u | \
+  sed 's/.*<!ENTITY \(.*\) "\(.*\)">/("\1:" <\2>)/g' > \
+  "${TMPDIR}/book-prefixes.txt"
+
+  return 0
+}
 #
 # Execute the "list of classes" query
 #
 function bookQueryListOfClasses() {
 
   logRule "Step: bookQueryListOfClasses"
+  
+  local -r queryFile="${TMPDIR}/book-list-of-classes.sq"
+  local -r resultsFile="${book_latex_dir}/data/list-of-classes.tsv"
 
-  cat > "${TMPDIR}/book-list-of-classes.sq" << __HERE__
+  #
+  # TODO: Embed the checksum of the query file in the file name of the results file so that we don't
+  # have to rerun queries that we've already done during development.
+  #
+  [ -f "${resultsFile}" ] && return 0
+
+  cat > "${queryFile}" << __HERE__
 #
 # Get a list of all the class names
 #
@@ -65,7 +85,7 @@ WHERE {
   # TODO: We should just store this in the database itself using the vann ontology or so (http://vocab.org/vann/)
   #
   VALUES (?prefix ?namespace) {
-$(grep --no-filename -r '<!ENTITY' /input/* | sort -u | sed 's/.*<!ENTITY \(.*\) "\(.*\)">/("\1:" <\2>)/g')
+    $(< "${TMPDIR}/book-prefixes.txt")
     ( "ex1:" <http://example1.com/> )
     ( "ex2:" <http://example2.com/> )
     ( "ex3:" <http://example3.com/> )
@@ -125,14 +145,21 @@ GROUP BY ?classIRI ?namezpace ?classLabel ?definition ?explanatoryNote
 ORDER BY ?classIRI
 __HERE__
 
-  logItem "Executing query" "${TMPDIR}/book-list-of-classes.sq"
+  #
+  # Get the list of classes and some details per class, somehow the DISTINCT keyword
+  # doesn't work in the query since it can end up with some duplicate classes if there
+  # are multiple solutions for ?definition such as is the case for fibo-fnd-ptyx-prc:RelationshipContext.
+  # So we're now just using the brute force way of doing a "sort --unique" (on just the classIRI) to
+  # ensure that we only have one line per class.
+  #
+  logItem "Executing query" "${queryFile}"
   tdb2.tdbquery \
     --loc="${book_latex_dir}/tdb2" \
-    --query="${TMPDIR}/book-list-of-classes.sq" \
-    --results=TSV > "${book_latex_dir}/data/list-of-classes.tsv"
+    --query="${queryFile}" \
+    --results=TSV | sort --key=1,2 --unique > "${resultsFile}"
   rc=$?
-  logItem "Finished query" "${TMPDIR}/book-list-of-classes.sq"
-  logItem "Results in" "${book_latex_dir}/data/list-of-classes.tsv"
+  logItem "Finished query" "${queryFile}"
+  logItem "Results in" "${resultsFile}"
 
   if ((rc > 0)) ; then
     logVar rc
@@ -149,7 +176,16 @@ function bookQueryListOfSuperClasses() {
 
   logRule "Step: bookQueryListOfSuperClasses"
 
-  cat > "${TMPDIR}/book-list-of-super-classes.sq" << __HERE__
+  local -r queryFile="${TMPDIR}/book-list-of-super-classes.sq"
+  local -r resultsFile="${book_latex_dir}/data/list-of-super-classes.tsv"
+
+  #
+  # TODO: Embed the checksum of the query file in the file name of the results file so that we don't
+  # have to rerun queries that we've already done during development.
+  #
+  [ -f "${resultsFile}" ] && return 0
+
+  cat > "${queryFile}" << __HERE__
 #
 # Get a list of all the class IRIs and their super class IRIs
 #
@@ -172,7 +208,7 @@ WHERE {
   # TODO: We should just store this in the database itself using the vann ontology or so (http://vocab.org/vann/)
   #
   VALUES (?prefix ?namespace) {
-$(grep --no-filename -r '<!ENTITY' /input/* | sort -u | sed 's/.*<!ENTITY \(.*\) "\(.*\)">/("\1:" <\2>)/g')
+    $(< "${TMPDIR}/book-prefixes.txt")
     ( "ex1:" <http://example1.com/> )
     ( "ex2:" <http://example2.com/> )
     ( "ex3:" <http://example3.com/> )
@@ -211,14 +247,14 @@ GROUP BY ?classIRI ?superClassIRI ?superClassNamespace
 ORDER BY ?classIRI ?superClassIRI
 __HERE__
 
-  logItem "Executing query" "${TMPDIR}/book-list-of-super-classes.sq"
+  logItem "Executing query" "${queryFile}"
   tdb2.tdbquery \
     --loc="${book_latex_dir}/tdb2" \
-    --query="${TMPDIR}/book-list-of-super-classes.sq" \
-    --results=TSV > "${book_latex_dir}/data/list-of-super-classes.tsv"
+    --query="${queryFile}" \
+    --results=TSV > "$resultsFile}"
   rc=$?
-  logItem "Finished query" "${TMPDIR}/book-list-of-super-classes.sq"
-  logItem "Results in" "${book_latex_dir}/data/list-of-super-classes.tsv"
+  logItem "Finished query" "${queryFile}"
+  logItem "Results in" "$resultsFile}"
 
   if ((rc > 0)) ; then
     logVar rc

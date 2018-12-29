@@ -257,35 +257,6 @@ function vocabularyGetModules() {
 }
 
 #
-# 2) Compute the prefixes we'll need.
-#
-function vocabularyGetPrefixes() {
-
-  require vocabulary_script_dir || return $?
-  require ontology_product_tag_root || return $?
-  require modules || return $?
-  require module_directories || return $?
-
-  log "Get prefixes"
-
-  cat "${vocabulary_script_dir}/basic-prefixes.ttl" > "${TMPDIR}/prefixes.ttl"
-
-  pushd "${ontology_product_tag_root}" >/dev/null
-  ${GREP} -R --include "*.ttl" --no-filename "@prefix fibo-" >> "${TMPDIR}/prefixes.ttl"
-  popd >/dev/null
-
-  #
-  # Sort and filter out duplicates
-  #
-  sort --unique --output="${TMPDIR}/prefixes.ttl" "${TMPDIR}/prefixes.ttl"
-
-  log "Found the following namespaces and prefixes:"
-  cat "${TMPDIR}/prefixes.ttl"
-
-  return 0
-}
-
-#
 # Stuff for building nquads files
 #
 function quadify () {
