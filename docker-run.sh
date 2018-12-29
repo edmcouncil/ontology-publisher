@@ -103,12 +103,16 @@ function temporaryFilesDirectory() {
   echo -n "$(cd ${SCRIPT_DIR}/../tmp && pwd -L)"
 }
 
-function build() {
-
-  "${SCRIPT_DIR}/docker-build.sh" "$@"
-}
-
 function checkCommandLine() {
+
+  #
+  # The --pushimage option publishes the image, after a successful build, to Dockerhub
+  #
+  if [[ "$@" =~ .*--pushimage($|[[:space:]]) ]] ; then
+    run_pushimage=1
+  else
+    run_pushimage=0
+  fi
 
   #
   # The --shell option allows you to end up in the shell of the publisher container itself
@@ -137,6 +141,43 @@ function checkCommandLine() {
   else
     run_clean=0
   fi
+}
+
+function dockerFile() {
+
+  if ((run_dev_mode)) ; then
+    cat "${SCRIPT_DIR}/Dockerfile" | sed '/skip in dev mode begin/,/skip in dev mode end/ d' > "${SCRIPT_DIR}/Dockerfile.dev"
+    echo -n "${SCRIPT_DIR}/Dockerfile.dev"
+  else
+    echo -n "${SCRIPT_DIR}/Dockerfile"
+  fi
+}
+
+function build() {
+
+  checkCommandLine "$@"
+
+  cd "${SCRIPT_DIR}" || return $?
+  #
+  # Build the image and tag it as ontology-publisher:latest
+  #
+  log "docker build --file $(dockerFile) --tag edmcouncil/ontology-publisher:latest"
+  if docker build --file $(dockerFile) . --tag edmcouncil/ontology-publisher:latest ; then
+    log "--------- Finished Building the Docker Image ---------"
+    pushImage
+    return $?
+  fi
+  error "Could not build"
+  return 1
+}
+
+function pushImage() {
+
+  ((run_pushimage == 0)) && return 0
+
+  log "docker push edmcouncil/ontology-publisher:latest"
+
+  docker push edmcouncil/ontology-publisher:latest
 }
 
 function run() {
@@ -209,7 +250,7 @@ function run() {
     log "Launching the container"
   fi
 
-  opts+=('ontology-publisher:latest')
+  opts+=('edmcouncil/ontology-publisher:latest')
 
   if ((run_shell)) ; then
     opts+=('-l')
