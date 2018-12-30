@@ -554,7 +554,6 @@ function initRepoBasedTools() {
     return 1
   fi
   JENAROOT="$(cd /usr/share/java/jena/latest && pwd -L)" ; export JENAROOT
-  logVar JENAROOT
 
   export JENA_BIN="${JENAROOT}/bin"
   export JENA_ARQ="${JENA_BIN}/arq"
@@ -752,11 +751,11 @@ function initGitVars() {
 
     if [ -n "${tagBranchSection}" ] ; then
       tagBranchSection=$(echo ${tagBranchSection} | tr '[:upper:]' '[:lower:]')
-      log "Found branch name in git tag: ${tagBranchSection}"
+      logItem "Branch in git tag" "${tagBranchSection}"
       export GIT_BRANCH="${tagBranchSection}"
     fi
     if [ -n "${tagVersionSection}" ] ; then
-      log "Found version string in git tag: ${tagVersionSection}"
+      logItem "Version in git tag" "${tagVersionSection}"
       export GIT_TAG_NAME="${tagVersionSection}"
     fi
   fi

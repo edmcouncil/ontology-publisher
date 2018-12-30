@@ -44,23 +44,12 @@ function bookGeneratePrefixesAsSparqlValues() {
 
   return 0
 }
-#
-# Execute the "list of classes" query
-#
-function bookQueryListOfClasses() {
 
-  logRule "Step: bookQueryListOfClasses"
-  
-  local -r queryFile="${TMPDIR}/book-list-of-classes.sq"
-  local -r resultsFile="${book_latex_dir}/data/list-of-classes.tsv"
+function bookCreateQueryListOfClasses() {
 
-  #
-  # TODO: Embed the checksum of the query file in the file name of the results file so that we don't
-  # have to rerun queries that we've already done during development.
-  #
-  [ -f "${resultsFile}" ] && return 0
+  book_query_file="${TMPDIR}/book-list-of-classes.sq"
 
-  cat > "${queryFile}" << __HERE__
+  cat > "${book_query_file}" << __HERE__
 #
 # Get a list of all the class names
 #
@@ -145,6 +134,32 @@ GROUP BY ?classIRI ?namezpace ?classLabel ?definition ?explanatoryNote
 ORDER BY ?classIRI
 __HERE__
 
+  local -r checksum="$(md5sum "${book_query_file}" | cut -f1 -d\  )"
+
+  book_results_file="${book_latex_dir:?}/data/list-of-classes-${checksum}.tsv"
+
+  return 0
+
+}
+
+#
+# Execute the "list of classes" query and store the name of the results file in the caller's variable book_results_file
+#
+function bookQueryListOfClasses() {
+
+  local book_query_file
+
+  bookCreateQueryListOfClasses || return $?
+
+  #
+  # If the results file already exists then it doesn't make sense
+  # to run the query again.
+  #
+  [ -z "${book_results_file}" ] && return 1
+  [ -f "${book_results_file}" ] && return 0
+
+  logRule "Step: bookQueryListOfClasses"
+
   #
   # Get the list of classes and some details per class, somehow the DISTINCT keyword
   # doesn't work in the query since it can end up with some duplicate classes if there
@@ -152,14 +167,14 @@ __HERE__
   # So we're now just using the brute force way of doing a "sort --unique" (on just the classIRI) to
   # ensure that we only have one line per class.
   #
-  logItem "Executing query" "${queryFile}"
+  logItem "Executing query" "${book_query_file}"
   tdb2.tdbquery \
     --loc="${book_latex_dir}/tdb2" \
-    --query="${queryFile}" \
-    --results=TSV | sort --key=1,2 --unique > "${resultsFile}"
+    --query="${book_query_file}" \
+    --results=TSV | sort --key=1,2 --unique > "${book_results_file}"
   rc=$?
-  logItem "Finished query" "${queryFile}"
-  logItem "Results in" "${resultsFile}"
+  logItem "Finished query" "${book_query_file}"
+  logItem "Results in" "${book_results_file}"
 
   if ((rc > 0)) ; then
     logVar rc
@@ -170,22 +185,16 @@ __HERE__
 }
 
 #
-# Execute the "list of super classes" query
+# Generates query "list of super classes"
 #
-function bookQueryListOfSuperClasses() {
+# Stores name of query file in global variable book_query_file and
+# name of results file in book_results_file
+#
+function bookCreateQueryListOfSuperClasses() {
 
-  logRule "Step: bookQueryListOfSuperClasses"
+  book_query_file="${TMPDIR}/book-list-of-super-classes.sq"
 
-  local -r queryFile="${TMPDIR}/book-list-of-super-classes.sq"
-  local -r resultsFile="${book_latex_dir}/data/list-of-super-classes.tsv"
-
-  #
-  # TODO: Embed the checksum of the query file in the file name of the results file so that we don't
-  # have to rerun queries that we've already done during development.
-  #
-  [ -f "${resultsFile}" ] && return 0
-
-  cat > "${queryFile}" << __HERE__
+  cat > "${book_query_file}" << __HERE__
 #
 # Get a list of all the class IRIs and their super class IRIs
 #
@@ -247,14 +256,39 @@ GROUP BY ?classIRI ?superClassIRI ?superClassNamespace
 ORDER BY ?classIRI ?superClassIRI
 __HERE__
 
-  logItem "Executing query" "${queryFile}"
+  local -r checksum="$(md5sum "${book_query_file}" | cut -f1 -d\  )"
+
+  book_results_file="${book_latex_dir:?}/data/list-of-super-classes-${checksum}.tsv"
+
+  return 0
+}
+
+#
+# Execute the "list of super classes" query
+#
+function bookQueryListOfSuperClasses() {
+
+  local book_query_file
+
+  bookCreateQueryListOfSuperClasses || return $?
+
+  #
+  # If the results file already exists then it doesn't make sense
+  # to run the query again.
+  #
+  [ -z "${book_results_file}" ] && return 1
+  [ -f "${book_results_file}" ] && return 0
+
+  logRule "Step: bookQueryListOfSuperClasses"
+
+  logItem "Executing query" "${book_query_file}"
   tdb2.tdbquery \
-    --loc="${book_latex_dir}/tdb2" \
-    --query="${queryFile}" \
-    --results=TSV > "$resultsFile}"
+    --loc="${book_latex_dir:?}/tdb2" \
+    --query="${book_query_file}" \
+    --results=TSV > "${book_results_file}"
   rc=$?
-  logItem "Finished query" "${queryFile}"
-  logItem "Results in" "$resultsFile}"
+  logItem "Finished query" "${book_query_file}"
+  logItem "Results in" "${book_results_file}"
 
   if ((rc > 0)) ; then
     logVar rc

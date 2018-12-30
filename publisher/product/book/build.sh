@@ -22,6 +22,8 @@ else
   source build-queries.sh # This line is only there to make the IntelliJ Bash plugin see build-queries.sh
 fi
 
+dev_max_classes=100
+
 #
 # Produce all artifacts for the book product
 #
@@ -38,6 +40,8 @@ function publishProductBook() {
   export book_latex_dir="${book_product_tag_root}"
 
   mkdir -p "${book_latex_dir}/data" >/dev/null 2>&1
+
+  export BIBINPUTS="${book_script_dir}"
   
   book_stat_number_of_classes_without_superclass=0
   book_stat_number_of_classes=0
@@ -45,16 +49,30 @@ function publishProductBook() {
 
   bookGenerateTdb2Database || return $?
   bookGeneratePrefixesAsSparqlValues || return $?
-  bookQueryListOfSuperClasses || return $?
   bookQueryListOfClasses || return $?
+
+  #
+  # Remove all generated files
+  #
+  for documentClass in book report ; do
+    for pageSize in letter a4 ; do
+      book_base_name="${documentClass}-${pageSize}"
+      book_file_noext="${book_latex_dir}/${book_base_name}"
+      glos_file_noext="${book_latex_dir}/${book_base_name}-glossary"
+      rm -vf "${book_file_noext}".* "${glos_file_noext}".*
+    done
+  done
 
   for documentClass in book report ; do
     for pageSize in letter a4 ; do
-      book_tex_file_noext="${book_latex_dir}/${documentClass}-${pageSize}"
-      rm -vf "${book_tex_file_noext}".*
-      book_tex_file="${book_tex_file_noext}.tex"
+      book_base_name="${documentClass}-${pageSize}"
+      logRule "Step: bookGenerate ${book_base_name}"
+      book_file_noext="${book_latex_dir}/${book_base_name}"
+      glos_file_noext="${book_latex_dir}/${book_base_name}-glossary"
+      book_tex_file="${book_file_noext}.tex"
+      glos_tex_file="${glos_file_noext}.tex"
       bookGenerateLaTex "${documentClass}" "${pageSize}" || return $?
-      bookGeneratePdf "${documentClass}" "${pageSize}" || return $?
+      bookCompile "${documentClass}" "${pageSize}" || return $?
     done
   done
 
@@ -95,6 +113,8 @@ function bookGenerateLaTex() {
 \usepackage{graphicx}
 \usepackage{blindtext}
 \usepackage{geometry}
+\usepackage{imakeidx}
+\makeindex
 \geometry{$(bookGeometry "${documentClass}" "${pageSize}")}
 %
 % One must be careful when importing hyperref. Usually, it has to be the last package to be imported, but there might
@@ -105,7 +125,16 @@ function bookGenerateLaTex() {
 \usepackage{hyperref}
 \hypersetup{colorlinks=true,linkcolor=blue,filecolor=magenta,urlcolor=cyan}
 \urlstyle{same}
+%
+% glossaries package has to come after hyperref
+% See http://mirrors.nxthost.com/ctan/macros/latex/contrib/glossaries/glossariesbegin.html
+%
+\usepackage[acronym,toc]{glossaries}
+\loadglsentries{${book_base_name}-glossary}
+\makeglossaries
 __HERE__
+
+  bookCreateGlossaryFile || return $?
 
   bookGenerateTitle || return $?
 
@@ -114,29 +143,73 @@ __HERE__
 \maketitle
 __HERE__
 
+  cat >> "${book_tex_file}" <<< "\part{Intro}"
+
   bookGenerateAbstract "${documentClass}" || return $?
 
   cat >> "${book_tex_file}" <<< "\tableofcontents{}"
 
   bookGenerateSectionIntro || return $?
+
+  cat >> "${book_tex_file}" <<< "\part{Reference}"
+
+  bookGenerateSectionOntologies "${documentClass}" "${pageSize}" || return $?
   bookGenerateSectionClasses "${documentClass}" "${pageSize}" || return $?
-  bookGenerateSectionStatistics || return $?
+  bookGenerateSectionProperties "${documentClass}" "${pageSize}" || return $?
+  bookGenerateSectionIndividuals "${documentClass}" "${pageSize}" || return $?
   bookGenerateSectionConclusion || return $?
 
+  cat >> "${book_tex_file}" <<< "\part{Appendices}"
+  bookGenerateSectionStatistics || return $?
+
   cat >> "${book_tex_file}" << __HERE__
-\medskip
+% \clearpage
+\setglossarystyle{altlist}
+\glsaddall
+\printglossary[type=\acronymtype]
+% \clearpage
+\glsaddall
+\printglossary[title=Glossary, toctitle=Glossary]
+% \clearpage
+\printindex
+% \clearpage
 \printbibliography[heading=bibintoc]
+\printindex
 \end{document}
 __HERE__
 
   return 0
 }
 
+function bookCreateGlossaryFile() {
+
+  cat > "${glos_tex_file}" << __HERE__
+\newacronym{rdf}{RDF}{Resource Definition Framework}
+\newacronym{owl}{OWL}{Web Ontology Language}
+\newacronym{fibo}{FIBO}{Financial Industry Business Ontology}
+\newacronym{omg}{OMG}{Object Management Group}
+\newacronym{edmc}{EDM Council}{Enterprise Data Management Council}
+__HERE__
+
+  return 0
+}
+
+function bookAddGlossaryTerm() {
+
+  local -r name="$1"
+  local -r description="$2"
+
+  cat >> "${glos_tex_file}" << __HERE__
+\newglossaryentry{${name}}{name={${name}},description={${description}}}
+__HERE__
+
+}
+
 function bookGenerateTitle() {
 
   cat >> "${book_tex_file}" << __HERE__
-\title{FIBO Glossary}
-\author{EDM Council}
+\title{The FIBO Reference}
+\author{Enterprise Data Management Council}
 \date{\today}
 __HERE__
 
@@ -161,23 +234,22 @@ __HERE__
 function bookGenerateSectionIntro() {
 
   cat >> "${book_tex_file}" << __HERE__
-\chapter{Introduction}
+\chapter*{What is FIBO?}
 
-\section{What is FIBO?}
-
-  The \textit{Financial Industry Business Ontology} (FIBO)\cite{fiboprimer} is the industry standard resource for
+  The \textit{\acrfull{fibo}}\cite{fiboprimer} is the industry standard resource for
   the definitions of business concepts in the financial services industry.
-  It is developed and hosted by the \textit{Enterprise Data Management Council} (EDM Council) and is published in a
+  It is developed and hosted by the \textit{\acrfull{edmc}} and is published in a
   number for formats for operating use and for business definitions.
-  It is also standardized through the \textit{Object Management Group} (OMG)\cite{omgwebsite,omgedmcwebsite}.
-  FIBO is developed as a series of ontologies in the \textit{Web Ontology Language} (OWL).
+  It is also standardized through the \textit{\acrfull{omg}}\cite{omgwebsite,omgedmcwebsite}.
+  \acrshort{fibo} is developed as a series of ontologies in the \textit{\acrfull{owl}}.
   As such it is not a data model but a representation of the “things in the world” of financial services.
   The use of logic ensures that each real-world concept is framed in a way that is unambiguous and that is readable
   both by humans and machines.
-  These common concepts have been reviewed by EDM Council member firms over a period of years and represent a consensus
-  of the common concepts as understood in the industry and as reflected in industry data models and message standards.
+  These common concepts have been reviewed by \acrshort{edmc} member firms over a period of years and represent a
+  consensus of the common concepts as understood in the industry and as reflected in industry data models and message
+  standards.
 
-\section{About this document}
+\chapter*{About this document}
 
   \blindtext
 __HERE__
@@ -195,12 +267,36 @@ __HERE__
   return 0
 }
 
+function bookGenerateSectionOntologies() {
+
+  local -r documentClass="$1"
+  local -r pageSize="$2"
+
+  logRule "Step: bookGenerateListOfClasses ${book_base_name}"
+
+  cat >> "${book_tex_file}" << __HERE__
+\chapter{Ontologies}
+
+  This chapter enumerates all the (OWL) ontologies that play a role in ${family}.
+
+  TODO
+
+  \blindtext
+__HERE__
+
+  return 0
+}
+
 function bookGenerateSectionClasses() {
 
   local -r documentClass="$1"
   local -r pageSize="$2"
 
-  logRule "Step: bookGenerateListOfClasses ${documentClass} ${pageSize}"
+  logRule "Step: bookGenerateListOfClasses ${book_base_name}"
+
+  local book_results_file # will get the name of the results value after the call to bookQueryListOfClasses
+
+  bookQueryListOfClasses || return $?
 
   cat >> "${book_tex_file}" << __HERE__
 \chapter{Classes}
@@ -224,6 +320,7 @@ __HERE__
   local classLabel
   local definition
   local explanatoryNote
+  local numberOfClasses=0
 
   #
   # Process each line of the TSV file with "read -a" which properly deals
@@ -234,6 +331,12 @@ __HERE__
     [ "${line[0]}" == "" ] && continue
     [ "${line[1]}" == "" ] && continue
     [ "${line[0]:0:1}" == "?" ] && continue
+
+    if ((numberOfClasses > dev_max_classes)) ; then
+      warning "Stopping at ${dev_max_classes} since we're running in dev mode"
+      break
+    fi
+    numberOfClasses=$((numberOfClasses + 1))
 
     classIRI="$(stripQuotes "${line[0]}")"
     prefName="$(stripQuotes "${line[1]}")"
@@ -248,10 +351,10 @@ __HERE__
 #    logVar classLabel
 #    logVar definition
 
-    latexSection="$(escapeAndDetokenizeLaTex "${prefName}")"
+    latexSection="$(escapeLaTex "${prefName}")"
 
     cat >> "${book_tex_file}" << __HERE__
-\section{${prefName}} \label{${latexSection}} \par
+\section{${latexSection}} \label{${latexSection}} \par
 __HERE__
 
     #
@@ -259,14 +362,13 @@ __HERE__
     #
     [ -n "${definition}" ] && cat >> "${book_tex_file}" <<< "$(escapeAndDetokenizeLaTex "${definition}")"
 
-    cat >> "${book_tex_file}" << __HERE__
-\begin{description}
-__HERE__
+    cat >> "${book_tex_file}" <<< "\begin{description}"
     #
     # Label
     #
     if [ -n "${classLabel}" ] ; then
       cat >> "${book_tex_file}" <<< "\item [Label] $(escapeAndDetokenizeLaTex "${classLabel}")"
+      bookAddGlossaryTerm "${classLabel}" "${definition}"
     else
       book_stat_number_of_classes_without_label=$((book_stat_number_of_classes_without_label + 1))
     fi
@@ -286,7 +388,7 @@ __HERE__
     cat >> "${book_tex_file}" <<< "\end{description}"
 
     book_stat_number_of_classes=$((book_stat_number_of_classes + 1))
-  done < "${book_latex_dir}/data/list-of-classes.tsv"
+  done < "${book_results_file}"
 
   if ((book_stat_number_of_classes == 0)) ; then
     error "Didn't process any classes, something went wrong"
@@ -299,10 +401,50 @@ __HERE__
   return 0
 }
 
+function bookGenerateSectionProperties() {
+
+  local -r documentClass="$1"
+  local -r pageSize="$2"
+
+  logRule "Step: bookGenerateSectionProperties ${book_base_name}"
+
+  cat >> "${book_tex_file}" << __HERE__
+\chapter{Properties}
+
+  This chapter enumerates all the (OWL) properties that play a role in ${family}.
+
+  TODO
+
+  \blindtext
+__HERE__
+
+  return 0
+}
+
+function bookGenerateSectionIndividuals() {
+
+  local -r documentClass="$1"
+  local -r pageSize="$2"
+
+  logRule "Step: bookGenerateSectionIndividuals ${book_base_name}"
+
+  cat >> "${book_tex_file}" << __HERE__
+\chapter{Individuals}
+
+  This chapter enumerates all the (OWL) properties that play a role in ${family}.
+
+  TODO
+
+  \blindtext
+__HERE__
+
+  return 0
+}
+
 function bookGenerateSectionStatistics() {
 
     cat >> "${book_tex_file}" << __HERE__
-\section{Statistics}
+\chapter*{Statistics}
 
   TODO: To be extended with some more interesting numbers.
 
@@ -321,16 +463,19 @@ __HERE__
 function bookGenerateListOfSuperClasses() {
 
   local -r classIRI="$1"
-  local -r data="${book_latex_dir}/data/list-of-super-classes.tsv"
 
-  if [ ! -f "${data}" ] ; then
-    error "Could not find ${data}"
+  local book_results_file # will get the name of the results value after the call to bookQueryListOfClasses
+
+  bookQueryListOfSuperClasses || return $?
+
+  if [ ! -f "${book_results_file}" ] ; then
+    error "Could not find ${book_results_file}"
     return 1
   fi
 
   local -a superClassArray
 
-  mapfile -t superClassArray < <(${SED} -n -e "s@^\"${classIRI}\"\(.*\)@\1@p" "${data}")
+  mapfile -t superClassArray < <(${SED} -n -e "s@^\"${classIRI}\"\(.*\)@\1@p" "${book_results_file}")
 
   local -r numberOfSuperClasses=${#superClassArray[*]}
 
@@ -378,19 +523,24 @@ __HERE__
 
 }
 
-function bookGeneratePdf() {
+function bookCompile() {
 
   local -r documentClass="$1"
   local -r pageSize="$2"
 
-  log "bookGeneratePdf documentClass=${documentClass} pageSize=${pageSize}"
+  log "bookCompile documentClass=${documentClass} pageSize=${pageSize}"
 
   (
     cd "${book_latex_dir}" || return $?
-    xelatex \
-      -halt-on-error \
-      -interaction=batchmode \
-      "${book_tex_file}"
+#      -interaction=batchmode \
+    set -x
+    xelatex -halt-on-error "${book_base_name}" || return $?
+    makeglossaries "${book_base_name}" || return $?
+    xelatex -halt-on-error "${book_base_name}" || return $?
+    biber "${book_base_name}" || return $?
+    xelatex -halt-on-error "${book_base_name}" || return $?
+    makeindex "${book_base_name}" || return $?
+    xelatex -halt-on-error "${book_base_name}" || return $?
   )
   return $?
 }
