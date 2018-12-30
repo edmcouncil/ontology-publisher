@@ -135,7 +135,8 @@ function spinRunInferences() {
   #
   cp "${locationMappingFile}" "$(pwd)"
   cp "${ontologyPolicyFile}" "$(pwd)"
-
+  echo "jars is"
+  echo "$jars"
   java \
     --add-opens java.base/java.lang=ALL-UNNAMED \
     -Dxxx=spin \

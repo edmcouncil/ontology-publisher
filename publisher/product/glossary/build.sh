@@ -99,10 +99,11 @@ function publishProductGlossaryRemoveWarnings() {
 
   verbose "Remove warnings from ${glossaryName}.ttl, save as ${glossaryName}-fixed.ttl"
   ${SED} '/^@prefix/,$!d' "${glossary_product_tag_root}/${glossaryName}.ttl" > "${glossary_product_tag_root}/${glossaryName}-fixed.ttl"
-  verbose "Run ${glossaryName}-fixed.ttl through fix-sparql construct and save as ${glossaryName}.ttl"
-  ${JENA_ARQ} --data="${glossary_product_tag_root}/${glossaryName}-fixed.ttl" --query="${fixFile}" > "${glossary_product_tag_root}/${glossaryName}.ttl"
-  verbose "Remove ${glossaryName}-fixed.ttl"
-  rm "${glossary_product_tag_root}/${glossaryName}-fixed.ttl"
+  mv "${glossary_product_tag_root}/${glossaryName}-fixed.ttl" "${glossary_product_tag_root}/${glossaryName}.ttl"
+#  verbose "Run ${glossaryName}-fixed.ttl through fix-sparql construct and save as ${glossaryName}.ttl"
+#  ${JENA_ARQ} --data="${glossary_product_tag_root}/${glossaryName}-fixed.ttl" --query="${fixFile}" > "${glossary_product_tag_root}/${glossaryName}.ttl"
+#  verbose "Remove ${glossaryName}-fixed.ttl"
+#  rm "${glossary_product_tag_root}/${glossaryName}-fixed.ttl"
 
   return 0
 }
@@ -146,6 +147,8 @@ function publishProductGlossaryContent() {
     ${JENA_ARQ} \
       $(${FIND} "${ontology_product_tag_root}" -name "*.rdf" | ${SED} "s/^/--data=/") \
       --data=${glossary_script_dir}/owlnames.ttl \
+      --data="${SCRIPT_DIR}/lib/ontologies/omg/CountryRepresentation.rdf" \
+      --data="${SCRIPT_DIR}/lib/ontologies/omg/LanguageRepresentation.rdf" \
       --query="${SCRIPT_DIR}/lib/echo.sparql" \
       --results=Turtle > "${TMPDIR}/glossary-dev.ttl"
 
@@ -161,37 +164,39 @@ function publishProductGlossaryContent() {
 
   #
   # Get ontologies for Prod
-  #
+    #
+    #We ought to compute this for all ontologies, then sort by whether they are PROD or DEV, instead of sorting the files. 
 # if ((debug == 0)) ; then
-    verbose "Get all prod ontologies convert to one Turtle file ($(logFileName ${TMPDIR}/glossary-prod.ttl))"
-
-    log "All production level ontology files:"
-    while IFS=: read prodOntologyFile ignore ; do
-      log "- ${prodOntologyFile}"
-      numberOfProductionLevelOntologyFiles=$((numberOfProductionLevelOntologyFiles + 1))
-    done < <(${GREP} -r 'utl-av[:;.]Release' "${ontology_product_tag_root}")
-
-    if ((numberOfProductionLevelOntologyFiles == 0)) ; then
-      warning "There are no production level ontology files"
-    else
-      ${JENA_ARQ} \
-        $(${GREP} -r 'utl-av[:;.]Release' "${ontology_product_tag_root}" | ${SED} 's/:.*$//;s/^/--data=/' | ${GREP} -F ".rdf") \
-        --data=${glossary_script_dir}/owlnames.ttl \
-        --query="${SCRIPT_DIR}/lib/echo.sparql" \
-        --results=Turtle > "${TMPDIR}/glossary-prod.ttl"
-
-      if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-        error "Could not get Prod ontologies"
-        return 1
-      fi
+#    verbose "Get all prod ontologies convert to one Turtle file ($(logFileName ${TMPDIR}/glossary-prod.ttl))"
+#
+#    log "All production level ontology files:"
+#    while IFS=: read prodOntologyFile ignore ; do
+#      log "- ${prodOntologyFile}"
+#      numberOfProductionLevelOntologyFiles=$((numberOfProductionLevelOntologyFiles + 1))
+#    done < <(${GREP} -r 'utl-av[:;.]Release' "${ontology_product_tag_root}")
+#
+#    if ((numberOfProductionLevelOntologyFiles == 0)) ; then
+#      warning "There are no production level ontology files"
+#    else
+#      ${JENA_ARQ} \
+#        $(${GREP} -r 'utl-av[:;.]Release' "${ontology_product_tag_root}" | ${SED} 's/:.*$//;s/^/--data=/' | ${GREP} -F ".rdf") \
+#        --data=${glossary_script_dir}/owlnames.ttl \
+#        --query="${SCRIPT_DIR}/lib/echo.sparql" \
+#        --results=Turtle > "${TMPDIR}/glossary-prod.ttl"
+#
+#      if [ ${PIPESTATUS[0]} -ne 0 ] ; then
+#        error "Could not get Prod ontologies"
+#        return 1
+#      fi
       #
       # Fast conversion of the N-Triples file to Turtle
       #
       #${SERDI} -b -f -i ntriples -o turtle "${TMPDIR}/glossary-prod.nt" > "${TMPDIR}/glossary-prod.ttl"
-    fi
+#    fi
 # fi
 
   #
+  # Now that this goes faster, we might not need this. 
   # Just do "Corporations.rdf" for test purposes
   #
   verbose "Get the Corporations.rdf ontology (for test purposes) and generate ($(logFileName ${TMPDIR}/glossary-test.ttl))"
@@ -221,39 +226,41 @@ function publishProductGlossaryContent() {
 #  else
     log "debug=false so now we're generating the full prod and dev versions"
 
-    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
-      "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-prod.ttl" "${glossary_product_tag_root}/glossary-prod.ttl" &
-    fi
-    "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-dev.ttl" "${glossary_product_tag_root}/glossary-dev.ttl" &
-    log "and on top of that also the test glossary"
-    "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-test.ttl" "${glossary_product_tag_root}/glossary-test.ttl" &
-    log "Waiting for the above SPIN commands to finish"
-    wait
+#    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
+##      "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-prod.ttl" "${glossary_product_tag_root}/glossary-prod.ttl" &
+#    fi
+set -x
+    "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-dev.ttl" "${glossary_product_tag_root}/glossary-dev.ttl" 
+set +x
+    #    log "and on top of that also the test glossary"
+#    "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-test.ttl" "${glossary_product_tag_root}/glossary-test.ttl" &
+#    log "Waiting for the above SPIN commands to finish"
+#    wait
     log "SPIN commands have finished"
 #  fi
 
   #
   # The spin inferences can create too many explanations.  This removes redundant ones.
   #
-  local -r fixFile="$(createTempFile "fix" "sq")"
-  cat > "${fixFile}" << __HERE__
-PREFIX owlnames: <http://spec.edmcouncil.org/owlnames#>
-
-CONSTRUCT {
-  ?s ?p ?o
-}
-WHERE {
-  ?s ?p ?o .
-  FILTER (
-    (?p != owlnames:mdDefinition) || (
-      NOT EXISTS {
-        ?s  owlnames:mdDefinition ?o2 .
-        FILTER (REGEX (?o2, CONCAT ("^", ?o, ".")))
-		  }
-		)
-  )
-}
-__HERE__
+#  local -r fixFile="$(createTempFile "fix" "sq")"
+#  cat > "${fixFile}" << __HERE__
+#PREFIX owlnames: <http://spec.edmcouncil.org/owlnames#>
+#
+#CONSTRUCT {
+#  ?s ?p ?o
+#}
+#WHERE {
+#  ?s ?p ?o .
+#  FILTER (
+#    (?p != owlnames:mdDefinition) || (
+#      NOT EXISTS {
+#        ?s  owlnames:mdDefinition ?o2 .
+#        FILTER (REGEX (?o2, CONCAT ("^", ?o, ".")))
+#		  }
+#		)
+#  )
+#}
+#__HERE__
 
   #
   # Spin can put warnings at the start of a file.  I don't know why. Get rid of them.
@@ -262,36 +269,36 @@ __HERE__
 #  if ((debug)) ; then
 #    publishProductGlossaryRemoveWarnings "${fixFile}" test || return $?
 #  else
-    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
-      publishProductGlossaryRemoveWarnings "${fixFile}" prod || return $?
-    fi
+#    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
+#      publishProductGlossaryRemoveWarnings "${fixFile}" prod || return $?
+#    fi
     publishProductGlossaryRemoveWarnings "${fixFile}" dev || return $?
-    publishProductGlossaryRemoveWarnings "${fixFile}" test || return $?
+#    publishProductGlossaryRemoveWarnings "${fixFile}" test || return $?
 #  fi
 
-  cat > "${TMPDIR}/nolabel.sq" << __HERE__
+#  cat > "${TMPDIR}/nolabel.sq" << __HERE__
+##
+## JG>Dean, what's going on here? Removing all the rdfs:labels? Why?
+##
+#PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 #
-# JG>Dean, what's going on here? Removing all the rdfs:labels? Why?
-#
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
-CONSTRUCT {
-  ?s ?p ?o
-}
-WHERE {
-  ?s ?p ?o .
-  FILTER (ISIRI (?s) || (?p != rdfs:label))
-}
-__HERE__
+#CONSTRUCT {
+#  ?s ?p ?o
+#}
+#WHERE {
+#  ?s ?p ?o .
+#  FILTER (ISIRI (?s) || (?p != rdfs:label))
+#}
+#__HERE__
 
 # if ((debug)) ; then
 #   ${JENA_ARQ} --data="${glossary_product_tag_root}/glossary-test.ttl" --query="${TMPDIR}/nolabel.sq" > "${TMPDIR}/glossary-test-nolabel.ttl"
 # else
-    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
-      ${JENA_ARQ} --data="${glossary_product_tag_root}/glossary-prod.ttl" --query="${TMPDIR}/nolabel.sq" > "${TMPDIR}/glossary-prod-nolabel.ttl"
-    fi
-    ${JENA_ARQ} --data="${glossary_product_tag_root}/glossary-dev.ttl"  --query="${TMPDIR}/nolabel.sq" > "${TMPDIR}/glossary-dev-nolabel.ttl"
-    ${JENA_ARQ} --data="${glossary_product_tag_root}/glossary-test.ttl" --query="${TMPDIR}/nolabel.sq" > "${TMPDIR}/glossary-test-nolabel.ttl"
+#    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
+####      ${JENA_ARQ} --data="${glossary_product_tag_root}/glossary-prod.ttl" --query="${TMPDIR}/nolabel.sq" > "${TMPDIR}/glossary-prod-nolabel.ttl"
+#    fi
+#    ${JENA_ARQ} --data="${glossary_product_tag_root}/glossary-dev.ttl"  --query="${TMPDIR}/nolabel.sq" > "${TMPDIR}/glossary-dev-nolabel.ttl"
+#    ${JENA_ARQ} --data="${glossary_product_tag_root}/glossary-test.ttl" --query="${TMPDIR}/nolabel.sq" > "${TMPDIR}/glossary-test-nolabel.ttl"
 #  fi
 
   log "Using RDF toolkit to convert Turtle to JSON-LD"
@@ -314,23 +321,23 @@ __HERE__
 #      > "${glossary_product_tag_root}/rdf-toolkit-glossary-test.log" 2>&1
 #    )
 #  else
-    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
-      log "Convert ${TMPDIR/${WORKSPACE}/}/glossary-prod-nolabel.ttl to ${glossary_product_tag_root/${WORKSPACE}/}/glossary-prod.jsonld"
-      java \
-        --add-opens java.base/java.lang=ALL-UNNAMED \
-        -Xmx4G \
-        -Xms4G \
-        -Dfile.encoding=UTF-8 \
-        -jar "${RDFTOOLKIT_JAR}" \
-        --source "${TMPDIR}/glossary-prod-nolabel.ttl" \
-        --source-format turtle \
-        --target "${glossary_product_tag_root}/glossary-prod.jsonld" \
-        --target-format json-ld \
-        --infer-base-iri \
-        --use-dtd-subset -ibn \
-        > "${glossary_product_tag_root}/rdf-toolkit-glossary-prod.log" 2>&1
-    fi
-    log "Convert ${TMPDIR/${WORKSPACE}/}/glossary-dev-nolabel.ttl to ${glossary_product_tag_root/${WORKSPACE}/}/glossary-dev.jsonld"
+#    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
+#      log "Convert ${TMPDIR/${WORKSPACE}/}/glossary-prod-nolabel.ttl to ${glossary_product_tag_root/${WORKSPACE}/}/glossary-prod.jsonld"
+#      java \
+#        --add-opens java.base/java.lang=ALL-UNNAMED \
+#        -Xmx4G \
+#        -Xms4G \
+#        -Dfile.encoding=UTF-8 \
+#        -jar "${RDFTOOLKIT_JAR}" \
+#        --source "${TMPDIR}/glossary-prod-nolabel.ttl" \
+#        --source-format turtle \
+#        --target "${glossary_product_tag_root}/glossary-prod.jsonld" \
+#        --target-format json-ld \
+#        --infer-base-iri \
+#        --use-dtd-subset -ibn \
+#        > "${glossary_product_tag_root}/rdf-toolkit-glossary-prod.log" 2>&1
+#    fi
+    log "Convert ${TMPDIR/${WORKSPACE}/}/glossary-dev.ttl to ${glossary_product_tag_root/${WORKSPACE}/}/glossary-dev.jsonld"
     java \
       --add-opens java.base/java.lang=ALL-UNNAMED \
       -Xmx4G \
@@ -344,30 +351,30 @@ __HERE__
       --infer-base-iri \
       --use-dtd-subset -ibn \
       > "${glossary_product_tag_root}/rdf-toolkit-glossary-dev.log" 2>&1
-    log "Convert ${TMPDIR/${WORKSPACE}/}/glossary-test-nolabel.ttl to ${glossary_product_tag_root/${WORKSPACE}/}/glossary-test.jsonld"
-    java \
-      --add-opens java.base/java.lang=ALL-UNNAMED \
-      -Xmx4G \
-      -Xms4G \
-      -Dfile.encoding=UTF-8 \
-      -jar "${RDFTOOLKIT_JAR}" \
-      --source "${TMPDIR}/glossary-test-nolabel.ttl" \
-      --source-format turtle \
-      --target "${glossary_product_tag_root}/glossary-test.jsonld" \
-      --target-format json-ld \
-      --infer-base-iri \
-      --use-dtd-subset -ibn \
-      > "${glossary_product_tag_root}/rdf-toolkit-glossary-test.log" 2>&1
+#    log "Convert ${TMPDIR/${WORKSPACE}/}/glossary-test-nolabel.ttl to ${glossary_product_tag_root/${WORKSPACE}/}/glossary-test.jsonld"
+#    java \
+#      --add-opens java.base/java.lang=ALL-UNNAMED \
+#      -Xmx4G \
+#      -Xms4G \
+#      -Dfile.encoding=UTF-8 \
+#      -jar "${RDFTOOLKIT_JAR}" \
+#      --source "${TMPDIR}/glossary-test-nolabel.ttl" \
+#      --source-format turtle \
+#      --target "${glossary_product_tag_root}/glossary-test.jsonld" \
+#      --target-format json-ld \
+#      --infer-base-iri \
+#      --use-dtd-subset -ibn \
+#      > "${glossary_product_tag_root}/rdf-toolkit-glossary-test.log" 2>&1
 #  fi
 
 # if ((debug)) ; then
 #   glossaryMakeExcel "${TMPDIR}/glossary-test-nolabel.ttl" "${glossary_product_tag_root}/glossary-test"
 # else
-    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
-      glossaryMakeExcel "${TMPDIR}/glossary-prod-nolabel.ttl" "${glossary_product_tag_root}/glossary-prod"
-    fi
-    glossaryMakeExcel "${TMPDIR}/glossary-dev-nolabel.ttl"  "${glossary_product_tag_root}/glossary-dev"
-    glossaryMakeExcel "${TMPDIR}/glossary-test-nolabel.ttl" "${glossary_product_tag_root}/glossary-test"
+#    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
+#      glossaryMakeExcel "${TMPDIR}/glossary-prod-nolabel.ttl" "${glossary_product_tag_root}/glossary-prod"
+#    fi
+    glossaryMakeExcel "${glossary_product_tag_root}/glossary-dev.ttl"  "${glossary_product_tag_root}/glossary"
+#    glossaryMakeExcel "${TMPDIR}/glossary-test.ttl" "${glossary_product_tag_root}/glossary-test"
 #  fi
 
   #
@@ -423,13 +430,14 @@ PREFIX av: <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVo
 
 SELECT ?Term ?Type (GROUP_CONCAT (?syn; separator=",") AS ?Synonyms) ?Definition ?GeneratedDefinition  ?example ?explanatoryNote ?ReleaseStatus
 WHERE {
-  ?c a owlnames:Class  ; av:hasMaturityLevel ?level .
+  ?c  av:hasMaturityLevel ?level ;a ?metaclass  .
   BIND (IF ((?level=av:Release), "Production", "Development") AS ?ReleaseStatus)
   FILTER (REGEX (xsd:string (?c), "edmcouncil"))
   ?c  owlnames:definition ?Definition ;
   owlnames:label ?Term .
+  FILTER (?Term != "")
 
-  BIND ("Class" as ?Type)
+  ?metaclass owlnames:label ?Type . 
 
   OPTIONAL {?c owlnames:synonym ?syn}
   OPTIONAL {?c owlnames:example ?example}
@@ -441,48 +449,26 @@ GROUP BY ?c ?Term ?Type ?Definition ?GeneratedDefinition ?example ?explanatoryNo
 ORDER BY ?Term
 __HERE__
 
-  ${JENA_ARQ} --data="${dataTurtle}" --query="${TMPDIR}/makeCcsv.sparql" --results=TSV > "${glossaryBaseName}.tsv"
+  ${JENA_ARQ} --data="${dataTurtle}" --query="${TMPDIR}/makeCcsv.sparql" --results=TSV > "${glossaryBaseName}-dev.tsv"
+  ${SED}  '/"Development"$/d' "${glossaryBaseName}-dev.tsv" > "${glossaryBaseName}-prod.tsv"
+  
+  ${SED} -i 's/"@../"/g; s/\t\t\t/\t""\t""\t/; s/\t\t/\t""\t/g; s/\t$/\t""/' "${glossaryBaseName}-dev.tsv"
+  ${SED} -i 's/"@../"/g; s/\t\t\t/\t""\t""\t/; s/\t\t/\t""\t/g; s/\t$/\t""/' "${glossaryBaseName}-prod.tsv"
 
-  cat > "${TMPDIR}/makePcsv.sparql" << __HERE__
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX owlnames: <http://spec.edmcouncil.org/owlnames#>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX av: <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/>
-
-SELECT ?Term ?Type (GROUP_CONCAT (?syn; separator=",") AS ?Synonyms) ?Definition ?GeneratedDefinition  ?example ?explanatoryNote ?ReleaseStatus
-WHERE {
-  ?c a owlnames:Property ; av:hasMaturityLevel ?level .
-  BIND (IF ((?level=av:Release), "Production", "Development") AS ?ReleaseStatus)
-  FILTER (REGEX (xsd:string (?c), "edmcouncil"))
-
-  OPTIONAL {?c  owlnames:definition ?Definition}
-
-  ?c owlnames:label ?Term .
-
-  BIND ("Property" as ?Type)
-
-  OPTIONAL {?c owlnames:synonym ?syn}
-  OPTIONAL {?c owlnames:example ?example}
-  OPTIONAL {?c owlnames:explanatoryNote ?explanatoryNote}
-  OPTIONAL {?c owlnames:mdDefinition ?GeneratedDefinition}
-}
-GROUP BY ?c ?Term ?Type ?Definition ?GeneratedDefinition ?example ?explanatoryNote ?ReleaseStatus
-ORDER BY ?Term
-__HERE__
-
-  ${JENA_ARQ} --data="${dataTurtle}" --query="${TMPDIR}/makePcsv.sparql" --results=TSV | tail -n +2 >> "${glossaryBaseName}.tsv"
-
-  ${SED} -i 's/"@../"/g; s/\t\t\t/\t""\t""\t/; s/\t\t/\t""\t/g; s/\t$/\t""/' "${glossaryBaseName}.tsv"
-
-  ${SED} 's/"\t"/","/g' "${glossaryBaseName}.tsv" > "${glossaryBaseName}.csv"
-  ${SED} -i '1s/\t[?]/,/g;1s/^[?]//' "${glossaryBaseName}.csv"
+  ${SED} 's/"\t"/","/g' "${glossaryBaseName}-dev.tsv" > "${glossaryBaseName}-dev.csv"
+  ${SED} 's/"\t"/","/g' "${glossaryBaseName}-prod.tsv" > "${glossaryBaseName}-prod.csv"
+  ${SED} -i '1s/\t[?]/,/g;1s/^[?]//' "${glossaryBaseName}-dev.csv"
+  ${SED} -i '1s/\t[?]/,/g;1s/^[?]//' "${glossaryBaseName}-prod.csv"
 
   ${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py \
-    "${glossaryBaseName}.csv" \
-    "${glossaryBaseName}.xlsx" \
+    "${glossaryBaseName}-prod.csv" \
+    "${glossaryBaseName}-prod.xlsx" \
     "${glossary_script_dir}/csvconfig"
 
+  ${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py \
+    "${glossaryBaseName}-dev.csv" \
+    "${glossaryBaseName}-dev.xlsx" \
+    "${glossary_script_dir}/csvconfig"
+  
   return 0
 }

@@ -170,7 +170,7 @@ skosify:subs
                           sp:varName "a2" ;
                         ] ;
                     ] ;
-                  sp:arg2 "[{]M[}]" ;
+                  sp:arg2 "[{].[}]" ;
                   sp:arg3 [
                       sp:varName "mod" ;
                     ] ;
@@ -2767,7 +2767,7 @@ I think property paths will simplify this a lot,perhaps obviating the need for t
                             sp:arg1 [
                                 sp:varName "px" ;
                               ] ;
-                            sp:arg2 "[{]M[}]" ;
+                            sp:arg2 "[{].[}]" ;
                             sp:arg3 ".*" ;
                           ] ;
                       ] ;
@@ -2794,7 +2794,7 @@ I think property paths will simplify this a lot,perhaps obviating the need for t
                             sp:arg1 [
                                 sp:varName "px" ;
                               ] ;
-                            sp:arg2 "[{]M[}]" ;
+                            sp:arg2 "[{].[}]" ;
                             sp:arg3 ".*" ;
                           ] ;
                       ] ;
@@ -3173,7 +3173,7 @@ I think property paths will simplify this a lot,perhaps obviating the need for t
                     arg:a1 [
                         sp:varName "s" ;
                       ] ;
-                    arg:a2 "https://spec.edmcouncil.org/fibo/@D@/About@D@/@D@Specification" ;
+                    arg:a2 "https://spec.edmcouncil.org/fibo/{D}/About{D}/{D}Specification" ;
                   ] ;
               ] ;
             sp:variable [
@@ -3187,7 +3187,7 @@ I think property paths will simplify this a lot,perhaps obviating the need for t
                 arg:a1 [
                     sp:varName "s" ;
                   ] ;
-                arg:a2 "@D@" ;
+                arg:a2 "{D}" ;
               ] ;
             sp:variable [
                 sp:varName "dabbrev" ;
@@ -3602,7 +3602,7 @@ I think property paths will simplify this a lot,perhaps obviating the need for t
                             sp:arg1 [
                                 sp:varName "px" ;
                               ] ;
-                            sp:arg2 "[{]M[}]" ;
+                            sp:arg2 "[{].[}]" ;
                             sp:arg3 ".*" ;
                           ] ;
                       ] ;
@@ -4344,5 +4344,5 @@ skos:Concept
   skosify:domain "fnd" ;
   skosify:domain "ind" ;
   skosify:domain "sec" ;
-  skosify:px "https://spec.edmcouncil.org/fibo/@D@/vocabulary#" ;
+  skosify:px "https://spec.edmcouncil.org/fibo/{D}/vocabulary#" ;
 .
