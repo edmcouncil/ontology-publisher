@@ -88,7 +88,7 @@ function ontologyCopyRdfToTarget() {
 
   logRule "Step: ontologyCopyRdfToTarget"
 
-  log "Copying all artifacts that we publish straight from git into target directory"
+  log "Copying all artifacts that we publish straight from git into ${tag_root}"
 
   (
     rm -rf "${tag_root}"
@@ -242,16 +242,15 @@ __HERE__
   #
   # We want to add in a rdfs:isDefinedBy link from every class back to the ontology.
   #
-  #  if ((speedy)) ; then
-    if (False) ; then
-	  log "speedy=true -> Leaving out isDefinedBy because it is slow"
-	else
+# if ((speedy)) ; then
+#	  log "speedy=true -> Leaving out isDefinedBy because it is slow"
+#	else
 	  #${tag_root}/ -type f  -name '*.rdf' -not -name '*About*'  -print | \
 	  #xargs -P $(nproc) -I fileName
 	  ${FIND} ${tag_root}/ -type f  -name '*.rdf' -not -name '*About*'  -print | while read file ; do
 	    ontologyAddIsDefinedBy "${file}"
     done
-  fi
+# fi
 
   return 0
 }

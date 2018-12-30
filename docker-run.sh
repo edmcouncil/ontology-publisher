@@ -218,17 +218,20 @@ function run() {
   opts+=("--mount type=bind,source=${inputDirectory},target=/input/${family},readonly,consistency=cached")
   logItem "/output" "${outputDirectory}"
   opts+=("--mount type=bind,source=${outputDirectory},target=/output,consistency=delegated")
-  case $(uname) in
-    Darwin|Linux)
+  case $(uname -a) in
+    *Darwin*)
       logItem "/var/tmp" "${temporaryFilesDirectory}"
       opts+=("--mount type=bind,source=${temporaryFilesDirectory},target=/var/tmp,consistency=delegated")
       ;;
-    *)
+    *Microsoft*)
       logItem "/tmp" "${temporaryFilesDirectory}/../tmp2"
       opts+=("--mount type=bind,source=${temporaryFilesDirectory}/../tmp2,target=/tmp,consistency=delegated")
       #
       # The line above does not make sense, target=/tmp is not better than target=/var/tmp
       #
+      ;;
+    *)
+      error "Unknown linux: $(uname -a)"
       ;;
   esac
   #
