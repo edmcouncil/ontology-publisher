@@ -218,10 +218,19 @@ function run() {
   opts+=("--mount type=bind,source=${inputDirectory},target=/input/${family},readonly,consistency=cached")
   logItem "/output" "${outputDirectory}"
   opts+=("--mount type=bind,source=${outputDirectory},target=/output,consistency=delegated")
-#  logItem "/var/tmp" "${temporaryFilesDirectory}"
-#  opts+=("--mount type=bind,source=${temporaryFilesDirectory},target=/var/tmp,consistency=delegated")
-  logItem "/tmp" "${temporaryFilesDirectory}/../tmp2"
-  opts+=("--mount type=bind,source=${temporaryFilesDirectory}/../tmp2,target=/tmp,consistency=delegated")
+  case $(uname) in
+    Darwin|Linux)
+      logItem "/var/tmp" "${temporaryFilesDirectory}"
+      opts+=("--mount type=bind,source=${temporaryFilesDirectory},target=/var/tmp,consistency=delegated")
+      ;;
+    *)
+      logItem "/tmp" "${temporaryFilesDirectory}/../tmp2"
+      opts+=("--mount type=bind,source=${temporaryFilesDirectory}/../tmp2,target=/tmp,consistency=delegated")
+      #
+      # The line above does not make sense, target=/tmp is not better than target=/var/tmp
+      #
+      ;;
+  esac
   #
   # When running in dev mode we mount the ontology publisher's repo's root directory as well
   #
