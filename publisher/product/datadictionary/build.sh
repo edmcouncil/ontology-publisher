@@ -296,12 +296,12 @@ WHERE {
   BIND (REPLACE (REPLACE(xsd:string (?class), "^.*fibo/ontology/", ""), "/.*$", "")   AS ?module)
   BIND (REPLACE (REPLACE(xsd:string (?class), "^.*fibo/ontology/[^/]*/", ""), "/.*$", "")   AS ?submodule)
   ?class rdfs:subClassOf* ?base1 .
-  ?b1 edm:pseudodomain ?base1;  edm:p ?p ; edm:pseudorange ?r1  .
+  ?b1 edm:pseudodomain ?base1. ?b1  edm:p ?p ; edm:pseudorange ?r1  .
 #   ?p av:forDD "true"^^xsd:boolean .
   FILTER NOT EXISTS {
     ?class rdfs:subClassOf+ ?base2 .
 # FILTER (?base2 != ?base1)
-    ?b2  edm:p ?p ; edm:pseudorange ?r2 ; edm:pseudodomain ?base2 .
+    ?b2  edm:p ?p . ?b2 edm:pseudorange ?r2 ; edm:pseudodomain ?base2 .
 	  ?r2 rdfs:subClassOf+ ?r1
 	}
 
@@ -312,10 +312,7 @@ WHERE {
   ?r1 rdfs:label ?type .
   ?class rdfs:label ?table
   OPTIONAL {  
-              ?class ?ss ?sr .
-           FILTER (   ?ss in (
-<http://www.omg.org/techprocess/ab/SpecificationMetadata/directSource>, <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/adaptedFrom>, <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/definitionOrigin>, <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/nameOrigin>, <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/termOrigin>, <http://purl.org/dc/terms/source>))
-    
+              ?class <http://www.omg.org/techprocess/ab/SpecificationMetadata/directSource>| <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/adaptedFrom>| <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/definitionOrigin>| <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/nameOrigin>| <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/termOrigin>| <http://purl.org/dc/terms/source> ?sr .
 }
   BIND (COALESCE (xsd:string(?sr), "EDMC") AS ?source)
 
@@ -352,7 +349,7 @@ echo "finished running ss"
 #  ${SED}  's/^[^\t][^\t]*\t[^\t]*\t/&""\t""\t""\t""\t""\t""\n\t""\t/' output.tsv > output2.tsv
    ${SED} 's/^\([^\t][^\t]*\t[^\t][^\t]*\t[^\t]*\t\)\([^\t]*\t[^\t]*\t[^\t]*\t\)\(.*\)$/\1""\t""\t""\t\3\n\t""\t""\t\2\3/'  "${TMPDIR}/output.tsv" > "${TMPDIR}/output2.tsv"
  
-  cat > "${TMPDIR}/${fname}.csv" <<EOF
+  cat > "${datadictionary_product_tag_root}/${fname}.csv" <<EOF
 Table,Definition,Source,Field,Description,Type,Module,Submodule,Maturity
 EOF
   

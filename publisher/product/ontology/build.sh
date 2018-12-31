@@ -243,16 +243,13 @@ __HERE__
   # We want to add in a rdfs:isDefinedBy link from every class back to the ontology.
   #
   #  if ((speedy)) ; then
-    if (False) ; then
-	  log "speedy=true -> Leaving out isDefinedBy because it is slow"
-	else
-	  #${tag_root}/ -type f  -name '*.rdf' -not -name '*About*'  -print | \
+
+
+          #${tag_root}/ -type f  -name '*.rdf' -not -name '*About*'  -print | \
 	  #xargs -P $(nproc) -I fileName
 	  ${FIND} ${tag_root}/ -type f  -name '*.rdf' -not -name '*About*'  -print | while read file ; do
 	    ontologyAddIsDefinedBy "${file}"
-    done
-  fi
-
+	  done 
   return 0
 }
 
@@ -282,7 +279,8 @@ function ontologyAddIsDefinedBy () {
   ${PYTHON3} ${SCRIPT_DIR}/lib/addIsDefinedBy.py --file=${file}
   
   # Let's save this for the very end
-  #  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${file}" "rdf-xml"
+  echo "serializing ${file}"
+  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${file}" "rdf-xml"
 
 
   return 0
