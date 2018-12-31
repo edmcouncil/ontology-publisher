@@ -31,15 +31,15 @@ class Adder():
                 self.verbose = args.verbose
                 self.g = rdflib.Graph().parse(file)
 
-        def __addIDB (self):
-                onturi=self.g.triples((None, RDF.type, OWL.Ontology))[0][0]
-                ts=[t[0] for t in self.g.triples((None, rdf.Type, None)) if "edmcouncil" in str(t[0])]
+        def addIDB (self):
+                onturi=list(self.g.triples((None, RDF.type, OWL.Ontology)))[0][0]
+                ts=[t[0] for t in self.g.triples((None, RDF.type, None)) if "edmcouncil" in str(t[0])]
                 for t in ts:
                         self.g.add((t, RDFS.isDefinedBy, onturi))
 
 
                 
-        def __dump (self, file):
+        def dump (self, file):
                 self.g.serialize(format="xml", destination=file)
 
 
@@ -59,4 +59,6 @@ if __name__ == "__main__":
 
   
         f = Adder(args, file)
-  
+        f.addIDB()
+        f.dump(file)
+        
