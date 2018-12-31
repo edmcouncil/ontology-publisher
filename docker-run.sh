@@ -44,6 +44,8 @@ function inputDirectory() {
 
   if [ -d "${HOME}/Work/${family}" ] ; then # Used by Jacobus
     echo -n "${HOME}/Work/${family}"
+  elif [ -d "/c/Users/RivettPJ/Documents/FIBO-Development" ] ; then
+    echo -n "/c/Users/RivettPJ/Documents/FIBO-Development"
   elif [ -d "${HOME}/${family}" ] ; then
     echo -n "${HOME}/Work/${family}"
   elif [ -d "/cygdrive/c/Users/Dean/Documents/${family}" ] ; then
