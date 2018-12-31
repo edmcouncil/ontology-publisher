@@ -35,12 +35,13 @@ class Adder():
                 onturi=list(self.g.triples((None, RDF.type, OWL.Ontology)))[0][0]
                 ts=[t[0] for t in self.g.triples((None, RDF.type, None)) if "edmcouncil" in str(t[0])]
                 for t in ts:
-                        self.g.add((t, RDFS.isDefinedBy, onturi))
+                        if (type(t)!=rdflib.BNode):
+                                self.g.add((t, RDFS.isDefinedBy, onturi))
 
 
                 
         def dump (self, file):
-                self.g.serialize(format="pretty-xml", destination=file)
+                self.g.serialize(format="xml", destination=file)
 
 
 

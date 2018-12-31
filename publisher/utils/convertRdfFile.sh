@@ -52,8 +52,8 @@ function convertRdfFileTo() {
     -Xmx1G \
     -Xms1G \
     -Dfile.encoding=UTF-8 \
-    -cp "${SCRIPT_DIR}/../lib/javax.xml.bind.jar \
-    -jar "${RDFTOOLKIT_JAR}" \
+    -cp "${SCRIPT_DIR}/../lib/javax.xml.bind.jar:${RDFTOOLKIT_JAR}" \
+    org.edmcouncil.rdf_toolkit.SesameRdfFormatter \
     --source "${rdfFile}" \
     --source-format "${sourceFormat}" \
     --target "${targetFile}" \
