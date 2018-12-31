@@ -72,18 +72,19 @@ function generateWidocoDocumentation() {
 
     local -r directories="$(find . -mindepth 1 -maxdepth 1 -type d)"
     if [ -z "${directories}" ] ; then
-      log "Directory $(pwd) is empty"
-      return 0
+      log "Directory $(pwd) has no subdirectories"
+    else
+      for directoryEntry in ${directories} ; do
+        generateWidocoDocumentation "${directoryEntry}"
+      done
     fi
-
-    while read directoryEntry ; do
-      generateWidocoDocumentation "${directoryEntry}"
-    done < <(find . -mindepth 1 -maxdepth 1 -type d)
 
     if ls *.ttl >/dev/null 2>&1 ; then
       while read ontologyFile ; do
         generateWidocoDocumentationForFile "${directory}" "${ontologyFile}"
       done < <(ls -1 *.ttl)
+    else
+      warning "Directory $(pwd) does not have any turtle files to process"
     fi
   )
 
@@ -107,12 +108,21 @@ function generateWidocoDocumentationForFile() {
   local -r directory="$1"
   local -r outputDir="${directory/ontology/widoco}"
   local -r turtleFile="$2"
+  local -r baseName="$(basename "${turtleFile}")"
   local -r rdfFileNoExtension="${turtleFile/.ttl/}"
   local widocoJar ; widocoJar="$(widocoLauncherJar)" || return $?
 
   local -r extension="$([[ "${turtleFile}" = *.* ]] && echo ".${turtleFile##*.}" || echo '')"
 
   logRule "Running widoco in $(logFileName "${directory}")"
+
+  case "${baseName}" in
+    Metadata*)
+      return 0
+      ;;
+    *)
+      ;;
+  esac
 
   if [[ "${turtleFile}" =~ ^[0-9].* || "${turtleFile}" =~ ^About.* ]] ; then
     logItem  "skipping" "$(logFileName "${turtleFile}") in $(logFileName "${directory}") with extension ${extension}"
