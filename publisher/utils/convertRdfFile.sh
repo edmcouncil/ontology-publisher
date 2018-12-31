@@ -52,6 +52,7 @@ function convertRdfFileTo() {
     -Xmx1G \
     -Xms1G \
     -Dfile.encoding=UTF-8 \
+    -cp "${SCRIPT_DIR}/../lib/javax.xml.bind.jar \
     -jar "${RDFTOOLKIT_JAR}" \
     --source "${rdfFile}" \
     --source-format "${sourceFormat}" \
