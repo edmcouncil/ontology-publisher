@@ -417,8 +417,8 @@ function ontologyBuildIndex () {
 #
 function ontologyConvertRdfToAllFormats() {
 
-  # Dean>For now, leave this out.  We don't need it for testing
-  return 0
+#  # Dean>For now, leave this out.  We don't need it for testing
+#  return 0
 
   require tag_root || return $?
 
