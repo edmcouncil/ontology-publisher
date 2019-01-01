@@ -280,9 +280,13 @@ function ontologyAddIsDefinedBy () {
 
   ${PYTHON3} ${SCRIPT_DIR}/lib/addIsDefinedBy.py --file=${file}
   
-  # Let's save this for the very end
-  #  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${file}" "rdf-xml"
 
+  echo "serializing ${file}"
+  cp  "${file}" "${file}.save"
+  set -x
+  
+  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${file}" "rdf-xml"
+  set +x
 
   return 0
 }
@@ -417,8 +421,6 @@ function ontologyBuildIndex () {
 #
 function ontologyConvertRdfToAllFormats() {
 
-#  # Dean>For now, leave this out.  We don't need it for testing
-#  return 0
 
   require tag_root || return $?
 
