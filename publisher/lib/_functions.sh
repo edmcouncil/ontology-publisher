@@ -798,7 +798,12 @@ function initJiraVars() {
 
 function stripQuotes() {
 
-  ${SED} -e 's/^"//' -e 's/"$//' <<< "$@"
+  local temp="$*"
+  temp="${temp%\"}"
+  temp="${temp#\"}"
+  echo -n "$temp"
+
+  # ${SED} -e 's/^"//' -e 's/"$//' <<< "$@"
 }
 
 #
@@ -817,7 +822,6 @@ function escapeLaTex() {
   line="${line//_/\\_}"
   line="${line//\{/\\\{}"
   line="${line//\}/\\\}}"
-  line="${line//_/\\_}"
 
   line="${line//\~/\\\\textasciitilde }"
   line="${line//^/\\\\textasciicircum }"
@@ -825,27 +829,41 @@ function escapeLaTex() {
   echo -n "${line}"
 }
 
+function escapeLaTex_test_002_0001() {
+
+  local -r result="$(escapeLaTex "whatever_dude\what %is% #metoo in {this} ~day and ^age")"
+
+  echo "[${result}]"
+
+  test "${result}" == "whatever\_dude\\textbackslash what \%is\% \#metoo in \{this\} \\textasciitilde day and \\textasciicircum age"
+}
+#escapeLaTex_test_002_0001
+#exit $?
+
+function escapeLaTexLabel() {
+
+  local line="$*"
+
+  echo -n "${line//[_&%\$#\{\}~^]/-}"
+}
+
+function escapeLaTexLabel_test_001_0002() {
+
+  local -r result="$(escapeLaTexLabel "abc_def&ghi%klm$nop#qrs{tuv}xyz~!^")"
+
+  test "${result}" == "abc-def-ghi-klm-qrs-tuv-xyz-!-"
+}
+
 function escapeAndDetokenizeLaTex() {
 
   local line="$*"
 
-  line="${line//\\/\\\\textbackslash }"
-
-  line="${line//&/\\&}"
-  line="${line//%/\\%}"
-  line="${line//\$/\\$}"
-  line="${line//#/\\#}"
-  line="${line//\{/\\\{}"
-  line="${line//\}/\\\}}"
-
-  line="${line//_/\\\\textunderscore }"
-  line="${line//\~/\\\\textasciitilde }"
-  line="${line//^/\\\\textasciicircum }"
-
   #
   # Don't use printf here
   #
-  echo -n "\detokenize{${line}}"
+  echo -n "\detokenize{"
+  escapeLaTex "${line}"
+  echo -n "}"
 }
 
 function escapeAndDetokenizeLaTex_test_001_0001() {

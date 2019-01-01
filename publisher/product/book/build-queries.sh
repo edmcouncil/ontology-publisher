@@ -35,9 +35,15 @@ function bookGenerateTdb2Database() {
 
 function bookGeneratePrefixesAsSparqlValues() {
 
-  [ -f "${TMPDIR}/book-prefixes.txt" ] && return 0
+  logRule "Step: bookGeneratePrefixesAsSparqlValues"
+
+  if [ -f "${TMPDIR}/book-prefixes.txt" ] ; then
+    warning "Skipping recreation of ${TMPDIR}/book-prefixes.txt"
+    return 0
+  fi
 
   grep --no-filename -r '<!ENTITY' /input/* | \
+  grep -v "http://www.omg.org/spec/EDMC-FIBO" | \
   sort -u | \
   sed 's/.*<!ENTITY \(.*\) "\(.*\)">/("\1:" <\2>)/g' > \
   "${TMPDIR}/book-prefixes.txt"
@@ -156,7 +162,10 @@ function bookQueryListOfClasses() {
   # to run the query again.
   #
   [ -z "${book_results_file}" ] && return 1
-  [ -f "${book_results_file}" ] && return 0
+  if [ -f "${book_results_file}" ] ; then
+    bookQueryListOfClassesInitArray
+    return $?
+  fi
 
   logRule "Step: bookQueryListOfClasses"
 
@@ -184,6 +193,41 @@ function bookQueryListOfClasses() {
   return 0
 }
 
+function bookQueryListOfClassesInitArray() {
+
+  [ ${#book_array_classes[*]} -gt 0 ] && return 0
+
+  logRule "Step: bookQueryListOfClassesInitArray (should take less than 40 seconds)"
+
+  while IFS=$'\t' read -a line ; do
+
+    [ "${line[0]}" == "" ] && continue
+    [ "${line[1]}" == "" ] && continue
+    [ "${line[0]:0:1}" == "?" ] && continue
+
+    classIRI="$(stripQuotes "${line[0]}")"
+    classPrefName="$(stripQuotes "${line[1]}")"
+    namespace="$(stripQuotes "${line[2]}")"
+    classLabel="$(stripQuotes "${line[3]}")"
+    definition="$(stripQuotes "${line[4]}")"
+    explanatoryNote="$(stripQuotes "${line[5]}")"
+
+    book_array_classes[${classIRI},prefName]="${classPrefName}"
+    book_array_classes[${classIRI},namespace]="${namespace}"
+    book_array_classes[${classIRI},label]="${classLabel}"
+    book_array_classes[${classIRI},definition]="${definition}"
+    book_array_classes[${classIRI},explanatoryNote]="${explanatoryNote}"
+
+  done < "${book_results_file}"
+
+  log "Step: bookQueryListOfClassesInitArray done"
+
+  classIRI="http://www.w3.org/2004/02/skos/core#Concept"
+
+  #echo "test: prefName=[${book_array_classes[${classIRI},prefName]}]"
+
+  return 0
+}
 #
 # Generates query "list of super classes"
 #
