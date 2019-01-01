@@ -141,6 +141,13 @@ function checkCommandLine() {
   else
     run_clean=0
   fi
+
+  if ((run_dev_mode == 1 && run_pushimage == 1)) ; then
+    error "Cannot push a dev-mode image to docker hub, the publisher code has to be copied into the image"
+    return 1
+  fi
+
+  return 0
 }
 
 function dockerFile() {
@@ -154,8 +161,6 @@ function dockerFile() {
 }
 
 function build() {
-
-  checkCommandLine "$@"
 
   cd "${SCRIPT_DIR}" || return $?
   #
@@ -184,8 +189,9 @@ function run() {
 
   requireValue family || return $?
 
-  build "$@" || return $?
-  checkCommandLine "$@"
+  checkCommandLine "$@" || return $?
+
+  build || return $?
 
   cd "${SCRIPT_DIR}" || return $?
 

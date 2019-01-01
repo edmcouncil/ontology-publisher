@@ -835,7 +835,7 @@ function escapeLaTex_test_002_0001() {
 
   echo "[${result}]"
 
-  test "${result}" == "whatever\_dude"
+  test "${result}" == "whatever\_dude\\textbackslash what \%is\% \#metoo in \{this\} \\textasciitilde day and \\textasciicircum age"
 }
 #escapeLaTex_test_002_0001
 #exit $?

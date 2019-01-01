@@ -391,7 +391,7 @@ __HERE__
     classPrefName="$(escapeLaTex "${classPrefName}")"
 
     cat >&3 << __HERE__
-\section{${classPrefName}} \label{${classLaTexLabel}} \index{${classPrefName#*:}}
+\section{${classPrefName}} \label{sec:${classLaTexLabel}} \index{${classPrefName#*:}}
 __HERE__
 
     #
@@ -568,7 +568,7 @@ __HERE__
     [ "$2" == "" ] && continue
 
 #   superClassIRI="$(stripQuotes "$1")"
-    superClassPrefName="$(escapeLaTex "$(stripQuotes "$2")")"
+    superClassPrefName="$(stripQuotes "$2")"
 
     if ((numberOfSuperClasses > 1)) ; then
       cat >&3 <<< "\item $(bookClassReference "${superClassPrefName}")"
@@ -587,10 +587,13 @@ __HERE__
 function bookClassReference() {
 
   local classPrefName="$1"
+  local -r classLaTexLabel="$(escapeLaTexLabel "${classPrefName}")"
+
+  classPrefName="$(escapeLaTex "${classPrefName}")"
 
   echo -n "${classPrefName}"
   echo -n "\index{${classPrefName#*:}}"
-  echo -n " (\ref{${classPrefName}} at page \pageref{${classPrefName}})"
+  echo -n " (Section~\ref{sec:${classLaTexLabel}} at page~\pageref{sec:${classLaTexLabel}})"
 }
 
 function bookGenerateListOfSubclasses() {
@@ -632,12 +635,11 @@ __HERE__
   #
   for line in "${subclassArray[@]}" ; do
 
-    [ "${line[0]}" == "" ] && continue
-    [ "${line[1]}" == "" ] && continue
-    [ "${line[0]:0:1}" == "?" ] && continue
+    set -- ${line}
 
-    subclassIRI="$(stripQuotes "${line[0]}")"
+    [ "$1" == "" ] && continue
 
+    subclassIRI="$(stripQuotes "$1")"
     subclassPrefLabel="${book_array_classes[${subclassIRI},prefName]}"
 
     [ "${subclassPrefLabel}" == "" ] && continue
