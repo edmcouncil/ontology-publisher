@@ -6,7 +6,7 @@
     <link rel="Shortcut Icon" href="favicon.ico"/>
   </head>
   <body>
-    <img src="../../../../static/image/EDM-coucil-RGB.png" height="100" />
+    <img src="../../../../static/image/EDM-coucil-RGB.png" />
     <h1>
 EDM Council FIBO Data Dictionary
     </h1>
@@ -14,7 +14,7 @@ EDM Council FIBO Data Dictionary
 
     <p>For selected classes in FIBO, we generate a spreadsheet that describes the class as if it were a table in a relational database.  This includes definitions of all properties (fields) that are relevant to that class (table), as well as the allowable types for those fields.  English language defintions for the tables and fields are also included.  Each spreadsheet includes defintions for all referenced types, thereby providing a snapshot that includes everything FIBO knows about the target class.   </p>
 
-<p>An <a href="https://spec.edmcouncil.org/static/datadictionary/master_data_dictionary_unabridged.xlsx">unabridged data dictionary</a> is available for all of FIBO (including development)</p>
+<p>An <a href="https://spec.edmcouncil.org/fibo/datadictionary/master/2018Q4/master_data_dictionary_unabridged.xlsx">unabridged data dictionary</a> is available for all of FIBO (including development)</p>
 
 <p>Like all FIBO products, the FIBO unabridged data dictionary is built out
 of FIBO sources from a FIBO GitHub Repository. FIBO sources are all in OWL and
