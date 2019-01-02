@@ -27,7 +27,6 @@ function ontologyCreateTheAllTtlFile() {
 
   echo "tag_root = ${tag_root}"
   if ((verbose)) ; then
-    set -x
     python3 ${SCRIPT_DIR}/lib/trigify.py \
       --dir=${tag_root} \
       --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/AboutFIBODev" \
@@ -36,7 +35,6 @@ function ontologyCreateTheAllTtlFile() {
       --verbose \
       --format=ttl
      rc=$?
-     set +x
   else
     python3 ${SCRIPT_DIR}/lib/trigify.py \
       --dir=${tag_root} \

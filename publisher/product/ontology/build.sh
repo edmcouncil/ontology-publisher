@@ -275,20 +275,16 @@ function ontologyAddIsDefinedBy () {
   JVM_ARGS="${JVM_ARGS} -Djava.io.tmpdir=\"${TMPDIR}\""
   export JVM_ARGS
 
-
   local outfile2 ; outfile2="$(mktempWithExtension outfile2 rdf)" || return $?
 
   ${PYTHON3} ${SCRIPT_DIR}/lib/addIsDefinedBy.py --file=${file}
-  
 
   echo "serializing ${file}"
   cp  "${file}" "${file}.save"
-  set -x
-  
-  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${file}" "rdf-xml"
-  set +x
 
-  return 0
+  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${file}" "rdf-xml"
+
+  return $?
 }
 
 #

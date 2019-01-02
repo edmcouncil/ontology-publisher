@@ -138,6 +138,8 @@ function checkCommandLine() {
   # The --shell option allows you to end up in the shell of the publisher container itself
   #
   if [[ "$@" =~ .*--shell($|[[:space:]]) ]] ; then
+    cli_option_buildimage=1
+    cli_option_runimage=1
     cli_option_shell=1
   else
     cli_option_shell=0
@@ -184,12 +186,22 @@ function buildImage() {
 
   ((cli_option_buildimage == 0)) && return 0
 
+  local containerName="ontology-publisher"
+
+  if ((cli_option_dev_mode)) ; then
+    #
+    # Just to make sure that the dev-mode version of the image is not being pushed to Docker Hub because it
+    # can't run on its own, it doesn't contain the /publisher directory
+    #
+    containerName+='-dev'
+  fi
+
   cd "${SCRIPT_DIR}" || return $?
   #
   # Build the image and tag it as ontology-publisher:latest
   #
-  log "docker build --file $(dockerFile) --tag edmcouncil/ontology-publisher:latest"
-  if docker build --file $(dockerFile) . --tag edmcouncil/ontology-publisher:latest ; then
+  log "docker build --file $(dockerFile) --tag edmcouncil/${containerName}:latest"
+  if docker build --file $(dockerFile) . --tag edmcouncil/${containerName}:latest ; then
     log "--------- Finished Building the Docker Image ---------"
     return 0
   fi

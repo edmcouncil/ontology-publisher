@@ -229,9 +229,7 @@ function publishProductGlossaryContent() {
 #    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
 ##      "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-prod.ttl" "${glossary_product_tag_root}/glossary-prod.ttl" &
 #    fi
-set -x
-    "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-dev.ttl" "${glossary_product_tag_root}/glossary-dev.ttl" 
-set +x
+    "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-dev.ttl" "${glossary_product_tag_root}/glossary-dev.ttl"
     #    log "and on top of that also the test glossary"
 #    "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-test.ttl" "${glossary_product_tag_root}/glossary-test.ttl" &
 #    log "Waiting for the above SPIN commands to finish"
