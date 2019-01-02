@@ -53,7 +53,7 @@ function bookGeneratePrefixesAsSparqlValues() {
 
 function bookCreateQueryListOfClasses() {
 
-  book_query_file="${TMPDIR}/book-list-of-classes.sq"
+  book_query_file="${book_query_dir}/book-list-of-classes.sq"
 
   cat > "${book_query_file}" << __HERE__
 #
@@ -94,14 +94,14 @@ WHERE {
   #
   OPTIONAL {
     ?classIRI rdfs:label ?classLabel .
-    FILTER (lang(?classLabel) = 'en')
+#   FILTER (lang(?classLabel) = 'en')
   }
   #
   # Optionally get the english definition
   #
   OPTIONAL {
     ?classIRI skos:definition ?definition .
-    FILTER (lang(?definition) = 'en')
+#   FILTER (lang(?definition) = 'en')
   }
   #
   # Optionally get the english explanatory note
@@ -142,7 +142,7 @@ __HERE__
 
   local -r checksum="$(md5sum "${book_query_file}" | cut -f1 -d\  )"
 
-  book_results_file="${book_latex_dir:?}/data/list-of-classes-${checksum}.tsv"
+  book_results_file="${book_data_dir}/list-of-classes-${checksum}.tsv"
 
   return 0
 
@@ -228,6 +228,7 @@ function bookQueryListOfClassesInitArray() {
 
   return 0
 }
+
 #
 # Generates query "list of super classes"
 #
@@ -236,7 +237,7 @@ function bookQueryListOfClassesInitArray() {
 #
 function bookCreateQueryListOfSuperClasses() {
 
-  book_query_file="${TMPDIR}/book-list-of-super-classes.sq"
+  book_query_file="${book_query_dir}/book-list-of-super-classes.sq"
 
   cat > "${book_query_file}" << __HERE__
 #
@@ -302,7 +303,7 @@ __HERE__
 
   local -r checksum="$(md5sum "${book_query_file}" | cut -f1 -d\  )"
 
-  book_results_file="${book_latex_dir:?}/data/list-of-super-classes-${checksum}.tsv"
+  book_results_file="${book_data_dir}/list-of-super-classes-${checksum}.tsv"
 
   return 0
 }
@@ -338,6 +339,184 @@ function bookQueryListOfSuperClasses() {
     logVar rc
     return ${rc}
   fi
+
+  return 0
+}
+
+function bookCreateQueryListOfOntologies() {
+
+  book_query_file="${book_query_dir}/book-list-of-ontologies.sq"
+
+  cat > "${book_query_file}" << __HERE__
+#
+# Get a list of all the ontologies
+#
+PREFIX sm: <http://www.omg.org/techprocess/ab/SpecificationMetadata/>
+PREFIX afn: <http://jena.apache.org/ARQ/function#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-namespace#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX fibo-fnd-utl-av: <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/>
+
+SELECT DISTINCT
+  (STR(?ontologyIRI) AS ?ontologyIRIstr)
+  (STR(?ontologyVersionIRI) AS ?ontologyVersionIRIstr)
+  ?ontologyPrefix
+  (STR(?ontologyLabel) AS ?ontologyLabelStr)
+  (STR(?abstract) AS ?abstractStr)
+  (STR(?preferredPrefix) AS ?preferredPrefixStr)
+  (STR(?maturityLevel) AS ?maturityLevelStr)
+WHERE {
+  #
+  # Here's a section with values, one for each prefix / namespace pair
+  #
+  # TODO: We should just store this in the database itself using the vann ontology or so (http://vocab.org/vann/)
+  #
+  VALUES (?prefix ?namespace) {
+    $(< "${TMPDIR}/book-prefixes.txt")
+    ( "ex1:" <http://example1.com/> )
+    ( "ex2:" <http://example2.com/> )
+    ( "ex3:" <http://example3.com/> )
+  }
+  #
+  # Select all the ontologies in the database
+  #
+  ?ontologyIRI a owl:Ontology .
+  #
+  # Optionally get the owl:versionIRI
+  #
+  OPTIONAL {
+    ?ontologyIRI owl:versionIRI ?ontologyVersionIRI .
+  }
+  #
+  # Optionally get the english label
+  #
+  OPTIONAL {
+    ?ontologyIRI rdfs:label ?ontologyLabel .
+#   FILTER (lang(?ontologyLabel) = 'en')
+  }
+  #
+  # Optionally get the english abstract
+  #
+  OPTIONAL {
+    ?ontologyIRI dct:abstract ?abstract .
+#   FILTER (lang(?abstract) = 'en')
+  }
+  #
+  # Optionally get the preferred prefix (which is strangely enough defined with sm:fileAbbreviation)
+  #
+  OPTIONAL {
+    ?ontologyIRI sm:fileAbbreviation ?preferredPrefix .
+  }
+  #
+  # Optionally get the maturity level
+  #
+  OPTIONAL {
+    ?ontologyIRI fibo-fnd-utl-av:hasMaturityLevel ?maturityLevelIRI .
+    ?maturityLevelIRI rdfs:label ?maturityLevel .
+  }
+  #
+  # And construct the prefixed version of the ontology name
+  #
+  OPTIONAL {
+    BIND(
+      IF(
+        ?ontologyIRI = ?namespace,
+        ?prefix,
+        IF(
+          BOUND(?preferredPrefix), ?
+          preferredPrefix,
+          ""
+        )
+      )
+      AS ?ontologyPrefix
+    )
+    FILTER(?ontologyPrefix != "")
+  }
+}
+ORDER BY ?ontologyIRI
+__HERE__
+
+  local -r checksum="$(md5sum "${book_query_file}" | cut -f1 -d\  )"
+
+  book_results_file="${book_data_dir}/list-of-ontologies-${checksum}.tsv"
+
+  return 0
+
+}
+
+#
+# Execute the "list of super classes" query
+#
+function bookQueryListOfOntologies() {
+
+  local book_query_file
+
+  bookCreateQueryListOfOntologies || return $?
+
+  #
+  # If the results file already exists then it doesn't make sense
+  # to run the query again.
+  #
+  [ -z "${book_results_file}" ] && return 1
+  if [ -f "${book_results_file}" ] ; then
+    bookQueryListOfOntologiesInitArray
+    return $?
+  fi
+
+  logRule "Step: bookQueryListOfOntologies"
+
+  logItem "Executing query" "${book_query_file}"
+  tdb2.tdbquery \
+    --loc="${book_latex_dir:?}/tdb2" \
+    --query="${book_query_file}" \
+    --results=TSV > "${book_results_file}"
+  rc=$?
+  logItem "Finished query" "${book_query_file}"
+  logItem "Results in" "${book_results_file}"
+
+  if ((rc > 0)) ; then
+    logVar rc
+    return ${rc}
+  fi
+
+  exit
+
+  return 0
+}
+
+function bookQueryListOfOntologiesInitArray() {
+
+  [ ${#book_array_ontologies[*]} -gt 0 ] && return 0
+
+  logRule "Step: bookQueryListOfOntologiesInitArray (should take less than 40 seconds)"
+
+  while IFS=$'\t' read -a line ; do
+
+    [ "${line[0]}" == "" ] && continue
+    [ "${line[1]}" == "" ] && continue
+    [ "${line[0]:0:1}" == "?" ] && continue
+
+    ontologyIRI="$(stripQuotes "${line[0]}")"
+    ontologyVersionIRI="$(stripQuotes "${line[1]}")"
+    prefix="$(stripQuotes "${line[2]}")"
+    ontologyLabel="$(stripQuotes "${line[3]}")"
+    abstract="$(stripQuotes "${line[4]}")"
+    preferredPrefix="$(stripQuotes "${line[5]}")"
+    maturityLevel="$(stripQuotes "${line[6]}")"
+
+    book_array_ontologies[${ontologyIRI},ontologyVersionIRI]="${ontologyVersionIRI}"
+    book_array_ontologies[${ontologyIRI},ontologyLabel]="${ontologyLabel}"
+    book_array_ontologies[${ontologyIRI},prefix]="${prefix}"
+    book_array_ontologies[${ontologyIRI},abstract]="${abstract}"
+    book_array_ontologies[${ontologyIRI},preferredPrefix]="${preferredPrefix}"
+    book_array_ontologies[${ontologyIRI},maturityLevel]="${maturityLevel}"
+
+  done < "${book_results_file}"
+
+  log "Step: bookQueryListOfClassesInitArray done"
 
   return 0
 }

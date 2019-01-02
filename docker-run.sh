@@ -110,19 +110,37 @@ function checkCommandLine() {
   #
   # The --pushimage option publishes the image, after a successful build, to Dockerhub
   #
-  if [[ "$@" =~ .*--pushimage($|[[:space:]]) ]] ; then
-    run_pushimage=1
+  if [[ "$@" =~ .*--pushimage($|[[:space:]]) ]] || [[ "$@" =~ .*--push($|[[:space:]]) ]] ; then
+    cli_option_pushimage=1
   else
-    run_pushimage=0
+    cli_option_pushimage=0
+  fi
+
+  #
+  # The --build option builds the image
+  #
+  if [[ "$@" =~ .*--buildimage($|[[:space:]]) ]] || [[ "$@" =~ .*--build($|[[:space:]]) ]] ; then
+    cli_option_buildimage=1
+  else
+    cli_option_buildimage=0
+  fi
+
+  #
+  # The --run option runs the container
+  #
+  if [[ "$@" =~ .*--run($|[[:space:]]) ]] ; then
+    cli_option_runimage=1
+  else
+    cli_option_runimage=0
   fi
 
   #
   # The --shell option allows you to end up in the shell of the publisher container itself
   #
   if [[ "$@" =~ .*--shell($|[[:space:]]) ]] ; then
-    run_shell=1
+    cli_option_shell=1
   else
-    run_shell=0
+    cli_option_shell=0
   fi
 
   #
@@ -130,21 +148,21 @@ function checkCommandLine() {
   # that into the image.
   #
   if [[ "$@" =~ .*--dev($|[[:space:]]) ]] ; then
-    run_dev_mode=1
+    cli_option_dev_mode=1
   else
-    run_dev_mode=0
+    cli_option_dev_mode=0
   fi
 
   #
   # The --clean option wipes out the contents of the target directory before the container starts
   #
   if [[ "$@" =~ .*--clean($|[[:space:]]) ]] ; then
-    run_clean=1
+    cli_option_clean=1
   else
-    run_clean=0
+    cli_option_clean=0
   fi
 
-  if ((run_dev_mode == 1 && run_pushimage == 1)) ; then
+  if ((cli_option_dev_mode == 1 && cli_option_pushimage == 1)) ; then
     error "Cannot push a dev-mode image to docker hub, the publisher code has to be copied into the image"
     return 1
   fi
@@ -154,7 +172,7 @@ function checkCommandLine() {
 
 function dockerFile() {
 
-  if ((run_dev_mode)) ; then
+  if ((cli_option_dev_mode)) ; then
     cat "${SCRIPT_DIR}/Dockerfile" | sed '/skip in dev mode begin/,/skip in dev mode end/ d' > "${SCRIPT_DIR}/Dockerfile.dev"
     echo -n "${SCRIPT_DIR}/Dockerfile.dev"
   else
@@ -162,7 +180,9 @@ function dockerFile() {
   fi
 }
 
-function build() {
+function buildImage() {
+
+  ((cli_option_buildimage == 0)) && return 0
 
   cd "${SCRIPT_DIR}" || return $?
   #
@@ -171,16 +191,16 @@ function build() {
   log "docker build --file $(dockerFile) --tag edmcouncil/ontology-publisher:latest"
   if docker build --file $(dockerFile) . --tag edmcouncil/ontology-publisher:latest ; then
     log "--------- Finished Building the Docker Image ---------"
-    pushImage
-    return $?
+    return 0
   fi
-  error "Could not build"
+
+  error "Could not build the image"
   return 1
 }
 
 function pushImage() {
 
-  ((run_pushimage == 0)) && return 0
+  ((cli_option_pushimage == 0)) && return 0
 
   log "docker push edmcouncil/ontology-publisher:latest"
 
@@ -189,19 +209,26 @@ function pushImage() {
 
 function run() {
 
+  ((cli_option_runimage == 0)) && return 0
+
   requireValue family || return $?
-
-  checkCommandLine "$@" || return $?
-
-  build || return $?
 
   cd "${SCRIPT_DIR}" || return $?
 
   local inputDirectory ; inputDirectory=$(inputDirectory) || return $?
   local outputDirectory ; outputDirectory=$(outputDirectory) || return $?
   local temporaryFilesDirectory ; temporaryFilesDirectory=$(temporaryFilesDirectory) || return $?
+  local containerName="ontology-publisher"
 
-  if ((run_clean)) ; then
+  if ((cli_option_dev_mode)) ; then
+    #
+    # Just to make sure that the dev-mode version of the image is not being pushed to Docker Hub because it
+    # can't run on its own, it doesn't contain the /publisher directory
+    #
+    containerName+='-dev'
+  fi
+
+  if ((cli_option_clean)) ; then
     log "Cleaning ${outputDirectory}"
     rm -rf "${outputDirectory:?}/"*
     log "Cleaning ${temporaryFilesDirectory}"
@@ -218,7 +245,7 @@ function run() {
   opts+=('--network')
   opts+=('none')
   opts+=('--name')
-  opts+=('ontology-publisher')
+  opts+=("${containerName}")
 
   logVar family
   log "Mounted:"
@@ -245,13 +272,13 @@ function run() {
   #
   # When running in dev mode we mount the ontology publisher's repo's root directory as well
   #
-  if ((run_dev_mode)) ; then
+  if ((cli_option_dev_mode)) ; then
     logItem "/publisher" "${SCRIPT_DIR}/publisher"
     opts+=("--mount type=bind,source=${SCRIPT_DIR}/publisher,target=/publisher,readonly,consistency=cached")
   fi
 
-  if ((run_shell)) ; then
-    log "Launching the ontology-publisher container in shell mode."
+  if ((cli_option_shell)) ; then
+    log "Launching the ${containerName} container in shell mode."
     log "Type $(bold ./publish.sh) to start the build and $(bold exit) to leave this container."
     log "If you want to run the publication of just one or more \"products\" then"
     log "specify the names of these products after $(bold ./publish.sh), for instance:"
@@ -270,9 +297,9 @@ function run() {
     log "Launching the container"
   fi
 
-  opts+=('edmcouncil/ontology-publisher:latest')
+  opts+=("edmcouncil/${containerName}:latest")
 
-  if ((run_shell)) ; then
+  if ((cli_option_shell)) ; then
     opts+=('-l')
   fi
 
@@ -283,5 +310,13 @@ function run() {
   return ${rc}
 }
 
-run "$@"
+function main() {
+
+  checkCommandLine "$@" || return $?
+  buildImage || return $?
+  pushImage || return $?
+  run
+}
+
+main $@
 exit $?

@@ -669,6 +669,18 @@ function setProduct() {
 
 function initGitVars() {
 
+  (
+    cd "${source_family_root}" || return $?
+    log "pwd=$(pwd)"
+    set -x
+    git status
+    rc=$?
+    set +x
+    logVar rc
+    ls -all
+    return ${rc}
+  ) || return $?
+
   if [ -z "${GIT_COMMIT}" ] ; then
     export GIT_COMMIT="$(cd ${source_family_root} && git rev-parse --short HEAD)"
     ((verbose)) && logVar GIT_COMMIT
@@ -705,6 +717,11 @@ function initGitVars() {
     GIT_BRANCH="${BASH_REMATCH[0]}" ; export GIT_BRANCH
   fi
   ((verbose)) && logVar GIT_BRANCH
+
+  if [ "${GIT_BRANCH}" == "" ] ; then
+    error "No GIT_BRANCH defined, cannot work without that"
+    return 1
+  fi
 
   #
   # If the current commit has a tag associated to it then the Git Tag Message Plugin in Jenkins will

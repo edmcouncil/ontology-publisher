@@ -42,16 +42,24 @@ function publishProductBook() {
   export book_product_tag_root_url="${tag_root_url:?}"
 
   book_script_dir="$(cd "${SCRIPT_DIR}/product/book" && pwd)" ; export book_script_dir
-  export book_latex_dir="${book_product_tag_root}"
+  book_latex_dir="${book_product_tag_root}"
+  book_data_dir="${book_product_tag_root}/data"
+  book_query_dir="${book_product_tag_root}/query"
 
-  mkdir -p "${book_latex_dir}/data" >/dev/null 2>&1
+  mkdir -p "${book_data_dir}" "${book_query_dir}" >/dev/null 2>&1
 
   export BIBINPUTS="${book_script_dir}"
-  
+
+  #
+  # Various stats that we maintain during generation of the book, to be printed in the Statistics chapter
+  #
+  book_stat_number_of_ontologies=0
+  book_stat_number_of_ontologies_without_label=0
   book_stat_number_of_classes_without_superclass=0
   book_stat_number_of_classes=0
   book_stat_number_of_classes_without_label=0
 
+  declare -A book_array_ontologies
   declare -A book_array_classes
 
   bookGenerateTdb2Database || return $?
@@ -173,16 +181,16 @@ __HERE__
   cat >&3 <<< "\part{Reference}"
 
   bookGenerateSectionOntologies "${documentClass}" "${pageSize}" || return $?
-  bookGenerateSectionClasses "${documentClass}" "${pageSize}" || return $?
-  bookGenerateSectionProperties "${documentClass}" "${pageSize}" || return $?
-  bookGenerateSectionIndividuals "${documentClass}" "${pageSize}" || return $?
-  bookGenerateSectionConclusion || return $?
+#  bookGenerateSectionClasses "${documentClass}" "${pageSize}" || return $?
+#  bookGenerateSectionProperties "${documentClass}" "${pageSize}" || return $?
+#  bookGenerateSectionIndividuals "${documentClass}" "${pageSize}" || return $?
+#  bookGenerateSectionConclusion || return $?
 
   cat >&3 <<< "\part{Appendices}"
   cat >&3 <<< "\appendix"
   cat >&3 <<< "\addappheadtotoc"
 
-  bookGenerateSectionPrefixes || return $?
+#  bookGenerateSectionPrefixes || return $?
   bookGenerateSectionStatistics || return $?
 
   cat >&3 << __HERE__
@@ -215,7 +223,11 @@ __HERE__
 function bookAddGlossaryTerm() {
 
   local -r name="$1"
-  local -r description="$2"
+  local description="$2"
+  #
+  # Remove the last dot from the line if its there because LaTex will add it again
+  #
+  [ "${description: -1}" == "." ] && description="${description::-1}"
 
   cat >&4 << __HERE__
 \newglossaryentry{${name}}{name={${name}},description={${description}}}
@@ -307,18 +319,98 @@ function bookGenerateSectionOntologies() {
 
   local -r documentClass="$1"
   local -r pageSize="$2"
+  local ontologyIRI
+  local ontologyVersionIRI
+  local ontologyLabel
+  local abstract
+  local preferredPrefix
+  local maturityLevel
 
   logRule "Step: bookGenerateListOfClasses ${book_base_name}"
+
+  bookQueryListOfOntologies || return $?
+
+  logVar book_results_file
 
   cat >&3 << __HERE__
 \chapter{Ontologies}
 
   This chapter enumerates all the (OWL) ontologies that play a role in ${family}.
 
-  TODO
-
-  \blindtext
 __HERE__
+
+  #
+  # Process each line of the TSV file with "read -a" which properly deals
+  # with spaces in class labels and definitions etc.
+  #
+  while IFS=$'\t' read -a line ; do
+
+    [ "${line[0]}" == "" ] && continue
+    [ "${line[1]}" == "" ] && continue
+    [ "${line[0]:0:1}" == "?" ] && continue
+
+    ontologyIRI="$(stripQuotes "${line[0]}")"
+    ontologyVersionIRI="$(stripQuotes "${line[1]}")"
+    prefix="$(stripQuotes "${line[2]}")"
+    ontologyLabel="$(stripQuotes "${line[3]}")"
+    abstract="$(stripQuotes "${line[4]}")"
+    preferredPrefix="$(stripQuotes "${line[5]}")"
+    maturityLevel="$(stripQuotes "${line[6]}")"
+
+    logVar ontologyIRI
+    logVar ontologyVersionIRI
+    logVar prefix
+    logVar ontologyLabel
+    logVar abstract
+    logVar preferredPrefix
+    logVar maturityLevel
+
+    ontologyLaTexLabel="$(escapeLaTexLabel "${ontologyLabel}")"
+    ontologyLabel="$(escapeLaTex "${ontologyLabel}")"
+
+    if [ -n "${prefix}" ] ; then
+      cat >&3 << __HERE__
+\section{${prefix}} \label{sec:${prefix}} \index{${prefix}}
+__HERE__
+    else
+      cat >&3 << __HERE__
+\section{${ontologyLabel}} \label{sec:${ontologyLaTexLabel}} \index{${ontologyLabel}}
+__HERE__
+    fi
+
+    #
+    # abstract
+    #
+    if [ -n "${abstract}" ] ; then
+      cat >&3 <<< "$(escapeAndDetokenizeLaTex "${abstract}")"
+    else
+      cat >&3 <<< "No abstract available."
+    fi
+
+    cat >&3 <<< "\begin{description}[topsep=1.0pt]"
+    #
+    # Label
+    #
+    if [ -n "${ontologyLabel}" ] ; then
+      cat >&3 <<< "\item [Label] $(escapeAndDetokenizeLaTex "${ontologyLabel}")"
+      bookAddGlossaryTerm "${ontologyLabel}" "$(escapeLaTex "${abstract}")"
+    else
+      book_stat_number_of_ontologies_without_label=$((book_stat_number_of_ontologies_without_label + 1))
+    fi
+    #
+    # Preferred prefix
+    #
+    if [ -n "${preferredPrefix}" ] ; then
+      cat >&3 <<< "\item [Prefix] $(escapeAndDetokenizeLaTex "${preferredPrefix}")"
+    fi
+    #
+    # Maturity level
+    #
+    if [ -n "${maturityLevel}" ] ; then
+      cat >&3 <<< "\item [Maturity] $(escapeAndDetokenizeLaTex "${maturityLevel}")"
+    fi
+
+  done < "${book_results_file}"
 
   return 0
 }
@@ -391,7 +483,7 @@ __HERE__
     classPrefName="$(escapeLaTex "${classPrefName}")"
 
     cat >&3 << __HERE__
-\section{${classPrefName}} \label{sec:${classLaTexLabel}} \index{${classPrefName#*:}}
+\section*{${classPrefName}} \label{sec:${classLaTexLabel}} \index{${classPrefName#*:}}
 __HERE__
 
     #
@@ -512,6 +604,10 @@ function bookGenerateSectionStatistics() {
   TODO: To be extended with some more interesting numbers.
 
   \begin{description}
+    \item [Number of ontologies] ${book_stat_number_of_ontologies}
+      \begin{description}
+        \item [Without a label] ${book_stat_number_of_ontologies_without_label}
+      \end{description}
     \item [Number of classes] ${book_stat_number_of_classes}
       \begin{description}
         \item [Without a label] ${book_stat_number_of_classes_without_label}

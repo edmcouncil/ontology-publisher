@@ -22,17 +22,15 @@ function publishProductWidoco() {
   setProduct widoco || return $?
   widoco_product_tag_root="${tag_root:?}"
 
-  #
-  # Show the widoco root directory but strip the WORKSPACE directory from it to
-  # save log space, it' ugly
-  #
-  logItem "Widoco Root" "${widoco_product_tag_root/${WORKSPACE}/}"
+  logItem "Widoco Root" "$(logFileName "${widoco_product_tag_root}")"
 
-  widoco_script_dir="$(cd "${SCRIPT_DIR}/product/vocabulary" && pwd)"
+  widoco_script_dir="$(cd "${SCRIPT_DIR}/product/widoco" && pwd)"
+
+  logItem "Widoco Scripts" "${widoco_script_dir}"
 
   buildVowlIndex || return $?
 
-  generateWidocoLog4jConfig || return $?
+  generateWidocoLog4jConfig || fileAbbreviationreturn $?
 
   generateWidocoDocumentation ${ontology_product_tag_root} || return $?
 
