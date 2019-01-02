@@ -583,9 +583,29 @@ function initWorkspaceVars() {
   require spec_host || return $?
 
   #
-  # source_family_root: the root directory of the ${family} repo
+  # TMPDIR
   #
-  export source_family_root="${INPUT:?}/${family:?}"
+  # If we're running in Jenkins, the environment variable WORKSPACE should be there
+  # and the tmp directory is assumed to be there..
+  #
+  if [ -n "${WORKSPACE}" ] && [ -d "${WORKSPACE}/tmp" ] ; then
+    TMPDIR="${WORKSPACE}/tmp"
+  else
+    TMPDIR="${TMPDIR:?}"
+  fi
+  export TMPDIR
+
+  #
+  # source_family_root: the root directory of the ${family} repo
+  # If we're running in Jenkins, the environment variable WORKSPACE should be there
+  # and the input/${family} directory is assumed to be there..
+  #
+  if [ -n "${WORKSPACE}" ] && [ -d "${WORKSPACE}/input/${family:?}" ] ; then
+    source_family_root="${WORKSPACE}/input/${family:?}"
+  else
+    source_family_root="${INPUT:?}/${family:?}"
+  fi
+  export source_family_root
   #
   # Add your own directory locations above if you will
   #
@@ -595,6 +615,12 @@ function initWorkspaceVars() {
   fi
   ((verbose)) && logVar source_family_root
 
+  if [ -n "${WORKSPACE}" ] && [ -d "${WORKSPACE}/output" ] ; then
+    spec_root="${WORKSPACE}/output"
+  else
+    spec_root="${OUTPUT:?}"
+  fi
+  export source_family_root
   export spec_root="${OUTPUT:?}"
   export spec_family_root="${spec_root}/${family:?}"
   export product_root=""
@@ -671,13 +697,9 @@ function initGitVars() {
 
   (
     cd "${source_family_root}" || return $?
-    log "pwd=$(pwd)"
-    set -x
     git status
     rc=$?
-    set +x
     logVar rc
-    ls -all
     return ${rc}
   ) || return $?
 
