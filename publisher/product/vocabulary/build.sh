@@ -337,11 +337,11 @@ function vocabularyGetOntologies() {
     return 1
   fi
 
-  log "Generated ${TMPDIR/${WORKSPACE}/}/temp0.ttl:"
+  log "Generated $(logFileName "${TMPDIR}/temp0.ttl"):"
 
   head -n200 "${TMPDIR}/temp0.ttl"
 
-  log "Generated ${TMPDIR/${WORKSPACE}/}/temp0B.ttl:"
+  log "Generated $(logFileName "${TMPDIR}/temp0B.ttl"):"
 
   head -n200 "${TMPDIR}/temp0B.ttl"
 
@@ -365,13 +365,13 @@ function vocabularyRunSpin() {
   "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/temp0.ttl" "${TMPDIR}/temp1.ttl" || return $?
   "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/temp0B.ttl" "${TMPDIR}/temp1B.ttl" || return $?
 
-  log "Generated ${TMPDIR/${WORKSPACE}/}/temp1.ttl:"
-  log "Generated ${TMPDIR/${WORKSPACE}/}/temp1B.ttl:"
+  log "Generated $(logFileName "${TMPDIR}/temp1.ttl"):"
+  log "Generated $(logFileName "${TMPDIR}/temp1B.ttl"):"
 
-  log "Printing first 50 lines of ${TMPDIR/${WORKSPACE}/}/temp1.ttl"
+  log "Printing first 50 lines of $(logFileName "${TMPDIR}/temp1.ttl")"
   head -n50 "${TMPDIR}/temp1.ttl"
 
-  log "Printing first 50 lines of ${TMPDIR/${WORKSPACE}/}/temp1B.ttl"
+  log "Printing first 50 lines of $(logFileName "${TMPDIR}/temp1B.ttl")"
   head -n50 "${TMPDIR}/temp1B.ttl"
 
   #The first three lines contain some WARN statements - removing it to complete the build.

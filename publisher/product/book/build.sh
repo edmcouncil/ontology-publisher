@@ -162,7 +162,6 @@ __HERE__
 
   bookCreateGlossaryFile || return $?
 
-
   cat >&3 << __HERE__
 \begin{document}
 %\maketitle
@@ -181,16 +180,16 @@ __HERE__
   cat >&3 <<< "\part{Reference}"
 
   bookGenerateSectionOntologies "${documentClass}" "${pageSize}" || return $?
-#  bookGenerateSectionClasses "${documentClass}" "${pageSize}" || return $?
-#  bookGenerateSectionProperties "${documentClass}" "${pageSize}" || return $?
-#  bookGenerateSectionIndividuals "${documentClass}" "${pageSize}" || return $?
-#  bookGenerateSectionConclusion || return $?
+  bookGenerateSectionClasses "${documentClass}" "${pageSize}" || return $?
+  bookGenerateSectionProperties "${documentClass}" "${pageSize}" || return $?
+  bookGenerateSectionIndividuals "${documentClass}" "${pageSize}" || return $?
+  bookGenerateSectionConclusion || return $?
 
   cat >&3 <<< "\part{Appendices}"
   cat >&3 <<< "\appendix"
   cat >&3 <<< "\addappheadtotoc"
 
-#  bookGenerateSectionPrefixes || return $?
+  bookGenerateSectionPrefixes || return $?
   bookGenerateSectionStatistics || return $?
 
   cat >&3 << __HERE__

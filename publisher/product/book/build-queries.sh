@@ -423,11 +423,11 @@ WHERE {
   OPTIONAL {
     BIND(
       IF(
-        ?ontologyIRI = ?namespace,
+        STR(?ontologyIRI) = STR(?namespace),
         ?prefix,
         IF(
-          BOUND(?preferredPrefix), ?
-          preferredPrefix,
+          BOUND(?preferredPrefix),
+          ?preferredPrefix,
           ""
         )
       )
@@ -444,7 +444,6 @@ __HERE__
   book_results_file="${book_data_dir}/list-of-ontologies-${checksum}.tsv"
 
   return 0
-
 }
 
 #
@@ -481,8 +480,6 @@ function bookQueryListOfOntologies() {
     logVar rc
     return ${rc}
   fi
-
-  exit
 
   return 0
 }
