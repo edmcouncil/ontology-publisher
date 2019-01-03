@@ -42,10 +42,9 @@ function publishProductOntology() {
 
   ontology_product_tag_root="${tag_root:?}"
   #
-  # Show the ontology root directory but strip the WORKSPACE director from it to
-  # save log space, it's ugly
+  # Show the ontology root directory
   #
-  log "Ontology Root: ${ontology_product_tag_root/${WORKSPACE}/}"
+  logItem "Ontology Root" "$(logFileName "${ontology_product_tag_root}")"
 
   ontologyCopyRdfToTarget || return $?
   ontologySearchAndReplaceStuff || return $?
@@ -88,7 +87,7 @@ function ontologyCopyRdfToTarget() {
 
   logRule "Step: ontologyCopyRdfToTarget"
 
-  log "Copying all artifacts that we publish straight from git into ${tag_root}"
+  log "Copying all artifacts that we publish straight from git into $(logFileName "${tag_root}")"
 
   (
     rm -rf "${tag_root}"
@@ -262,25 +261,11 @@ function ontologyAddIsDefinedBy () {
 
   local file="$1"
 
-  log "add isDefinedBy link to ${file/${WORKSPACE}/}"
+  logItem "add isDefinedBy to" "$(logFileName "${file}")"
 
-  #
-  # Set the memory for ARQ
-  #
-  JVM_ARGS="--add-opens java.base/java.lang=ALL-UNNAMED"
-  JVM_ARGS="${JVM_ARGS} -Dxxx=arq"
-  JVM_ARGS="${JVM_ARGS} -Xms2g"
-  JVM_ARGS="${JVM_ARGS} -Xmx2g"
-  JVM_ARGS="${JVM_ARGS} -Dfile.encoding=UTF-8"
-  JVM_ARGS="${JVM_ARGS} -Djava.io.tmpdir=\"${TMPDIR}\""
-  export JVM_ARGS
+  ${PYTHON3} ${SCRIPT_DIR}/lib/addIsDefinedBy.py --file="${file}"
 
-  local outfile2 ; outfile2="$(mktempWithExtension outfile2 rdf)" || return $?
-
-  ${PYTHON3} ${SCRIPT_DIR}/lib/addIsDefinedBy.py --file=${file}
-
-  echo "serializing ${file}"
-  cp  "${file}" "${file}.save"
+  cp "${file}" "${file}.save"
 
   ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${file}" "rdf-xml"
 
@@ -298,7 +283,7 @@ function ontologyFixTopBraidBaseURICookie() {
   local baseURI
   local uri
 
-  log "Annotating ${ontologyFile/${WORKSPACE}/}"
+  log "Annotating $(logFileName "${ontologyFile}")"
 
   log "CSV output of query is:"
 
@@ -328,7 +313,7 @@ function ontologyFixTopBraidBaseURICookie() {
 
 function ontologyAnnotateTopBraidBaseURL() {
 
-  local queryFile="$(mktemp ${TMPDIR}/ontXXXXXX.sq)"
+  local -r queryFile="$(mktemp ${TMPDIR}/ontXXXXXX.sq)"
 
   log "Add versioned baseURI to all turtle files"
 

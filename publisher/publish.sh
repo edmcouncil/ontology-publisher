@@ -111,8 +111,8 @@ function zipWholeTagDir() {
   )
   [ $? -ne 0 ] && return 1
 
-  log "Created ${tarGzFile/${WORKSPACE}/},"
-  log "saving contents list in ${tarGzContentsFile/${WORKSPACE}/}"
+  log "Created $(logFileName "${tarGzFile}"),"
+  log "saving contents list in $(logFileName "${tarGzContentsFile}")"
   ls -al "${tarGzFile}" > "${tarGzContentsFile}" 2>&1 || return $?
 
   return 0

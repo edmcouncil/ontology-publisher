@@ -408,7 +408,7 @@ function sourceFile() {
 
 function logFileName() {
 
-  local -r name1="${1/${WORKSPACE}/.}"
+  local -r name1="${1}"
   local -r name2="${name1/${OUTPUT}/<output>}"
   local -r name3="${name2/${INPUT}/<input>}"
 
@@ -465,15 +465,6 @@ function initOSBasedTools() {
   shopt -s globstar
 
   #export | sort
-
-  if [ -z "${WORKSPACE}" ] ; then
-    export is_running_in_jenkins=1 # = false
-    WORKSPACE="${SCRIPT_DIR}/test-workspace"
-    mkdir -p "${WORKSPACE}" >/dev/null 2>&1
-  else
-    export is_running_in_jenkins=0 # = true
-  fi
-  mkdir -p "${WORKSPACE}/bin" "${WORKSPACE}/target" >/dev/null 2>&1
 
   #
   # TAR
@@ -582,6 +573,8 @@ function initWorkspaceVars() {
   require family || return $?
   require spec_host || return $?
 
+  logVar WORKSPACE
+
   #
   # TMPDIR
   #
@@ -595,17 +588,31 @@ function initWorkspaceVars() {
   fi
   export TMPDIR
 
+  ((verbose)) && logItem TMPDIR "$(logFileName "${TMPDIR}")"
+
+  if [ -n "${WORKSPACE}" ] && [ -d "${WORKSPACE}/input" ] ; then
+    INPUT="${WORKSPACE}/input"
+  else
+    INPUT="${INPUT:?}"
+  fi
+  export INPUT
+
+  ((verbose)) && logItem INPUT "$(logFileName "${INPUT}")"
+
+  if [ -n "${WORKSPACE}" ] && [ -d "${WORKSPACE}/output" ] ; then
+    OUTPUT="${WORKSPACE}/output"
+  else
+    OUTPUT="${OUTPUT:?}"
+  fi
+  export OUTPUT
+
+  ((verbose)) && logItem OUTPUT "$(logFileName "${OUTPUT}")"
+
   #
   # source_family_root: the root directory of the ${family} repo
-  # If we're running in Jenkins, the environment variable WORKSPACE should be there
-  # and the input/${family} directory is assumed to be there..
   #
-  if [ -n "${WORKSPACE}" ] && [ -d "${WORKSPACE}/input/${family:?}" ] ; then
-    source_family_root="${WORKSPACE}/input/${family:?}"
-  else
-    source_family_root="${INPUT:?}/${family:?}"
-  fi
-  export source_family_root
+  export source_family_root="${INPUT:?}/${family:?}"
+
   #
   # Add your own directory locations above if you will
   #
@@ -613,16 +620,13 @@ function initWorkspaceVars() {
     error "source_family_root directory not found (${source_family_root})"
     return 1
   fi
-  ((verbose)) && logVar source_family_root
+  ((verbose)) && logItem source_family_root "$(logFileName "${source_family_root}")"
 
-  if [ -n "${WORKSPACE}" ] && [ -d "${WORKSPACE}/output" ] ; then
-    spec_root="${WORKSPACE}/output"
-  else
-    spec_root="${OUTPUT:?}"
-  fi
-  export source_family_root
   export spec_root="${OUTPUT:?}"
   export spec_family_root="${spec_root}/${family:?}"
+
+  ((verbose)) && logItem spec_family_root "$(logFileName "${spec_family_root}")"
+
   export product_root=""
   export branch_root=""
   export tag_root=""
@@ -658,7 +662,7 @@ function setProduct() {
   require GIT_TAG_NAME || return $?
   require spec_family_root || return $?
 
-  ((verbose)) && logItem "spec_family_root" "${spec_family_root/${WORKSPACE}/}"
+  ((verbose)) && logItem "spec_family_root" "$(logFileName "${spec_family_root}")"
 
   export product_root="${spec_family_root}/${ontology_publisher_current_product}"
   export product_root_url="${spec_family_root_url}/${ontology_publisher_current_product}"
@@ -667,7 +671,7 @@ function setProduct() {
     mkdir -p "${product_root}" || return $?
   fi
 
-  ((verbose)) && logItem "product_root" "${product_root/${WORKSPACE}/}"
+  ((verbose)) && logItem "product_root" "$(logFileName "${product_root}")"
 
   export branch_root="${product_root}/${GIT_BRANCH}"
   export branch_root_url="${product_root_url}/${GIT_BRANCH}"
@@ -676,7 +680,7 @@ function setProduct() {
     mkdir -p "${branch_root}" || return $?
   fi
 
-  ((verbose)) && logItem "branch_root" "${branch_root/${WORKSPACE}/}"
+  ((verbose)) && logItem "branch_root" "$(logFileName "${branch_root}")"
 
   export tag_root="${branch_root}/${GIT_TAG_NAME}"
   export tag_root_url="${branch_root_url}/${GIT_TAG_NAME}"
@@ -685,7 +689,7 @@ function setProduct() {
     mkdir -p "${tag_root}" || return $?
   fi
 
-  ((verbose)) && logItem "tag_root" "${tag_root/${WORKSPACE}/}"
+  ((verbose)) && logItem "tag_root" "$(logFileName "${tag_root}")"
 
   export product_branch_tag="${ontology_publisher_current_product}/${GIT_BRANCH}/${GIT_TAG_NAME}"
   export family_product_branch_tag="${family}/${product_branch_tag}"
@@ -799,12 +803,6 @@ function initGitVars() {
     fi
   fi
 
-  saveEnvironmentVariable GIT_BRANCH || return $?
-  saveEnvironmentVariable GIT_TAG_NAME || return $?
-  saveEnvironmentVariable GIT_AUTHOR || return $?
-  saveEnvironmentVariable GIT_COMMIT || return $?
-  saveEnvironmentVariable GIT_COMMENT || return $?
-
   #
   # Set default product
   #
@@ -813,24 +811,9 @@ function initGitVars() {
   return 0
 }
 
-function saveEnvironmentVariable() {
-
-  require OUTPUT || return $?
-
-  local variable="$1"
-  local value="${!variable}"
-
-  logVar "${variable}"
-
-  mkdir -p "${OUTPUT}/env" >/dev/null 2>&1
-  echo -n "${value}" > "${OUTPUT}/env/${variable}"
-}
-
 function initJiraVars() {
 
   JIRA_ISSUE="$(echo ${GIT_COMMENT} | rev | ${GREP} -oP '\d+-[A-Z0-9]+(?!-?[a-zA-Z]{1,10})' | rev | sort -u)" ; export JIRA_ISSUE
-
-  saveEnvironmentVariable JIRA_ISSUE || return $?
 
   return 0
 }

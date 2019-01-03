@@ -168,7 +168,7 @@ EOF
 
   echo Writing into "${datadictionary_product_tag_root}/index.html"
 
-  log "${datadictionary_script_dir/${WORKSPACE}/}/index.template contains"
+  log "$(logFileName "${datadictionary_script_dir}/index.template") contains"
   cat "${datadictionary_script_dir}/index.template"
 
   ${SED}  '/-- index of dictionaries goes here/,$d' \

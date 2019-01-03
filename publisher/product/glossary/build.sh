@@ -77,7 +77,7 @@ function publishProductGlossaryReactApp() {
 
     npm run build || return $?
 
-    ${CP} -vR publisher/* "${glossary_product_tag_root}/" > "${WORKSPACE}/glossary-build-directory.log" 2>&1
+    ${CP} -vR publisher/* "${glossary_product_tag_root}/" > "${OUTPUT}/glossary-build-directory.log" 2>&1
   )
   rc=$?
 
@@ -335,7 +335,7 @@ function publishProductGlossaryContent() {
 #        --use-dtd-subset -ibn \
 #        > "${glossary_product_tag_root}/rdf-toolkit-glossary-prod.log" 2>&1
 #    fi
-    log "Convert ${TMPDIR/${WORKSPACE}/}/glossary-dev.ttl to ${glossary_product_tag_root/${WORKSPACE}/}/glossary-dev.jsonld"
+    log "Convert $(logFileName "${TMPDIR}/glossary-dev.ttl") to $(logFileName "${glossary_product_tag_root}/glossary-dev.jsonld")"
     java \
       --add-opens java.base/java.lang=ALL-UNNAMED \
       -Xmx4G \
@@ -411,7 +411,7 @@ function glossaryMakeExcel () {
   local dataTurtle="$1"
   local glossaryBaseName="$2"
 
-  log "Creating Excel file from ${glossaryBaseName/${WORKSPACE}/}.csv"
+  log "Creating Excel file from $(logFileName "${glossaryBaseName}.csv")"
 
   #
   # Set the memory for ARQ

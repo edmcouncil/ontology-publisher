@@ -31,7 +31,7 @@ function ontologyCreateTheAllTtlFile() {
       --dir=${tag_root} \
       --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/AboutFIBODev" \
       --top="https://spec.edmcouncil.org/fibo/ontology/MetadataFIBO/" \
-      --output="${tmp_dir}/all.ttl" \
+      --output="${TMPDIR}/all.ttl" \
       --verbose \
       --format=ttl
      rc=$?
@@ -40,7 +40,7 @@ function ontologyCreateTheAllTtlFile() {
       --dir=${tag_root} \
       --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/AboutFIBODev" \
       --top="https://spec.edmcouncil.org/fibo/ontology/MetadataFIBO/" \
-      --output="${tmp_dir}/all.ttl" \
+      --output="${TMPDIR}/all.ttl" \
       --format=ttl
       rc=$?
   fi
@@ -50,14 +50,14 @@ function ontologyCreateTheAllTtlFile() {
     return 1
   fi
 
-  if [ ! -f "${tmp_dir}/all.ttl" ] ; then
-    error "Did not generate ${tmp_dir}/all.ttl"
+  if [ ! -f "${TMPDIR}/all.ttl" ] ; then
+    error "Did not generate ${TMPDIR}/all.ttl"
     return 1
   fi
 
-  ls -la "${tmp_dir}/all.ttl"
+  ls -la "${TMPDIR}/all.ttl"
 
-  cat > "${tmp_dir}/maturemodule.sq" << __HERE__
+  cat > "${TMPDIR}/maturemodule.sq" << __HERE__
 #
 # Finds all the modules in FIBO that have parts that have maturily level :Release 
 # Those are the ones that should 
@@ -87,38 +87,38 @@ SELECT DISTINCT ?modfile WHERE {
 ORDER BY ?mod
 __HERE__
 
-# sed -i 's/\r//'  ${tmp_dir}/all.ttl
-# sed -i 's/\r//'  ${tmp_dir}/maturemodule.sq
+# sed -i 's/\r//'  ${TMPDIR}/all.ttl
+# sed -i 's/\r//'  ${TMPDIR}/maturemodule.sq
 
-  tail "${tmp_dir}/all.ttl"
+  tail "${TMPDIR}/all.ttl"
 
   ${JENA_ARQ} \
-    --data="${tmp_dir}/all.ttl" \
-    --query="${tmp_dir}/maturemodule.sq" \
+    --data="${TMPDIR}/all.ttl" \
+    --query="${TMPDIR}/maturemodule.sq" \
     --results=CSV \
-    > ${tmp_dir}/good
+    > ${TMPDIR}/good
 
   #
   # Good file should include all the modules that include Release level ontologies
   #
   echo "Here are all the release-level modules:"
-  head ${tmp_dir}/good
+  head ${TMPDIR}/good
 
-  ${SED} -i 's/\r//' ${tmp_dir}/good
+  ${SED} -i 's/\r//' ${TMPDIR}/good
 
   (
     cd ${spec_root:?} || return $?
-    rm -f ${tmp_dir}/prodpaths.txt
-    touch ${tmp_dir}/prodpaths.txt
-    chmod a+w ${tmp_dir}/prodpaths.txt
+    rm -f ${TMPDIR}/prodpaths.txt
+    touch ${TMPDIR}/prodpaths.txt
+    chmod a+w ${TMPDIR}/prodpaths.txt
     ${SED} \
       "s@^@find ${family_product_branch_tag} -name \"@;s/.rdf/.*\"/" \
-      ${tmp_dir}/good | \
+      ${TMPDIR}/good | \
       tail --lines=+2 | \
-      sh > ${tmp_dir}/prodpaths.txt
+      sh > ${TMPDIR}/prodpaths.txt
 
     echo "prodpaths"
-    cat ${tmp_dir}/prodpaths.txt
+    cat ${TMPDIR}/prodpaths.txt
   )
 
   return $?

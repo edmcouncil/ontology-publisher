@@ -38,10 +38,6 @@ module_directories=""
 
 stardog_vcs=""
 
-if [ -z "${WORKSPACE}" ] && ((RUNNING_IN_DOCKER == 1)) ; then
-  export WORKSPACE=/publisher
-fi
-
 function checkCommandLine() {
 
   #

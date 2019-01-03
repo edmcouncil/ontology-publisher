@@ -201,8 +201,8 @@ function generateWidocoDocumentationForFile() {
     #log "contents of index file before modification"
     #log "${contents}"
 
-    log "Replacing introduction with acknowledgements section from file ${outputDir}/${rdfFileNoExtension}/index-en.html"
-    log "Contents of widoco-sections folder ${widoco_script_dir/${WORKSPACE}/}/widoco-sections"
+    log "Replacing introduction with acknowledgements section from file $(logFileName "${outputDir}/${rdfFileNoExtension}/index-en.html")"
+    log "Contents of widoco-sections folder $(logFileName "${widoco_script_dir}/widoco-sections")"
     ls -al ${widoco_script_dir}/widoco-sections
     ${CP} "${widoco_script_dir}/widoco-sections/acknowledgements-en.html" "${outputDir}/${rdfFileNoExtension}/sections"
     log "Contents of folder ${outputDir}/${rdfFileNoExtension}/sections"
@@ -291,7 +291,7 @@ function buildVowlIndex () {
   local -r titleP="FIBO Widoco File Directory (Production)"
   local -r titleD="FIBO Widoco File Directory (Development)"
 
-  logRule "Step: buildVowlIndex (${vowlTree/${WORKSPACE}/})"
+  logRule "Step: buildVowlIndex ($(logFileName "${vowlTree}"))"
 
   logVar vowlTree
   logVar vowlTreeP
@@ -301,7 +301,7 @@ function buildVowlIndex () {
 
   (
     cd "${ontology_product_tag_root}" || return $?
-    logItem "Ontology Root" "${ontology_product_tag_root/${WORKSPACE}/}"
+    logItem "Ontology Root" "$(logFileName "${ontology_product_tag_root}")"
 
     logVar tag_root_url
     logVar GIT_BRANCH

@@ -65,7 +65,6 @@ __HERE__
 function spinRunInferences() {
 
   require family || return $?
-  require WORKSPACE || return $?
   require SPIN_VERSION || return $?
   require spec_family_root || return $?
 
@@ -124,7 +123,7 @@ function spinRunInferences() {
     error "Could not find ${ontologyPolicyFile}"
   fi
 
-  logItem "Run SPIN on" "$(logFileName "${inputFile/${WORKSPACE}/}")"
+  logItem "Run SPIN on" "$(logFileName "${inputFile}")"
   logItem "Producing" "$(logFileName "${outputFile}")"
   logItem "Current Directory" "$(pwd)"
 
