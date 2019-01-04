@@ -213,14 +213,7 @@ s@${spec_family_root_url}/ext/@${product_root_url}/ext/@g
 #
 s@${product_root_url}/\([A-Z]*\)/[0-9]*/@${product_root_url}/\1/@g
 #
-# We only want the following types of IRIs to be versioned: owl:imports and owl:versionIRI.
-#
-# - <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/InformationExt/InfoCore/"/> becomes:
-# - <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/master/latest/FND/InformationExt/InfoCore/"/>
-#
-s@\(owl:imports rdf:resource="${product_root_url}/\)@\1${GIT_BRANCH}/${GIT_TAG_NAME}/@g
-#
-# And then the same for the owl:versionIRI.
+# We only want the following types of IRIs to be versioned: owl:versionIRI.
 #
 s@\(owl:versionIRI rdf:resource="${product_root_url}/\)@\1${GIT_BRANCH}/${GIT_TAG_NAME}/@g
 #
