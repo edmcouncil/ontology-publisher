@@ -124,7 +124,7 @@ RUN \
 # Installing Apache Jena
 #
 ENV \
-  JENA_VERSION="3.9.0" \
+  JENA_VERSION="3.10.0" \
   JENA_HOME=/usr/share/java/jena/latest
 RUN \
   echo ================================= install jena ${JENA_VERSION} >&2 && \

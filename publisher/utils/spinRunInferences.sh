@@ -125,7 +125,7 @@ function spinRunInferences() {
 
   logItem "Run SPIN on" "$(logFileName "${inputFile}")"
   logItem "Producing" "$(logFileName "${outputFile}")"
-  logItem "Current Directory" "$(pwd)"
+  logItem "Current Directory" "$(logFileName "$(pwd)")"
 
   #
   # There's no other way to tell jena where to find the ont-policy.rdf file

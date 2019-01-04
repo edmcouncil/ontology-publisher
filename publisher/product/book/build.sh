@@ -221,8 +221,9 @@ __HERE__
 
 function bookAddGlossaryTerm() {
 
-  local -r name="$1"
-  local description="$2"
+  local -r name="$(escapeLaTex "$1")"
+  # shellcheck disable=SC2155
+  local description="$(escapeLaTex "$2")"
   #
   # Remove the last dot from the line if its there because LaTex will add it again
   #
@@ -342,20 +343,28 @@ __HERE__
   # Process each line of the TSV file with "read -a" which properly deals
   # with spaces in class labels and definitions etc.
   #
-  while IFS=$'\t' read -a line ; do
+  # ?ontologyIRIstr	?ontologyVersionIRIstr	?ontologyPrefix	?ontologyLabelStr
+  # ?abstractStr	?preferredPrefixStr	?maturityLevelStr
+  #
+  while IFS=$'\t' read ontologyIRI ontologyVersionIRI prefix ontologyLabel abstract preferredPrefix maturityLevel ; do
 
-    [ "${line[0]}" == "" ] && continue
-    [ "${line[1]}" == "" ] && continue
-    [ "${line[0]:0:1}" == "?" ] && continue
+    [ "${ontologyIRI}" == "" ] && continue
+    [ "${ontologyIRI:0:1}" == "?" ] && continue
 
-    ontologyIRI="$(stripQuotes "${line[0]}")"
-    ontologyVersionIRI="$(stripQuotes "${line[1]}")"
-    prefix="$(stripQuotes "${line[2]}")"
-    ontologyLabel="$(stripQuotes "${line[3]}")"
-    abstract="$(stripQuotes "${line[4]}")"
-    preferredPrefix="$(stripQuotes "${line[5]}")"
-    maturityLevel="$(stripQuotes "${line[6]}")"
+    ontologyIRI="$(stripQuotes "${ontologyIRI}")"
+    ontologyVersionIRI="$(stripQuotes "${ontologyVersionIRI}")"
+    prefix="$(stripQuotes "${prefix}")"
+    ontologyLabel="$(stripQuotes "${ontologyLabel}")"
+    abstract="$(stripQuotes "${abstract}")"
+    preferredPrefix="$(stripQuotes "${preferredPrefix}")"
+    maturityLevel="$(stripQuotes "${maturityLevel}")"
 
+    if [ "${prefix}" == "" ] ; then
+      prefix="${preferredPrefix}"
+      preferredPrefix=""
+    fi
+
+    logRule "Ontology:"
     logVar ontologyIRI
     logVar ontologyVersionIRI
     logVar prefix
@@ -369,12 +378,14 @@ __HERE__
 
     if [ -n "${prefix}" ] ; then
       cat >&3 << __HERE__
-\section{${prefix}} \label{sec:${prefix}} \index{${prefix}}
+\section*{${prefix}} \label{sec:${prefix}} \index{${prefix}}
+__HERE__
+    elif [ -n "${ontologyLabel}" ] ; then
+      cat >&3 << __HERE__
+\section*{${ontologyLabel}} \label{sec:${ontologyLaTexLabel}} \index{${ontologyLabel}}
 __HERE__
     else
-      cat >&3 << __HERE__
-\section{${ontologyLabel}} \label{sec:${ontologyLaTexLabel}} \index{${ontologyLabel}}
-__HERE__
+      continue
     fi
 
     #
@@ -392,7 +403,9 @@ __HERE__
     #
     if [ -n "${ontologyLabel}" ] ; then
       cat >&3 <<< "\item [Label] $(escapeAndDetokenizeLaTex "${ontologyLabel}")"
-      bookAddGlossaryTerm "${ontologyLabel}" "$(escapeLaTex "${abstract}")"
+      if [ -n "${prefix}" ] && [ -n "${abstract}" ] ; then
+        bookAddGlossaryTerm "${prefix}" "${abstract}"
+      fi
     else
       book_stat_number_of_ontologies_without_label=$((book_stat_number_of_ontologies_without_label + 1))
     fi
@@ -408,6 +421,16 @@ __HERE__
     if [ -n "${maturityLevel}" ] ; then
       cat >&3 <<< "\item [Maturity] $(escapeAndDetokenizeLaTex "${maturityLevel}")"
     fi
+    #
+    # Ontology Version IRI
+    #
+    if [ -n "${ontologyVersionIRI}" ] ; then
+      cat >&3 <<< "\item [Version IRI] $(escapeAndDetokenizeLaTex "${ontologyVersionIRI}")"
+    fi
+
+    cat >&3 <<< "\end{description}"
+
+    book_stat_number_of_ontologies=$((book_stat_number_of_ontologies + 1))
 
   done < "${book_results_file}"
 
@@ -453,11 +476,11 @@ __HERE__
   # Process each line of the TSV file with "read -a" which properly deals
   # with spaces in class labels and definitions etc.
   #
-  while IFS=$'\t' read -a line ; do
+  while IFS=$'\t' read classIRI classPrefName namespace classLabel definition explanatoryNote ; do
 
-    [ "${line[0]}" == "" ] && continue
-    [ "${line[1]}" == "" ] && continue
-    [ "${line[0]:0:1}" == "?" ] && continue
+    [ "${classIRI}" == "" ] && continue
+    [ "${classPrefName}" == "" ] && continue
+    [ "${classIRI:0:1}" == "?" ] && continue
 
     if ((numberOfClasses > book_max_classes)) ; then
       warning "Stopping at ${book_max_classes} since we're running in dev mode"
@@ -465,12 +488,12 @@ __HERE__
     fi
     numberOfClasses=$((numberOfClasses + 1))
 
-    classIRI="$(stripQuotes "${line[0]}")"
-    classPrefName="$(stripQuotes "${line[1]}")"
-    namespace="$(stripQuotes "${line[2]}")"
-    classLabel="$(stripQuotes "${line[3]}")"
-    definition="$(stripQuotes "${line[4]}")"
-    explanatoryNote="$(stripQuotes "${line[5]}")"
+    classIRI="$(stripQuotes "${classIRI}")"
+    classPrefName="$(stripQuotes "${classPrefName}")"
+    namespace="$(stripQuotes "${namespace}")"
+    classLabel="$(stripQuotes "${classLabel}")"
+    definition="$(stripQuotes "${definition}")"
+    explanatoryNote="$(stripQuotes "${explanatoryNote}")"
 
 #    logVar classIRI
 #    logVar classPrefName
@@ -500,7 +523,7 @@ __HERE__
     #
     if [ -n "${classLabel}" ] ; then
       cat >&3 <<< "\item [Label] $(escapeAndDetokenizeLaTex "${classLabel}")"
-      bookAddGlossaryTerm "${classLabel}" "$(escapeLaTex "${definition}")"
+      bookAddGlossaryTerm "${classLabel}" "${definition}"
     else
       book_stat_number_of_classes_without_label=$((book_stat_number_of_classes_without_label + 1))
     fi
