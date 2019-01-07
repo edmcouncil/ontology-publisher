@@ -49,6 +49,7 @@ function publishProductOntology() {
   ontologyCopyRdfToTarget || return $?
   ontologySearchAndReplaceStuff || return $?
   ontologyBuildCatalogs  || return $?
+exit 1
   ontologyConvertMarkdownToHtml || return $?
   ontologyBuildIndex  || return $?
   ontologyCreateAboutFiles || return $?
@@ -69,6 +70,76 @@ function publishProductOntology() {
   else
     buildquads || return $?
   fi
+
+  return 0
+}
+
+#
+# JG>Dean, I just copied the code from the old hygiene test into this function...
+#
+function runHygieneTests() {
+
+  setProduct ontology || return $?
+
+  ontology_product_tag_root="${tag_root:?}"
+
+  #
+  # Get ontologies for Dev
+  #
+  log "Merging all dev ontologies into one RDF file"
+  "${JENA_ARQ}" $(find "${source_family_root}" -name "*.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
+    --query=/publisher/lib/echo.sparql \
+    --results=TTL > ${OUTPUT}/DEV.ttl
+
+  #
+  # Get ontologies for Prod
+  #
+  log "Merging all prod ontologies into one RDF file"
+  "${JENA_ARQ}" \
+    $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
+    --query=/publisher/lib/echo.sparql \
+    --results=TTL > ${OUTPUT}/PROD.ttl
+
+  log "Running tests:"
+  while read -r hygieneTestSparqlFile ; do
+    logItem "$(basename "${hygieneTestSparqlFile}")" "$(grep "banner" "${hygieneTestSparqlFile}" | cut -d\  -f 3- )"
+  done < <(find "${source_family_root}/etc" -name 'testHygiene*.sq')
+
+  log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  log "Errors in DEV:"
+  log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+  while read -r hygieneTestSparqlFile ; do
+    logItem "Running test" "$(grep "banner" "${hygieneTestSparqlFile}" | cut -d\  -f 3- )"
+    ${JENA_ARQ} \
+      --data=${OUTPUT}/DEV.ttl \
+      --query="${hygieneTestSparqlFile}" | \
+      sed 's/PRODERROR/WARN/g' > \
+      ${TMPDIR}/console1.txt
+    cat ${TMPDIR}/console1.txt
+  done < <(find "${source_family_root}/etc" -name 'testHygiene*.sq')
+
+  log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  log "Errors in PROD:"
+  log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+  while read -r hygieneTestSparqlFile ; do
+    logItem "Running test" "$(grep "banner" "${hygieneTestSparqlFile}" | cut -d\  -f 3- )"
+    ${JENA_ARQ} \
+      --data=${OUTPUT}/PROD.ttl \
+      --query="${hygieneTestSparqlFile}" | \
+      sed 's/PRODERROR/ERROR/g' > \
+      ${TMPDIR}/console2.txt
+    cat ${TMPDIR}/console2.txt
+  done < <(find "${source_family_root}/etc" -name 'testHygiene*.sq')
+
+  grep "ERROR:" ${TMPDIR}/console1.txt && return 1
+  grep "ERROR:" ${TMPDIR}/console2.txt && return 1
+
+  rm ${TMPDIR}/console1.txt
+  rm ${TMPDIR}/console2.txt
+
+  log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
   return 0
 }

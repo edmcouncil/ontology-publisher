@@ -181,9 +181,13 @@ function logDir() {
   local -r directory="${!1}"
 
   if [ -d "${directory}" ] ; then
-    printf -- ' - %-25s : [%s]\n' "${item}" "$(bold "$(logFileName "${directory}")")"
+    if [ "$(cd "${directory}" && ls -A)" ] ; then
+      printf -- ' - %-25s : [%s]\n' "${item}" "$(bold "$(logFileName "${directory}")")"
+    else
+      printf -- ' - %-25s : [%s] (is empty)\n' "${item}" "$(bold "$(logFileName "${directory}")")"
+    fi
   else
-    printf -- ' - %-25s : [%s] does not exist\n' "${item}" "$(bold "$(logFileName "${directory}")")"
+    printf -- ' - %-25s : [%s] (does not exist)\n' "${item}" "$(bold "$(logFileName "${directory}")")"
   fi
 }
 
@@ -418,13 +422,26 @@ function sourceFile() {
   printf "${sourceFile}"
 }
 
+#
+# Use this function to show any file or directory name, it shortens it drastically, especially when running
+# in a Jenkins job context where the WORKSPACE path sits in front of all directory and file names.
+#
 function logFileName() {
 
-  local -r name1="${1}"
-  local -r name2="${name1/${OUTPUT}/<output>}"
-  local -r name3="${name2/${INPUT}/<input>}"
+  local -r name0="$1"
 
-  echo -n "${name3}"
+  if [ -n "${WORKSPACE}" ] ; then
+    local -r name1="${name0/${TMPDIR}/<ws>/tmp}"
+    local -r name2="${name1/${OUTPUT}/<ws>/output}"
+    local -r name3="${name2/${INPUT}/<ws>/input}"
+    local -r name4="${name3/${WORKSPACE}/<ws>}"
+    echo -n "${name4}"
+  else
+    local -r name1="${name0/${TMPDIR}/<tmp>}"
+    local -r name2="${name1/${OUTPUT}/<output>}"
+    local -r name3="${name2/${INPUT}/<input>}"
+    echo -n "${name3}"
+  fi
 }
 
 #
@@ -585,6 +602,10 @@ function initWorkspaceVars() {
   require family || return $?
   require spec_host || return $?
 
+  #
+  # We use logVar here and not logDir because we really want to show the actual WORKSPACE directory
+  # and not the shorthand version of it (which is <ws>)
+  #
   logVar WORKSPACE
 
   if [ -n "${WORKSPACE}" ] && [ -d "${WORKSPACE}/input" ] ; then
@@ -639,6 +660,8 @@ function initWorkspaceVars() {
   export spec_root="${OUTPUT:?}"
   export spec_family_root="${spec_root}/${family:?}"
 
+  mkdir -p "${spec_family_root}" >/dev/null 2>&1
+
   ((verbose)) && logDir spec_family_root
 
   export product_root=""
@@ -687,6 +710,11 @@ function setProduct() {
 
   ((verbose)) && logItem "product_root" "$(logFileName "${product_root}")"
 
+  if [ "${GIT_BRANCH}" == "head" ] ; then
+    error "Git repository not checked out to a local branch, GIT_BRANCH = head which is wrong"
+    return 1
+  fi
+
   export branch_root="${product_root}/${GIT_BRANCH}"
   export branch_root_url="${product_root_url}/${GIT_BRANCH}"
 
@@ -715,10 +743,11 @@ function initGitVars() {
 
   (
     cd "${source_family_root}" || return $?
-    git status
-    rc=$?
-    logVar rc
-    return ${rc}
+    log "Git status:"
+    git status 2>&1 | pipelog
+    local -r git_status_rc=$?
+    logVar git_status_rc
+    return ${git_status_rc}
   ) || return $?
 
   if [ -z "${GIT_COMMIT}" ] ; then
@@ -866,13 +895,13 @@ function escapeLaTex() {
 
   line="${line//\\/\\\\textbackslash }"
 
-  line="${line//&/\\&}"
   line="${line//%/\\%}"
   line="${line//\$/\\$}"
   line="${line//#/\\#}"
   line="${line//_/\\_}"
   line="${line//\{/\\\{}"
   line="${line//\}/\\\}}"
+  line="${line//&/{\\&\}}"
 
   line="${line//\~/\\\\textasciitilde }"
   line="${line//^/\\\\textasciicircum }"
@@ -882,11 +911,11 @@ function escapeLaTex() {
 
 function escapeLaTex_test_002_0001() {
 
-  local -r result="$(escapeLaTex "whatever_dude\what %is% #metoo in {this} ~day and ^age")"
+  local -r result="$(escapeLaTex "whatever_dude\what %is% #metoo in {this} ~day & ^age")"
 
   echo "[${result}]"
 
-  test "${result}" == "whatever\_dude\\textbackslash what \%is\% \#metoo in \{this\} \\textasciitilde day and \\textasciicircum age"
+  test "${result}" == "whatever\_dude\\textbackslash what \%is\% \#metoo in \{this\} \\textasciitilde day {\&} \\textasciicircum age"
 }
 #escapeLaTex_test_002_0001
 #exit $?
@@ -931,4 +960,32 @@ function escapeAndDetokenizeLaTex_test_001_0001() {
 function isRunningInDockerContainer() {
 
   grep docker /proc/1/cgroup -qa >/dev/null 2>&1
+}
+
+#
+# Return all the .rdf files that go into "dev"
+#
+function getDevOntologies() {
+
+  requireValue ontology_product_tag_root || return $?
+
+  ${FIND} "${ontology_product_tag_root}" \
+    -path '*/etc*' -prune -o \
+    -name '*About*' -prune -o \
+    -name 'ont-policy.rdf' -prune -o \
+    -name '*.rdf' -print
+}
+
+#
+# Return all the .rdf files that go into "prod"
+#
+function getProdOntologies() {
+
+  requireValue ontology_product_tag_root || return $?
+
+  ${GREP} -r 'utl-av[:;.]Release' "${ontology_product_tag_root}" | \
+    ${GREP} -F ".rdf" | \
+    ${GREP} -v ont-policy.rdf | \
+    ${GREP} -v '*About*' | \
+    ${GREP} -v '/etc/'
 }

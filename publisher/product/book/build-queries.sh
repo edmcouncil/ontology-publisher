@@ -26,7 +26,14 @@ function bookGenerateTdb2Database() {
     return 0
   fi
 
-  tdb2.tdbloader \
+  if ! which tdb2.tdbloader >/dev/null 2>&1 ; then
+    error "jena tdb2.tdbloader is not in the PATH"
+    logVar PATH
+    ls -al /usr/share/java/jena/latest/bin/
+    return 1
+  fi
+
+  /usr/share/java/jena/latest/bin/tdb2.tdbloader \
     --loc="${book_latex_dir}/tdb2" \
     --loader="phased" \
     --verbose \
