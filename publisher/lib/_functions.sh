@@ -175,6 +175,18 @@ function logVar() {
   logItem "$1" "${!1}"
 }
 
+function logDir() {
+
+  local -r item="$1"
+  local -r directory="${!1}"
+
+  if [ -d "${directory}" ] ; then
+    printf -- ' - %-25s : [%s]\n' "${item}" "$(bold "$(logFileName "${directory}")")"
+  else
+    printf -- ' - %-25s : [%s] does not exist\n' "${item}" "$(bold "$(logFileName "${directory}")")"
+  fi
+}
+
 #
 # Log each line of the input stream.
 #
@@ -575,21 +587,6 @@ function initWorkspaceVars() {
 
   logVar WORKSPACE
 
-  #
-  # TMPDIR
-  #
-  # If we're running in Jenkins, the environment variable WORKSPACE should be there
-  # and the tmp directory is assumed to be there..
-  #
-  if [ -n "${WORKSPACE}" ] && [ -d "${WORKSPACE}/tmp" ] ; then
-    TMPDIR="${WORKSPACE}/tmp"
-  else
-    TMPDIR="${TMPDIR:?}"
-  fi
-  export TMPDIR
-
-  ((verbose)) && logItem TMPDIR "$(logFileName "${TMPDIR}")"
-
   if [ -n "${WORKSPACE}" ] && [ -d "${WORKSPACE}/input" ] ; then
     INPUT="${WORKSPACE}/input"
   else
@@ -597,16 +594,33 @@ function initWorkspaceVars() {
   fi
   export INPUT
 
-  ((verbose)) && logItem INPUT "$(logFileName "${INPUT}")"
+  ((verbose)) && logDir INPUT
 
-  if [ -n "${WORKSPACE}" ] && [ -d "${WORKSPACE}/output" ] ; then
+  if [ -n "${WORKSPACE}" ] ; then
     OUTPUT="${WORKSPACE}/output"
+    mkdir -p "${OUTPUT}" || return $?
   else
     OUTPUT="${OUTPUT:?}"
   fi
   export OUTPUT
 
-  ((verbose)) && logItem OUTPUT "$(logFileName "${OUTPUT}")"
+  ((verbose)) && logDir OUTPUT
+
+  #
+  # TMPDIR
+  #
+  # If we're running in Jenkins, the environment variable WORKSPACE should be there
+  # and the tmp directory is assumed to be there..
+  #
+  if [ -n "${WORKSPACE}" ] ; then
+    TMPDIR="${WORKSPACE}/tmp"
+    mkdir -p "${TMPDIR}" || return $?
+  else
+    TMPDIR="${TMPDIR:?}"
+  fi
+  export TMPDIR
+
+  ((verbose)) && logDir TMPDIR
 
   #
   # source_family_root: the root directory of the ${family} repo
@@ -620,12 +634,12 @@ function initWorkspaceVars() {
     error "source_family_root directory not found (${source_family_root})"
     return 1
   fi
-  ((verbose)) && logItem source_family_root "$(logFileName "${source_family_root}")"
+  ((verbose)) && logDir source_family_root
 
   export spec_root="${OUTPUT:?}"
   export spec_family_root="${spec_root}/${family:?}"
 
-  ((verbose)) && logItem spec_family_root "$(logFileName "${spec_family_root}")"
+  ((verbose)) && logDir spec_family_root
 
   export product_root=""
   export branch_root=""
@@ -821,11 +835,26 @@ function initJiraVars() {
 function stripQuotes() {
 
   local temp="$*"
-  temp="${temp%\"}"
-  temp="${temp#\"}"
-  echo -n "$temp"
 
-  # ${SED} -e 's/^"//' -e 's/"$//' <<< "$@"
+  case "${temp}" in
+    *[!\ ]*)
+      temp="${temp%\"}"
+      temp="${temp#\"}"
+      echo -n "$temp"
+      ;;
+    *)
+      echo -n ""
+      ;;
+  esac
+}
+
+function stripQuotes_test_0003_001() {
+
+  test "$(stripQuotes "\" \"")" == "" || return $?
+  test "$(stripQuotes "\"abc\"")" == "abc" || return $?
+  test "$(stripQuotes "\"abc \"def\"\"")" == "abc \"def\"" || return $?
+
+  return 0
 }
 
 #
