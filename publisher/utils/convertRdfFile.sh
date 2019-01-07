@@ -64,16 +64,6 @@ function convertRdfFileTo() {
     > "${logfile}" 2>&1
   rc=$?
 
-  #
-  # For the turtle files, we want the base annotations to be the versionIRI
-  #
-  if [ "${targetFormat}" == "turtle" ] ; then
-#   ((verbose)) && logItem "Adjusting ttl base IRI" "$(logFileName "${rdfFile}")"
-    ${SED} -i "s?^\(\(# baseURI:\)\|\(@base\)\).*ontology/?&${GIT_BRANCH}/${GIT_TAG_NAME}/?" "${targetFile}"
-    ${SED} -i "s@${GIT_BRANCH}/${GIT_TAG_NAME}/${GIT_BRANCH}/${GIT_TAG_NAME}/@${GIT_BRANCH}/${GIT_TAG_NAME}/@" \
-	  "${targetFile}"
-  fi
-
   if ${GREP} -q "ERROR" "${logfile}"; then
     error "Found errors during conversion of$(logFileName "${rdfFile}") to \"${targetFormat}\":"
     cat "${logfile}"
