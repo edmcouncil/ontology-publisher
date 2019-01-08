@@ -11,6 +11,8 @@ false && source ../../lib/_functions.sh
 export SCRIPT_DIR="${SCRIPT_DIR}" # Yet another hack to silence IntelliJ
 export speedy="${speedy:-0}"
 
+declare -r -g test_widoco=1
+
 #
 # Publish the widoco product which depends on the ontology product, so that should have been built before
 #
@@ -27,7 +29,7 @@ function publishProductWidoco() {
   logDir widoco_product_tag_root
   logDir widoco_script_dir
 
-  buildVowlIndex || return $?
+  ((test_widoco)) || buildVowlIndex || return $?
 
   generateWidocoLog4jConfig || return $?
   generateWidocoLog4j2Config || return $?
@@ -41,7 +43,11 @@ function publishProductWidoco() {
   # shellcheck disable=SC2038
   find "${ontology_product_tag_root}" -type d -name 'tmp*' | xargs rm -rf
 
-  generateWidocoDocumentation "${ontology_product_tag_root}"
+  if ((test_widoco)) ; then
+    testWidoco
+  else
+    generateWidocoDocumentation "${ontology_product_tag_root}"
+  fi
   local -r rc=$?
 
   #
@@ -235,6 +241,88 @@ function generateWidocoDocumentationForFile() {
   #fi
 
   return 0
+}
+
+function widocoOutFolder() {
+
+  local -r  outputDir="$1"
+  local     ontFile="$2"
+
+  require ontology_product_tag_root || return $?
+  require source_family_root || return $?
+  require spec_family_root || return $?
+
+  ontFile="${ontFile/${ontology_product_tag_root}\/}"
+  ontFile="${ontFile/${source_family_root}\/}"
+  ontFile="${ontFile/${spec_family_root}\/}"
+  ontFile="${ontFile%.*}"
+
+  echo -n "${outputDir}/${ontFile}"
+}
+
+#
+# This function is called when test_widoco=1, it runs widoco only on the CorporateBodies ontology
+#
+# Widoco Usage: java -jar widoco.jar [-ontFile file] or [-ontURI uri] [-outFolder folderName]
+# [-confFile propertiesFile] [-getOntologyMetadata] [-oops] [-rewriteAll] [-crossRef] [-saveConfig configOutFile]
+# [-lang lang1-lang2] [-includeImportedOntologies] [-htaccess] [-licensius] [-webVowl] [-ignoreIndividuals]
+# [-includeAnnotationProperties] [-analytics analyticsCode] [-doNotDisplaySerializations] [-displayDirectImportsOnly]
+# [-rewriteBase rewriteBasePath]
+#
+function testWidoco() {
+
+  require ontology_product_tag_root || return $?
+  require widoco_product_tag_root || return $?
+  require source_family_root || return $?
+  require spec_family_root || return $?
+
+  local widocoJar ; widocoJar="$(widocoLauncherJar)" || return $?
+  local -r outputDir="${widoco_product_tag_root}"
+  local -r ontFile="${ontology_product_tag_root}/BE/LegalEntities/CorporateBodies.rdf"
+  local -r outFolder="$(widocoOutFolder "${outputDir}" "${ontFile}")"
+
+  logVar ontFile
+  logVar outFolder
+
+  #
+  # Ensure that target folder is empty
+  #
+  rm -rf "${outFolder}" >/dev/null 2>&1
+
+  (
+    cd "${TMPDIR}" || return $?
+    java \
+      -classpath /usr/share/java/log4j/log4j-core.jar:/usr/share/java/log4j/log4j-1.2-api.jar:/usr/share/java/log4j/log4j-api.jar \
+      -Dxxx=widoco \
+      --add-opens java.base/java.lang=ALL-UNNAMED \
+      -Xmx4g \
+      -Xms4g \
+      -Dfile.encoding=UTF-8 \
+      -Dlog4j.debug=false \
+      -Dlog4j.configuration="file:${TMPDIR}/widoco-log4j.properties" \
+      -Dlog4j.configurationFile="file:${TMPDIR}/widoco-log4j2.xml" \
+      -jar "${widocoJar}" \
+      -ontFile "${ontFile}" \
+      -outFolder "${outFolder}" \
+      -rewriteAll \
+      -saveConfig "${outFolder}/config.txt" \
+      -doNotDisplaySerializations \
+      -includeImportedOntologies \
+      -lang en  \
+      -getOntologyMetadata \
+      -webVowl
+    local -r rc=$?
+
+    logVar rc
+    return ${rc}
+  )
+  local -r rc=$?
+
+  log "x"
+  find "${outFolder}" | pipelog
+
+
+  return ${rc}
 }
 
 #
