@@ -49,7 +49,6 @@ function publishProductOntology() {
   ontologyCopyRdfToTarget || return $?
   ontologySearchAndReplaceStuff || return $?
   ontologyBuildCatalogs  || return $?
-exit 1
   ontologyConvertMarkdownToHtml || return $?
   ontologyBuildIndex  || return $?
   ontologyCreateAboutFiles || return $?
