@@ -154,7 +154,11 @@ function printfLog() {
 
 function log() {
 
-  blue "$@" >&2
+  if getIsDarkMode ; then
+    lightGreen "$@" >&2
+  else
+    blue "$@" >&2
+  fi
 }
 
 function logRule() {
@@ -167,7 +171,7 @@ function logItem() {
   local -r item="$1"
   shift
 
-  printf -- ' - %-25s : [%s]\n' "${item}" "$(bold "$@")"
+  printf -- ' - %-25s : [%s]\n' "${item}" "$(bold "$@")" >&2
 }
 
 function logVar() {
@@ -205,14 +209,20 @@ function pipelog() {
 
 function warning() {
 
-  local line="$@"
+  local line="$*"
 
-  printf "WARNING: \e[31m${line}\e[0m\n" >&2
+  if getIsDarkMode ; then
+    # light red
+    printf "WARNING: \e[91m${line}\e[0m\n" >&2
+  else
+    # red
+    printf "WARNING: \e[31m${line}\e[0m\n" >&2
+  fi
 }
 
 function verbose() {
 
-  ((verbose)) && log "$@"
+  ((verbose)) && log "$*"
 }
 
 function debug() {
@@ -348,11 +358,19 @@ function red() {
 }
 
 #
-# Blue is for technical but important messages
+# Blue is for technical but important messages in light mode
 #
 function blue() {
 
   printf "\e[34m%b\e[0m\n" "$*"
+}
+
+#
+# LightGreen is for technical but important messages in dark mode
+#
+function lightGreen() {
+
+  printf "\e[92m%b\e[0m\n" "$*"
 }
 
 #
@@ -989,3 +1007,33 @@ function getProdOntologies() {
     ${GREP} -v '*About*' | \
     ${GREP} -v '/etc/'
 }
+
+
+function getIsDarkMode() {
+
+  [ -n "${IS_DARK_MODE}" ] && return ${IS_DARK_MODE}
+  [ "${is_dark_mode:-1}" == "" ] || return ${is_dark_mode:-1}
+
+  if isMacOSX ; then
+    #
+    # In Mac OS X Mojave we can detect Dark mode
+    #
+    local style=$(defaults read -g AppleInterfaceStyle)
+    if [ "${style}" == "Dark" ] ; then
+      return 0
+    fi
+    return 1
+  fi
+
+  #
+  # In a Jenkins context we also use dark mode because the Blue Ocean logs show dark mode.
+  # The normal Jenkins UI does not but can support it.
+  #
+  if [ -n "${WORKSPACE}" ] ; then
+    return 0
+  fi
+
+  return 1
+}
+
+declare -r -g is_dark_mode=$(getIsDarkMode)

@@ -164,6 +164,15 @@ function checkCommandLine() {
     cli_option_clean=0
   fi
 
+  #
+  # The --dark option forces dark mode for all the colors being used.
+  #
+  if [[ "$@" =~ .*--dark($|[[:space:]]) ]] ; then
+    cli_option_dark=1
+  else
+    cli_option_dark=$(getIsDarkMode)
+  fi
+
   if ((cli_option_dev_mode == 1 && cli_option_pushimage == 1)) ; then
     error "Cannot push a dev-mode image to docker hub, the publisher code has to be copied into the image"
     return 1
