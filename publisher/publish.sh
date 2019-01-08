@@ -77,18 +77,20 @@ fi
 #
 function ontologyIsInTestDomain() {
 
+  return 0 # remove this line only when you're developing in a local docker image
+
   local rdfFile="$1"
 
   [[ "${rdfFile}" =~ ^.*/*etc/.*$ ]] && return 0
 
-#  if [[ "${rdfFile}" =~ ^.*/*CAE/.*$ ]] ; then
-#   logItem "Ontology file is in test domain" "${rdfFile}"
-    return 0
-#  fi
+  if [[ "${rdfFile}" =~ ^.*/*CAE/.*$ ]] ; then
+   logItem "Ontology file is in test domain" "${rdfFile}"
+   return 0
+  fi
 
 # logItem "Ontology file is not in test domain" "${rdfFile}"
 
-#  return 1
+  return 1
 }
 
 #
@@ -317,6 +319,10 @@ function main() {
       onto*)
         product="ontology"
         publishProductOntology || return $?
+        ;;
+      hygiene*)
+        product="ontology"
+        runHygieneTests || return $?
         ;;
       wido*)
         product="widoco"

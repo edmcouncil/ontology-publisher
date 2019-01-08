@@ -259,10 +259,14 @@ __HERE__
     cd / || return $?
     while read ontologyRdfFile ; do
 
+      logVar ontologyRdfFile
       ontologyVersionIRI="https://${ontologyRdfFile/.rdf}"
+      logVar ontologyVersionIRI
       ontologyVersionIRI="${ontologyVersionIRI/\/output/${spec_host}}"
+      logVar ontologyVersionIRI
 
       ontologyIRI="${ontologyVersionIRI/\/${GIT_BRANCH}\/${GIT_TAG_NAME}}"
+      logVar ontologyIRI
 
       cat >> "${tag_root}/ont-policy.rdf" << __HERE__
 
@@ -278,7 +282,7 @@ __HERE__
       <language  rdf:resource="http://www.w3.org/2000/01/rdf-schema" />
   </OntologySpec>
 __HERE__
-    done < <(find ${tag_root} -path '*/etc*' -prune -o -name '*About*' -prune -o -name 'ont-policy.rdf' -prune -o -name '*.rdf' -print)
+    done < <(getDevOntologies)
   )
 
   cat >> "${tag_root}/ont-policy.rdf" << __HERE__
@@ -298,7 +302,7 @@ function ontologyBuildCatalogs() {
 
   logRule "Step: ontologyBuildCatalogs"
 
-  find /output -name 'ont-policy.rdf' -o -name 'location-mapping.n3' -delete
+  find ${OUTPUT} -name 'ont-policy.rdf' -o -name 'location-mapping.n3' -delete
 
   ontologyBuildJenaCatalogs && ontologyBuildProtegeCatalogs
 }

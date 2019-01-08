@@ -110,37 +110,36 @@ function spinRunInferences() {
 
   setProduct "${savedProduct}" || return $?
 
-  cd /output/${family} || return 1
-
   if [ -f "${locationMappingFile}" ] ; then
-    log "Found ${locationMappingFile}"
+    logItem "JENA location mapping" "$(logFileName "${locationMappingFile}")"
   else
     error "Could not find ${locationMappingFile}"
   fi
   if [ -f "${ontologyPolicyFile}" ] ; then
-    log "Found ${ontologyPolicyFile}"
+    logItem "JENA ontology policy" "$(logFileName "${ontologyPolicyFile}")"
   else
     error "Could not find ${ontologyPolicyFile}"
   fi
 
   logItem "Run SPIN on" "$(logFileName "${inputFile}")"
   logItem "Producing" "$(logFileName "${outputFile}")"
-  logItem "Current Directory" "$(pwd)"
+  logItem "Current Directory" "$(logFileName "$(pwd)")"
 
   #
   # There's no other way to tell jena where to find the ont-policy.rdf file
   # so we have to copy it into the local directory (and remove it afterwards
   # so that we don't publish it here.
   #
-  cp "${locationMappingFile}" "$(pwd)"
-  cp "${ontologyPolicyFile}" "$(pwd)"
-  echo "jars is"
-  echo "$jars"
+  cp "${locationMappingFile}" "${tag_root:?}"
+  cp "${ontologyPolicyFile}" "${tag_root:?}"
+
+  logVar jars
+
   java \
     --add-opens java.base/java.lang=ALL-UNNAMED \
     -Dxxx=spin \
-    -Xms2g \
-    -Xmx2g \
+    -Xms1g \
+    -Xmx1g \
     -Dfile.encoding=UTF-8 \
     -Djava.io.tmpdir="${TMPDIR}" \
     -Dlog4j.configuration="file:${TMPDIR}/jena-log4j.properties" \

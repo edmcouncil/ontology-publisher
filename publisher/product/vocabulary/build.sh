@@ -301,17 +301,23 @@ function vocabularyGetOntologies() {
 
   log "Files that go into dev:"
 
-  ${FIND} "${ontology_product_tag_root}" -name "*.rdf" | ${SED} "s@^/output/@- @g"
+  while read -r fileName ; do
+    log "- $(logFileName "${fileName}")"
+  done < <(getDevOntologies)
 
   log "Files that go into prod:"
 
-  ${GREP} -r 'utl-av[:;.]Release' "${ontology_product_tag_root}" | ${SED} 's/:.*$//;s/^${WORKSPACE}/- /' | ${GREP} -F ".rdf"
+  while read -r fileName ; do
+    log "$(logFileName "${fileName}")"
+  done < <(getProdOntologies)
 
   #
   # Get ontologies for Dev
   #
+  # shellcheck disable=SC2046
+  #
   ${JENA_ARQ} \
-    $(${FIND}  "${ontology_product_tag_root}" -name "*.rdf" | ${SED} "s/^/--data=/") \
+    $(getDevOntologies | ${SED} "s/^/--data=/") \
     --data="${vocabulary_script_dir}/skosify.ttl" \
     --data="${vocabulary_script_dir}/datatypes.rdf" \
     --query="${vocabulary_script_dir}/skosecho.sparql" \
@@ -325,8 +331,10 @@ function vocabularyGetOntologies() {
   #
   # Get ontologies for Prod
   #
+  # shellcheck disable=SC2046
+  #
   ${JENA_ARQ} \
-    $(${GREP} -r 'utl-av[:;.]Release' "${ontology_product_tag_root}" | ${SED} 's/:.*$//;s/^/--data=/' | ${GREP} -F ".rdf") \
+    $(getProdOntologies | ${SED} "s/^/--data=/") \
     --data="${vocabulary_script_dir}/skosify.ttl" \
     --data="${vocabulary_script_dir}/datatypes.rdf" \
     --query="${vocabulary_script_dir}/skosecho.sparql" \
@@ -365,8 +373,8 @@ function vocabularyRunSpin() {
   "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/temp0.ttl" "${TMPDIR}/temp1.ttl" || return $?
   "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/temp0B.ttl" "${TMPDIR}/temp1B.ttl" || return $?
 
-  log "Generated $(logFileName "${TMPDIR}/temp1.ttl"):"
-  log "Generated $(logFileName "${TMPDIR}/temp1B.ttl"):"
+  logItem "Generated" "$(logFileName "${TMPDIR}/temp1.ttl"):"
+  logItem "Generated" "$(logFileName "${TMPDIR}/temp1B.ttl"):"
 
   log "Printing first 50 lines of $(logFileName "${TMPDIR}/temp1.ttl")"
   head -n50 "${TMPDIR}/temp1.ttl"

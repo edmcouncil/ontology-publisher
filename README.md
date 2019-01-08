@@ -23,7 +23,7 @@ have installed Docker.
 Run the publisher with the following command:
 
 ```bash
-./docker-run.sh
+./docker-run.sh --run
 ```
 
 If you'd like to have a shell inside the Docker Container use this:
@@ -43,6 +43,18 @@ If you'd like the ontology-publisher's container to start with a clean slate in 
 
 ```bash
 ./docker-run.sh --shell --dev --clean
+```
+
+If you'd like to just build the image:
+
+```bash
+./docker-run.sh --buildimage
+```
+
+If you'd like to publish the image to Docker Hub:
+
+```bash
+./docker-run.sh --pushimage
 ```
 
 ## Jenkins

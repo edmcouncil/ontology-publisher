@@ -26,7 +26,14 @@ function bookGenerateTdb2Database() {
     return 0
   fi
 
-  tdb2.tdbloader \
+  if ! which tdb2.tdbloader >/dev/null 2>&1 ; then
+    error "jena tdb2.tdbloader is not in the PATH"
+    logVar PATH
+    ls -al /usr/share/java/jena/latest/bin/
+    return 1
+  fi
+
+  /usr/share/java/jena/latest/bin/tdb2.tdbloader \
     --loc="${book_latex_dir}/tdb2" \
     --loader="phased" \
     --verbose \
@@ -180,7 +187,7 @@ function bookQueryListOfClasses() {
   tdb2.tdbquery \
     --loc="${book_latex_dir}/tdb2" \
     --query="${book_query_file}" \
-    --results=TSV | sort --key=1,2 --unique > "${book_results_file}"
+    --results=TSV | sort --key=1,2 --unique | ${SED} 's/\(^\|\t\)\t/\1 \t/g' > "${book_results_file}"
   rc=$?
   logItem "Finished query" "${book_query_file}"
   logItem "Results in" "${book_results_file}"
@@ -330,7 +337,7 @@ function bookQueryListOfSuperClasses() {
   tdb2.tdbquery \
     --loc="${book_latex_dir:?}/tdb2" \
     --query="${book_query_file}" \
-    --results=TSV > "${book_results_file}"
+    --results=TSV | ${SED} 's/\(^\|\t\)\t/\1 \t/g' > "${book_results_file}"
   rc=$?
   logItem "Finished query" "${book_query_file}"
   logItem "Results in" "${book_results_file}"
@@ -363,7 +370,7 @@ PREFIX fibo-fnd-utl-av: <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities
 SELECT DISTINCT
   (STR(?ontologyIRI) AS ?ontologyIRIstr)
   (STR(?ontologyVersionIRI) AS ?ontologyVersionIRIstr)
-  ?ontologyPrefix
+  (STR(?ontologyPrefix) AS ?ontologyPrefixStr)
   (STR(?ontologyLabel) AS ?ontologyLabelStr)
   (STR(?abstract) AS ?abstractStr)
   (STR(?preferredPrefix) AS ?preferredPrefixStr)
@@ -394,14 +401,14 @@ WHERE {
   # Optionally get the english label
   #
   OPTIONAL {
-    ?ontologyIRI rdfs:label ?ontologyLabel .
+    ?ontologyIRI sm:specificationTitle|dct:title|rdfs:label ?ontologyLabel .
 #   FILTER (lang(?ontologyLabel) = 'en')
   }
   #
   # Optionally get the english abstract
   #
   OPTIONAL {
-    ?ontologyIRI dct:abstract ?abstract .
+    ?ontologyIRI dct:abstract|sm:specificationAbstract|dct:description ?abstract .
 #   FILTER (lang(?abstract) = 'en')
   }
   #
@@ -423,17 +430,22 @@ WHERE {
   OPTIONAL {
     BIND(
       IF(
-        STR(?ontologyIRI) = STR(?namespace),
+        (
+          STR(?ontologyIRI) = STR(?namespace)
+        ) || (
+          CONCAT(STR(?ontologyIRI), "/") = STR(?namespace)
+        ) || (
+          CONCAT(STR(?ontologyIRI), "#") = STR(?namespace)
+        ),
         ?prefix,
         IF(
           BOUND(?preferredPrefix),
           ?preferredPrefix,
-          ""
+          "none"
         )
       )
       AS ?ontologyPrefix
     )
-    FILTER(?ontologyPrefix != "")
   }
 }
 ORDER BY ?ontologyIRI
@@ -471,7 +483,7 @@ function bookQueryListOfOntologies() {
   tdb2.tdbquery \
     --loc="${book_latex_dir:?}/tdb2" \
     --query="${book_query_file}" \
-    --results=TSV > "${book_results_file}"
+    --results=TSV | ${SED} 's/\(^\|\t\)\t/\1 \t/g' > "${book_results_file}"
   rc=$?
   logItem "Finished query" "${book_query_file}"
   logItem "Results in" "${book_results_file}"
