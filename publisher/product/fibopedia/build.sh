@@ -49,4 +49,21 @@ function publishProductFIBOpedia () {
       -o:${fibopedia_product_tag_root}/FIBOpedia.html \
       -xsl:${fibopedia_script_dir}/format-modules.xsl \
       ${fibopedia_product_tag_root}/modules-clean.rdf
+
+  logItem "Generating" "$(logFileName "${fibopedia_product_tag_root}/FIBOpedia.csv")"
+
+  java \
+    -cp /usr/share/java/saxon/saxon9he.jar \
+    net.sf.saxon.Transform \
+      -o:${fibopedia_product_tag_root}/FIBOpedia.csv \
+      -xsl:${fibopedia_script_dir}/csv-modules.xsl \
+      ${fibopedia_product_tag_root}/modules-clean.rdf
+
+logItem "Generating" "$(logFileName "${fibopedia_product_tag_root}/FIBOpedia.xslx")"
+      
+  ${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py \
+    "${fibopedia_product_tag_root}/FIBOpedia.csv" \
+    "${fibopedia_product_tag_root}/FIBOpedia.xlsx" \
+    "${fibopedia_script_dir}/csvconfig"
+
 }
