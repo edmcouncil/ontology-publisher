@@ -422,6 +422,7 @@ __HERE__
       cat >&3 <<< "No abstract available."
     fi
 
+    cat >&3 <<< "\\\\"
     cat >&3 <<< "\begin{description}[topsep=1.0pt]"
     #
     # Preferred prefix
@@ -519,8 +520,21 @@ __HERE__
     classPrefName="$(escapeLaTex "${classPrefName}")"
 
     cat >&3 << __HERE__
-\section{${classPrefName}} \label{sec:${classLaTexLabel}} \index{${classPrefName#*:}}
+{\renewcommand\addcontentsline[3]{} \section{${classPrefName}}}
+\label{sec:${classLaTexLabel}} \index{${classPrefName#*:}}
 __HERE__
+
+    #
+    # Label
+    #
+    if [ -n "${classLabel}" ] ; then
+      cat >&3 <<< "\textbf{$(escapeAndDetokenizeLaTex "${classLabel}")} \\\\"
+      if [ -n "${classLabel}" ] && [ -n "${definition}" ] ; then
+        bookAddGlossaryTerm "${classLabel}" "${definition}"
+      fi
+    else
+      book_stat_number_of_classes_without_label=$((book_stat_number_of_classes_without_label + 1))
+    fi
 
     #
     # Definition
@@ -531,16 +545,8 @@ __HERE__
       cat >&3 <<< "No definition available."
     fi
 
+    cat >&3 <<< "\\\\"
     cat >&3 <<< "\begin{description}[topsep=1.0pt]"
-    #
-    # Label
-    #
-    if [ -n "${classLabel}" ] ; then
-      cat >&3 <<< "\item [Label] $(escapeAndDetokenizeLaTex "${classLabel}")"
-      bookAddGlossaryTerm "${classLabel}" "${definition}"
-    else
-      book_stat_number_of_classes_without_label=$((book_stat_number_of_classes_without_label + 1))
-    fi
     #
     # Namespace
     #
@@ -683,7 +689,7 @@ function bookGenerateListOfSuperclasses() {
 
   if ((numberOfSuperClasses > 1)) ; then
     cat >&3 << __HERE__
-\item [Superclasses] \hfill \\\\
+\item [Superclasses] \hfill
 \begin{itemize}[noitemsep,nolistsep,topsep=1.0pt]
 __HERE__
   fi
