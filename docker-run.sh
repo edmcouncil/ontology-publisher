@@ -38,12 +38,14 @@ function inputDirectory() {
     # the windows directory that's supposed to be the input directory.
     # That shell-container should pass the current user id through somehow. Windows has it in USERNAME env var.
     #
-    echo -n "c:/Users/Dean/Documents/${family}"
+    echo -n "/c/Users/RivettPJ/Documents/FIBO-Development"
     return 0
   fi
 
   if [ -d "${HOME}/Work/${family}" ] ; then # Used by Jacobus
     echo -n "${HOME}/Work/${family}"
+  elif [ -d "/c/Users/RivettPJ/Documents/FIBO-Development" ] ; then
+    echo -n "/c/Users/RivettPJ/Documents/FIBO-Development"
   elif [ -d "${HOME}/${family}" ] ; then
     echo -n "${HOME}/Work/${family}"
   elif [ -d "/cygdrive/c/Users/Dean/Documents/${family}" ] ; then
