@@ -38,12 +38,14 @@ function inputDirectory() {
     # the windows directory that's supposed to be the input directory.
     # That shell-container should pass the current user id through somehow. Windows has it in USERNAME env var.
     #
-    echo -n "c:/Users/Dean/Documents/${family}"
+    echo -n "/c/Users/RivettPJ/Documents/FIBO-Development"
     return 0
   fi
 
   if [ -d "${HOME}/Work/${family}" ] ; then # Used by Jacobus
     echo -n "${HOME}/Work/${family}"
+  elif [ -d "/c/Users/RivettPJ/Documents/FIBO-Development" ] ; then
+    echo -n "/c/Users/RivettPJ/Documents/FIBO-Development"
   elif [ -d "${HOME}/${family}" ] ; then
     echo -n "${HOME}/Work/${family}"
   elif [ -d "/cygdrive/c/Users/Dean/Documents/${family}" ] ; then
@@ -124,6 +126,17 @@ function checkCommandLine() {
   fi
 
   #
+  # The --rebuild option builds the image from scratch
+  #
+  if [[ "$@" =~ .*--rebuildimage($|[[:space:]]) ]] || [[ "$@" =~ .*--rebuild($|[[:space:]]) ]] ; then
+    cli_option_buildimage=1
+    cli_option_rebuildimage=1
+  else
+    cli_option_buildimage=0
+    cli_option_rebuildimage=0
+  fi
+
+  #
   # The --run option runs the container
   #
   if [[ "$@" =~ .*--run($|[[:space:]]) ]] ; then
@@ -162,6 +175,15 @@ function checkCommandLine() {
     cli_option_clean=0
   fi
 
+  #
+  # The --dark option forces dark mode for all the colors being used.
+  #
+  if [[ "$@" =~ .*--dark($|[[:space:]]) ]] ; then
+    cli_option_dark=1
+  else
+    cli_option_dark=$(getIsDarkMode ; echo $?)
+  fi
+
   if ((cli_option_dev_mode == 1 && cli_option_pushimage == 1)) ; then
     error "Cannot push a dev-mode image to docker hub, the publisher code has to be copied into the image"
     return 1
@@ -184,6 +206,8 @@ function buildImage() {
 
   ((cli_option_buildimage == 0)) && return 0
 
+  cd "${SCRIPT_DIR}" || return $?
+
   local containerName="ontology-publisher"
 
   if ((cli_option_dev_mode)) ; then
@@ -194,12 +218,30 @@ function buildImage() {
     containerName+='-dev'
   fi
 
-  cd "${SCRIPT_DIR}" || return $?
+  local -a opts=()
+
+  opts+=('build')
+  ((cli_option_rebuildimage)) && opts+=('--no-cache')
+  opts+=('--build-arg')
+  opts+=("FAMILY=${FAMILY}")
+  opts+=('--build-arg')
+  opts+=("spec_host=${spec_host}")
+  opts+=('--build-arg')
+  opts+=("IS_DARK_MODE=${cli_option_dark}")
+  opts+=('--label')
+  opts+=('org.edmcouncil.ontology-publisher.version="0.0.1"')
+  opts+=('--label')
+  opts+=("org.edmcouncil.ontology-publisher.release-date="$(date "+%Y-%m-%d")"")
+  opts+=('--tag')
+  opts+=("edmcouncil/${containerName}:latest")
+  opts+=('--file')
+  opts+=("$(dockerFile) .")
+
   #
   # Build the image and tag it as ontology-publisher:latest
   #
-  log "docker build --file $(dockerFile) --tag edmcouncil/${containerName}:latest"
-  if docker build --file $(dockerFile) . --tag edmcouncil/${containerName}:latest ; then
+  log "docker ${opts[@]}"
+  if docker ${opts[@]} ; then
     log "--------- Finished Building the Docker Image ---------"
     return 0
   fi
@@ -256,6 +298,12 @@ function run() {
   opts+=('none')
   opts+=('--name')
   opts+=("${containerName}")
+  opts+=('--env')
+  opts+=("IS_DARK_MODE=${cli_option_dark}")
+  opts+=('--env')
+  opts+=("FAMILY=\"${FAMILY}\"")
+  opts+=('--env')
+  opts+=("spec_host=\"${spec_host}\"")
 
   logVar family
   log "Mounted:"

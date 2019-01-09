@@ -260,19 +260,20 @@ EOF
 
 function unabridged () {
 
-     #cd /cygdrive/c/Dean/Documents/fibo
+  #cd /cygdrive/c/Dean/Documents/fibo
   ${JENA_ARQ} \
     $(${FIND}  "${ontology_product_tag_root}" -name "*.rdf" | ${SED} "s/^/--data=/") \
     --query="${SCRIPT_DIR}/lib/echo.sparql" \
     --results=TTL > "${TMPDIR}/temp0.ttl"
-echo "finished gathering files"
+
+  log "Finished gathering files"
   
   ${JENA_ARQ} \
     --data="${TMPDIR}/temp0.ttl" \
     --query="${SCRIPT_DIR}/product/datadictionary/pseudorange.sq" \
     > "${TMPDIR}/pr.ttl"
 
-echo "finished running pr"
+  log "Finished running pr"
   
   cat > "${TMPDIR}/ss.sq" << EOF
 PREFIX afn: <http://jena.apache.org/ARQ/function#>
@@ -328,17 +329,16 @@ EOF
     --query="${TMPDIR}/ss.sq" \
     --results=TSV | ${SED} 's/"@[a-zA-Z-]*/"/g' > "${TMPDIR}/ssx.txt"
 
-echo "finished running ss"
+  log "Finished running ss"
   
   ${SED} -i 's!\^\^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>!!g'  "${TMPDIR}/ssx.txt"
   ${SED} -i 's!\^\^<http://www.w3.org/2001/XMLSchema#anyURI>!!g' "${TMPDIR}/ssx.txt"
 
-
-  echo "cleaned up output"
+  log "Cleaned up output"
   
   tail -n +2 "${TMPDIR}/ssx.txt" | sort  -u  > "${TMPDIR}/ss.txt"
 
-  echo "sorted"
+  log "Sorted"
   
   export fname=master_data_dictionary_unabridged
   echo "" > "${TMPDIR}/output.tsv"

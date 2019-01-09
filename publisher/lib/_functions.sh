@@ -154,7 +154,11 @@ function printfLog() {
 
 function log() {
 
-  blue "$@" >&2
+  if getIsDarkMode ; then
+    lightGreen "$@" >&2
+  else
+    blue "$@" >&2
+  fi
 }
 
 function logRule() {
@@ -167,7 +171,13 @@ function logItem() {
   local -r item="$1"
   shift
 
-  printf -- ' - %-25s : [%s]\n' "${item}" "$(bold "$@")"
+  if getIsDarkMode ; then
+    # lightgreen
+    printf -- ' - %-25s : [\e[92m%s\e[0m]\n' "${item}" "$*" >&2
+  else
+    # blue
+    printf -- ' - %-25s : [\e[34m%s\e[0m]\n' "${item}" "$*" >&2
+  fi
 }
 
 function logVar() {
@@ -181,9 +191,13 @@ function logDir() {
   local -r directory="${!1}"
 
   if [ -d "${directory}" ] ; then
-    printf -- ' - %-25s : [%s]\n' "${item}" "$(bold "$(logFileName "${directory}")")"
+    if [ "$(cd "${directory}" && ls -A)" ] ; then
+      printf -- ' - %-25s : [%s]\n' "${item}" "$(bold "$(logFileName "${directory}")")"
+    else
+      printf -- ' - %-25s : [%s] (is empty)\n' "${item}" "$(bold "$(logFileName "${directory}")")"
+    fi
   else
-    printf -- ' - %-25s : [%s] does not exist\n' "${item}" "$(bold "$(logFileName "${directory}")")"
+    printf -- ' - %-25s : [%s] (does not exist)\n' "${item}" "$(bold "$(logFileName "${directory}")")"
   fi
 }
 
@@ -201,14 +215,20 @@ function pipelog() {
 
 function warning() {
 
-  local line="$@"
+  local line="$*"
 
-  printf "WARNING: \e[31m${line}\e[0m\n" >&2
+  if getIsDarkMode ; then
+    # light red
+    printf "WARNING: \\033[38;5;208m${line}\e[0m\n" >&2
+  else
+    # red
+    printf "WARNING: \e[31m${line}\e[0m\n" >&2
+  fi
 }
 
 function verbose() {
 
-  ((verbose)) && log "$@"
+  ((verbose)) && log "$*"
 }
 
 function debug() {
@@ -248,7 +268,7 @@ function error() {
     local line="$*"
     # shellcheck disable=SC2046
     set -- $(caller 0)
-    if ! printf "ERROR: in $(sourceLine "$@"): \e[31m${line}\e[0m\n" >&2 ; then
+    if ! printf "ERROR: in $(sourceLine "$@"): \\033[38;5;208m${line}\e[0m\n" >&2 ; then
       echo "ERROR: Could not show error: $* ${line}" >&2
     fi
   fi
@@ -268,7 +288,7 @@ function errorNoSource() {
   else
     local line="$*"
     set -- $(caller 0)
-    printf "ERROR: \e[31m${line}\e[0m\n" >&2
+    printf "ERROR: \\033[38;5;208m${line}\e[0m\n" >&2
   fi
 
   return 1
@@ -285,9 +305,9 @@ function errorInCaller() {
     echo "$(date "+%Y-%m-%d %H:%M:%S.%3N") ERROR: $@" >&2
   else
     local line="$*"
-    line="${line//[0m;/[0;31m}"
+    line="${line//[0m;/[0;208m}"
     set -- $(caller 1)
-    printf "ERROR: in $(sourceLine $@): \e[31m${line}\e[0m\n" >&2
+    printf "ERROR: in $(sourceLine $@): \\033[38;5;208m${line}\e[0m\n" >&2
   fi
 
   return 1
@@ -305,7 +325,7 @@ function errorInCallerOfCaller() {
   else
     local line="$*"
     set -- $(caller 2)
-    printf "ERROR: in $(sourceLine $@): \e[31m${line}\e[0m\n" >&2
+    printf "ERROR: in $(sourceLine $@): \\033[38;5;208m${line}\e[0m\n" >&2
   fi
 
   return 1
@@ -324,7 +344,7 @@ function printfError() {
     shift
     printf -- "${formatString}" "$@" >&2
   else
-    local formatString="ERROR: %s: \e[31m%s\e[0m $1"
+    local formatString="ERROR: %s: \\033[38;5;208m%s\e[0m $1"
     shift
     local line="$*"
     # shellcheck disable=SC2046
@@ -336,7 +356,7 @@ function printfError() {
 }
 
 #
-# Red is for error messages
+# Red is for error messages in light mode
 #
 function red() {
 
@@ -344,11 +364,27 @@ function red() {
 }
 
 #
-# Blue is for technical but important messages
+# Lightred is for error messages in dark mode
+#
+function lightRed() {
+
+  printf "\\033[38;5;208m%b\e[0m\n" "$*"
+}
+
+#
+# Blue is for technical but important messages in light mode
 #
 function blue() {
 
   printf "\e[34m%b\e[0m\n" "$*"
+}
+
+#
+# LightGreen is for technical but important messages in dark mode
+#
+function lightGreen() {
+
+  printf "\e[92m%b\e[0m\n" "$*"
 }
 
 #
@@ -418,13 +454,26 @@ function sourceFile() {
   printf "${sourceFile}"
 }
 
+#
+# Use this function to show any file or directory name, it shortens it drastically, especially when running
+# in a Jenkins job context where the WORKSPACE path sits in front of all directory and file names.
+#
 function logFileName() {
 
-  local -r name1="${1}"
-  local -r name2="${name1/${OUTPUT}/<output>}"
-  local -r name3="${name2/${INPUT}/<input>}"
+  local -r name0="$1"
 
-  echo -n "${name3}"
+  if [ -n "${WORKSPACE}" ] ; then
+    local -r name1="${name0/${TMPDIR}/<ws>/tmp}"
+    local -r name2="${name1/${OUTPUT}/<ws>/output}"
+    local -r name3="${name2/${INPUT}/<ws>/input}"
+    local -r name4="${name3/${WORKSPACE}/<ws>}"
+    echo -n "${name4}"
+  else
+    local -r name1="${name0/${TMPDIR}/<tmp>}"
+    local -r name2="${name1/${OUTPUT}/<output>}"
+    local -r name3="${name2/${INPUT}/<input>}"
+    echo -n "${name3}"
+  fi
 }
 
 #
@@ -585,6 +634,10 @@ function initWorkspaceVars() {
   require family || return $?
   require spec_host || return $?
 
+  #
+  # We use logVar here and not logDir because we really want to show the actual WORKSPACE directory
+  # and not the shorthand version of it (which is <ws>)
+  #
   logVar WORKSPACE
 
   if [ -n "${WORKSPACE}" ] && [ -d "${WORKSPACE}/input" ] ; then
@@ -639,6 +692,8 @@ function initWorkspaceVars() {
   export spec_root="${OUTPUT:?}"
   export spec_family_root="${spec_root}/${family:?}"
 
+  mkdir -p "${spec_family_root}" >/dev/null 2>&1
+
   ((verbose)) && logDir spec_family_root
 
   export product_root=""
@@ -687,6 +742,11 @@ function setProduct() {
 
   ((verbose)) && logItem "product_root" "$(logFileName "${product_root}")"
 
+  if [ "${GIT_BRANCH}" == "head" ] ; then
+    error "Git repository not checked out to a local branch, GIT_BRANCH = head which is wrong"
+    return 1
+  fi
+
   export branch_root="${product_root}/${GIT_BRANCH}"
   export branch_root_url="${product_root_url}/${GIT_BRANCH}"
 
@@ -715,10 +775,11 @@ function initGitVars() {
 
   (
     cd "${source_family_root}" || return $?
-    git status
-    rc=$?
-    logVar rc
-    return ${rc}
+    log "Git status:"
+    git status 2>&1 | pipelog
+    local -r git_status_rc=$?
+    logVar git_status_rc
+    return ${git_status_rc}
   ) || return $?
 
   if [ -z "${GIT_COMMIT}" ] ; then
@@ -866,13 +927,13 @@ function escapeLaTex() {
 
   line="${line//\\/\\\\textbackslash }"
 
-  line="${line//&/\\&}"
   line="${line//%/\\%}"
   line="${line//\$/\\$}"
   line="${line//#/\\#}"
   line="${line//_/\\_}"
   line="${line//\{/\\\{}"
   line="${line//\}/\\\}}"
+  line="${line//&/{\\&\}}"
 
   line="${line//\~/\\\\textasciitilde }"
   line="${line//^/\\\\textasciicircum }"
@@ -882,11 +943,11 @@ function escapeLaTex() {
 
 function escapeLaTex_test_002_0001() {
 
-  local -r result="$(escapeLaTex "whatever_dude\what %is% #metoo in {this} ~day and ^age")"
+  local -r result="$(escapeLaTex "whatever_dude\what %is% #metoo in {this} ~day & ^age")"
 
   echo "[${result}]"
 
-  test "${result}" == "whatever\_dude\\textbackslash what \%is\% \#metoo in \{this\} \\textasciitilde day and \\textasciicircum age"
+  test "${result}" == "whatever\_dude\\textbackslash what \%is\% \#metoo in \{this\} \\textasciitilde day {\&} \\textasciicircum age"
 }
 #escapeLaTex_test_002_0001
 #exit $?
@@ -932,3 +993,60 @@ function isRunningInDockerContainer() {
 
   grep docker /proc/1/cgroup -qa >/dev/null 2>&1
 }
+
+#
+# Return all the .rdf files that go into "dev"
+#
+function getDevOntologies() {
+
+  requireValue ontology_product_tag_root || return $?
+
+  ${FIND} "${ontology_product_tag_root}" \
+    -path '*/etc*' -prune -o \
+    -name '*About*' -prune -o \
+    -name 'ont-policy.rdf' -prune -o \
+    -name '*.rdf' -print
+}
+
+#
+# Return all the .rdf files that go into "prod"
+#
+function getProdOntologies() {
+
+  requireValue ontology_product_tag_root || return $?
+
+  ${GREP} -r 'utl-av[:;.]Release' "${ontology_product_tag_root}" | \
+    ${GREP} -F ".rdf" | \
+    ${GREP} -v ont-policy.rdf | \
+    ${GREP} -v '*About*' | \
+    ${GREP} -v '/etc/'
+}
+
+
+function getIsDarkMode() {
+
+  [ -n "${IS_DARK_MODE}" ] && return ${IS_DARK_MODE}
+  [ -n "${is_dark_mode}" ] && return ${is_dark_mode}
+
+  if isMacOSX ; then
+    #
+    # In Mac OS X Mojave we can detect Dark mode
+    #
+    if [ "$(defaults read -g AppleInterfaceStyle)" == "Dark" ] ; then
+      return 0
+    fi
+    return 1
+  fi
+
+  #
+  # In a Jenkins context we also use dark mode because the Blue Ocean logs show dark mode.
+  # The normal Jenkins UI does not but can support it.
+  #
+  if [ -n "${WORKSPACE}" ] ; then
+    return 0
+  fi
+
+  return 1
+}
+
+declare -r -g is_dark_mode=$(getIsDarkMode ; echo $?)
