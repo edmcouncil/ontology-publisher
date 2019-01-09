@@ -308,6 +308,7 @@ function testWidoco() {
       -saveConfig "${outFolder}/config.txt" \
       -doNotDisplaySerializations \
       -includeImportedOntologies \
+      -includeAnnotationProperties \
       -lang en  \
       -getOntologyMetadata \
       -webVowl
