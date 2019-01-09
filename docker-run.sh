@@ -276,7 +276,7 @@ function run() {
       #
       ;;
     *)
-      error "Unknown linux: $(uname -a)"
+      echo "Unknown linux: $(uname -a)"
       ;;
   esac
   #
