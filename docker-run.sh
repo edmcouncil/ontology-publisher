@@ -208,7 +208,15 @@ function buildImage() {
   # Build the image and tag it as ontology-publisher:latest
   #
   log "docker build --file $(dockerFile) --tag edmcouncil/${containerName}:latest"
-  if docker build --file $(dockerFile) . --tag edmcouncil/${containerName}:latest ; then
+  if docker build \
+    --build-arg FAMILY=${FAMILY} \
+    --build-arg spec_host=${spec_host} \
+    --build-arg IS_DARK_MODE=$(getIsDarkMode) \
+    --label org.edmcouncil.ontology-publisher.version="0.0.1" \
+    --label org.edmcouncil.ontology-publisher.release-date="$(date "+%Y-%m-%d")" \
+    --file $(dockerFile) . \
+    --tag edmcouncil/${containerName}:latest ; \
+  then
     log "--------- Finished Building the Docker Image ---------"
     return 0
   fi
@@ -265,6 +273,12 @@ function run() {
   opts+=('none')
   opts+=('--name')
   opts+=("${containerName}")
+  opts+=('--env')
+  opts+=("IS_DARK_MODE=$(getIsDarkMode ; echo $?)")
+  opts+=('--env')
+  opts+=("FAMILY=\"${FAMILY}\"")
+  opts+=('--env')
+  opts+=("spec_host=\"${spec_host}\"")
 
   logVar family
   log "Mounted:"
