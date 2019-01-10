@@ -23,12 +23,13 @@ LABEL authors="jacobus.geluk@agnos.ai,dallemang@workingontologist.com,kartgk@gma
 LABEL owner="Enterprise Data Management Council"
 
 #
-# These ARG-variables are NOT environment variables that end up in the docker container itself.
-# They're just there during the image build process itself. You can override their default values
-# with any number of "--build-arg" options on the "docker build" command line.
+# These ARG-variables are NOT necessarily environment variables that end up in the docker container itself. Unless
+# their value is copied into a same named ENV variable. They're just there during the image build process itself.
+# You can override their default values with any number of "--build-arg" options on the "docker build" command line.
 #
 ARG FAMILY
 ARG spec_host
+ARG IS_DARK_MODE
 
 #
 # TODO: Move the FAMILY env to ARGS so that this can be used for other ontologies than FIBO
@@ -37,6 +38,7 @@ ENV \
   FAMILY=${FAMILY:-fibo} \
   INPUT=/input \
   OUTPUT=/output \
+  IS_DARK_MODE=${IS_DARK_MODE:-1} \
   RUNNING_IN_DOCKER=1 \
   TMPDIR=/var/tmp
 

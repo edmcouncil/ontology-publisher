@@ -171,7 +171,13 @@ function logItem() {
   local -r item="$1"
   shift
 
-  printf -- ' - %-25s : [%s]\n' "${item}" "$(bold "$@")" >&2
+  if getIsDarkMode ; then
+    # lightgreen
+    printf -- ' - %-25s : [\e[92m%s\e[0m]\n' "${item}" "$*" >&2
+  else
+    # blue
+    printf -- ' - %-25s : [\e[34m%s\e[0m]\n' "${item}" "$*" >&2
+  fi
 }
 
 function logVar() {
@@ -213,7 +219,7 @@ function warning() {
 
   if getIsDarkMode ; then
     # light red
-    printf "WARNING: \e[91m${line}\e[0m\n" >&2
+    printf "WARNING: \\033[38;5;208m${line}\e[0m\n" >&2
   else
     # red
     printf "WARNING: \e[31m${line}\e[0m\n" >&2
@@ -262,7 +268,7 @@ function error() {
     local line="$*"
     # shellcheck disable=SC2046
     set -- $(caller 0)
-    if ! printf "ERROR: in $(sourceLine "$@"): \e[31m${line}\e[0m\n" >&2 ; then
+    if ! printf "ERROR: in $(sourceLine "$@"): \\033[38;5;208m${line}\e[0m\n" >&2 ; then
       echo "ERROR: Could not show error: $* ${line}" >&2
     fi
   fi
@@ -282,7 +288,7 @@ function errorNoSource() {
   else
     local line="$*"
     set -- $(caller 0)
-    printf "ERROR: \e[31m${line}\e[0m\n" >&2
+    printf "ERROR: \\033[38;5;208m${line}\e[0m\n" >&2
   fi
 
   return 1
@@ -299,9 +305,9 @@ function errorInCaller() {
     echo "$(date "+%Y-%m-%d %H:%M:%S.%3N") ERROR: $@" >&2
   else
     local line="$*"
-    line="${line//[0m;/[0;31m}"
+    line="${line//[0m;/[0;208m}"
     set -- $(caller 1)
-    printf "ERROR: in $(sourceLine $@): \e[31m${line}\e[0m\n" >&2
+    printf "ERROR: in $(sourceLine $@): \\033[38;5;208m${line}\e[0m\n" >&2
   fi
 
   return 1
@@ -319,7 +325,7 @@ function errorInCallerOfCaller() {
   else
     local line="$*"
     set -- $(caller 2)
-    printf "ERROR: in $(sourceLine $@): \e[31m${line}\e[0m\n" >&2
+    printf "ERROR: in $(sourceLine $@): \\033[38;5;208m${line}\e[0m\n" >&2
   fi
 
   return 1
@@ -338,7 +344,7 @@ function printfError() {
     shift
     printf -- "${formatString}" "$@" >&2
   else
-    local formatString="ERROR: %s: \e[31m%s\e[0m $1"
+    local formatString="ERROR: %s: \\033[38;5;208m%s\e[0m $1"
     shift
     local line="$*"
     # shellcheck disable=SC2046
@@ -350,11 +356,19 @@ function printfError() {
 }
 
 #
-# Red is for error messages
+# Red is for error messages in light mode
 #
 function red() {
 
   printf "\e[31m%b\e[0m\n" "$*"
+}
+
+#
+# Lightred is for error messages in dark mode
+#
+function lightRed() {
+
+  printf "\\033[38;5;208m%b\e[0m\n" "$*"
 }
 
 #
@@ -1012,14 +1026,13 @@ function getProdOntologies() {
 function getIsDarkMode() {
 
   [ -n "${IS_DARK_MODE}" ] && return ${IS_DARK_MODE}
-  [ "${is_dark_mode:-1}" == "" ] || return ${is_dark_mode:-1}
+  [ -n "${is_dark_mode}" ] && return ${is_dark_mode}
 
   if isMacOSX ; then
     #
     # In Mac OS X Mojave we can detect Dark mode
     #
-    local style=$(defaults read -g AppleInterfaceStyle)
-    if [ "${style}" == "Dark" ] ; then
+    if [ "$(defaults read -g AppleInterfaceStyle)" == "Dark" ] ; then
       return 0
     fi
     return 1
@@ -1036,4 +1049,4 @@ function getIsDarkMode() {
   return 1
 }
 
-declare -r -g is_dark_mode=$(getIsDarkMode)
+declare -r -g is_dark_mode=$(getIsDarkMode ; echo $?)
