@@ -15,7 +15,7 @@ function ontologyBuildProtegeCatalog () {
 
   (
     cd "${directory}" || return $?    # Build the catalog in this directory
-    verbose "Building Protegé catalog in $(logFileName "${directory}")"
+    ((verbose)) && logItem "Protegé catalog" "$(logFileName "${directory}")"
 
     cat > catalog-v001.xml << __HERE__
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -172,7 +172,7 @@ __HERE__
     lm:altName "file://${ontologyRdfFile}"
   ],
 __HERE__
-    done < <(find ${tag_root} -path '*/etc*' -prune -o -name '*About*' -prune -o -name 'ont-policy.rdf' -prune -o -name '*.rdf' -print)
+    done < <(getDevOntologies)
   )
   #
   # Remove the last comma

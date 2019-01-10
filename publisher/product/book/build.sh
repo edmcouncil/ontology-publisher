@@ -340,7 +340,7 @@ function bookGenerateSectionOntologies() {
   cat >&3 << __HERE__
 \chapter{Ontologies}
 
-  This chapter enumerates all the (OWL) ontologies that play a role in ${family}.
+  This chapter enumerates all the (OWL) ontologies that play a role in ${FAMILY}.
 
 __HERE__
 
@@ -466,7 +466,7 @@ function bookGenerateSectionClasses() {
   cat >&3 << __HERE__
 \chapter{Classes}
 
-  This chapter enumerates all the (OWL) classes that play a role in ${family}.
+  This chapter enumerates all the (OWL) classes that play a role in ${FAMILY}.
   Per Class we show the following information:
 
   \begin{description}
@@ -590,7 +590,7 @@ function bookGenerateSectionProperties() {
   cat >&3 << __HERE__
 \chapter{Properties}
 
-  This chapter enumerates all the (OWL) properties that play a role in ${family}.
+  This chapter enumerates all the (OWL) properties that play a role in ${FAMILY}.
 
   TODO
 
@@ -610,7 +610,7 @@ function bookGenerateSectionIndividuals() {
   cat >&3 << __HERE__
 \chapter{Individuals}
 
-  This chapter enumerates all the (OWL) properties that play a role in ${family}.
+  This chapter enumerates all the (OWL) properties that play a role in ${FAMILY}.
 
   TODO
 
