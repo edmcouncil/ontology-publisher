@@ -185,6 +185,19 @@ function logVar() {
   logItem "$1" "${!1}"
 }
 
+function logBoolean() {
+
+  local -r value="${!1}"
+
+  if ((value)) ; then
+    logItem "$1" "true"
+    return 0
+  fi
+
+  logItem "$1" "false"
+  return 1
+}
+
 function logDir() {
 
   local -r item="$1"
@@ -631,7 +644,7 @@ function initWorkspaceVars() {
 
   require INPUT || return $?
   require OUTPUT || return $?
-  require family || return $?
+  require FAMILY || return $?
   require spec_host || return $?
 
   #
@@ -676,9 +689,9 @@ function initWorkspaceVars() {
   ((verbose)) && logDir TMPDIR
 
   #
-  # source_family_root: the root directory of the ${family} repo
+  # source_family_root: the root directory of the ${FAMILY} repo
   #
-  export source_family_root="${INPUT:?}/${family:?}"
+  export source_family_root="${INPUT:?}/${FAMILY:?}"
 
   #
   # Add your own directory locations above if you will
@@ -690,7 +703,7 @@ function initWorkspaceVars() {
   ((verbose)) && logDir source_family_root
 
   export spec_root="${OUTPUT:?}"
-  export spec_family_root="${spec_root}/${family:?}"
+  export spec_family_root="${spec_root}/${FAMILY:?}"
 
   mkdir -p "${spec_family_root}" >/dev/null 2>&1
 
@@ -708,7 +721,7 @@ function initWorkspaceVars() {
   # TODO: Make URL configurable
   #
   export spec_root_url="https://${spec_host}"
-  export spec_family_root_url="${spec_root_url}/${family}"
+  export spec_family_root_url="${spec_root_url}/${FAMILY}"
   export product_root_url=""
   export branch_root_url=""
   export tag_root_url=""
@@ -766,7 +779,7 @@ function setProduct() {
   ((verbose)) && logItem "tag_root" "$(logFileName "${tag_root}")"
 
   export product_branch_tag="${ontology_publisher_current_product}/${GIT_BRANCH}/${GIT_TAG_NAME}"
-  export family_product_branch_tag="${family}/${product_branch_tag}"
+  export family_product_branch_tag="${FAMILY}/${product_branch_tag}"
 
   return 0
 }
