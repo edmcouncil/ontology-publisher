@@ -1,0 +1,10 @@
+#
+# Variant of Echo SPARQL, used to merge 2 or more RDF files together with Jena
+# Removes imports 
+#
+prefix owl: <http://www.w3.org/2002/07/owl#>
+
+CONSTRUCT {?s ?p ?o} 
+WHERE {?s ?p ?o .
+FILTER (?p != owl:imports)
+}
