@@ -1015,7 +1015,7 @@ function getProdOntologies() {
 
   requireValue ontology_product_tag_root || return $?
 
-  ${GREP} -r 'utl-av[:;.]Release' "${ontology_product_tag_root}" | \
+  ${GREP} -rl 'utl-av[:;.]Release' "${ontology_product_tag_root}" | \
     ${GREP} -F ".rdf" | \
     ${GREP} -v ont-policy.rdf | \
     ${GREP} -v '*About*' | \
