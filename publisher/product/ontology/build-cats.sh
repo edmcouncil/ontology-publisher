@@ -262,7 +262,7 @@ __HERE__
       logVar ontologyRdfFile
       ontologyVersionIRI="https://${spec_host}/${ontologyRdfFile/.rdf}"
       logVar ontologyVersionIRI
-      ontologyVersionIRI="${ontologyVersionIRI/${spec_host}.*output/}"
+      ontologyVersionIRI="${ontologyVersionIRI/${spec_host}?*output/}"
       logVar ontologyVersionIRI
 
       ontologyIRI="${ontologyVersionIRI/\/${GIT_BRANCH}\/${GIT_TAG_NAME}}"
