@@ -260,9 +260,9 @@ __HERE__
     while read ontologyRdfFile ; do
 
       logVar ontologyRdfFile
-      ontologyVersionIRI="https://${ontologyRdfFile/.rdf}"
+      ontologyVersionIRI="https://${spec_host}/${ontologyRdfFile/.rdf}"
       logVar ontologyVersionIRI
-      ontologyVersionIRI="${ontologyVersionIRI/\/output/${spec_host}}"
+      ontologyVersionIRI="${ontologyVersionIRI/${spec_host}.*output/}"
       logVar ontologyVersionIRI
 
       ontologyIRI="${ontologyVersionIRI/\/${GIT_BRANCH}\/${GIT_TAG_NAME}}"
