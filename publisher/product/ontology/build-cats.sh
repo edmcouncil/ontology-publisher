@@ -157,8 +157,8 @@ __HERE__
     #
     while read ontologyRdfFile ; do
 
-      ontologyVersionIRI="https://${ontologyRdfFile/.rdf}"
-      ontologyVersionIRI="${ontologyVersionIRI/\/output/${spec_host}}"
+      ontologyVersionIRI="https://${spec_host}/${ontologyRdfFile/.rdf//}"
+      ontologyVersionIRI="${ontologyVersionIRI/${spec_host}?*output/${spec_host}}"
 
       ontologyIRI="${ontologyVersionIRI/\/${GIT_BRANCH}\/${GIT_TAG_NAME}}"
 
