@@ -41,7 +41,7 @@ class Adder():
 
                 
         def dump (self, file):
-                self.g.serialize(format="xml", destination=file)
+                self.g.serialize(destination=file.replace(".rdf", ".ttl"), format='ttl')
 
 
 
