@@ -38,8 +38,7 @@ function inputDirectory() {
     # the windows directory that's supposed to be the input directory.
     # That shell-container should pass the current user id through somehow. Windows has it in USERNAME env var.
     #
-      #    echo -n "/c/Users/RivettPJ/Documents/FIBO-Development"
-          echo -n "/c/Users/Dean/Documents/fibo"
+    echo -n "/c/Users/RivettPJ/Documents/FIBO-Development"
     return 0
   fi
 
