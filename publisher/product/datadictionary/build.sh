@@ -100,7 +100,7 @@ WHERE {
   FIlTER (REGEX (xsd:string (?class), "edmcouncil"))
   ?class rdfs:subClassOf* ?base1 .
   ?b1 edm:pseudodomain ?base1; a edm:PR ; edm:p ?p ; edm:pseudorange ?r1  .
-  ?p av:forDD "true"^^xsd:boolean .
+#  ?p av:forDD "true"^^xsd:boolean .
   FILTER NOT EXISTS {
     ?class rdfs:subClassOf* ?base2 .
 # FILTER (?base2 != ?base1)

@@ -56,7 +56,7 @@ function convertRdfFileTo() {
     org.edmcouncil.rdf_toolkit.SesameRdfFormatter \
     --source "${rdfFile}" \
     --source-format "${sourceFormat}" \
-    --target "${targetFile}" \
+    --target "${targetFile}X" \
     --target-format "${targetFormat}" \
     --inline-blank-nodes \
     --infer-base-iri \
@@ -64,6 +64,8 @@ function convertRdfFileTo() {
     > "${logfile}" 2>&1
   rc=$?
 
+  cp "${targetFile}X" "${targetFile}" \
+  
   #
   # For the turtle files, we want the base annotations to be the versionIRI
   #
