@@ -210,26 +210,27 @@ RUN \
   rm /var/tmp/SaxonHE${SAXON_VERSION}.zip
     
 
-#
-# Installing Widoco
-#
-RUN \
-  widoco_version="1.4.7" ; \
-  widoco_root_url="https://jenkins.edmcouncil.org/view/widoco/job/widoco-build/lastStableBuild/es.oeg\$widoco/artifact/es.oeg" ; \
-  echo ================================= install widoco ${widoco_version} >&2 && \
-  #
-  # Creating widoco and its config directory and storing an empty config file in there which suppresses
-  # an annoying log message at each invocation of widoco
-  #
-  mkdir -p /usr/share/java/widoco/config || true && \
-  touch /usr/share/java/widoco/config/config.properties && \
-  curl \
-    --fail \
-    --insecure \
-    --location \
-    --output /usr/share/java/widoco/widoco-launcher.jar \
-    --url ${widoco_root_url}/widoco/${widoco_version}/widoco-${widoco_version}-launcher.jar && \
-  test -f /usr/share/java/widoco/widoco-launcher.jar
+##
+## Installing Widoco
+##
+#RUN \
+#  widoco_version="1.4.7" ; \
+#  widoco_version="1.4.7" ; \
+#  widoco_root_url="https://jenkins.edmcouncil.org/view/widoco/job/widoco-build/lastStableBuild/es.oeg\$widoco/artifact/es.oeg" ; \
+#  echo ================================= install widoco ${widoco_version} >&2 && \
+#  #
+#  # Creating widoco and its config directory and storing an empty config file in there which suppresses
+#  # an annoying log message at each invocation of widoco
+#  #
+#  mkdir -p /usr/share/java/widoco/config || true && \
+#  touch /usr/share/java/widoco/config/config.properties && \
+#  curl \
+#    --fail \
+#    --insecure \
+#    --location \
+#    --output /usr/share/java/widoco/widoco-launcher.jar \
+#    --url ${widoco_root_url}/widoco/${widoco_version}/widoco-${widoco_version}-launcher.jar && \
+#  test -f /usr/share/java/widoco/widoco-launcher.jar
 
 #
 # Installing log4j (needed by widoco)
@@ -269,6 +270,7 @@ RUN \
 
 COPY etc /etc
 COPY root /root
+COPY usr /usr
 
 #
 # <skip in dev mode begin>

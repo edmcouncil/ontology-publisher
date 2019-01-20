@@ -6,8 +6,7 @@
 #
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)" || exit 1
 
-export family="${FAMILY:-fibo}"
-export FAMILY="${family}"
+export FAMILY="${FAMILY:-fibo}"
 export spec_host="${spec_host:-spec.edmcouncil.org}"
 
 if [ -f ${SCRIPT_DIR}/publisher/lib/_functions.sh ] ; then
@@ -30,7 +29,7 @@ function inputDirectory() {
   # JG>Dean, to make this work from inside your shell-container we need
   # to have a detection here whether we're running inside that container
   # or not. When you're IN the container, we cannot check for the existence
-  # of /cygdrive/c/Users/Dean/Documents/${family}
+  # of /cygdrive/c/Users/Dean/Documents/${FAMILY}
 
   if isRunningInDockerContainer ; then
     #
@@ -42,16 +41,16 @@ function inputDirectory() {
     return 0
   fi
 
-  if [ -d "${HOME}/Work/${family}" ] ; then # Used by Jacobus
-    echo -n "${HOME}/Work/${family}"
+  if [ -d "${HOME}/Work/${FAMILY}" ] ; then # Used by Jacobus
+    echo -n "${HOME}/Work/${FAMILY}"
   elif [ -d "/c/Users/RivettPJ/Documents/FIBO-Development" ] ; then
     echo -n "/c/Users/RivettPJ/Documents/FIBO-Development"
-  elif [ -d "${HOME}/${family}" ] ; then
-    echo -n "${HOME}/Work/${family}"
-  elif [ -d "/cygdrive/c/Users/Dean/Documents/${family}" ] ; then
-    echo -n "c:/Users/Dean/Documents/${family}"
+  elif [ -d "${HOME}/${FAMILY}" ] ; then
+    echo -n "${HOME}/Work/${FAMILY}"
+  elif [ -d "/cygdrive/c/Users/Dean/Documents/${FAMILY}" ] ; then
+    echo -n "c:/Users/Dean/Documents/${FAMILY}"
   else
-    error "No ${family} root found"
+    error "No ${FAMILY} root found"
     return 1
   fi
 
@@ -76,7 +75,7 @@ function outputDirectory() {
     #
     # Dean, the input and output directory should be different from each other
     #
-    echo -n "c:/Users/Dean/Documents/${family}-output"
+    echo -n "c:/Users/Dean/Documents/${FAMILY}-output"
     return 0
   fi
 
@@ -97,7 +96,7 @@ function temporaryFilesDirectory() {
     # the windows directory that's supposed to be the tmp directory.
     # That shell-container should pass the current user id through somehow. Windows has it in USERNAME env var.
     #
-    echo -n "c:/Users/Dean/Documents/${family}-tmp"
+    echo -n "c:/Users/Dean/Documents/${FAMILY}-tmp"
     return 0
   fi
 
@@ -263,7 +262,7 @@ function run() {
 
   ((cli_option_runimage == 0)) && return 0
 
-  requireValue family || return $?
+  requireValue FAMILY || return $?
 
   cd "${SCRIPT_DIR}" || return $?
 
@@ -294,21 +293,21 @@ function run() {
   opts+=('run')
   opts+=('--rm')
   opts+=('--tty')
-  opts+=('--network')
-  opts+=('none')
+#  opts+=('--network')
+#  opts+=('none')
   opts+=('--name')
   opts+=("${containerName}")
   opts+=('--env')
   opts+=("IS_DARK_MODE=${cli_option_dark}")
   opts+=('--env')
-  opts+=("FAMILY=\"${FAMILY}\"")
+  opts+=("FAMILY=${FAMILY}")
   opts+=('--env')
-  opts+=("spec_host=\"${spec_host}\"")
+  opts+=("spec_host=${spec_host}")
 
-  logVar family
+  logVar FAMILY
   log "Mounted:"
-  logItem "/input/${family}" "${inputDirectory}"
-  opts+=("--mount type=bind,source=${inputDirectory},target=/input/${family},readonly,consistency=cached")
+  logItem "/input/${FAMILY}" "${inputDirectory}"
+  opts+=("--mount type=bind,source=${inputDirectory},target=/input/${FAMILY},readonly,consistency=cached")
   logItem "/output" "${outputDirectory}"
   opts+=("--mount type=bind,source=${outputDirectory},target=/output,consistency=delegated")
   case $(uname -a) in
@@ -361,10 +360,10 @@ function run() {
     opts+=('-l')
   fi
 
-#  set -x
+  log "docker ${opts[@]}"
   docker ${opts[@]}
-  local rc=$?
-#  set +x
+  local -r rc=$?
+
   return ${rc}
 }
 

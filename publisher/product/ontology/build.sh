@@ -479,7 +479,7 @@ function ontologyConvertRdfToAllFormats() {
 
   pushd "${tag_root:?}" >/dev/null || return $?
 
-  local -r maxParallelJobs=1
+  local -r maxParallelJobs=2
   local numberOfParallelJobs=0
 
   log "Running ${maxParallelJobs} converter jobs in parallel:"

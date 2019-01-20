@@ -64,12 +64,12 @@ function generateWidocoLog4jConfig() {
   #
   # Don't overwrite an existing one created by a previous (or parallel) run of this script
   #
-  [ -f "${TMPDIR}/widoco-log4j.properties" ] && return 0
+  [[ -f "${TMPDIR}/widoco-log4j.properties" ]] && return 0
 
   logItem "Widoco log4j config" "$(logFileName "${TMPDIR}/widoco-log4j.properties")"
 
   cat > "${TMPDIR}/widoco-log4j.properties" << __HERE__
-log4j.rootLogger=INFO, stdlog
+log4j.rootLogger=DEBUG, stdlog
 
 log4j.appender.stdlog=org.apache.log4j.ConsoleAppender
 log4j.appender.stdlog.target=System.err
@@ -80,6 +80,7 @@ log4j.appender.stdout.Threshold=TRACE
 log4j.appender.org.apache.logging.log4j.simplelog.StatusLogger.level=TRACE
 
 log4j.appender.org.semanticweb.owlapi=TRACE
+log4j.appender.widoco.JenaCatalogIRIMapper=DEBUG
 #
 __HERE__
 }
@@ -117,7 +118,7 @@ function generateWidocoDocumentation() {
     cd "${directory}" || return $?
 
     local -r directories="$(find . -mindepth 1 -maxdepth 1 -type d)"
-    if [ -z "${directories}" ] ; then
+    if [[ -z "${directories}" ]] ; then
       verbose "Directory $(pwd) has no subdirectories"
     else
       for directoryEntry in ${directories} ; do
@@ -139,7 +140,7 @@ function generateWidocoDocumentation() {
 
 function widocoLauncherJar() {
 
-  if [ -f /usr/share/java/widoco/widoco-launcher.jar ] ; then
+  if [[ -f /usr/share/java/widoco/widoco-launcher.jar ]] ; then
     echo -n "/usr/share/java/widoco/widoco-launcher.jar"
   else
     error "Could not find Widoco jar"
@@ -179,7 +180,7 @@ function generateWidocoDocumentationForFile() {
 
   #    -licensius \
 
-  if [ ! -f "${TMPDIR}/widoco-log4j.properties" ] ; then
+  if [[ ! -f "${TMPDIR}/widoco-log4j.properties" ]] ; then
     error "Missing ${TMPDIR}/widoco-log4j.properties"
     return 1
   fi
@@ -212,7 +213,7 @@ function generateWidocoDocumentationForFile() {
   local -r rc=${PIPESTATUS[0]}
   logItem "Widoco rc" "${rc}"
 
-  if [ ${rc} -ne 0 ] ; then
+  if [[ ${rc} -ne 0 ]] ; then
     find ${outputDir} -ls
     error "Could not run widoco on ${turtleFile} "
     #log "Printing contents of file ${rdfFile} "
@@ -278,11 +279,14 @@ function testWidoco() {
 
   local widocoJar ; widocoJar="$(widocoLauncherJar)" || return $?
   local -r outputDir="${widoco_product_tag_root}"
-  local -r ontFile="${ontology_product_tag_root}/BE/LegalEntities/CorporateBodies.rdf"
+# local -r ontFile="${ontology_product_tag_root}/BE/LegalEntities/CorporateBodies.rdf"
+  local -r ontFile="${ontology_product_tag_root}/CAE/CorporateEvents/CorporateActionsEvents.rdf"
   local -r outFolder="$(widocoOutFolder "${outputDir}" "${ontFile}")"
 
   logVar ontFile
   logVar outFolder
+
+  local -r ontologyPolicyFile="${ontology_product_tag_root:?}/ont-policy.rdf"
 
   #
   # Ensure that target folder is empty
@@ -291,6 +295,7 @@ function testWidoco() {
 
   (
     cd "${TMPDIR}" || return $?
+    cp "${ontologyPolicyFile}" .
     java \
       -classpath /usr/share/java/log4j/log4j-core.jar:/usr/share/java/log4j/log4j-1.2-api.jar:/usr/share/java/log4j/log4j-api.jar \
       -Dxxx=widoco \
@@ -333,12 +338,12 @@ function widocoRemoveIntroductionSection() {
 
   local -r indexHtml="${outputDir}/${rdfFileNoExtension}/index-en.html"
 
-  if [ ! -f "${indexHtml}" ] ; then
+  if [[ ! -f "${indexHtml}" ]] ; then
     logItem "Not found" "$(logFileName "${indexHtml}")"
     return 0
   fi
 
-  if [ "${turtleFile}" = "AboutFIBODev.ttl" ] || [ "${turtleFile}" = "Corporations.ttl" ] ; then
+  if [[ "${turtleFile}" = "AboutFIBODev.ttl" ]] || [[ "${turtleFile}" = "Corporations.ttl" ]] ; then
     log "Printing contents of file before modification ${outputDir}/${rdfFileNoExtension}/index-en.html "
     cat "${indexHtml}"
   fi
@@ -370,7 +375,7 @@ function widocoRemoveIntroductionSection() {
   # log "Removing anchor tags for skos core generated improperly in the imported ontologies section"
   # ${SED} -i 's@\(<a[^>]*>\)core</a>@@g' "${indexHtml}"
 
-  if [ "${turtleFile}" = "AboutFIBODev.ttl" -o "${turtleFile}" = "Corporations.ttl" ] ; then
+  if [[ "${turtleFile}" = "AboutFIBODev.ttl" ]] || [[ "${turtleFile}" = "Corporations.ttl" ]] ; then
     log "Printing contents of file after modification ${outputDir}/${rdfFileNoExtension}/index-en.html "
     cat "${indexHtml}"
   fi
