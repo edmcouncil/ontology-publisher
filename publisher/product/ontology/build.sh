@@ -333,11 +333,13 @@ function ontologyAddIsDefinedBy () {
 
   logItem "add isDefinedBy to" "$(logFileName "${file}")"
 
+  cp "${file}" "${file}.orig"
+
   ${PYTHON3} ${SCRIPT_DIR}/lib/addIsDefinedBy.py --file="${file}"
 
   cp "${file}" "${file}.save"
 
-  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${file}" "rdf-xml"
+  ${SCRIPT_DIR}/utils/convertRdfFile.sh turtle "${file/.rdf/.ttl}" "rdf-xml"
 
   return $?
 }

@@ -149,7 +149,7 @@ function publishProductGlossaryContent() {
       --data=${glossary_script_dir}/owlnames.ttl \
       --data="${SCRIPT_DIR}/lib/ontologies/omg/CountryRepresentation.rdf" \
       --data="${SCRIPT_DIR}/lib/ontologies/omg/LanguageRepresentation.rdf" \
-      --query="${SCRIPT_DIR}/lib/echo.sparql" \
+      --query="${SCRIPT_DIR}/lib/noimport.sparql" \
       --results=Turtle > "${TMPDIR}/glossary-dev.ttl"
 
     if [ ${PIPESTATUS[0]} -ne 0 ] ; then
@@ -224,6 +224,7 @@ function publishProductGlossaryContent() {
 #    log "debug=true so only generating the test version of the glossary"
 #    "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-test.ttl" "${glossary_product_tag_root}/glossary-test.ttl" || return $?
 #  else
+set -x
     log "debug=false so now we're generating the full prod and dev versions"
 
 #    if ((numberOfProductionLevelOntologyFiles > 0)) ; then

@@ -170,7 +170,7 @@ skosify:subs
                           sp:varName "a2" ;
                         ] ;
                     ] ;
-                  sp:arg2 "[{].[}]" ;
+                  sp:arg2 "[{]M[}]" ;
                   sp:arg3 [
                       sp:varName "mod" ;
                     ] ;
