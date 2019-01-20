@@ -9,7 +9,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)" || exit 1
 export FAMILY="${FAMILY:-fibo}"
 export spec_host="${spec_host:-spec.edmcouncil.org}"
 
-if [ -f ${SCRIPT_DIR}/publisher/lib/_functions.sh ] ; then
+if [[ -f ${SCRIPT_DIR}/publisher/lib/_functions.sh ]] ; then
   # shellcheck source=publisher/lib/_functions.sh
   source ${SCRIPT_DIR}/publisher/lib/_functions.sh || exit $?
 else # This else section is to trick IntelliJ Idea to actually load _functions.sh during editing
@@ -42,13 +42,13 @@ function inputDirectory() {
     return 0
   fi
 
-  if [ -d "${HOME}/Work/${FAMILY}" ] ; then # Used by Jacobus
+  if [[ -d "${HOME}/Work/${FAMILY}" ]] ; then # Used by Jacobus
     echo -n "${HOME}/Work/${FAMILY}"
-  elif [ -d "/c/Users/RivettPJ/Documents/FIBO-Development" ] ; then
+  elif [[ -d "/c/Users/RivettPJ/Documents/FIBO-Development" ]] ; then
     echo -n "/c/Users/RivettPJ/Documents/FIBO-Development"
-  elif [ -d "${HOME}/${FAMILY}" ] ; then
+  elif [[ -d "${HOME}/${FAMILY}" ]] ; then
     echo -n "${HOME}/Work/${FAMILY}"
-  elif [ -d "/cygdrive/c/Users/Dean/Documents/${FAMILY}" ] ; then
+  elif [[ -d "/cygdrive/c/Users/Dean/Documents/${FAMILY}" ]] ; then
     echo -n "c:/Users/Dean/Documents/${FAMILY}"
   else
     error "No ${FAMILY} root found"
@@ -101,7 +101,10 @@ function temporaryFilesDirectory() {
     return 0
   fi
 
-  mkdir -p "${SCRIPT_DIR}/../tmp" >/dev/null 2>&1
+  if ! mkdir -p "${SCRIPT_DIR}/../tmp" >/dev/null 2>&1 ; then
+    error "Could not create directory ${SCRIPT_DIR}/../tmp"
+  fi
+
   echo -n "$(cd ${SCRIPT_DIR}/../tmp && pwd -L)"
 }
 
@@ -311,22 +314,9 @@ function run() {
   opts+=("--mount type=bind,source=${inputDirectory},target=/input/${FAMILY},readonly,consistency=cached")
   logItem "/output" "${outputDirectory}"
   opts+=("--mount type=bind,source=${outputDirectory},target=/output,consistency=delegated")
-  case $(uname -a) in
-    *Darwin*)
-      logItem "/var/tmp" "${temporaryFilesDirectory}"
-      opts+=("--mount type=bind,source=${temporaryFilesDirectory},target=/var/tmp,consistency=delegated")
-      ;;
-    *Microsoft*)
-      logItem "/tmp" "${temporaryFilesDirectory}/../tmp2"
-      opts+=("--mount type=bind,source=${temporaryFilesDirectory}/../tmp2,target=/tmp,consistency=delegated")
-      #
-      # The line above does not make sense, target=/tmp is not better than target=/var/tmp
-      #
-      ;;
-    *)
-      echo "Unknown linux: $(uname -a)"
-      ;;
-  esac
+  logItem "/var/tmp" "${temporaryFilesDirectory}"
+  opts+=("--mount type=bind,source=${temporaryFilesDirectory},target=/var/tmp,consistency=delegated")
+
   #
   # When running in dev mode we mount the ontology publisher's repo's root directory as well
   #
