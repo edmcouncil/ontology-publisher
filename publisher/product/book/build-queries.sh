@@ -21,30 +21,28 @@ function bookGenerateTdb2Database() {
   requireValue book_latex_dir || return $?
   requireValue ontology_product_tag_root || return $?
 
-  if [ -d "${book_latex_dir}/tdb2" ] ; then
+  if [[ -d "${book_latex_dir}/tdb2" ]] ; then
     warning "Skipping recreation of ${book_latex_dir}/tdb2"
     return 0
   fi
 
   if ! which tdb2.tdbloader >/dev/null 2>&1 ; then
     error "jena tdb2.tdbloader is not in the PATH"
-    logVar PATH
-    ls -al /usr/share/java/jena/latest/bin/
     return 1
   fi
 
-  /usr/share/java/jena/latest/bin/tdb2.tdbloader \
+  tdb2.tdbloader \
     --loc="${book_latex_dir}/tdb2" \
     --loader="phased" \
     --verbose \
-    $(${FIND} "${ontology_product_tag_root}" -name "*.rdf")
+    $(getDevOntologies)
 }
 
 function bookGeneratePrefixesAsSparqlValues() {
 
   logRule "Step: bookGeneratePrefixesAsSparqlValues"
 
-  if [ -f "${TMPDIR}/book-prefixes.txt" ] ; then
+  if [[ -f "${TMPDIR}/book-prefixes.txt" ]] ; then
     warning "Skipping recreation of ${TMPDIR}/book-prefixes.txt"
     return 0
   fi
@@ -168,8 +166,8 @@ function bookQueryListOfClasses() {
   # If the results file already exists then it doesn't make sense
   # to run the query again.
   #
-  [ -z "${book_results_file}" ] && return 1
-  if [ -f "${book_results_file}" ] ; then
+  [[ -z "${book_results_file}" ]] && return 1
+  if [[ -f "${book_results_file}" ]] ; then
     bookQueryListOfClassesInitArray
     return $?
   fi
@@ -202,15 +200,15 @@ function bookQueryListOfClasses() {
 
 function bookQueryListOfClassesInitArray() {
 
-  [ ${#book_array_classes[*]} -gt 0 ] && return 0
+  [[ ${#book_array_classes[*]} -gt 0 ]] && return 0
 
   logRule "Step: bookQueryListOfClassesInitArray (should take less than 40 seconds)"
 
   while IFS=$'\t' read -a line ; do
 
-    [ "${line[0]}" == "" ] && continue
-    [ "${line[1]}" == "" ] && continue
-    [ "${line[0]:0:1}" == "?" ] && continue
+    [[ "${line[0]}" == "" ]] && continue
+    [[ "${line[1]}" == "" ]] && continue
+    [[ "${line[0]:0:1}" == "?" ]] && continue
 
     classIRI="$(stripQuotes "${line[0]}")"
     classPrefName="$(stripQuotes "${line[1]}")"
@@ -328,8 +326,8 @@ function bookQueryListOfSuperClasses() {
   # If the results file already exists then it doesn't make sense
   # to run the query again.
   #
-  [ -z "${book_results_file}" ] && return 1
-  [ -f "${book_results_file}" ] && return 0
+  [[ -z "${book_results_file}" ]] && return 1
+  [[ -f "${book_results_file}" ]] && return 0
 
   logRule "Step: bookQueryListOfSuperClasses"
 
@@ -471,8 +469,8 @@ function bookQueryListOfOntologies() {
   # If the results file already exists then it doesn't make sense
   # to run the query again.
   #
-  [ -z "${book_results_file}" ] && return 1
-  if [ -f "${book_results_file}" ] ; then
+  [[ -z "${book_results_file}" ]] && return 1
+  if [[ -f "${book_results_file}" ]] ; then
     bookQueryListOfOntologiesInitArray
     return $?
   fi
@@ -498,15 +496,15 @@ function bookQueryListOfOntologies() {
 
 function bookQueryListOfOntologiesInitArray() {
 
-  [ ${#book_array_ontologies[*]} -gt 0 ] && return 0
+  [[ ${#book_array_ontologies[*]} -gt 0 ]] && return 0
 
   logRule "Step: bookQueryListOfOntologiesInitArray (should take less than 40 seconds)"
 
   while IFS=$'\t' read -a line ; do
 
-    [ "${line[0]}" == "" ] && continue
-    [ "${line[1]}" == "" ] && continue
-    [ "${line[0]:0:1}" == "?" ] && continue
+    [[ "${line[0]}" == "" ]] && continue
+    [[ "${line[1]}" == "" ]] && continue
+    [[ "${line[0]:0:1}" == "?" ]] && continue
 
     ontologyIRI="$(stripQuotes "${line[0]}")"
     ontologyVersionIRI="$(stripQuotes "${line[1]}")"
