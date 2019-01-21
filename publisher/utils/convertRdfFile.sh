@@ -64,7 +64,7 @@ function convertRdfFileTo() {
     > "${logfile}" 2>&1
   rc=$?
 
-  cp "${targetFile}X" "${targetFile}" \
+  mv "${targetFile}X" "${targetFile}" \
   
   #
   # For the turtle files, we want the base annotations to be the versionIRI
