@@ -81,6 +81,12 @@ log4j.appender.org.apache.logging.log4j.simplelog.StatusLogger.level=TRACE
 
 log4j.appender.org.semanticweb.owlapi=TRACE
 log4j.appender.widoco.JenaCatalogIRIMapper=DEBUG
+
+log4j.logger.org.semanticweb.owlapi=DEBUG
+log4j.logger.org.semanticweb.owlapi.util.SAXParsers=OFF
+log4j.logger.org.semanticweb.owlapi.utilities.Injector=OFF
+log4j.logger.org.eclipse.rdf4j.rio=OFF
+RDFParserRegistry
 #
 __HERE__
 }
@@ -157,6 +163,7 @@ function generateWidocoDocumentationForFile() {
   local -r turtleFile="$2"
   local -r rdfFileNoExtension="${turtleFile/.ttl/}"
   local widocoJar ; widocoJar="$(widocoLauncherJar)" || return $?
+  local -r ontologyPolicyFile="${ontology_product_tag_root:?}/ont-policy.rdf"
 
   local -r extension="$([[ "${turtleFile}" = *.* ]] && echo ".${turtleFile##*.}" || echo '')"
 
@@ -184,6 +191,11 @@ function generateWidocoDocumentationForFile() {
     error "Missing ${TMPDIR}/widoco-log4j.properties"
     return 1
   fi
+  #
+  # ont-policy.rdf has to be in current directory unfortunately
+  #
+  cp "${ontologyPolicyFile}" .
+
   java \
     -classpath /usr/share/java/log4j/log4j-core.jar:/usr/share/java/log4j/log4j-1.2-api.jar:/usr/share/java/log4j/log4j-api.jar \
     -Dxxx=widoco \
