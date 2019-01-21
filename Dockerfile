@@ -324,7 +324,5 @@ RUN \
   sed -i -e 's/export PATH=\(.*\)/export PATH=${PATH}/g' /etc/profile && \
   echo "export PATH=${PATH}" >> /etc/bashrc
 
-ENTRYPOINT ["/bin/bash"]
-
 CMD ["./publish.sh"]
 
