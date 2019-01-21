@@ -244,7 +244,7 @@ function ontologySearchAndReplaceStuff() {
 
   logRule "Step: ontologySearchAndReplaceStuff"
 
-  require spec_host || return $?
+  require ONTPUB_SPEC_HOST || return $?
   require spec_family_root_url || return $?
   require product_root_url || return $?
   require GIT_BRANCH || return $?
@@ -256,7 +256,7 @@ function ontologySearchAndReplaceStuff() {
 #
 # First replace all http:// urls to https:// if that's not already done
 #
-s@http://${spec_host}@${spec_root_url}@g
+s@http://${ONTPUB_SPEC_HOST}@${spec_root_url}@g
 #
 # Replace all IRIs in the form:
 #

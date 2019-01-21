@@ -198,20 +198,34 @@ function logBoolean() {
   return 1
 }
 
+function logValueColor() {
+
+  if getIsDarkMode ; then
+    # lightgreen
+    printf -- '\e[92m'
+  else
+    # blue
+    printf -- '\e[34m'
+  fi
+}
+
 function logDir() {
 
   local -r item="$1"
   local -r directory="${!1}"
+  local -r valueColor="$(logValueColor)"
 
-  if [ -d "${directory}" ] ; then
-    if [ "$(cd "${directory}" && ls -A)" ] ; then
-      printf -- ' - %-25s : [%s]\n' "${item}" "$(bold "$(logFileName "${directory}")")"
+  if [[ -d "${directory}" ]] ; then
+    if [[ "$(cd "${directory}" && ls -A)" ]] ; then
+      printf -- ' - %-25s : [%b%s\e[0m] (exists)\n' "${item}" "${valueColor}" "$(logFileName "${directory}")" >&2
     else
-      printf -- ' - %-25s : [%s] (is empty)\n' "${item}" "$(bold "$(logFileName "${directory}")")"
+      printf -- ' - %-25s : [%b%s\e[0m] (is empty)\n' "${item}" "${valueColor}" "$(logFileName "${directory}")" >&2
     fi
-  else
-    printf -- ' - %-25s : [%s] (does not exist)\n' "${item}" "$(bold "$(logFileName "${directory}")")"
+    return 0
   fi
+
+  printf -- ' - %-25s : [%b%s\e[0m] (does not exist)\n' "${item}" "${valueColor}" "$(logFileName "${directory}")" >&2
+  return 1
 }
 
 #
@@ -644,8 +658,8 @@ function initWorkspaceVars() {
 
   require INPUT || return $?
   require OUTPUT || return $?
-  require FAMILY || return $?
-  require spec_host || return $?
+  require ONTPUB_FAMILY || return $?
+  require ONTPUB_SPEC_HOST || return $?
 
   #
   # We use logVar here and not logDir because we really want to show the actual WORKSPACE directory
@@ -689,9 +703,9 @@ function initWorkspaceVars() {
   ((verbose)) && logDir TMPDIR
 
   #
-  # source_family_root: the root directory of the ${FAMILY} repo
+  # source_family_root: the root directory of the ${ONTPUB_FAMILY} repo
   #
-  export source_family_root="${INPUT:?}/${FAMILY:?}"
+  export source_family_root="${INPUT:?}/${ONTPUB_FAMILY:?}"
 
   #
   # Add your own directory locations above if you will
@@ -703,7 +717,7 @@ function initWorkspaceVars() {
   ((verbose)) && logDir source_family_root
 
   export spec_root="${OUTPUT:?}"
-  export spec_family_root="${spec_root}/${FAMILY:?}"
+  export spec_family_root="${spec_root}/${ONTPUB_FAMILY:?}"
 
   mkdir -p "${spec_family_root}" >/dev/null 2>&1
 
@@ -720,8 +734,8 @@ function initWorkspaceVars() {
   #
   # TODO: Make URL configurable
   #
-  export spec_root_url="https://${spec_host}"
-  export spec_family_root_url="${spec_root_url}/${FAMILY}"
+  export spec_root_url="https://${ONTPUB_SPEC_HOST}"
+  export spec_family_root_url="${spec_root_url}/${ONTPUB_FAMILY}"
   export product_root_url=""
   export branch_root_url=""
   export tag_root_url=""
@@ -779,7 +793,7 @@ function setProduct() {
   ((verbose)) && logItem "tag_root" "$(logFileName "${tag_root}")"
 
   export product_branch_tag="${ontology_publisher_current_product}/${GIT_BRANCH}/${GIT_TAG_NAME}"
-  export family_product_branch_tag="${FAMILY}/${product_branch_tag}"
+  export family_product_branch_tag="${ONTPUB_FAMILY}/${product_branch_tag}"
 
   return 0
 }
@@ -1038,7 +1052,7 @@ function getProdOntologies() {
 
 function getIsDarkMode() {
 
-  [ -n "${IS_DARK_MODE}" ] && return ${IS_DARK_MODE}
+  [ -n "${ONTPUB_IS_DARK_MODE}" ] && return ${ONTPUB_IS_DARK_MODE}
   [ -n "${is_dark_mode}" ] && return ${is_dark_mode}
 
   if isMacOSX ; then

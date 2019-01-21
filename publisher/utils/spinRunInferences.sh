@@ -64,7 +64,7 @@ __HERE__
 
 function spinRunInferences() {
 
-  require FAMILY || return $?
+  require ONTPUB_FAMILY || return $?
   require SPIN_VERSION || return $?
   require spec_family_root || return $?
 

@@ -154,10 +154,10 @@ function copySiteFiles() {
     ${CP} -r * "${spec_root}/"
   )
 
-  if [ -f /input/${FAMILY}/LICENSE ] ; then
-    ${CP} /input/${FAMILY}/LICENSE "${spec_root}"
+  if [ -f /input/${ONTPUB_FAMILY}/LICENSE ] ; then
+    ${CP} /input/${ONTPUB_FAMILY}/LICENSE "${spec_root}"
   else
-    warning "Could not find license: /input/${FAMILY}/LICENSE"
+    warning "Could not find license: /input/${ONTPUB_FAMILY}/LICENSE"
   fi
 
   (
@@ -313,7 +313,7 @@ function main() {
 
   for product in ${products} ; do
     if [[ "${product}" != "publish" && ! "${product}" =~ ^--* ]] ; then
-      logRule "Publish ${FAMILY}-product \"${product}\""
+      logRule "Publish ${ONTPUB_FAMILY}-product \"${product}\""
     fi
     case ${product} in
       onto*)
@@ -374,7 +374,7 @@ function main() {
     # Make clear in the log that a given product is done
     #
     if [ "${product}" != "publish" ] ; then
-      log "Finished publication of ${FAMILY}-product \"${product}\""
+      log "Finished publication of ${ONTPUB_FAMILY}-product \"${product}\""
     fi
   done
 
