@@ -11,7 +11,7 @@ false && source ../../lib/_functions.sh
 export SCRIPT_DIR="${SCRIPT_DIR}" # Yet another hack to silence IntelliJ
 export speedy="${speedy:-0}"
 
-declare -r -g test_widoco=1
+declare -r -g test_widoco=0
 
 #
 # Publish the widoco product which depends on the ontology product, so that should have been built before
