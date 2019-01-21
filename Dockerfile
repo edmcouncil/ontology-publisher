@@ -13,7 +13,8 @@
 # Using Alpine linux because it's ultra-lightweight, designed for running in a Docker
 # container.
 #
-FROM maven:3-jdk-12-alpine
+#FROM maven:3-jdk-12-alpine
+FROM openjdk:13-ea-1-jdk-alpine3.8
 
 #
 # Some meta data, can only have one maintainer
@@ -40,7 +41,8 @@ ENV \
   OUTPUT=/output \
   IS_DARK_MODE=${IS_DARK_MODE:-1} \
   RUNNING_IN_DOCKER=1 \
-  TMPDIR=/var/tmp
+  TMPDIR=/var/tmp \
+  PATH=${PATH}:${JAVA_HOME}/bin
 
 RUN mkdir -p /publisher ${TMPDIR} || true
 
@@ -214,6 +216,7 @@ RUN \
 ## Installing Widoco
 ##
 RUN \
+  widoco_version="1.4.7" ; \
   widoco_version="1.4.7" ; \
   widoco_root_url="https://jenkins.edmcouncil.org/view/widoco/job/widoco-build/lastStableBuild/es.oeg\$widoco/artifact/es.oeg" ; \
   echo ================================= install widoco ${widoco_version} >&2 && \
