@@ -758,7 +758,7 @@ function setProduct() {
   require GIT_TAG_NAME || return $?
   require spec_family_root || return $?
 
-  ((verbose)) && logItem "spec_family_root" "$(logFileName "${spec_family_root}")"
+  ((verbose)) && logDir spec_family_root
 
   export product_root="${spec_family_root}/${ontology_publisher_current_product}"
   export product_root_url="${spec_family_root_url}/${ontology_publisher_current_product}"
@@ -767,7 +767,7 @@ function setProduct() {
     mkdir -p "${product_root}" || return $?
   fi
 
-  ((verbose)) && logItem "product_root" "$(logFileName "${product_root}")"
+  ((verbose)) && logDir product_root
 
   if [ "${GIT_BRANCH}" == "head" ] ; then
     error "Git repository not checked out to a local branch, GIT_BRANCH = head which is wrong"
@@ -781,7 +781,7 @@ function setProduct() {
     mkdir -p "${branch_root}" || return $?
   fi
 
-  ((verbose)) && logItem "branch_root" "$(logFileName "${branch_root}")"
+  ((verbose)) && logDir branch_root
 
   export tag_root="${branch_root}/${GIT_TAG_NAME}"
   export tag_root_url="${branch_root_url}/${GIT_TAG_NAME}"
@@ -790,7 +790,7 @@ function setProduct() {
     mkdir -p "${tag_root}" || return $?
   fi
 
-  ((verbose)) && logItem "tag_root" "$(logFileName "${tag_root}")"
+  ((verbose)) && logDir tag_root
 
   export product_branch_tag="${ontology_publisher_current_product}/${GIT_BRANCH}/${GIT_TAG_NAME}"
   export family_product_branch_tag="${ONTPUB_FAMILY}/${product_branch_tag}"

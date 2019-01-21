@@ -25,7 +25,7 @@ function ontologyCreateTheAllTtlFile() {
 
 	local rc=$?
 
-  logVar tag_root
+  logDir tag_root
 
   if ((verbose)) ; then
     python3 ${SCRIPT_DIR}/lib/trigify.py \
