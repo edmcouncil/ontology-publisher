@@ -353,8 +353,8 @@ __HERE__
   #
   while IFS=$'\t' read ontologyIRI ontologyVersionIRI prefix ontologyLabel abstract preferredPrefix maturityLevel ; do
 
-    [ "${ontologyIRI}" == "" ] && continue
-    [ "${ontologyIRI:0:1}" == "?" ] && continue
+    [[ "${ontologyIRI}" == "" ]] && continue
+    [[ "${ontologyIRI:0:1}" == "?" ]] && continue
 
     ontologyIsInTestDomain "${ontologyIRI}" || continue
 
@@ -375,12 +375,12 @@ __HERE__
     logVar preferredPrefix
     logVar maturityLevel
 
-    if [ "${prefix}" == "" ] ; then
+    if [[ "${prefix}" == "" ]] ; then
       prefix="${preferredPrefix}"
       preferredPrefix=""
     fi
 
-    if [ "${ontologyLabel}" == "${prefix}" ] ; then
+    if [[ "${ontologyLabel}" == "${prefix}" ]] ; then
       ontologyLaTexLabel=""
       ontologyLabel=""
     else
@@ -388,12 +388,12 @@ __HERE__
       ontologyLabel="$(escapeLaTex "${ontologyLabel}")"
     fi
 
-    if [ -n "${prefix}" ] ; then
+    if [[ -n "${prefix}" ]] ; then
       cat >&3 << __HERE__
 {\renewcommand\addcontentsline[3]{} \section{${prefix}}}
 \label{sec:${prefix}} \index{${prefix}}
 __HERE__
-    elif [ -n "${ontologyLabel}" ] ; then
+    elif [[ -n "${ontologyLabel}" ]] ; then
       cat >&3 << __HERE__
 {\renewcommand\addcontentsline[3]{} \section{${ontologyLabel}}}
 \label{sec:${ontologyLaTexLabel}} \index{${ontologyLabel}}
@@ -405,9 +405,9 @@ __HERE__
     #
     # Label
     #
-    if [ -n "${ontologyLabel}" ] ; then
+    if [[ -n "${ontologyLabel}" ]] ; then
       cat >&3 <<< "\textbf{$(escapeAndDetokenizeLaTex "${ontologyLabel}")} \\\\"
-      if [ -n "${prefix}" ] && [ -n "${abstract}" ] ; then
+      if [[ -n "${prefix}" && -n "${abstract}" ]] ; then
         bookAddGlossaryTerm "${prefix}" "${abstract}"
       fi
     else
@@ -416,7 +416,7 @@ __HERE__
     #
     # abstract
     #
-    if [ -n "${abstract}" ] ; then
+    if [[ -n "${abstract}" ]] ; then
       cat >&3 <<< "$(escapeAndDetokenizeLaTex "${abstract}")"
     else
       cat >&3 <<< "No abstract available."
@@ -427,19 +427,19 @@ __HERE__
     #
     # Preferred prefix
     #
-    if [ -n "${preferredPrefix}" ] ; then
+    if [[ -n "${preferredPrefix}" ]] ; then
       cat >&3 <<< "\item [Prefix] $(escapeAndDetokenizeLaTex "${preferredPrefix}")"
     fi
     #
     # Maturity level
     #
-    if [ -n "${maturityLevel}" ] ; then
+    if [[ -n "${maturityLevel}" ]] ; then
       cat >&3 <<< "\item [Maturity] $(escapeAndDetokenizeLaTex "${maturityLevel}")"
     fi
     #
     # Ontology Version IRI
     #
-    if [ -n "${ontologyVersionIRI}" ] ; then
+    if [[ -n "${ontologyVersionIRI}" ]] ; then
       cat >&3 <<< "\item [Version IRI] \url{$(escapeAndDetokenizeLaTex "${ontologyVersionIRI}")}"
     fi
 
@@ -493,9 +493,9 @@ __HERE__
   #
   while IFS=$'\t' read classIRI classPrefName namespace classLabel definition explanatoryNote ; do
 
-    [ "${classIRI}" == "" ] && continue
-    [ "${classPrefName}" == "" ] && continue
-    [ "${classIRI:0:1}" == "?" ] && continue
+    [[ "${classIRI}" == "" ]] && continue
+    [[ "${classPrefName}" == "" ]] && continue
+    [[ "${classIRI:0:1}" == "?" ]] && continue
 
     if ((numberOfClasses > book_max_classes)) ; then
       warning "Stopping at ${book_max_classes} since we're running in dev mode"
@@ -527,7 +527,7 @@ __HERE__
     #
     # Label
     #
-    if [ -n "${classLabel}" ] ; then
+    if [[ -n "${classLabel}" ]] ; then
       cat >&3 <<< "\textbf{$(escapeAndDetokenizeLaTex "${classLabel}")} \\\\"
       if [ -n "${classLabel}" ] && [ -n "${definition}" ] ; then
         bookAddGlossaryTerm "${classLabel}" "${definition}"
@@ -539,7 +539,7 @@ __HERE__
     #
     # Definition
     #
-    if [ -n "${definition}" ] ; then
+    if [[ -n "${definition}" ]] ; then
       cat >&3 <<< "$(escapeAndDetokenizeLaTex "${definition}")"
     else
       cat >&3 <<< "No definition available."
@@ -562,7 +562,7 @@ __HERE__
     #
     # Explanatory Note
     #
-    [ -n "${explanatoryNote}" ] && cat >&3 <<< "\item [Explanatory note] \hfill \\\\ $(escapeAndDetokenizeLaTex "${explanatoryNote}")"
+    [[ -n "${explanatoryNote}" ]] && cat >&3 <<< "\item [Explanatory note] \hfill \\\\ $(escapeAndDetokenizeLaTex "${explanatoryNote}")"
 
     cat >&3 <<< "\end{description}"
 
@@ -670,7 +670,7 @@ function bookGenerateListOfSuperclasses() {
 
   bookQueryListOfSuperClasses || return $?
 
-  if [ ! -f "${book_results_file}" ] ; then
+  if [[ ! -f "${book_results_file}" ]] ; then
     error "Could not find ${book_results_file}"
     return 1
   fi
@@ -702,8 +702,8 @@ __HERE__
 
     set -- ${line}
 
-    [ "$1" == "" ] && continue
-    [ "$2" == "" ] && continue
+    [[ "$1" == "" ]] && continue
+    [[ "$2" == "" ]] && continue
 
 #   superClassIRI="$(stripQuotes "$1")"
     superClassPrefName="$(stripQuotes "$2")"
@@ -745,7 +745,7 @@ function bookGenerateListOfSubclasses() {
   #
   bookQueryListOfSuperClasses || return $?
 
-  if [ ! -f "${book_results_file}" ] ; then
+  if [[ ! -f "${book_results_file}" ]] ; then
     error "Could not find ${book_results_file}"
     return 1
   fi
@@ -775,12 +775,12 @@ __HERE__
 
     set -- ${line}
 
-    [ "$1" == "" ] && continue
+    [[ "$1" == "" ]] && continue
 
     subclassIRI="$(stripQuotes "$1")"
     subclassPrefLabel="${book_array_classes[${subclassIRI},prefName]}"
 
-    [ "${subclassPrefLabel}" == "" ] && continue
+    [[ "${subclassPrefLabel}" == "" ]] && continue
 
     if ((numberOfSubclasses > 1)) ; then
       cat >&3 <<< "\item $(bookClassReference "${subclassPrefLabel}")"
