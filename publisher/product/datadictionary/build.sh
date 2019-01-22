@@ -39,7 +39,7 @@ function publishProductDataDictionary() {
   export JVM_ARGS=${JVM_ARGS:--Xmx4G}
 
       unabridged
-   return 0
+
 
   
   #
@@ -226,7 +226,7 @@ function localdd () {
 function dumpdd () {
 
   log "Creating Data Dictionary for $1"
-  return 0
+
   # Extract the filename from the local part of the class IRI
   local t=${1##*/}
   local fname=${t%>*}
