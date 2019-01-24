@@ -25,7 +25,8 @@ function ontologyCreateTheAllTtlFile() {
 
 	local rc=$?
 
-  echo "tag_root = ${tag_root}"
+  logDir tag_root
+
   if ((verbose)) ; then
     python3 ${SCRIPT_DIR}/lib/trigify.py \
       --dir=${tag_root} \
@@ -55,7 +56,7 @@ function ontologyCreateTheAllTtlFile() {
     return 1
   fi
 
-  ls -la "${TMPDIR}/all.ttl"
+  ls -la "${TMPDIR}/all.ttl" | pipelog
 
   cat > "${TMPDIR}/maturemodule.sq" << __HERE__
 #
@@ -90,7 +91,7 @@ __HERE__
 # sed -i 's/\r//'  ${TMPDIR}/all.ttl
 # sed -i 's/\r//'  ${TMPDIR}/maturemodule.sq
 
-  tail "${TMPDIR}/all.ttl"
+  tail "${TMPDIR}/all.ttl" | pipelog
 
   ${JENA_ARQ} \
     --data="${TMPDIR}/all.ttl" \
@@ -101,8 +102,8 @@ __HERE__
   #
   # Good file should include all the modules that include Release level ontologies
   #
-  echo "Here are all the release-level modules:"
-  head ${TMPDIR}/good
+  log "Here are all the release-level modules:"
+  head ${TMPDIR}/good | pipelog
 
   ${SED} -i 's/\r//' ${TMPDIR}/good
 
@@ -117,8 +118,8 @@ __HERE__
       tail --lines=+2 | \
       sh > ${TMPDIR}/prodpaths.txt
 
-    echo "prodpaths"
-    cat ${TMPDIR}/prodpaths.txt
+    log "prodpaths"
+    cat ${TMPDIR}/prodpaths.txt | pipelog
   )
 
   return $?

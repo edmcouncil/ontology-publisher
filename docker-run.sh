@@ -6,11 +6,10 @@
 #
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)" || exit 1
 
-export family="${FAMILY:-fibo}"
-export FAMILY="${family}"
-export spec_host="${spec_host:-spec.edmcouncil.org}"
+export ONTPUB_FAMILY="${ONTPUB_FAMILY:-fibo}"
+export ONTPUB_SPEC_HOST="${ONTPUB_SPEC_HOST:-spec.edmcouncil.org}"
 
-if [ -f ${SCRIPT_DIR}/publisher/lib/_functions.sh ] ; then
+if [[ -f ${SCRIPT_DIR}/publisher/lib/_functions.sh ]] ; then
   # shellcheck source=publisher/lib/_functions.sh
   source ${SCRIPT_DIR}/publisher/lib/_functions.sh || exit $?
 else # This else section is to trick IntelliJ Idea to actually load _functions.sh during editing
@@ -30,7 +29,7 @@ function inputDirectory() {
   # JG>Dean, to make this work from inside your shell-container we need
   # to have a detection here whether we're running inside that container
   # or not. When you're IN the container, we cannot check for the existence
-  # of /cygdrive/c/Users/Dean/Documents/${family}
+  # of /cygdrive/c/Users/Dean/Documents/${ONTPUB_FAMILY}
 
   if isRunningInDockerContainer ; then
     #
@@ -42,16 +41,16 @@ function inputDirectory() {
     return 0
   fi
 
-  if [ -d "${HOME}/Work/${family}" ] ; then # Used by Jacobus
-    echo -n "${HOME}/Work/${family}"
-  elif [ -d "/c/Users/RivettPJ/Documents/FIBO-Development" ] ; then
+  if [[ -d "${HOME}/Work/${ONTPUB_FAMILY}" ]] ; then # Used by Jacobus
+    echo -n "${HOME}/Work/${ONTPUB_FAMILY}"
+  elif [[ -d "/c/Users/RivettPJ/Documents/FIBO-Development" ]] ; then
     echo -n "/c/Users/RivettPJ/Documents/FIBO-Development"
-  elif [ -d "${HOME}/${family}" ] ; then
-    echo -n "${HOME}/Work/${family}"
-  elif [ -d "/cygdrive/c/Users/Dean/Documents/${family}" ] ; then
-    echo -n "c:/Users/Dean/Documents/${family}"
+  elif [[ -d "${HOME}/${ONTPUB_FAMILY}" ]] ; then
+    echo -n "${HOME}/Work/${ONTPUB_FAMILY}"
+  elif [[ -d "/cygdrive/c/Users/Dean/Documents/${ONTPUB_FAMILY}" ]] ; then
+    echo -n "c:/Users/Dean/Documents/${ONTPUB_FAMILY}"
   else
-    error "No ${family} root found"
+    error "No ${ONTPUB_FAMILY} root found"
     return 1
   fi
 
@@ -76,7 +75,7 @@ function outputDirectory() {
     #
     # Dean, the input and output directory should be different from each other
     #
-    echo -n "c:/Users/Dean/Documents/${family}-output"
+    echo -n "c:/Users/Dean/Documents/${ONTPUB_FAMILY}-output"
     return 0
   fi
 
@@ -97,11 +96,14 @@ function temporaryFilesDirectory() {
     # the windows directory that's supposed to be the tmp directory.
     # That shell-container should pass the current user id through somehow. Windows has it in USERNAME env var.
     #
-    echo -n "c:/Users/Dean/Documents/${family}-tmp"
+    echo -n "c:/Users/Dean/Documents/${ONTPUB_FAMILY}-tmp"
     return 0
   fi
 
-  mkdir -p "${SCRIPT_DIR}/../tmp" >/dev/null 2>&1
+  if ! mkdir -p "${SCRIPT_DIR}/../tmp" >/dev/null 2>&1 ; then
+    error "Could not create directory ${SCRIPT_DIR}/../tmp"
+  fi
+
   echo -n "$(cd ${SCRIPT_DIR}/../tmp && pwd -L)"
 }
 
@@ -110,7 +112,7 @@ function checkCommandLine() {
   #
   # The --pushimage option publishes the image, after a successful build, to Dockerhub
   #
-  if [[ "$@" =~ .*--pushimage($|[[:space:]]) ]] || [[ "$@" =~ .*--push($|[[:space:]]) ]] ; then
+  if [[ "$*" =~ .*--pushimage($|[[:space:]]) || "$*" =~ .*--push($|[[:space:]]) ]] ; then
     cli_option_pushimage=1
   else
     cli_option_pushimage=0
@@ -119,7 +121,7 @@ function checkCommandLine() {
   #
   # The --build option builds the image
   #
-  if [[ "$@" =~ .*--buildimage($|[[:space:]]) ]] || [[ "$@" =~ .*--build($|[[:space:]]) ]] ; then
+  if [[ "$*" =~ .*--buildimage($|[[:space:]]) || "$*" =~ .*--build($|[[:space:]]) ]] ; then
     cli_option_buildimage=1
   else
     cli_option_buildimage=0
@@ -128,18 +130,17 @@ function checkCommandLine() {
   #
   # The --rebuild option builds the image from scratch
   #
-  if [[ "$@" =~ .*--rebuildimage($|[[:space:]]) ]] || [[ "$@" =~ .*--rebuild($|[[:space:]]) ]] ; then
+  if [[ "$*" =~ .*--rebuildimage($|[[:space:]]) || "$*" =~ .*--rebuild($|[[:space:]]) ]] ; then
     cli_option_buildimage=1
     cli_option_rebuildimage=1
   else
-    cli_option_buildimage=0
     cli_option_rebuildimage=0
   fi
 
   #
   # The --run option runs the container
   #
-  if [[ "$@" =~ .*--run($|[[:space:]]) ]] ; then
+  if [[ "$*" =~ .*--run($|[[:space:]]) ]] ; then
     cli_option_runimage=1
   else
     cli_option_runimage=0
@@ -148,7 +149,7 @@ function checkCommandLine() {
   #
   # The --shell option allows you to end up in the shell of the publisher container itself
   #
-  if [[ "$@" =~ .*--shell($|[[:space:]]) ]] ; then
+  if [[ "$*" =~ .*--shell($|[[:space:]]) ]] ; then
     cli_option_buildimage=1
     cli_option_runimage=1
     cli_option_shell=1
@@ -160,7 +161,7 @@ function checkCommandLine() {
   # The --dev option makes the container use the local publisher directory for its sources rather than copying
   # that into the image.
   #
-  if [[ "$@" =~ .*--dev($|[[:space:]]) ]] ; then
+  if [[ "$*" =~ .*--dev($|[[:space:]]) ]] ; then
     cli_option_dev_mode=1
   else
     cli_option_dev_mode=0
@@ -169,7 +170,7 @@ function checkCommandLine() {
   #
   # The --clean option wipes out the contents of the target directory before the container starts
   #
-  if [[ "$@" =~ .*--clean($|[[:space:]]) ]] ; then
+  if [[ "$*" =~ .*--clean($|[[:space:]]) ]] ; then
     cli_option_clean=1
   else
     cli_option_clean=0
@@ -178,15 +179,35 @@ function checkCommandLine() {
   #
   # The --dark option forces dark mode for all the colors being used.
   #
-  if [[ "$@" =~ .*--dark($|[[:space:]]) ]] ; then
+  if [[ "$*" =~ .*--dark($|[[:space:]]) ]] ; then
     cli_option_dark=1
   else
     cli_option_dark=$(getIsDarkMode ; echo $?)
   fi
 
+  #
+  # The --verbose option shows more logging
+  #
+  if [[ "$*" =~ .*--verbose($|[[:space:]]) ]] ; then
+    cli_option_verbose=1
+  else
+    cli_option_verbose=0
+  fi
+
   if ((cli_option_dev_mode == 1 && cli_option_pushimage == 1)) ; then
     error "Cannot push a dev-mode image to docker hub, the publisher code has to be copied into the image"
     return 1
+  fi
+
+  if ((cli_option_verbose)) ; then
+    logBoolean cli_option_buildimage
+    logBoolean cli_option_rebuildimage
+    logBoolean cli_option_runimage
+    logBoolean cli_option_pushimage
+    logBoolean cli_option_shell
+    logBoolean cli_option_clean
+    logBoolean cli_option_dark
+    logBoolean cli_option_dev_mode
   fi
 
   return 0
@@ -223,11 +244,11 @@ function buildImage() {
   opts+=('build')
   ((cli_option_rebuildimage)) && opts+=('--no-cache')
   opts+=('--build-arg')
-  opts+=("FAMILY=${FAMILY}")
+  opts+=("ONTPUB_FAMILY=${ONTPUB_FAMILY}")
   opts+=('--build-arg')
-  opts+=("spec_host=${spec_host}")
+  opts+=("ONTPUB_SPEC_HOST=${ONTPUB_SPEC_HOST}")
   opts+=('--build-arg')
-  opts+=("IS_DARK_MODE=${cli_option_dark}")
+  opts+=("ONTPUB_IS_DARK_MODE=${cli_option_dark}")
   opts+=('--label')
   opts+=('org.edmcouncil.ontology-publisher.version="0.0.1"')
   opts+=('--label')
@@ -263,7 +284,7 @@ function run() {
 
   ((cli_option_runimage == 0)) && return 0
 
-  requireValue family || return $?
+  requireValue ONTPUB_FAMILY || return $?
 
   cd "${SCRIPT_DIR}" || return $?
 
@@ -294,39 +315,26 @@ function run() {
   opts+=('run')
   opts+=('--rm')
   opts+=('--tty')
-  opts+=('--network')
-  opts+=('none')
+#  opts+=('--network')
+#  opts+=('none')
   opts+=('--name')
   opts+=("${containerName}")
   opts+=('--env')
-  opts+=("IS_DARK_MODE=${cli_option_dark}")
+  opts+=("ONTPUB_IS_DARK_MODE=${cli_option_dark}")
   opts+=('--env')
-  opts+=("FAMILY=\"${FAMILY}\"")
+  opts+=("ONTPUB_FAMILY=${ONTPUB_FAMILY}")
   opts+=('--env')
-  opts+=("spec_host=\"${spec_host}\"")
+  opts+=("ONTPUB_SPEC_HOST=${ONTPUB_SPEC_HOST}")
 
-  logVar family
+  logVar ONTPUB_FAMILY
   log "Mounted:"
-  logItem "/input/${family}" "${inputDirectory}"
-  opts+=("--mount type=bind,source=${inputDirectory},target=/input/${family},readonly,consistency=cached")
+  logItem "/input/${ONTPUB_FAMILY}" "${inputDirectory}"
+  opts+=("--mount type=bind,source=${inputDirectory},target=/input/${ONTPUB_FAMILY},readonly,consistency=cached")
   logItem "/output" "${outputDirectory}"
   opts+=("--mount type=bind,source=${outputDirectory},target=/output,consistency=delegated")
-  case $(uname -a) in
-    *Darwin*)
-      logItem "/var/tmp" "${temporaryFilesDirectory}"
-      opts+=("--mount type=bind,source=${temporaryFilesDirectory},target=/var/tmp,consistency=delegated")
-      ;;
-    *Microsoft*)
-      logItem "/tmp" "${temporaryFilesDirectory}/../tmp2"
-      opts+=("--mount type=bind,source=${temporaryFilesDirectory}/../tmp2,target=/tmp,consistency=delegated")
-      #
-      # The line above does not make sense, target=/tmp is not better than target=/var/tmp
-      #
-      ;;
-    *)
-      echo "Unknown linux: $(uname -a)"
-      ;;
-  esac
+  logItem "/var/tmp" "${temporaryFilesDirectory}"
+  opts+=("--mount type=bind,source=${temporaryFilesDirectory},target=/var/tmp,consistency=delegated")
+
   #
   # When running in dev mode we mount the ontology publisher's repo's root directory as well
   #
@@ -349,6 +357,7 @@ function run() {
     log "$(bold ./publish.sh ontology vocabulary)"
     log ""
     opts+=('--interactive')
+    opts+=('--tty')
     opts+=('--entrypoint')
     opts+=('/bin/bash')
   else
@@ -361,10 +370,10 @@ function run() {
     opts+=('-l')
   fi
 
-#  set -x
+  log "docker ${opts[@]}"
   docker ${opts[@]}
-  local rc=$?
-#  set +x
+  local -r rc=$?
+
   return ${rc}
 }
 

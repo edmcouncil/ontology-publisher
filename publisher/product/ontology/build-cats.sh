@@ -15,7 +15,7 @@ function ontologyBuildProtegeCatalog () {
 
   (
     cd "${directory}" || return $?    # Build the catalog in this directory
-    verbose "Building Protegé catalog in $(logFileName "${directory}")"
+    ((verbose)) && logItem "Protegé catalog" "$(logFileName "${directory}")"
 
     cat > catalog-v001.xml << __HERE__
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -157,8 +157,8 @@ __HERE__
     #
     while read ontologyRdfFile ; do
 
-      ontologyVersionIRI="https://${spec_host}/${ontologyRdfFile/.rdf//}"
-      ontologyVersionIRI="${ontologyVersionIRI/${spec_host}?*output/${spec_host}}"
+      ontologyVersionIRI="https://${ONTPUB_SPEC_HOST}/${ontologyRdfFile/.rdf//}"
+      ontologyVersionIRI="${ontologyVersionIRI/${ONTPUB_SPEC_HOST}?*output/${ONTPUB_SPEC_HOST}}"
 
       ontologyIRI="${ontologyVersionIRI/\/${GIT_BRANCH}\/${GIT_TAG_NAME}}"
 
@@ -172,7 +172,7 @@ __HERE__
     lm:altName "file://${ontologyRdfFile}"
   ],
 __HERE__
-    done < <(find ${tag_root} -path '*/etc*' -prune -o -name '*About*' -prune -o -name 'ont-policy.rdf' -prune -o -name '*.rdf' -print)
+    done < <(getDevOntologies)
   )
   #
   # Remove the last comma
@@ -258,11 +258,11 @@ __HERE__
   (
     cd / || return $?
     while read ontologyRdfFile ; do
-      logVar spec_host 	
+      logVar ONTPUB_SPEC_HOST
       logVar ontologyRdfFile
-      ontologyVersionIRI="https://${spec_host}/${ontologyRdfFile/.rdf//}"
+      ontologyVersionIRI="https://${ONTPUB_SPEC_HOST}/${ontologyRdfFile/.rdf//}"
       logVar ontologyVersionIRI
-      ontologyVersionIRI="${ontologyVersionIRI/${spec_host}?*output/${spec_host}}"
+      ontologyVersionIRI="${ontologyVersionIRI/${ONTPUB_SPEC_HOST}?*output/${ONTPUB_SPEC_HOST}}"
       logVar ontologyVersionIRI
 
       ontologyIRI="${ontologyVersionIRI/\/${GIT_BRANCH}\/${GIT_TAG_NAME}}"

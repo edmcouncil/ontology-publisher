@@ -132,7 +132,7 @@ pipeline {
         dockerfile {
           filename 'Dockerfile'
           dir 'publisher'
-          additionalBuildArgs '--pull --tag ${ONTOLOGY_BUILDER_IMAGE}:${GIT_HASH_BUILDER} --build-arg FAMILY=${ONTOLOGY_FAMILY}'
+          additionalBuildArgs '--pull --tag ${ONTOLOGY_BUILDER_IMAGE}:${GIT_HASH_BUILDER} --build-arg ONTPUB_FAMILY=${ONTOLOGY_FAMILY}'
           args '-u 0:0 ' +
             '--mount type=bind,source=${WORKSPACE}/fibo,target=/input/fibo,readonly,consistency=cached ' +
             '-w /publisher'

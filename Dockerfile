@@ -13,7 +13,8 @@
 # Using Alpine linux because it's ultra-lightweight, designed for running in a Docker
 # container.
 #
-FROM maven:3-jdk-12-alpine
+#FROM maven:3-jdk-12-alpine
+FROM openjdk:13-ea-1-jdk-alpine3.8
 
 #
 # Some meta data, can only have one maintainer
@@ -27,18 +28,18 @@ LABEL owner="Enterprise Data Management Council"
 # their value is copied into a same named ENV variable. They're just there during the image build process itself.
 # You can override their default values with any number of "--build-arg" options on the "docker build" command line.
 #
-ARG FAMILY
-ARG spec_host
-ARG IS_DARK_MODE
+ARG ONTPUB_FAMILY
+ARG ONTPUB_SPEC_HOST
+ARG ONTPUB_IS_DARK_MODE
 
 #
-# TODO: Move the FAMILY env to ARGS so that this can be used for other ontologies than FIBO
+# TODO: Move the ONTPUB_FAMILY env to ARGS so that this can be used for other ontologies than FIBO
 #
 ENV \
-  FAMILY=${FAMILY:-fibo} \
+  ONTPUB_FAMILY=${ONTPUB_FAMILY:-fibo} \
   INPUT=/input \
   OUTPUT=/output \
-  IS_DARK_MODE=${IS_DARK_MODE:-1} \
+  ONTPUB_IS_DARK_MODE=${ONTPUB_IS_DARK_MODE:-1} \
   RUNNING_IN_DOCKER=1 \
   TMPDIR=/var/tmp
 
@@ -48,19 +49,28 @@ RUN mkdir -p /publisher ${TMPDIR} || true
 # Installing bash, curl, git, grep, coreutils
 #
 RUN \
-  apk update && \
-  apk upgrade && \
-  apk add \
+  echo ================================= install basics >&2 && \
+  apk --no-cache add \
     bash curl git grep sed findutils coreutils tree jq \
     zip tar \
     python python3 py3-setuptools \
-    gcc linux-headers libc-dev wget xz biber texlive-full \
-  && \
+    gcc linux-headers libc-dev wget xz && \
   #
   # Clean up
   #
-  rm -rf /var/lib/apt/lists/* && \
-  rm /var/cache/apk/*
+  rm -rf /var/lib/apt/lists/*
+
+#
+# Installing LaTex seperately since it's such a giant layer (3GB)
+# We'll have to figure out how to make it smaller.
+#
+RUN \
+  echo ================================= install LaTex >&2 && \
+  apk --no-cache add biber texlive-full && \
+  #
+  # Clean up
+  #
+  rm -rf /var/lib/apt/lists/*
 
 #
 # Installing pandoc
@@ -127,7 +137,8 @@ RUN \
 #
 ENV \
   JENA_VERSION="3.10.0" \
-  JENA_HOME=/usr/share/java/jena/latest
+  JENA_HOME=/usr/share/java/jena/latest \
+  PATH=${PATH}:/usr/share/java/jena/latest/bin
 RUN \
   echo ================================= install jena ${JENA_VERSION} >&2 && \
   name="apache-jena-${JENA_VERSION}" ; \
@@ -146,7 +157,10 @@ RUN \
   ln -s /usr/share/java/jena/latest/bin/turtle /usr/local/bin/turtle && \
   cd ${JENA_VERSION} && \
   rm -rf src-examples lib-src bat && \
-  cd /
+  cd / && \
+  version="$(echo $(tdb2.tdbloader --version | grep Jena | grep VERSION | cut -d: -f3))" && \
+  echo "installed version="[${version}]"" && \
+  test "${version}" == "${JENA_VERSION}"
 
 #
 # Installing old version of Apache Jena because SPIN 2.0.0 needs it
@@ -203,16 +217,19 @@ RUN \
 #
 ENV SAXON_VERSION="9-9-0-2J"  
 RUN \
-  curl --location --silent --show-error --output /var/tmp/SaxonHE${SAXON_VERSION}.zip --url "https://sourceforge.net/projects/saxon/files/latest/download" && \
+  echo ================================= install saxon ${SAXON_VERSION} >&2 && \
+  curl --location --silent --show-error \
+    --output /var/tmp/SaxonHE${SAXON_VERSION}.zip \
+    --url "https://sourceforge.net/projects/saxon/files/latest/download" && \
   (mkdir -p /usr/share/java/saxon || true) && \
   cd /usr/share/java/saxon && \
   unzip -q /var/tmp/SaxonHE${SAXON_VERSION}.zip && \
   rm /var/tmp/SaxonHE${SAXON_VERSION}.zip
     
 
-#
-# Installing Widoco
-#
+##
+## Installing Widoco
+##
 RUN \
   widoco_version="1.4.7" ; \
   widoco_root_url="https://jenkins.edmcouncil.org/view/widoco/job/widoco-build/lastStableBuild/es.oeg\$widoco/artifact/es.oeg" ; \
@@ -227,6 +244,8 @@ RUN \
     --fail \
     --insecure \
     --location \
+    --silent \
+    --show-error \
     --output /usr/share/java/widoco/widoco-launcher.jar \
     --url ${widoco_root_url}/widoco/${widoco_version}/widoco-${widoco_version}-launcher.jar && \
   test -f /usr/share/java/widoco/widoco-launcher.jar
@@ -242,8 +261,9 @@ RUN \
   mkdir -p /usr/share/java/log4j || true && \
   curl \
     --fail \
-    --insecure \
     --location \
+    --silent \
+    --show-error \
     --output /usr/share/java/log4j/apache-log4j-bin.tar.gz \
     --url "${log4j_targz_url}" && \
   test -f /usr/share/java/log4j/apache-log4j-bin.tar.gz && \
@@ -269,6 +289,7 @@ RUN \
 
 COPY etc /etc
 COPY root /root
+COPY usr /usr
 
 #
 # <skip in dev mode begin>
@@ -286,7 +307,7 @@ RUN find /publisher/ -name '*.sh' | xargs sed -i 's/\r//'
 #
 # Mount your local git clone containing all the OWL files here
 #
-VOLUME ["${INPUT}/${FAMILY}"]
+VOLUME ["${INPUT}/${ONTPUB_FAMILY}"]
 #
 # Mount your "target directory", the place where all published files end up, here
 #
@@ -297,6 +318,11 @@ VOLUME ["${OUTPUT}"]
 VOLUME ["${TMPDIR}"]
 
 WORKDIR /publisher
+
+RUN \
+  echo PATH=${PATH} && \
+  sed -i -e 's/export PATH=\(.*\)/export PATH=${PATH}/g' /etc/profile && \
+  echo "export PATH=${PATH}" >> /etc/bashrc
 
 CMD ["./publish.sh"]
 
