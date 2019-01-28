@@ -1,12 +1,8 @@
 #!/usr/bin/env bash
 #
-# Create an about file in RDF/XML format, do this BEFORE we convert all .rdf files to the other
-# formats so that this about file will also be converted.
+# Create a Load file in RDF/XML format, do this BEFORE we convert all .rdf files to the other
+# formats so that this load file will also be converted.
 #
-# TODO: Generate this at each directory level in the tree
-#  I don't think this is correct; the About files at lower levels have curated metadata in them.  -DA
-#
-# DONE: Should be done for each serialization format
 #
 
 #
@@ -26,6 +22,9 @@ function ontologyCreateAboutFiles () {
   local -r tmpAboutFileDev="$(createTempFile ABOUTD ttl)"
   local -r tmpAboutFileProd="$(createTempFile ABOUTP ttl)"
 
+  echo "temp about file dev"
+  echo "${tmpAboutFileDev}"
+
   (
     cd "${tag_root:?}" || return $?
 
@@ -34,25 +33,26 @@ function ontologyCreateAboutFiles () {
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
 @prefix owl: <http://www.w3.org/2002/07/owl#> 
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-<${tag_root_url}/AboutFIBOProd> a owl:Ontology;
+<${tag_root_url}/LoadFIBOProd> a owl:Ontology;
 __HERE__
 
     ${GREP} -r 'utl-av[:;.]Release' . | \
 	  ${GREP} -F ".rdf" | \
 	  ${SED} 's/:.*$//'  | \
 	  while read file; do
-	    ${GREP} "xml:base" "${file}";
+	    ${GREP} "versionIRI" "${file}";
     done | \
-	  ${SED} 's/^.*xml:base="/owl:imports </;s/"[\t \n\r]*$/> ;/' \
+	  ${SED} 's/^.*versionIRI.*resource="/owl:imports </;s/".*$/> ;/' \
 	  >> "${tmpAboutFileProd}"
-
+    
     "${JENA_ARQ}" \
       --data="${tmpAboutFileProd}" \
       --query="${SCRIPT_DIR}/lib/echo.sparql" \
-      --results=RDF > "${tag_root}/AboutFIBOProd.rdf" 2> "${TMPDIR}/err.tmp"
+      --results=RDF > "${tag_root}/LoadFIBOProd.rdf"
+    # 2> "${TMPDIR}/err.tmp"
 
     if [ -s "${TMPDIR}/err.tmp" ] ; then
-      warning "no RDF XML output generated.  Use AboutFIBOProd.ttl file instead"
+      warning "no RDF XML output generated.  Use LoadFIBOProd.ttl file instead"
     fi
     rm -f "${TMPDIR}/err.tmp"
   )
@@ -65,32 +65,37 @@ __HERE__
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
 @prefix owl: <http://www.w3.org/2002/07/owl#> 
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-<${tag_root_url}/AboutFIBODev> a owl:Ontology;
+<${tag_root_url}/LoadFIBODev> a owl:Ontology;
 __HERE__
 
     ${GREP} \
-      -r "xml:base" \
+      -r "versionIRI" \
       $( \
         find . -mindepth 1  -maxdepth 1 -type d -print | \
         ${GREP} -vE "(etc)|(git)"
       ) | \
-      ${GREP} -vE "(catalog)|(About)|(About)" | \
-	  ${SED} 's/^.*xml:base="/owl:imports </;s/"[ 	\n\r]*$/> ;/' \
+      ${GREP} -vE "(catalog)|(All)|(About)|(Metadata)" | \
+      ${GREP} "rdf" | \
+	  ${SED} 's/^.*versionIRI.*resource="/owl:imports </;s/".*$/> ;/' \
       >> "${tmpAboutFileDev}"
 
+    ls -la "${tmpAboutFileDev}"
+    cat "${tmpAboutFileDev}"
+
+    
     "${JENA_ARQ}" \
       --data="${tmpAboutFileDev}" \
       --query="${SCRIPT_DIR}/lib/echo.sparql" \
-      --results=RDF > "${tag_root}/AboutFIBODev.rdf" 2> "${TMPDIR}/err.tmp"
+      --results=RDF > "${tag_root}/LoadFIBODev.rdf" 2> "${TMPDIR}/err.tmp"
 
     if [ -s "${TMPDIR}/err.tmp" ] ; then
-      warning "no RDF XML output generated.  Use AboutFIBODev.ttl file instead"
+      warning "no RDF XML output generated.  Use LoadFIBODev.ttl file instead"
     fi
     rm "${TMPDIR}/err.tmp"
   )
 
-  rm -f "${tmpAboutFileDev}"
-  rm -f "${tmpAboutFileProd}"
+#  rm -f "${tmpAboutFileDev}"
+#  rm -f "${tmpAboutFileProd}"
 
   return 0
 }
