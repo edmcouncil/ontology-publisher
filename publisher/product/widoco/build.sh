@@ -445,6 +445,8 @@ function buildVowlIndex () {
   local -r titleP="FIBO Widoco File Directory (Production)"
   local -r titleD="FIBO Widoco File Directory (Development)"
 
+  touch "${widoco_product_tag_root}"/widoco.log
+  
   logRule "Step: buildVowlIndex"
 
   (
