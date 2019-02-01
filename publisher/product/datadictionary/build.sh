@@ -355,6 +355,8 @@ EOF
   
   ${SED} 's/"\t"/","/g; s/^\t"/,"/' "${TMPDIR}/output2.tsv" >> "${datadictionary_product_tag_root}/${fname}.csv"
 
+  touch "${datadictionary_product_tag_root}/datadictionary.log"
+  
   ${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py \
     "${datadictionary_product_tag_root}/${fname}.csv" \
     "${datadictionary_product_tag_root}/${fname}.xlsx" \
