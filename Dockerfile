@@ -126,8 +126,9 @@ RUN \
 ENV RDFTOOLKIT_JAR=/usr/share/java/rdf-toolkit/rdf-toolkit.jar
 RUN \
   echo ================================= install the RDF toolkit >&2 && \
+  toolkit_build="27" ; \
   url="https://jenkins.edmcouncil.org/view/rdf-toolkit/job/rdf-toolkit-build/" ; \
-  url="${url}lastSuccessfulBuild/artifact/target/scala-2.12/rdf-toolkit.jar" ; \
+  url="${url}${toolkit_build}/artifact/target/scala-2.12/rdf-toolkit.jar" ; \
   echo "Downloading ${url}:" >&2 ; \
   mkdir -p /usr/share/java/rdf-toolkit ; \
   curl --location --silent --show-error --output ${RDFTOOLKIT_JAR} --url "${url}"
