@@ -203,12 +203,12 @@ function publishProductGlossaryContent() {
   ${JENA_ARQ} \
     $(${FIND}  "${ontology_product_tag_root}" -name "Corporations.rdf" | ${SED} "s/^/--data=/") \
     --data=${glossary_script_dir}/owlnames.ttl \
-    --query="${SCRIPT_DIR}/lib/echo.sparql" \
+    --query="${SCRIPT_DIR}/lib/noimport.sparql" \
     --results=Turtle > "${TMPDIR}/glossary-test.ttl"
   rc=$?
 
   if ((rc > 0)) ; then
-    error "Could not get Prod ontologies"
+    error "Could not get Test ontologies"
     return 1
   fi
   if [ ! -f "${TMPDIR}/glossary-test.ttl" ] ; then
@@ -459,6 +459,8 @@ __HERE__
   ${SED} -i '1s/\t[?]/,/g;1s/^[?]//' "${glossaryBaseName}-dev.csv"
   ${SED} -i '1s/\t[?]/,/g;1s/^[?]//' "${glossaryBaseName}-prod.csv"
 
+  touch "${glossary_product_tag_root}/glossary.log"
+  
   ${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py \
     "${glossaryBaseName}-prod.csv" \
     "${glossaryBaseName}-prod.xlsx" \
