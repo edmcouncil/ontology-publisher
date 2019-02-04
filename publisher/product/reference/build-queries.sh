@@ -14,15 +14,17 @@ false && source ../../lib/_functions.sh
 export SCRIPT_DIR="${SCRIPT_DIR}" # Yet another hack to silence IntelliJ
 export speedy="${speedy:-0}"
 
-function bookGenerateTdb2Database() {
+function referenceGenerateTdb2Database() {
 
-  logRule "Step: bookGenerateTdb2Database"
+  ((reference_skip_content)) && return 0
 
-  requireValue book_latex_dir || return $?
+  logRule "Step: referenceGenerateTdb2Database"
+
+  requireValue reference_latex_dir || return $?
   requireValue ontology_product_tag_root || return $?
 
-  if [[ -d "${book_latex_dir}/tdb2" ]] ; then
-    warning "Skipping recreation of ${book_latex_dir}/tdb2"
+  if [[ -d "${reference_latex_dir}/tdb2" ]] ; then
+    warning "Skipping recreation of ${reference_latex_dir}/tdb2"
     return 0
   fi
 
@@ -32,18 +34,20 @@ function bookGenerateTdb2Database() {
   fi
 
   tdb2.tdbloader \
-    --loc="${book_latex_dir}/tdb2" \
+    --loc="${reference_latex_dir}/tdb2" \
     --loader="phased" \
     --verbose \
     $(getDevOntologies)
 }
 
-function bookGeneratePrefixesAsSparqlValues() {
+function referenceGeneratePrefixesAsSparqlValues() {
 
-  logRule "Step: bookGeneratePrefixesAsSparqlValues"
+  ((reference_skip_content)) && return 0
 
-  if [[ -f "${TMPDIR}/book-prefixes.txt" ]] ; then
-    warning "Skipping recreation of ${TMPDIR}/book-prefixes.txt"
+  logRule "Step: referenceGeneratePrefixesAsSparqlValues"
+
+  if [[ -f "${TMPDIR}/reference-prefixes.txt" ]] ; then
+    warning "Skipping recreation of ${TMPDIR}/reference-prefixes.txt"
     return 0
   fi
 
@@ -51,16 +55,16 @@ function bookGeneratePrefixesAsSparqlValues() {
   grep -v "http://www.omg.org/spec/EDMC-FIBO" | \
   sort -u | \
   sed 's/.*<!ENTITY \(.*\) "\(.*\)">/("\1:" <\2>)/g' > \
-  "${TMPDIR}/book-prefixes.txt"
+  "${TMPDIR}/reference-prefixes.txt"
 
   return 0
 }
 
-function bookCreateQueryListOfClasses() {
+function referenceCreateQueryListOfClasses() {
 
-  book_query_file="${book_query_dir}/book-list-of-classes.sq"
+  reference_query_file="${reference_query_dir}/list-of-classes.sq"
 
-  cat > "${book_query_file}" << __HERE__
+  cat > "${reference_query_file}" << __HERE__
 #
 # Get a list of all the class names
 #
@@ -85,7 +89,7 @@ WHERE {
   # TODO: We should just store this in the database itself using the vann ontology or so (http://vocab.org/vann/)
   #
   VALUES (?prefix ?namespace) {
-    $(< "${TMPDIR}/book-prefixes.txt")
+    $(< "${TMPDIR}/reference-prefixes.txt")
     ( "ex1:" <http://example1.com/> )
     ( "ex2:" <http://example2.com/> )
     ( "ex3:" <http://example3.com/> )
@@ -145,34 +149,36 @@ GROUP BY ?classIRI ?namezpace ?classLabel ?definition ?explanatoryNote
 ORDER BY ?classIRI
 __HERE__
 
-  local -r checksum="$(md5sum "${book_query_file}" | cut -f1 -d\  )"
+  local -r checksum="$(md5sum "${reference_query_file}" | cut -f1 -d\  )"
 
-  book_results_file="${book_data_dir}/list-of-classes-${checksum}.tsv"
+  reference_results_file="${reference_data_dir}/list-of-classes-${checksum}.tsv"
 
   return 0
 
 }
 
 #
-# Execute the "list of classes" query and store the name of the results file in the caller's variable book_results_file
+# Execute the "list of classes" query and store the name of the results file in the caller's variable reference_results_file
 #
-function bookQueryListOfClasses() {
+function referenceQueryListOfClasses() {
 
-  local book_query_file
+  ((reference_skip_content)) && return 0
 
-  bookCreateQueryListOfClasses || return $?
+  local reference_query_file
+
+  referenceCreateQueryListOfClasses || return $?
 
   #
   # If the results file already exists then it doesn't make sense
   # to run the query again.
   #
-  [[ -z "${book_results_file}" ]] && return 1
-  if [[ -f "${book_results_file}" ]] ; then
-    bookQueryListOfClassesInitArray
+  [[ -z "${reference_results_file}" ]] && return 1
+  if [[ -f "${reference_results_file}" ]] ; then
+    referenceQueryListOfClassesInitArray
     return $?
   fi
 
-  logRule "Step: bookQueryListOfClasses"
+  logRule "Step: referenceQueryListOfClasses"
 
   #
   # Get the list of classes and some details per class, somehow the DISTINCT keyword
@@ -181,14 +187,14 @@ function bookQueryListOfClasses() {
   # So we're now just using the brute force way of doing a "sort --unique" (on just the classIRI) to
   # ensure that we only have one line per class.
   #
-  logItem "Executing query" "${book_query_file}"
+  logItem "Executing query" "${reference_query_file}"
   tdb2.tdbquery \
-    --loc="${book_latex_dir}/tdb2" \
-    --query="${book_query_file}" \
-    --results=TSV | sort --key=1,2 --unique | ${SED} 's/\(^\|\t\)\t/\1 \t/g' > "${book_results_file}"
+    --loc="${reference_latex_dir}/tdb2" \
+    --query="${reference_query_file}" \
+    --results=TSV | sort --key=1,2 --unique | ${SED} 's/\(^\|\t\)\t/\1 \t/g' > "${reference_results_file}"
   rc=$?
-  logItem "Finished query" "${book_query_file}"
-  logItem "Results in" "${book_results_file}"
+  logItem "Finished query" "${reference_query_file}"
+  logItem "Results in" "${reference_results_file}"
 
   if ((rc > 0)) ; then
     logVar rc
@@ -198,11 +204,11 @@ function bookQueryListOfClasses() {
   return 0
 }
 
-function bookQueryListOfClassesInitArray() {
+function referenceQueryListOfClassesInitArray() {
 
-  [[ ${#book_array_classes[*]} -gt 0 ]] && return 0
+  [[ ${#reference_array_classes[*]} -gt 0 ]] && return 0
 
-  logRule "Step: bookQueryListOfClassesInitArray (should take less than 40 seconds)"
+  logRule "Step: referenceQueryListOfClassesInitArray (should take less than 40 seconds)"
 
   while IFS=$'\t' read -a line ; do
 
@@ -217,19 +223,19 @@ function bookQueryListOfClassesInitArray() {
     definition="$(stripQuotes "${line[4]}")"
     explanatoryNote="$(stripQuotes "${line[5]}")"
 
-    book_array_classes[${classIRI},prefName]="${classPrefName}"
-    book_array_classes[${classIRI},namespace]="${namespace}"
-    book_array_classes[${classIRI},label]="${classLabel}"
-    book_array_classes[${classIRI},definition]="${definition}"
-    book_array_classes[${classIRI},explanatoryNote]="${explanatoryNote}"
+    reference_array_classes[${classIRI},prefName]="${classPrefName}"
+    reference_array_classes[${classIRI},namespace]="${namespace}"
+    reference_array_classes[${classIRI},label]="${classLabel}"
+    reference_array_classes[${classIRI},definition]="${definition}"
+    reference_array_classes[${classIRI},explanatoryNote]="${explanatoryNote}"
 
-  done < "${book_results_file}"
+  done < "${reference_results_file}"
 
-  log "Step: bookQueryListOfClassesInitArray done"
+  log "Step: referenceQueryListOfClassesInitArray done"
 
   classIRI="http://www.w3.org/2004/02/skos/core#Concept"
 
-  #echo "test: prefName=[${book_array_classes[${classIRI},prefName]}]"
+  #echo "test: prefName=[${reference_array_classes[${classIRI},prefName]}]"
 
   return 0
 }
@@ -237,14 +243,14 @@ function bookQueryListOfClassesInitArray() {
 #
 # Generates query "list of super classes"
 #
-# Stores name of query file in global variable book_query_file and
-# name of results file in book_results_file
+# Stores name of query file in global variable reference_query_file and
+# name of results file in reference_results_file
 #
-function bookCreateQueryListOfSuperClasses() {
+function referenceCreateQueryListOfSuperClasses() {
 
-  book_query_file="${book_query_dir}/book-list-of-super-classes.sq"
+  reference_query_file="${reference_query_dir}/list-of-super-classes.sq"
 
-  cat > "${book_query_file}" << __HERE__
+  cat > "${reference_query_file}" << __HERE__
 #
 # Get a list of all the class IRIs and their super class IRIs
 #
@@ -267,7 +273,7 @@ WHERE {
   # TODO: We should just store this in the database itself using the vann ontology or so (http://vocab.org/vann/)
   #
   VALUES (?prefix ?namespace) {
-    $(< "${TMPDIR}/book-prefixes.txt")
+    $(< "${TMPDIR}/reference-prefixes.txt")
     ( "ex1:" <http://example1.com/> )
     ( "ex2:" <http://example2.com/> )
     ( "ex3:" <http://example3.com/> )
@@ -306,9 +312,10 @@ GROUP BY ?classIRI ?superClassIRI ?superClassNamespace
 ORDER BY ?classIRI ?superClassIRI
 __HERE__
 
-  local -r checksum="$(md5sum "${book_query_file}" | cut -f1 -d\  )"
+  local -r checksum="$(md5sum "${reference_query_file}" | cut -f1 -d\  )"
 
-  book_results_file="${book_data_dir}/list-of-super-classes-${checksum}.tsv"
+  reference_results_file="${reference_data_dir}/list-of-super-classes-${checksum}.tsv"
+  reference_results_file_number_of_lines="$(cat "${reference_results_file}" | wc -l)"
 
   return 0
 }
@@ -316,29 +323,31 @@ __HERE__
 #
 # Execute the "list of super classes" query
 #
-function bookQueryListOfSuperClasses() {
+# Assumes that var reference_results_file exists
+#
+function referenceQueryListOfSuperClasses() {
 
-  local book_query_file
+  local reference_query_file   # set by bookCreateQueryListOfSuperClasses
 
-  bookCreateQueryListOfSuperClasses || return $?
+  referenceCreateQueryListOfSuperClasses || return $?
 
   #
   # If the results file already exists then it doesn't make sense
   # to run the query again.
   #
-  [[ -z "${book_results_file}" ]] && return 1
-  [[ -f "${book_results_file}" ]] && return 0
+  [[ -z "${reference_results_file}" ]] && return 1
+  [[ -f "${reference_results_file}" ]] && return 0
 
-  logRule "Step: bookQueryListOfSuperClasses"
+  logRule "Step: referenceQueryListOfSuperClasses"
 
-  logItem "Executing query" "${book_query_file}"
+  logItem "Executing query" "${reference_query_file}"
   tdb2.tdbquery \
-    --loc="${book_latex_dir:?}/tdb2" \
-    --query="${book_query_file}" \
-    --results=TSV | ${SED} 's/\(^\|\t\)\t/\1 \t/g' > "${book_results_file}"
+    --loc="${reference_latex_dir:?}/tdb2" \
+    --query="${reference_query_file}" \
+    --results=TSV | ${SED} 's/\(^\|\t\)\t/\1 \t/g' > "${reference_results_file}"
   rc=$?
-  logItem "Finished query" "${book_query_file}"
-  logItem "Results in" "${book_results_file}"
+  logItem "Finished query" "${reference_query_file}"
+  logItem "Results in" "${reference_results_file}"
 
   if ((rc > 0)) ; then
     logVar rc
@@ -348,11 +357,11 @@ function bookQueryListOfSuperClasses() {
   return 0
 }
 
-function bookCreateQueryListOfOntologies() {
+function referenceCreateQueryListOfOntologies() {
 
-  book_query_file="${book_query_dir}/book-list-of-ontologies.sq"
+  reference_query_file="${reference_query_dir}/list-of-ontologies.sq"
 
-  cat > "${book_query_file}" << __HERE__
+  cat > "${reference_query_file}" << __HERE__
 #
 # Get a list of all the ontologies
 #
@@ -380,7 +389,7 @@ WHERE {
   # TODO: We should just store this in the database itself using the vann ontology or so (http://vocab.org/vann/)
   #
   VALUES (?prefix ?namespace) {
-    $(< "${TMPDIR}/book-prefixes.txt")
+    $(< "${TMPDIR}/reference-prefixes.txt")
     ( "ex1:" <http://example1.com/> )
     ( "ex2:" <http://example2.com/> )
     ( "ex3:" <http://example3.com/> )
@@ -449,9 +458,9 @@ WHERE {
 ORDER BY ?ontologyIRI
 __HERE__
 
-  local -r checksum="$(md5sum "${book_query_file}" | cut -f1 -d\  )"
+  local -r checksum="$(md5sum "${reference_query_file}" | cut -f1 -d\  )"
 
-  book_results_file="${book_data_dir}/list-of-ontologies-${checksum}.tsv"
+  reference_results_file="${reference_data_dir}/list-of-ontologies-${checksum}.tsv"
 
   return 0
 }
@@ -459,32 +468,34 @@ __HERE__
 #
 # Execute the "list of super classes" query
 #
-function bookQueryListOfOntologies() {
+function referenceQueryListOfOntologies() {
 
-  local book_query_file
+  ((reference_skip_content)) && return 0
 
-  bookCreateQueryListOfOntologies || return $?
+  local reference_query_file
+
+  referenceCreateQueryListOfOntologies || return $?
 
   #
   # If the results file already exists then it doesn't make sense
   # to run the query again.
   #
-  [[ -z "${book_results_file}" ]] && return 1
-  if [[ -f "${book_results_file}" ]] ; then
-    bookQueryListOfOntologiesInitArray
+  [[ -z "${reference_results_file}" ]] && return 1
+  if [[ -f "${reference_results_file}" ]] ; then
+    referenceQueryListOfOntologiesInitArray
     return $?
   fi
 
-  logRule "Step: bookQueryListOfOntologies"
+  logRule "Step: referenceQueryListOfOntologies"
 
-  logItem "Executing query" "${book_query_file}"
+  logItem "Executing query" "${reference_query_file}"
   tdb2.tdbquery \
-    --loc="${book_latex_dir:?}/tdb2" \
-    --query="${book_query_file}" \
-    --results=TSV | ${SED} 's/\(^\|\t\)\t/\1 \t/g' > "${book_results_file}"
+    --loc="${reference_latex_dir:?}/tdb2" \
+    --query="${reference_query_file}" \
+    --results=TSV | ${SED} 's/\(^\|\t\)\t/\1 \t/g' > "${reference_results_file}"
   rc=$?
-  logItem "Finished query" "${book_query_file}"
-  logItem "Results in" "${book_results_file}"
+  logItem "Finished query" "${reference_query_file}"
+  logItem "Results in" "${reference_results_file}"
 
   if ((rc > 0)) ; then
     logVar rc
@@ -494,11 +505,11 @@ function bookQueryListOfOntologies() {
   return 0
 }
 
-function bookQueryListOfOntologiesInitArray() {
+function referenceQueryListOfOntologiesInitArray() {
 
-  [[ ${#book_array_ontologies[*]} -gt 0 ]] && return 0
+  [[ ${#reference_array_ontologies[*]} -gt 0 ]] && return 0
 
-  logRule "Step: bookQueryListOfOntologiesInitArray (should take less than 40 seconds)"
+  logRule "Step: referenceQueryListOfOntologiesInitArray (should take less than 40 seconds)"
 
   while IFS=$'\t' read -a line ; do
 
@@ -514,16 +525,16 @@ function bookQueryListOfOntologiesInitArray() {
     preferredPrefix="$(stripQuotes "${line[5]}")"
     maturityLevel="$(stripQuotes "${line[6]}")"
 
-    book_array_ontologies[${ontologyIRI},ontologyVersionIRI]="${ontologyVersionIRI}"
-    book_array_ontologies[${ontologyIRI},ontologyLabel]="${ontologyLabel}"
-    book_array_ontologies[${ontologyIRI},prefix]="${prefix}"
-    book_array_ontologies[${ontologyIRI},abstract]="${abstract}"
-    book_array_ontologies[${ontologyIRI},preferredPrefix]="${preferredPrefix}"
-    book_array_ontologies[${ontologyIRI},maturityLevel]="${maturityLevel}"
+    reference_array_ontologies[${ontologyIRI},ontologyVersionIRI]="${ontologyVersionIRI}"
+    reference_array_ontologies[${ontologyIRI},ontologyLabel]="${ontologyLabel}"
+    reference_array_ontologies[${ontologyIRI},prefix]="${prefix}"
+    reference_array_ontologies[${ontologyIRI},abstract]="${abstract}"
+    reference_array_ontologies[${ontologyIRI},preferredPrefix]="${preferredPrefix}"
+    reference_array_ontologies[${ontologyIRI},maturityLevel]="${maturityLevel}"
 
-  done < "${book_results_file}"
+  done < "${reference_results_file}"
 
-  log "Step: bookQueryListOfClassesInitArray done"
+  log "Step: referenceQueryListOfOntologiesInitArray done"
 
   return 0
 }

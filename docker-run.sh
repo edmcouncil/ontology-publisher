@@ -37,8 +37,13 @@ function inputDirectory() {
     # the windows directory that's supposed to be the input directory.
     # That shell-container should pass the current user id through somehow. Windows has it in USERNAME env var.
     #
-      #    echo -n "/c/Users/RivettPJ/Documents/FIBO-Development"
-          echo -n "/c/Users/Dean/Documents/fibo"
+    #
+    # JG>Dean and/or Pete can you check if there's an environment variable available when you run this
+    #    that contains your user name as RivettPJ or Dean so that we can automate at least part of the
+    #    path name below?
+    #
+    # echo -n "/c/Users/RivettPJ/Documents/FIBO-Development"
+      echo -n "/c/Users/Dean/Documents/fibo"
     return 0
   fi
 
@@ -224,21 +229,45 @@ function dockerFile() {
   fi
 }
 
-function buildImage() {
+function containerName() {
 
-  ((cli_option_buildimage == 0)) && return 0
-
-  cd "${SCRIPT_DIR}" || return $?
-
-  local containerName="ontology-publisher"
+  echo -n "ontology-publisher"
 
   if ((cli_option_dev_mode)) ; then
     #
     # Just to make sure that the dev-mode version of the image is not being pushed to Docker Hub because it
     # can't run on its own, it doesn't contain the /publisher directory
     #
-    containerName+='-dev'
+    echo -n "-dev"
   fi
+}
+
+function idOfRunningContainer() {
+
+  local containerName="$(containerName)"
+
+  docker container ls --filter "name=$(containerName)" --quiet
+}
+
+function isContainerRunning() {
+
+  local -r id="$(idOfRunningContainer)"
+
+  [[ -n "${id}" ]]
+}
+
+function buildImage() {
+
+  ((cli_option_buildimage)) || return 0
+
+  if isContainerRunning ; then
+    warning "Container is running so we skip the build"
+    return 0
+  fi
+
+  cd "${SCRIPT_DIR}" || return $?
+
+  local containerName="$(containerName)"
 
   local -a opts=()
 
@@ -285,6 +314,10 @@ function run() {
 
   ((cli_option_runimage == 0)) && return 0
 
+  if isContainerRunning ; then
+    return 0
+  fi
+
   requireValue ONTPUB_FAMILY || return $?
 
   cd "${SCRIPT_DIR}" || return $?
@@ -316,10 +349,16 @@ function run() {
   opts+=('run')
   opts+=('--rm')
   opts+=('--tty')
-#  opts+=('--network')
-#  opts+=('none')
+# opts+=('--network')
+# opts+=('none')
   opts+=('--name')
   opts+=("${containerName}")
+  #
+  # Remove the --read-only option if you want to experiment with adding new tools to the running container.
+  # The --read-only flag is set by default (by this script) to protect the image from being overwritten by anything
+  # that runs inside the container itself.
+  #
+#  opts+=('--read-only')
   opts+=('--env')
   opts+=("ONTPUB_IS_DARK_MODE=${cli_option_dark}")
   opts+=('--env')
@@ -346,17 +385,7 @@ function run() {
 
   if ((cli_option_shell)) ; then
     log "Launching the ${containerName} container in shell mode."
-    log "Type $(bold ./publish.sh) to start the build and $(bold exit) to leave this container."
-    log "If you want to run the publication of just one or more \"products\" then"
-    log "specify the names of these products after $(bold ./publish.sh), for instance:"
-    log ""
-    log ""
-    log ""
-    log ""
-    log ""
-    log ""
-    log "$(bold ./publish.sh ontology vocabulary)"
-    log ""
+    logShellWelcome
     opts+=('--interactive')
     opts+=('--tty')
     opts+=('--entrypoint')
@@ -378,12 +407,41 @@ function run() {
   return ${rc}
 }
 
+function logShellWelcome() {
+
+  log "Type $(bold ./publish.sh) to start the build and $(bold exit) to leave this container."
+  log ""
+  log "If you want to run the publication of just one or more \"products\" then"
+  log "specify the names of these products after $(bold ./publish.sh), for instance:"
+  log ""
+  log ""
+  log ""
+  log "$(bold ./publish.sh ontology vocabulary)"
+  log ""
+}
+
+#
+# Connect to the running container with a bash login shell
+#
+function shell() {
+
+  if ! isContainerRunning ; then
+    return 0
+  fi
+
+  local -r id="$(idOfRunningContainer)"
+
+  logShellWelcome
+  docker exec --interactive --tty ${id} bash --login
+}
+
 function main() {
 
   checkCommandLine "$@" || return $?
   buildImage || return $?
   pushImage || return $?
-  run
+  run || return $?
+  shell
 }
 
 main $@

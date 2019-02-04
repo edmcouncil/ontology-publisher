@@ -1,4 +1,6 @@
 #
 # The /etc/bashrc file will be executed for all non-interactive or interactive shells
 #
-
+# Putting stuff in this file while it resides in git doesnt work since at container startup this file
+# is overwritten somehow
+#
