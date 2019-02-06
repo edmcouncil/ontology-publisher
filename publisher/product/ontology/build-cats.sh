@@ -181,10 +181,10 @@ __HERE__
 
   cat >> "${tag_root}/location-mapping.n3" <<< "."
 
-  if ((verbose)) ; then
-    log "Generated Jena Location Mapping file:"
-    cat "${tag_root}/location-mapping.n3" | pipelog
-  fi
+  log "Generated Jena Location Mapping file"
+#  if ((verbose)) ; then
+#    cat "${tag_root}/location-mapping.n3" | pipelog
+#  fi
 
   cat > "${tag_root}/ont-policy.rdf" << __HERE__
 <?xml version='1.0'?>
@@ -258,15 +258,15 @@ __HERE__
   (
     cd / || return $?
     while read ontologyRdfFile ; do
-      logVar ONTPUB_SPEC_HOST
-      logVar ontologyRdfFile
+#     logVar ONTPUB_SPEC_HOST
+#     logVar ontologyRdfFile
       ontologyVersionIRI="https://${ONTPUB_SPEC_HOST}/${ontologyRdfFile/.rdf//}"
-      logVar ontologyVersionIRI
+#     logVar ontologyVersionIRI
       ontologyVersionIRI="${ontologyVersionIRI/${ONTPUB_SPEC_HOST}?*output/${ONTPUB_SPEC_HOST}}"
-      logVar ontologyVersionIRI
+#     logVar ontologyVersionIRI
 
       ontologyIRI="${ontologyVersionIRI/\/${GIT_BRANCH}\/${GIT_TAG_NAME}}"
-      logVar ontologyIRI
+#     logVar ontologyIRI
 
       cat >> "${tag_root}/ont-policy.rdf" << __HERE__
 
@@ -290,10 +290,10 @@ __HERE__
 
 __HERE__
 
-  if ((verbose)) ; then
-    log "Generated Jena Ontology Policy file:"
-    cat "${tag_root}/ont-policy.rdf" | pipelog
-  fi
+  log "Generated Jena Ontology Policy file"
+#  if ((verbose)) ; then
+#    cat "${tag_root}/ont-policy.rdf" | pipelog
+#  fi
 
   return $?
 }

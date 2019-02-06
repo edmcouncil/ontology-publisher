@@ -700,7 +700,12 @@ __HERE__
 #    logVar definition
 #    logVar explanatoryNote
 
+    reference_stat_number_of_classes=$((reference_stat_number_of_classes + 1))
+
     cat >&3 << __HERE__
+%
+% Class #${reference_stat_number_of_classes}: ${classPrefName}
+%
 {\renewcommand\addcontentsline[3]{} \section{${classPrefName}}}
 \label{sec:${classLaTexLabel}} \index{${classPrefName#*:}}
 __HERE__
@@ -747,7 +752,6 @@ __HERE__
 
     cat >&3 <<< "\end{description}"
 
-    reference_stat_number_of_classes=$((reference_stat_number_of_classes + 1))
     if ((reference_stat_number_of_classes % 100 == 0)) ; then
       logItem "Progress Classes Chapter" "$((100 * reference_stat_number_of_classes / reference_results_file_number_of_lines))% (${reference_stat_number_of_classes}/${reference_results_file_number_of_lines})"
       break
