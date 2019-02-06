@@ -56,7 +56,7 @@ function convertRdfFileTo() {
     org.edmcouncil.rdf_toolkit.SesameRdfFormatter \
     --source "${rdfFile}" \
     --source-format "${sourceFormat}" \
-    --target "${targetFile}X" \
+    --target "${targetFile}.tmp" \
     --target-format "${targetFormat}" \
     --inline-blank-nodes \
     --infer-base-iri \
@@ -64,12 +64,15 @@ function convertRdfFileTo() {
     > "${logfile}" 2>&1
   rc=$?
 
-  mv "${targetFile}X" "${targetFile}" \
+  #
+  # JG>DA please document here why we need to write the target file to a temporary file first?
+  #
+  mv "${targetFile}.tmp" "${targetFile}"
   
   #
   # For the turtle files, we want the base annotations to be the versionIRI
   #
-  if [ "${targetFormat}" == "turtle" ] ; then
+  if [[ "${targetFormat}" == "turtle" ]] ; then
 #   ((verbose)) && logItem "Adjusting ttl base IRI" "$(logFileName "${rdfFile}")"
     ${SED} -i "s?^\(\(# baseURI:\)\|\(@base\)\).*ontology/?&${GIT_BRANCH}/${GIT_TAG_NAME}/?" "${targetFile}"
     ${SED} -i "s@${GIT_BRANCH}/${GIT_TAG_NAME}/${GIT_BRANCH}/${GIT_TAG_NAME}/@${GIT_BRANCH}/${GIT_TAG_NAME}/@" \
@@ -98,7 +101,7 @@ function main() {
   local -r rc=$?
 
   ((rc == 0)) && return 0
-  warning "convertRdfFile.sh $@ returned ${rc}"
+  error "convertRdfFile.sh $@ returned ${rc}"
 
   return ${rc}
 }
