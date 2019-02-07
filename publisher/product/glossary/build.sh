@@ -20,6 +20,8 @@ function publishProductGlossary() {
   export glossary_product_tag_root="${tag_root:?}"
   export glossary_product_tag_root_url="${tag_root_url:?}"
 
+  echo "glossary_product_tag_root_url=${glossary_product_tag_root_url}"
+  
   publishProductGlossaryContent || return $?
   publishProductGlossaryReactApp || return $?
 
@@ -144,14 +146,38 @@ function publishProductGlossaryContent() {
   #
 # if ((debug == 0)) ; then
     verbose "Get all dev ontologies convert to one Turtle file ($(logFileName ${TMPDIR}/glossary-dev.ttl))"
-    ${JENA_ARQ} \
-      $(${FIND} "${ontology_product_tag_root}" -name "*.rdf" | ${SED} "s/^/--data=/") \
-      --data=${glossary_script_dir}/owlnames.ttl \
-      --data="${SCRIPT_DIR}/lib/ontologies/omg/CountryRepresentation.rdf" \
-      --data="${SCRIPT_DIR}/lib/ontologies/omg/LanguageRepresentation.rdf" \
-      --query="${SCRIPT_DIR}/lib/noimport.sparql" \
-      --results=Turtle > "${TMPDIR}/glossary-dev.ttl"
+#    ${JENA_ARQ} \
+#      $(${FIND} "${ontology_product_tag_root}" -name "*.rdf" | ${SED} "s/^/--data=/") \
+#      --data=${glossary_script_dir}/owlnames.ttl \
+#      --data="${SCRIPT_DIR}/lib/ontologies/omg/CountryRepresentation.rdf" \
+#      --data="${SCRIPT_DIR}/lib/ontologies/omg/LanguageRepresentation.rdf" \
+#      --query="${SCRIPT_DIR}/lib/noimport.sparql" \
+#      --results=Turtle > "${TMPDIR}/glossary-dev.ttl"
 
+
+    if [ ! -f ${SCRIPT_DIR}/lib/trigify.py ] ; then
+	error "Could not find ${SCRIPT_DIR}/lib/trigify.py"
+	return 1
+    fi
+
+    echo "tag_root=$tag_root"
+    riot --output=rdf/xml ${glossary_script_dir}/owlnames.ttl >${glossary_script_dir}/owlnames.rdf
+    
+    
+    python3 ${SCRIPT_DIR}/lib/trigify.py \
+	    --dir=${ontology_product_tag_root} \
+	    --dir="${SCRIPT_DIR}/lib/ontologies/omg" \
+	    --dir="${glossary_script_dir}" \
+	    --output="${TMPDIR}/glossary-dev.ttl" \
+	    --noimports \
+	    --top=http://www.edmcouncil.org/fibo/AboutFIBODev \
+            --top=http://www.omg.org/spec/LCC/Countries/CountryRepresentation/ \
+            --top=http://www.omg.org/spec/LCC/Languages/LanguageRepresentation/ \
+	    --top=http://spec.edmcouncil.org/owlnames \
+	    --verbose \
+	    --format=ttl
+
+    
     if [ ${PIPESTATUS[0]} -ne 0 ] ; then
       error "Could not get Dev ontologies"
       return 1

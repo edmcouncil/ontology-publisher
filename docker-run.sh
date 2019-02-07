@@ -372,8 +372,8 @@ function run() {
   opts+=("--mount type=bind,source=${inputDirectory},target=/input/${ONTPUB_FAMILY},readonly,consistency=cached")
   logItem "/output" "${outputDirectory}"
   opts+=("--mount type=bind,source=${outputDirectory},target=/output,consistency=delegated")
-  logItem "/var/tmp" "${temporaryFilesDirectory}"
-  opts+=("--mount type=bind,source=${temporaryFilesDirectory},target=/var/tmp,consistency=delegated")
+#  logItem "/var/tmp" "${temporaryFilesDirectory}"
+#  opts+=("--mount type=bind,source=${temporaryFilesDirectory},target=/var/tmp,consistency=delegated")
 
   #
   # When running in dev mode we mount the ontology publisher's repo's root directory as well
