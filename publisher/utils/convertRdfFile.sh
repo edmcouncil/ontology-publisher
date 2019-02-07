@@ -65,7 +65,9 @@ function convertRdfFileTo() {
   rc=$?
 
   #
-  # JG>DA please document here why we need to write the target file to a temporary file first?
+  # We write the output to a temp file in case the input and the
+  # output are the same file (which happens a lot) since the
+  # serializer can't handle that situation. 
   #
   mv "${targetFile}.tmp" "${targetFile}"
   
