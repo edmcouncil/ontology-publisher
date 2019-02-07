@@ -60,10 +60,7 @@ fi
 #
 function publishProductReference() {
 
-    #
-    # I'm not sure how to disable a product in the current setup.  This is a pretty tough way to do it .
-    #
-    return 0
+
     
   setProduct ontology || return $?
   export ontology_product_tag_root="${tag_root:?}"
@@ -71,6 +68,13 @@ function publishProductReference() {
   setProduct reference || return $?
   export reference_product_tag_root="${tag_root:?}"
   export reference_product_tag_root_url="${tag_root_url:?}"
+
+    #
+    # I'm not sure how to disable a product in the current setup.  This is a pretty tough way to do it .
+    #
+    touch ${reference_product_tag_root}/reference.log
+    return 0
+
 
   reference_script_dir="$(cd "${SCRIPT_DIR}/product/reference" && pwd)" ; export reference_script_dir
   reference_latex_dir="${reference_product_tag_root}"
