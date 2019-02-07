@@ -60,6 +60,11 @@ fi
 #
 function publishProductReference() {
 
+    #
+    # I'm not sure how to disable a product in the current setup.  This is a pretty tough way to do it .
+    #
+    return 0
+    
   setProduct ontology || return $?
   export ontology_product_tag_root="${tag_root:?}"
 
