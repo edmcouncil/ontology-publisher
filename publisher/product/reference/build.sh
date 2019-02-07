@@ -73,6 +73,7 @@ function publishProductReference() {
     # I'm not sure how to disable a product in the current setup.  This is a pretty tough way to do it .
     #
     touch ${reference_product_tag_root}/reference.log
+    touch ${reference_product_tag_root}/reference.pdf
     return 0
 
 
