@@ -40,7 +40,7 @@
         </head>
         <body>
           <br/>
-          <img src="https://spec.edmcouncil.org/static/image/edmc-logo.jpg"/>
+          <img src="https://spec.edmcouncil.org/static/image/edmc-logo.jpg" height="100"/>
           <br/>
           <h1>FIBOpedia</h1>
           <p>This page allows you to navigate the tree structure of FIBO's Domains and Modules and drill down into the individual ontologies.<br/>
