@@ -169,14 +169,19 @@ function generateWidocoDocumentationForFile() {
 
   logRule "Running widoco in $(logFileName "${directory}")"
 
-  if [[ "${turtleFile}" =~ ^[0-9].* || "${turtleFile}" =~ ^About.* || "${turtleFile}" =~ ^Metadata.* ]] ; then
+  if [[ \
+    "${turtleFile}" =~ ^[0-9].* || \
+    "${turtleFile}" =~ ^About.* || \
+    "${turtleFile}" =~ ^Metadata.*  || \
+    "${turtleFile}" =~ ^ont-policy.* \
+  ]] ; then
     logItem  "skipping" "$(logFileName "${turtleFile}") in $(logFileName "${directory}") with extension ${extension}"
     return 0
   fi
 
-  logItem "Widoco processing"  "$(logFileName "${turtleFile}")"
-  logItem "Current Directory"  "$(logFileName "${directory}")"
-  logItem "Output Directory"   "$(logFileName "${outputDir}")"
+  logItem "Widoco is processing"  "$(logFileName "${turtleFile}")"
+  logDir  directory
+  logDir  outputDir
 
   mkdir -p "${outputDir}" >/dev/null 2>&1 || return $?
 
