@@ -396,6 +396,40 @@ function widocoRemoveIntroductionSection() {
 }
 
 #
+# Replace all "hrefs" that refer to URLs with .../ontology/.. in it to their .../widoco/.. equivalents so that
+# everyone can navigate around through all the widoco docs that we generate for each ontology
+#
+function widocoReplaceOntologyIRIs() {
+
+  local -r outputFolder="$1"
+
+  #
+  # TODO: If we even are going to support multi-lingual widoco output we would need to refer to index-<language>
+  #       rather than index-en.html
+  #
+  for htmlFile in "${outputFolder}"/**/*.html ; do
+    logItem "Replacing IRIs in" "${htmlFile}"
+    ${SED} \
+      -i \
+      `# replace all ../ontology/.. urls used in hrefs with their ../widoco/.. counterparts` \
+      `# note that we leave out href=#<url> because those are not real urls but fragment IDs` \
+      -e 's@href="\([^#][^"]*\)/ontology/\([^"]*\)"@href="\1/widoco/\2/index-en.html"@g' \
+      `# stich index-en.html at the end` \
+      -e 's@//index-en.html@/index-en.html@g' \
+      `# replace any visible references to version IRIs` \
+      -e "s@title=\"${ontology_tag_root_url}@title=\"${ontology_product_root_url}@g" \
+      `# replace all hrefs with versioned IRIs` \
+      -e "s@href=\"${product_root_url}@href=\"${tag_root_url}@g" \
+      `# remove duplicates` \
+      -e "s@${branch_tag}/${branch_tag}@${branch_tag}@g" \
+      -e "s@${branch_tag}/${branch_tag}@${branch_tag}@g" \
+      "${htmlFile}"
+  done
+
+  return 0
+}
+
+#
 # Called by buildVowlIndex() exclusively
 #
 function buildVowlIndexInvokeTree() {
