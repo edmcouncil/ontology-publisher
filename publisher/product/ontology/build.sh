@@ -41,10 +41,6 @@ function publishProductOntology() {
   setProduct ontology || return $?
 
   ontology_product_tag_root="${tag_root:?}"
-  #
-  # Show the ontology root directory
-  #
-  logItem "Ontology Root" "$(logFileName "${ontology_product_tag_root}")"
 
   ontologyCopyRdfToTarget || return $?
   ontologySearchAndReplaceStuff || return $?
@@ -288,11 +284,11 @@ s@${product_root_url}/\([A-Z]*\)/[0-9]*/@${product_root_url}/\1/@g
 # - <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/InformationExt/InfoCore/"/> becomes:
 # - <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/master/latest/FND/InformationExt/InfoCore/"/>
 #
-s@\(owl:imports rdf:resource="${product_root_url}/\)@\1${GIT_BRANCH}/${GIT_TAG_NAME}/@g
+s@\(owl:imports rdf:resource="${product_root_url}/\)@\1${branch_tag}/@g
 #
 # And then the same for the owl:versionIRI.
 #
-s@\(owl:versionIRI rdf:resource="${product_root_url}/\)@\1${GIT_BRANCH}/${GIT_TAG_NAME}/@g
+s@\(owl:versionIRI rdf:resource="${product_root_url}/\)@\1${branch_tag}/@g
 #
 # Just to be sure that we don't see any 'ontology/ontology' IRIs:
 #
@@ -368,8 +364,8 @@ function ontologyFixTopBraidBaseURICookie() {
       --data="${ontologyFile}" \
       --results=csv | \
       ${GREP} edmcouncil | \
-      ${SED} "s@\(${product_root_url}/\)@\1${GIT_BRANCH}/${GIT_TAG_NAME}/@" | \
-      ${SED} "s@${GIT_BRANCH}/${GIT_TAG_NAME}/${GIT_BRANCH}/${GIT_TAG_NAME}/@${GIT_BRANCH}/${GIT_TAG_NAME}/@" \
+      ${SED} "s@\(${product_root_url}/\)@\1${branch_tag}/@" | \
+      ${SED} "s@${branch_tag}/${branch_tag}/@${branch_tag}/@" \
   )
 
   uri="# baseURI: ${baseURI}"

@@ -31,7 +31,7 @@ __HERE__
     find ${fibo_rel} -name '*.rdf' | \
       ${GREP} -v etc | \
       ${SED} 's@^.*$@  <uri id="User Entered Import Resolution" uri="&" name="https://spec.edmcouncil.org/fibo/&"/>@;s@.rdf"/>@/"/>@' | \
-      ${SED} "s@fibo/${fibo_rel}/\([a-zA-Z]*/\)@fibo/${product}/${GIT_BRANCH}/${GIT_TAG_NAME}/\U\1\E@" | \
+      ${SED} "s@fibo/${fibo_rel}/\([a-zA-Z]*/\)@fibo/${product}/${branch_tag}/\U\1\E@" | \
       ${SED} "s@fibo//*@fibo/@g" >> catalog-v001.xml
 
     cat >> catalog-v001.xml <<< '</catalog>'

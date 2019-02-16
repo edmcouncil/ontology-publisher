@@ -60,8 +60,6 @@ fi
 #
 function publishProductReference() {
 
-
-    
   setProduct ontology || return $?
   export ontology_product_tag_root="${tag_root:?}"
 
@@ -69,13 +67,13 @@ function publishProductReference() {
   export reference_product_tag_root="${tag_root:?}"
   export reference_product_tag_root_url="${tag_root_url:?}"
 
-    #
-    # I'm not sure how to disable a product in the current setup.  This is a pretty tough way to do it .
-    #
-    touch ${reference_product_tag_root}/reference.log
-    touch ${reference_product_tag_root}/reference.pdf
-    return 0
-
+#    #
+#    # I'm not sure how to disable a product in the current setup.  This is a pretty tough way to do it .
+#    # JG>Basically by just not including it in the Jenkinsfile.
+#    #
+#    touch ${reference_product_tag_root}/reference.log
+#    touch ${reference_product_tag_root}/reference.pdf
+#    return 0
 
   reference_script_dir="$(cd "${SCRIPT_DIR}/product/reference" && pwd)" ; export reference_script_dir
   reference_latex_dir="${reference_product_tag_root}"
@@ -325,8 +323,8 @@ __HERE__
 %
 \sloppy
 \begin{document}
-%\setmainfont{Nimbus Sans L}
-\setmainfont{TeX Palladio L}
+\setmainfont{Nimbus Sans L}
+%\setmainfont{TeX Palladio L}
 %\setmainfont{TeXGyreHerosCondensed}
 %\setmainfont{TeX Gyre Adventor}
 %\maketitle
