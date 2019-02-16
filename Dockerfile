@@ -265,7 +265,7 @@ RUN \
 ## Installing Widoco
 ##
 RUN \
-  widoco_version="1.4.7" ; \
+  widoco_version="1.4.8" ; \
   widoco_root_url="https://jenkins.edmcouncil.org/view/widoco/job/widoco-build/lastStableBuild/es.oeg\$widoco/artifact/es.oeg" ; \
   echo ================================= install widoco ${widoco_version} >&2 && \
   #
