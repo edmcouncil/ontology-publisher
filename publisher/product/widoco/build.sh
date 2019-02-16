@@ -20,6 +20,8 @@ function publishProductWidoco() {
 
   setProduct ontology || return $?
   ontology_product_tag_root="${tag_root:?}"
+  ontology_tag_root_url="${tag_root_url:?}"
+  ontology_product_root_url="${product_root_url:?}"
 
   setProduct widoco || return $?
   widoco_product_tag_root="${tag_root:?}"
@@ -64,31 +66,34 @@ function generateWidocoLog4jConfig() {
   #
   # Don't overwrite an existing one created by a previous (or parallel) run of this script
   #
-  [[ -f "${TMPDIR}/widoco-log4j.properties" ]] && return 0
+#  [[ -f "${TMPDIR}/widoco-log4j.properties" ]] && return 0
 
   logItem "Widoco log4j config" "$(logFileName "${TMPDIR}/widoco-log4j.properties")"
 
   cat > "${TMPDIR}/widoco-log4j.properties" << __HERE__
-log4j.rootLogger=DEBUG, stdlog
+log4j.rootLogger=INFO, stdlog
 
 log4j.appender.stdlog=org.apache.log4j.ConsoleAppender
 log4j.appender.stdlog.target=System.err
 log4j.appender.stdlog.layout=org.apache.log4j.PatternLayout
 log4j.appender.stdlog.layout.ConversionPattern=%d{HH:mm:ss} %-5p %-20c{1} :: %m%n
-log4j.appender.stdout.Threshold=TRACE
+log4j.appender.stdout.Threshold=INFO
 
-log4j.appender.org.apache.logging.log4j.simplelog.StatusLogger.level=TRACE
+log4j.appender.org.apache.logging.log4j.simplelog.StatusLogger.level=INFO
 
-log4j.appender.org.semanticweb.owlapi=TRACE
-log4j.appender.widoco.JenaCatalogIRIMapper=DEBUG
+log4j.appender.org.semanticweb.owlapi=INFO
+log4j.appender.widoco.JenaCatalogIRIMapper=INFO
 
-log4j.logger.org.semanticweb.owlapi=DEBUG
+log4j.logger.org.semanticweb.owlapi=INFO
 log4j.logger.org.semanticweb.owlapi.util.SAXParsers=OFF
 log4j.logger.org.semanticweb.owlapi.utilities.Injector=OFF
+log4j.logger.org.semanticweb.owlapi.rdf.rdfxml.parser.TripleHandlers=OFF
 log4j.logger.org.eclipse.rdf4j.rio=OFF
 RDFParserRegistry
 #
 __HERE__
+
+  return 0
 }
 
 function generateWidocoLog4j2Config() {
@@ -111,6 +116,7 @@ function generateWidocoLog4j2Config() {
 </configuration>
 __HERE__
 
+  return 0
 }
 
 #
@@ -140,6 +146,10 @@ function generateWidocoDocumentation() {
       warning "Directory $(pwd) does not have any turtle files to process"
     fi
   )
+
+  #
+  # uncomment this exit here if you just want to run widoco on the first ontology for testing
+  #exit
 
   return $?
 }
@@ -248,6 +258,7 @@ function generateWidocoDocumentationForFile() {
   fi
 
   widocoRemoveIntroductionSection || return $?
+  widocoReplaceOntologyIRIs "${outputDir}/${rdfFileNoExtension}" || return $?
 
   # KG: Need to figure out why it fails on fibo/ontology/master/latest/SEC/SecuritiesExt/SecuritiesExt.ttl
   #
