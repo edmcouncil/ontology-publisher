@@ -70,13 +70,28 @@ function publishProductOntology() {
 }
 
 #
+# Every hygiene test file has a '# banner <banner>' message, fetch that with this function
+#
+function getBannerFromSparqlTestFile() {
+
+  local -r hygieneTestSparqlFile="$1"
+
+  grep "banner" "${hygieneTestSparqlFile}" | cut -d\  -f 3-
+}
+
+function getHygieneTestFiles() {
+
+  find "${source_family_root}/etc" -name 'testHygiene*.sparql'
+}
+
+#
 # JG>Dean, I just copied the code from the old hygiene test into this function...
 #
 function runHygieneTests() {
 
-  setProduct ontology || return $?
+  local banner
 
-  ontology_product_tag_root="${tag_root:?}"
+  setProduct ontology || return $?
 
   #
   # Get ontologies for Dev
@@ -95,38 +110,44 @@ function runHygieneTests() {
     --query=/publisher/lib/echo.sparql \
     --results=TTL > ${OUTPUT}/PROD.ttl
 
-  log "Running tests:"
-  while read -r hygieneTestSparqlFile ; do
-    logItem "$(basename "${hygieneTestSparqlFile}")" "$(grep "banner" "${hygieneTestSparqlFile}" | cut -d\  -f 3- )"
-  done < <(find "${source_family_root}/etc" -name 'testHygiene*.sq')
-
-  log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-  log "Errors in DEV:"
-  log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  logRule "Will run the following tests:"
 
   while read -r hygieneTestSparqlFile ; do
-    logItem "Running test" "$(grep "banner" "${hygieneTestSparqlFile}" | cut -d\  -f 3- )"
+    banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
+    logItem "$(basename "${hygieneTestSparqlFile}")" "${banner}"
+  done < <(getHygieneTestFiles)
+
+  logRule "Errors in DEV:"
+
+  while read -r hygieneTestSparqlFile ; do
+    banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
+    logItem "Running test" "${banner}"
     ${JENA_ARQ} \
       --data=${OUTPUT}/DEV.ttl \
+      --results=csv \
       --query="${hygieneTestSparqlFile}" | \
+      grep -v "^s,o,error$" | \
+      grep -v "^error$" | \
       sed 's/PRODERROR/WARN/g' > \
       ${TMPDIR}/console1.txt
     cat ${TMPDIR}/console1.txt
-  done < <(find "${source_family_root}/etc" -name 'testHygiene*.sq')
+  done < <(getHygieneTestFiles)
 
-  log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-  log "Errors in PROD:"
-  log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  logRule "Errors in PROD:"
 
   while read -r hygieneTestSparqlFile ; do
-    logItem "Running test" "$(grep "banner" "${hygieneTestSparqlFile}" | cut -d\  -f 3- )"
+    banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
+    logItem "Running test" "${banner}"
     ${JENA_ARQ} \
       --data=${OUTPUT}/PROD.ttl \
+      --results=csv \
       --query="${hygieneTestSparqlFile}" | \
+      grep -v "^s,o,error$" | \
+      grep -v "^error$" | \
       sed 's/PRODERROR/ERROR/g' > \
       ${TMPDIR}/console2.txt
     cat ${TMPDIR}/console2.txt
-  done < <(find "${source_family_root}/etc" -name 'testHygiene*.sq')
+  done < <(getHygieneTestFiles)
 
   grep "ERROR:" ${TMPDIR}/console1.txt && return 1
   grep "ERROR:" ${TMPDIR}/console2.txt && return 1
@@ -134,7 +155,7 @@ function runHygieneTests() {
   rm ${TMPDIR}/console1.txt
   rm ${TMPDIR}/console2.txt
 
-  log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  logRule "Passed all the hygiene tests"
 
   return 0
 }
@@ -151,7 +172,7 @@ function ontologyCopyRdfToTarget() {
   local module
 #  local upperModule
 
-  logRule "Step: ontologyCopyRdfToTarget"
+  logStep "ontologyCopyRdfToTarget"
 
   log "Copying all artifacts that we publish straight from git into $(logFileName "${tag_root}")"
 
@@ -165,15 +186,16 @@ function ontologyCopyRdfToTarget() {
       fi
     done < <(
       find . \
-        -name '*.rdf'  -o \
-        -name '*.ttl'  -o \
-        -name '*.md'   -o \
-        -name '*.jpg'  -o \
-        -name '*.png'  -o \
-        -name '*.gif'  -o \
-        -name '*.docx' -o \
-        -name '*.pdf'  -o \
-        -name '*.sq'
+        -name '*.rdf'   -o \
+        -name '*.ttl'   -o \
+        -name '*.md'    -o \
+        -name '*.jpg'   -o \
+        -name '*.png'   -o \
+        -name '*.gif'   -o \
+        -name '*.docx'  -o \
+        -name '*.pdf'   -o \
+        -name '*.sq'    -o \
+        -name '*.sparql'
     )
   )
 
@@ -238,7 +260,7 @@ function ontologyCopyRdfToTarget() {
 
 function ontologySearchAndReplaceStuff() {
 
-  logRule "Step: ontologySearchAndReplaceStuff"
+  logStep "ontologySearchAndReplaceStuff"
 
   require ONTPUB_SPEC_HOST || return $?
   require spec_family_root_url || return $?
@@ -405,7 +427,7 @@ __HERE__
 
 function ontologyConvertMarkdownToHtml() {
 
-  logRule "Step: ontologyConvertMarkdownToHtml"
+  logStep "ontologyConvertMarkdownToHtml"
 
   if ((pandoc_available == 0)) ; then
     error "Could not convert Markdown files to HTML since pandoc is missing"
@@ -435,7 +457,7 @@ function ontologyBuildIndex () {
   require tag_root_url || return $?
   require GIT_TAG_NAME || return $?
 
-  logRule "Step: build tree.html files"
+  logStep "build tree.html files"
 
   (
   	cd ${tag_root:?} || return $?
@@ -471,7 +493,7 @@ function ontologyConvertRdfToAllFormats() {
 
   require tag_root || return $?
 
-  logRule "Step: ontologyConvertRdfToAllFormats"
+  logStep "ontologyConvertRdfToAllFormats"
 
   pushd "${tag_root:?}" >/dev/null || return $?
 
@@ -511,7 +533,7 @@ function ontologyZipFiles () {
   require family_product_branch_tag || return $?
   require tag_root || return $?
 
-  logRule "Step: ontologyZipFiles"
+  logStep "ontologyZipFiles"
 
   local zipttlDevFile="${tag_root}/dev.ttl.zip"
   local ziprdfDevFile="${tag_root}/dev.rdf.zip"

@@ -300,7 +300,7 @@ __HERE__
 
 function ontologyBuildCatalogs() {
 
-  logRule "Step: ontologyBuildCatalogs"
+  logStep "ontologyBuildCatalogs"
 
   find ${OUTPUT} -name 'ont-policy.rdf' -o -name 'location-mapping.n3' -delete
 

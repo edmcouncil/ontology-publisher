@@ -36,7 +36,7 @@ function publishProductWidoco() {
   generateWidocoLog4jConfig || return $?
   generateWidocoLog4j2Config || return $?
 
-  logRule "Step: generateWidocoDocumentation"
+  logStep "generateWidocoDocumentation"
   #
   # Seems that widoco can leave tmp* directories around in the output ontology directories,
   # so if we are rerunning widoco we better make sure that those temporary directories are
@@ -371,6 +371,11 @@ function widocoRemoveIntroductionSection() {
     return 0
   fi
 
+  if [[ ! -d "${outputDir}/${rdfFileNoExtension}/sections/" ]] ; then
+    error "Directory $(logFileName "${outputDir}/${rdfFileNoExtension}/sections/") does not exist"
+    return 1
+  fi
+
   if [[ "${turtleFile}" = "AboutFIBODev.ttl" ]] || [[ "${turtleFile}" = "Corporations.ttl" ]] ; then
     log "Printing contents of file before modification ${outputDir}/${rdfFileNoExtension}/index-en.html "
     cat "${indexHtml}"
@@ -384,7 +389,7 @@ function widocoRemoveIntroductionSection() {
 #  log "Contents of widoco-sections folder $(logFileName "${widoco_script_dir}/widoco-sections")"
 #  ls -al ${widoco_script_dir}/widoco-sections
 
-  ${CP} "${widoco_script_dir}/widoco-sections/acknowledgements-en.html" "${outputDir}/${rdfFileNoExtension}/sections"
+  ${CP} "${widoco_script_dir}/widoco-sections/acknowledgements-en.html" "${outputDir}/${rdfFileNoExtension}/sections/"
 
 #  log "Contents of folder ${outputDir}/${rdfFileNoExtension}/sections"
 #  ls -al "${outputDir}/${rdfFileNoExtension}/sections"
@@ -497,7 +502,7 @@ function buildVowlIndex () {
 
   touch "${widoco_product_tag_root}"/widoco.log
   
-  logRule "Step: buildVowlIndex"
+  logStep "buildVowlIndex"
 
   (
     cd "${ontology_product_tag_root}" || return $?

@@ -10,7 +10,7 @@ false && source ../../lib/_functions.sh
 
 function ontologyCreateTheAllTtlFile() {
 
-  logRule "Step: ontologyCreateTheAllTtlFile"
+  logStep "ontologyCreateTheAllTtlFile"
 
   require TMPDIR || return $?
   require tag_root || return $?

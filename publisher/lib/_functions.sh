@@ -173,6 +173,11 @@ function logRule() {
 #  echo $(printf '=%.0s' {1..40}) $(bold "$@") >&2
 }
 
+function logStep() {
+
+  logRule "Step: $*"
+}
+
 function logItem() {
 
   local -r item="$1"
@@ -1048,7 +1053,10 @@ function getDevOntologies() {
     -name '*About*' -prune -o \
     -name 'All*' -prune -o \
     -name 'Metadata*' -prune -o \
+    -name 'Load*' -prune -o \
     -name 'ont-policy.rdf' -prune -o \
+    -name '*.rdfX' -prune -o \
+    -name '*.rdf.orig' -prune -o \
     -name '*.rdf' -print
 }
 
@@ -1062,6 +1070,11 @@ function getProdOntologies() {
   ${GREP} -rl 'utl-av[:;.]Release' "${ontology_product_tag_root}" | \
     ${GREP} -F ".rdf" | \
     ${GREP} -v ont-policy.rdf | \
+    ${GREP} -v "*About*" | \
+    ${GREP} -v "*Metadata*" | \
+    ${GREP} -v "*Load*" | \
+    ${GREP} -v "*.rdfX" | \
+    ${GREP} -v ".rdf.orig" | \
     ${GREP} -v '*About*' | \
     ${GREP} -v '/etc/'
 }

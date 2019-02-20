@@ -106,6 +106,14 @@ ENV \
   PATH=${PATH}:/usr/local/texlive/2018/bin/x86_64-linuxmusl:/usr/local/texlive/2018/bin/x86_64-linux
 
 #
+# Installing biblatex manually
+#
+COPY /usr/share/scripts/install-biber.sh /usr/share/scripts/install-biber.sh
+RUN \
+  echo ================================= install biblatex-biber >&2 && \
+  /usr/share/scripts/install-biber.sh
+
+#
 # Installing pandoc
 #
 ENV \
@@ -361,12 +369,6 @@ RUN \
   echo PATH=${PATH} && \
   sed -i -e 's/export PATH=\(.*\)/export PATH=${PATH}/g' /etc/profile && \
   echo "export PATH=${PATH}" >> /etc/bashrc
-
-COPY /usr/share/scripts/install-biber.sh /usr/share/scripts/install-biber.sh
-RUN \
-  echo ================================= install biblatex-biber >&2 && \
-  /usr/share/scripts/install-biber.sh
-
 
 CMD ["./publish.sh"]
 

@@ -244,9 +244,9 @@ function containerName() {
 
 function idOfRunningContainer() {
 
-  local containerName="$(containerName)"
+  local -r containerName="$(containerName)"
 
-  docker container ls --filter "name=$(containerName)" --quiet
+  docker ps -a --no-trunc --filter name=^/${containerName}$ --quiet
 }
 
 function isContainerRunning() {
@@ -260,14 +260,14 @@ function buildImage() {
 
   ((cli_option_buildimage)) || return 0
 
+  local -r containerName="$(containerName)"
+
   if isContainerRunning ; then
-    warning "Container is running so we skip the build"
+    warning "Container ${containerName} is running so we skip the build"
     return 0
   fi
 
   cd "${SCRIPT_DIR}" || return $?
-
-  local containerName="$(containerName)"
 
   local -a opts=()
 

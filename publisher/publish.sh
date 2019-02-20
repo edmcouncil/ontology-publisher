@@ -104,14 +104,14 @@ function zipWholeTagDir() {
 
   local -r tarGzFile="${tag_root}.tar.gz"
   local -r tarGzContentsFile="${tag_root}.tar.gz.log"
-  local -r zipttlFile="${tag_root}.ttl.zip"
-  local -r ziprdfFile="${tag_root}.rdf.zip"
-  local -r zipjsonFile="${tag_root}.jsonld.zip"
+#  local -r zipttlFile="${tag_root}.ttl.zip"
+#  local -r ziprdfFile="${tag_root}.rdf.zip"
+#  local -r zipjsonFile="${tag_root}.jsonld.zip"
 
   (
     cd ${spec_root} && ${TAR} -czf "${tarGzFile}" "${tag_root/${spec_root}/.}"
   )
-  [ $? -ne 0 ] && return 1
+  [[ $? -ne 0 ]] && return 1
 
   log "Created $(logFileName "${tarGzFile}"),"
   log "saving contents list in $(logFileName "${tarGzContentsFile}")"
@@ -154,7 +154,7 @@ function copySiteFiles() {
     ${CP} -r * "${spec_root}/"
   )
 
-  if [ -f /input/${ONTPUB_FAMILY}/LICENSE ] ; then
+  if [[ -f /input/${ONTPUB_FAMILY}/LICENSE ]] ; then
     ${CP} /input/${ONTPUB_FAMILY}/LICENSE "${spec_root}"
   else
     warning "Could not find license: /input/${ONTPUB_FAMILY}/LICENSE"
@@ -172,7 +172,7 @@ function zipOntologyFiles () {
   require family_product_branch_tag || return $?
   require tag_root || return $?
 
-  logRule "Step: zipOntologyFiles"
+  logStep "zipOntologyFiles"
 
   local zipttlDevFile="${tag_root}/dev.ttl.zip"
   local ziprdfDevFile="${tag_root}/dev.rdf.zip"
@@ -292,7 +292,7 @@ function main() {
   initGitVars || return $?
   initJiraVars || return $?
 
-  if [ "$1" == "init" ] ; then
+  if [[ "$1" == "init" ]] ; then
     return 0
   fi
 
@@ -300,7 +300,7 @@ function main() {
   # If we specified any parameters (other than "init") then
   # assume that these are the product names we need to run
   #
-  if [ $# -gt 0 ] ; then
+  if [[ $# -gt 0 ]] ; then
     products="$*"
   else
     #
@@ -321,7 +321,7 @@ function main() {
         publishProductOntology || return $?
         ;;
       hygiene*)
-        product="ontology"
+        product="hygiene"
         runHygieneTests || return $?
         ;;
       wido*)
@@ -373,15 +373,22 @@ function main() {
     #
     # Make clear in the log that a given product is done
     #
-    if [ "${product}" != "publish" ] ; then
-      log "Finished publication of ${ONTPUB_FAMILY}-product \"${product}\""
-    fi
+    case ${product} in
+      publish)
+        ;;
+      hygiene)
+        log "Finished hygiene tests"
+        ;;
+      *)
+        log "Finished publication of ${ONTPUB_FAMILY}-product \"${product}\""
+        ;;
+    esac
   done
-
-  log "We're all done"
 
   return 0
 }
 
 main $@
-exit $?
+rc=$?
+log "End of \"./publish $*\", rc=${rc}"
+exit ${rc}
