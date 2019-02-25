@@ -6,6 +6,29 @@
 
 export GREP=grep
 
+function checkShell() {
+
+  if ((BASH_VERSINFO < 4)) ; then
+    error "You're not using Bash 4"
+    if isMacOSX ; then
+      log "Install bash 4 with HomeBrew: https://brew.sh/"
+    fi
+    return 1
+  fi
+
+  return 0
+}
+
+function isMacOSX() {
+
+  test "$(uname -s)" == "Darwin"
+}
+
+function isDebian() {
+
+  test -f "/etc/debian_version"
+}
+
 #
 # Generic function that returns 1 if the variable with the given name does not exist (as a local or global Bash variable or
 # as an environment variable)
