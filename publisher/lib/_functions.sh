@@ -1072,15 +1072,28 @@ function getDevOntologies() {
   requireValue ontology_product_tag_root || return $?
 
   ${FIND} "${ontology_product_tag_root}" \
+    -name 'ont-policy.rdf' -prune -o \
     -path '*/etc*' -prune -o \
     -name '*About*' -prune -o \
     -name 'All*' -prune -o \
     -name 'Metadata*' -prune -o \
-    -name 'Load*' -prune -o \
-    -name 'ont-policy.rdf' -prune -o \
+    -name '*Load*' -prune -o \
     -name '*.rdfX' -prune -o \
     -name '*.rdf.orig' -prune -o \
     -name '*.rdf' -print
+}
+
+function getDevOntologiesInRDFXMLFormatInCurrentDirectory() {
+
+  ls -1 *.rdf | \
+    ${GREP} -v ont-policy.rdf | \
+    ${GREP} -v ".*/etc.*" | \
+    ${GREP} -v ".*About.*" | \
+    ${GREP} -v "All.*" | \
+    ${GREP} -v ".*Metadata.*" | \
+    ${GREP} -v ".*Load.*" | \
+    ${GREP} -v ".*\.rdfX" | \
+    ${GREP} -v "\.rdf\.orig"
 }
 
 #
