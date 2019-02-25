@@ -170,35 +170,28 @@ function generateWidocoDocumentationForFile() {
 
   local -r directory="$1"
   local -r outputDir="${directory/ontology/widoco}"
-  local -r turtleFile="$2"
-  local -r rdfFileNoExtension="${turtleFile/.ttl/}"
+  local -r ontologyFile="$2"
+  local -r rdfFileNoExtension="${ontologyFile/.rdf/}"
   local widocoJar ; widocoJar="$(widocoLauncherJar)" || return $?
   local -r ontologyPolicyFile="${ontology_product_tag_root:?}/ont-policy.rdf"
 
-  local -r extension="$([[ "${turtleFile}" = *.* ]] && echo ".${turtleFile##*.}" || echo '')"
+  local -r extension="$([[ "${ontologyFile}" = *.* ]] && echo ".${ontologyFile##*.}" || echo '')"
 
   logRule "Running widoco in $(logFileName "${directory}")"
 
   if [[ \
-    "${turtleFile}" =~ ^[0-9].* || \
-    "${turtleFile}" =~ ^About.* || \
-    "${turtleFile}" =~ ^Metadata.*  || \
-    "${turtleFile}" =~ ^ont-policy.* \
+    "${ontologyFile}" =~ ^[0-9].* || \
+    "${ontologyFile}" =~ ^ont-policy.* \
   ]] ; then
-    logItem  "skipping" "$(logFileName "${turtleFile}") in $(logFileName "${directory}") with extension ${extension}"
+    logItem  "skipping" "$(logFileName "${ontologyFile}") in $(logFileName "${directory}") with extension ${extension}"
     return 0
   fi
 
-  logItem "Widoco is processing"  "$(logFileName "${turtleFile}")"
+  logItem "Widoco is processing"  "$(logFileName "${ontologyFile}")"
   logDir  directory
   logDir  outputDir
 
   mkdir -p "${outputDir}" >/dev/null 2>&1 || return $?
-
-#  if [ "${turtleFile}" = "AboutFIBODev.ttl" ] || [ "${turtleFile}" = "Corporations.ttl" ] ; then
-#    log "Printing contents of file ${turtleFile} "
-#    cat "${turtleFile}" | pipelog
-#  fi
 
   #    -licensius \
 
