@@ -358,7 +358,7 @@ function run() {
   # The --read-only flag is set by default (by this script) to protect the image from being overwritten by anything
   # that runs inside the container itself.
   #
-#  opts+=('--read-only')
+  opts+=('--read-only')
   opts+=('--env')
   opts+=("ONTPUB_IS_DARK_MODE=${cli_option_dark}")
   opts+=('--env')
