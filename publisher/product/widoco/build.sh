@@ -138,18 +138,18 @@ function generateWidocoDocumentation() {
       done
     fi
 
-    if ls *.ttl >/dev/null 2>&1 ; then
+    if getDevOntologiesInRDFXMLFormatInCurrentDirectory >/dev/null 2>&1 ; then
       while read ontologyFile ; do
         generateWidocoDocumentationForFile "${directory}" "${ontologyFile}" || return $?
-      done < <(ls -1 *.ttl)
+      done < <(getDevOntologiesInRDFXMLFormatInCurrentDirectory)
     else
-      warning "Directory $(pwd) does not have any turtle files to process"
+      warning "Directory $(pwd) does not have any .rdf files to process"
     fi
   )
 
   #
   # uncomment this exit here if you just want to run widoco on the first ontology for testing
-  #exit
+#  exit
 
   return $?
 }
@@ -214,7 +214,7 @@ function generateWidocoDocumentationForFile() {
     -Dlog4j.configuration="file:${TMPDIR}/widoco-log4j.properties" \
     -Dlog4j.configurationFile="file:${TMPDIR}/widoco-log4j2.xml" \
     -jar "${widocoJar}" \
-    -ontFile "${turtleFile}" \
+    -ontFile "${ontologyFile}" \
     -outFolder "${outputDir}/${rdfFileNoExtension}" \
     -rewriteAll \
     -doNotDisplaySerializations \
@@ -235,7 +235,7 @@ function generateWidocoDocumentationForFile() {
 
   if [[ ${rc} -ne 0 ]] ; then
     find ${outputDir} -ls
-    error "Could not run widoco on ${turtleFile} "
+    error "Could not run widoco on ${ontologyFile} "
     #log "Printing contents of file ${rdfFile} "
     #contents=$(<${rdfFile})
     #log "${contents}"

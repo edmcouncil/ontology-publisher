@@ -1142,4 +1142,6 @@ function getIsDarkMode() {
   return 1
 }
 
+checkShell || return $?
+
 declare -r -g is_dark_mode=$(getIsDarkMode ; echo $?)
