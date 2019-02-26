@@ -29,6 +29,18 @@ function isDebian() {
   test -f "/etc/debian_version"
 }
 
+function isWindowsWSL() {
+
+  test -f '/mnt/c/Windows/System32/cmd.exe'
+}
+
+function getWindowsEnvironmentVariable() {
+
+  local variableName="$1"
+
+  /mnt/c/Windows/System32/cmd.exe /C echo %${variableName}% | tr -d '\r'
+}
+
 #
 # Generic function that returns 1 if the variable with the given name does not exist (as a local or global Bash variable or
 # as an environment variable)
