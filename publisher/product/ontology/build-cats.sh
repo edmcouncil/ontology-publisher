@@ -70,6 +70,30 @@ function ontologyBuildProtegeCatalogs () {
 }
 
 #
+# Generates one line with first the given file name and secondly the ontologyIRI (if one was found)
+#
+function extractOntologyIRIFromRDFXMLFile() {
+
+  local -r ontologyRdfFile="$1"
+
+  echo -n "${ontologyRdfFile} "
+
+  xml c14n ${ontologyRdfFile} | xml sel -t -v '/rdf:RDF/owl:Ontology/@rdf:about' -nl
+}
+
+function getOntologyIRIsFromDirectoryOfRDFXMLFiles() {
+
+  local -r rootDirectoryWithRDFXMLFiles="$1"
+
+  export -f extractOntologyIRIFromRDFXMLFile
+
+  grep -R --include="*.rdf" -l "owl:Ontology rdf:about" "${rootDirectoryWithRDFXMLFiles}" | \
+  xargs -I FILE -n 1 ${BASH} -c "extractOntologyIRIFromRDFXMLFile FILE"
+
+  unset extractOntologyIRIFromRDFXMLFile
+}
+
+#
 # Called during the generation of the ontology product.
 #
 function ontologyBuildJenaCatalogs() {
@@ -160,7 +184,10 @@ __HERE__
       ontologyVersionIRI="https://${ONTPUB_SPEC_HOST}/${ontologyRdfFile/.rdf//}"
       ontologyVersionIRI="${ontologyVersionIRI/${ONTPUB_SPEC_HOST}?*output/${ONTPUB_SPEC_HOST}}"
 
-      ontologyIRI="${ontologyVersionIRI/\/${GIT_BRANCH}\/${GIT_TAG_NAME}}"
+      ontologyIRI="${ontologyVersionIRI/\/${branch_tag}}"
+      ontologyIRI="${ontologyIRI/\/\//\/}"
+      ontologyIRI="${ontologyIRI/https:\//https:\/\/}"
+      ontologyIRI="${ontologyIRI/http:\//http:\/\/}"
 
       cat >> "${tag_root}/location-mapping.n3" << __HERE__
   [
@@ -174,6 +201,28 @@ __HERE__
 __HERE__
     done < <(getDevOntologies)
   )
+  #
+  # Now get all the ontology IRIs from the .rdf files in the /input/LCC directory if it exists.
+  # It uses the xml utility (which is XMLStarlet) to first canonicalize the RDF and then it uses an XPATH
+  # expression to find the rdf:about IIR of the owl:Ontology node.
+  #
+  # TODO: make this generic using the ONTPUB_INPUT_REPOS environment variable
+  #
+  while read ontologyRdfFile ontologyIRI ; do
+    # logVar ontologyRdfFile
+    # logVar ontologyIRI
+    cat >> "${tag_root}/location-mapping.n3" << __HERE__
+  [
+    lm:name "${ontologyIRI}/" ;
+    lm:altName "file://${ontologyRdfFile}"
+  ],
+  [
+    lm:name "${ontologyVersionIRI}/" ;
+    lm:altName "file://${ontologyRdfFile}"
+  ],
+__HERE__
+  done < <(getOntologyIRIsFromDirectoryOfRDFXMLFiles /input/LCC)
+
   #
   # Remove the last comma
   #
@@ -258,6 +307,9 @@ __HERE__
   (
     cd / || return $?
     while read ontologyRdfFile ; do
+
+#    logRule "${ontologyRdfFile}"
+
 #     logVar ONTPUB_SPEC_HOST
 #     logVar ontologyRdfFile
       ontologyVersionIRI="https://${ONTPUB_SPEC_HOST}/${ontologyRdfFile/.rdf//}"
@@ -265,25 +317,49 @@ __HERE__
       ontologyVersionIRI="${ontologyVersionIRI/${ONTPUB_SPEC_HOST}?*output/${ONTPUB_SPEC_HOST}}"
 #     logVar ontologyVersionIRI
 
-      ontologyIRI="${ontologyVersionIRI/\/${GIT_BRANCH}\/${GIT_TAG_NAME}}"
+      ontologyIRI="${ontologyVersionIRI/\/${branch_tag}}"
+      ontologyIRI="${ontologyIRI/\/\//\/}"
+      ontologyIRI="${ontologyIRI/https:\//https:\/\/}"
+      ontologyIRI="${ontologyIRI/http:\//http:\/\/}"
 #     logVar ontologyIRI
 
       cat >> "${tag_root}/ont-policy.rdf" << __HERE__
 
   <OntologySpec>
-      <publicURI rdf:resource="${ontologyIRI}/" />
+      <publicURI rdf:resource="${ontologyIRI}" />
       <altURL    rdf:resource="file://${ontologyRdfFile}" />
       <language  rdf:resource="http://www.w3.org/2000/01/rdf-schema" />
   </OntologySpec>
 
   <OntologySpec>
-      <publicURI rdf:resource="${ontologyVersionIRI}/" />
+      <publicURI rdf:resource="${ontologyVersionIRI}" />
       <altURL    rdf:resource="file://${ontologyRdfFile}" />
       <language  rdf:resource="http://www.w3.org/2000/01/rdf-schema" />
   </OntologySpec>
 __HERE__
     done < <(getDevOntologies)
   )
+
+  #
+  # Now get all the ontology IRIs from the .rdf files in the /input/LCC directory if it exists.
+  # It uses the xml utility (which is XMLStarlet) to first canonicalize the RDF and then it uses an XPATH
+  # expression to find the rdf:about IIR of the owl:Ontology node.
+  #
+  # TODO: make this generic using the ONTPUB_INPUT_REPOS environment variable
+  #
+  while read ontologyRdfFile ontologyIRI ; do
+    # logVar ontologyRdfFile
+    # logVar ontologyIRI
+    cat >> "${tag_root}/ont-policy.rdf" << __HERE__
+
+  <OntologySpec>
+      <publicURI rdf:resource="${ontologyIRI}" />
+      <altURL    rdf:resource="file://${ontologyRdfFile}" />
+      <language  rdf:resource="http://www.w3.org/2000/01/rdf-schema" />
+  </OntologySpec>
+__HERE__
+  done < <(getOntologyIRIsFromDirectoryOfRDFXMLFiles /input/LCC)
+
 
   cat >> "${tag_root}/ont-policy.rdf" << __HERE__
 </rdf:RDF>
