@@ -30,7 +30,14 @@ function publishProductWidoco() {
 
   logDir widoco_product_tag_root
   logDir widoco_script_dir
-
+  #
+  # Build the "vowltreeDev.html" and "vowltreeProd.html" files.
+  #
+  # JG>Dean, those file names are terribly ugly. Not only mixed case but also mixing vowl and widoco as two
+  #    product names is not really consistent. Should be all widoco. We can do vowl separately next to widoco later.
+  #    Also, I think that vowltreeDev.html should be just index.html (and look much better, but not only that,
+  #    also show the maturity level (prod or dev) in a column or filter it on/off)
+  #
   ((test_widoco)) || buildVowlIndex || return $?
 
   generateWidocoLog4jConfig || return $?
@@ -462,7 +469,7 @@ function buildVowlIndexInvokeTree() {
   #
   ${TREE} \
     -P "*.rdf${type}" \
-    -I  "[0-9]*|*Ext|About*|All*|Metadata*" \
+    -I  "[0-9]*|*Ext|About*|All*|Metadata*|ont-policy.rdf" \
     -T "${title}" \
     --noreport \
     --dirsfirst \
@@ -470,8 +477,9 @@ function buildVowlIndexInvokeTree() {
     ${SED} \
       -e "s@${GIT_BRANCH}\/${GIT_TAG_NAME}\/\(/[^/]*/\)@${GIT_BRANCH}\/${GIT_TAG_NAME}/\\U\\1@" \
       -e "s@\(${product_branch_tag:?}/.*\)\.rdf${type}\">@\1/index-en.html\">@" \
+      -e "s@href=\"${tag_root_url:?}/@href=\"@g" \
       -e "s@rdf${type}@rdf@g" \
-      -e 's@\(.*\).rdf@\1 vowl@' \
+      -e 's@\(.*\).rdf@\1@' \
       -e 's/<a[^>]*\/\">\([^<]*\)<\/a>/\1/g' \
       -e 's/.VERSION { font-size: small;/.VERSION { display: none; font-size: small;/g' \
       -e 's/BODY {.*}/BODY { font-family : \"Courier New\"; font-size: 12pt ; line-height: 0.90}/g' \
@@ -483,6 +491,37 @@ function buildVowlIndexInvokeTree() {
 }
 
 #
+# Called by buildVowlIndex() exclusively
+#
+function buildVowlIndexInvokeTreeForJson() {
+
+  local -r title="$1"
+  local -r type="$2" # RELEASE or empty
+  local -r outputFile="$3"
+
+  #
+  # JG>Saving original call to tree util (for json output) here
+  #
+  #${TREE} -J -P '*.rdf' > "${vowlTreeDjson}"
+
+  logItem "Generating" "$(logFileName "${outputFile}")"
+
+  #
+  # KG>Do we need this -I '*Ext'
+  # JG>I don't know, PR knows more about this
+  #
+  ${TREE} \
+    -P "*.rdf${type}" \
+    -I  "[0-9]*|*Ext|About*|All*|Metadata*|ont-policy.rdf" \
+    -J \
+    --noreport \
+    --dirsfirst | \
+    ${SED} \
+      -e "s@rdf${type}@rdf@g" \
+      > "${outputFile}"
+}
+
+#
 # The vowl "index" of fibo is a list of all the ontology files, in their
 # directory structure and link to the vowl documentation.  This is an attempt to automatically produce
 # this.
@@ -491,6 +530,7 @@ function buildVowlIndex () {
 
   local -r vowlTreeP="${widoco_product_tag_root}/vowltreeProd.html"
   local -r vowlTreeD="${widoco_product_tag_root}/vowltreeDev.html"
+  local -r vowlTreePjson="${widoco_product_tag_root}/vowltreeProd.json"
   local -r vowlTreeDjson="${widoco_product_tag_root}/vowltreeDev.json"
   local -r titleP="FIBO Widoco File Directory (Production)"
   local -r titleD="FIBO Widoco File Directory (Development)"
@@ -524,14 +564,15 @@ function buildVowlIndex () {
 
     buildVowlIndexInvokeTree "${titleP}" "RELEASE" "${vowlTreeP}"
 
-    cat ${pfiles} | while read file ; do mv ${file}RELEASE ${file} ; done
-    rm ${pfiles}
-
     #
     # Also create a JSON version of the tree file so that we can later easily add a browsing function to the new
     # SPA (single page application) front end
     #
-    ${TREE} -J -P '*.rdf' > "${vowlTreeDjson}"
+    buildVowlIndexInvokeTreeForJson "${titleD}" "" "${vowlTreeDjson}"
+    buildVowlIndexInvokeTreeForJson "${titleP}" "RELEASE" "${vowlTreePjson}"
+
+    cat ${pfiles} | while read file ; do mv ${file}RELEASE ${file} ; done
+    rm ${pfiles}
   )
 
 	return 0
