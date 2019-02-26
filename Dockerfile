@@ -52,7 +52,7 @@ RUN \
   echo ================================= install basics >&2 && \
   apk --no-cache add \
     curl wget \
-    bash git grep sed findutils coreutils tree jq bc \
+    bash git grep sed findutils coreutils tree jq bc xmlstarlet \
     zip tar xz \
     python python3 py3-setuptools \
     perl perl-utils \
