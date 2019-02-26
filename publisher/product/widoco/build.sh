@@ -437,6 +437,8 @@ function widocoReplaceOntologyIRIs() {
       `# remove duplicates` \
       -e "s@${branch_tag}/${branch_tag}@${branch_tag}@g" \
       -e "s@${branch_tag}/${branch_tag}@${branch_tag}@g" \
+      `# make all hrefs relative so that we can host this locally via http://localhost` \
+      -e "s@<a href=\"https://spec.edmcouncil.org@<a href=\"@g" \
       "${htmlFile}"
   done
 
