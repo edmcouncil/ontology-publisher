@@ -424,12 +424,17 @@ function widocoReplaceOntologyIRIs() {
 
   local -r outputFolder="$1"
 
+  if [[ ! -f "${outputFolder}/index-en.html" ]] ; then
+    error "index-en.html has not been generated"
+    return 1
+  fi
+
   #
   # TODO: If we even are going to support multi-lingual widoco output we would need to refer to index-<language>
   #       rather than index-en.html
   #
   for htmlFile in "${outputFolder}"/**/*.html ; do
-    logItem "Replacing IRIs in" "${htmlFile}"
+    logItem "Replacing IRIs in" "$(logFileName "${htmlFile}")"
     ${SED} \
       -i \
       `# replace all ../ontology/.. urls used in hrefs with their ../widoco/.. counterparts` \

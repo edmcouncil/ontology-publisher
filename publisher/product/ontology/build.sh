@@ -11,19 +11,19 @@ false && source ../../lib/_functions.sh
 export SCRIPT_DIR="${SCRIPT_DIR}" # Yet another hack to silence IntelliJ
 export speedy="${speedy:-0}"
 
-if [ -f ${SCRIPT_DIR}/product/ontology/build-cats.sh ] ; then
+if [[ -f ${SCRIPT_DIR}/product/ontology/build-cats.sh ]] ; then
   # shellcheck source=build-cats.sh
   source ${SCRIPT_DIR}/product/ontology/build-cats.sh
 else
   source build-cats.sh # This line is only there to make the IntelliJ Bash plugin see build-cats.sh
 fi
-if [ -f ${SCRIPT_DIR}/product/ontology/build-about.sh ] ; then
+if [[ -f ${SCRIPT_DIR}/product/ontology/build-about.sh ]] ; then
   # shellcheck source=build-about.sh
   source ${SCRIPT_DIR}/product/ontology/build-about.sh
 else
   source build-about.sh # This line is only there to make the IntelliJ Bash plugin see build-about.sh
 fi
-if [ -f ${SCRIPT_DIR}/product/ontology/build-theallfile.sh ] ; then
+if [[ -f ${SCRIPT_DIR}/product/ontology/build-theallfile.sh ]] ; then
   # shellcheck source=build-theallfile.sh
   source ${SCRIPT_DIR}/product/ontology/build-theallfile.sh
 else

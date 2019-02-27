@@ -69,28 +69,16 @@ function ontologyBuildProtegeCatalogs () {
   return $?
 }
 
-#
-# Generates one line with first the given file name and secondly the ontologyIRI (if one was found)
-#
-function extractOntologyIRIFromRDFXMLFile() {
-
-  local -r ontologyRdfFile="$1"
-
-  echo -n "${ontologyRdfFile} "
-
-  xml c14n ${ontologyRdfFile} | xml sel -t -v '/rdf:RDF/owl:Ontology/@rdf:about' -nl
-}
-
 function getOntologyIRIsFromDirectoryOfRDFXMLFiles() {
 
   local -r rootDirectoryWithRDFXMLFiles="$1"
 
-  export -f extractOntologyIRIFromRDFXMLFile
-
-  grep -R --include="*.rdf" -l "owl:Ontology rdf:about" "${rootDirectoryWithRDFXMLFiles}" | \
-  xargs -I FILE -n 1 ${BASH} -c "extractOntologyIRIFromRDFXMLFile FILE"
-
-  unset extractOntologyIRIFromRDFXMLFile
+  while read -r ontologyRdfFile ; do
+    echo -n "${ontologyRdfFile} "
+    xml c14n ${ontologyRdfFile} | xml sel -t -v '/rdf:RDF/owl:Ontology/@rdf:about' -nl
+  done < <(
+    grep -R --include="*.rdf" -l "owl:Ontology rdf:about" "${rootDirectoryWithRDFXMLFiles}"
+  )
 }
 
 #
