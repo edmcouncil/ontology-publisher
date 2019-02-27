@@ -51,7 +51,7 @@ function referenceGeneratePrefixesAsSparqlValues() {
 #    return 0
 #  fi
 
-  grep --no-filename -r '<!ENTITY' /input/* | \
+  grep --no-filename -r '<!ENTITY' ${INPUT}/* | \
   grep -v "http://www.omg.org/spec/EDMC-FIBO" | \
   sort -u | \
   sed 's/.*<!ENTITY \(.*\) "\(.*\)">/("\1:" <\2>)/g' > \

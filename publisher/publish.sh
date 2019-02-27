@@ -154,10 +154,10 @@ function copySiteFiles() {
     ${CP} -r * "${spec_root}/"
   )
 
-  if [[ -f /input/${ONTPUB_FAMILY}/LICENSE ]] ; then
-    ${CP} /input/${ONTPUB_FAMILY}/LICENSE "${spec_root}"
+  if [[ -f ${INPUT}/${ONTPUB_FAMILY}/LICENSE ]] ; then
+    ${CP} ${INPUT}/${ONTPUB_FAMILY}/LICENSE "${spec_root}"
   else
-    warning "Could not find license: /input/${ONTPUB_FAMILY}/LICENSE"
+    warning "Could not find license: $(logFileName "${INPUT}/${ONTPUB_FAMILY}/LICENSE")"
   fi
 
   (

@@ -221,7 +221,10 @@ __HERE__
     lm:altName "file://${ontologyRdfFile}"
   ],
 __HERE__
-  done < <(getOntologyIRIsFromDirectoryOfRDFXMLFiles /input/LCC)
+  done < <(
+    getOntologyIRIsFromDirectoryOfRDFXMLFiles ${INPUT}/LCC && \
+    getOntologyIRIsFromDirectoryOfRDFXMLFiles ${INPUT}/fibo/etc/imports
+  )
 
   #
   # Remove the last comma
@@ -358,7 +361,10 @@ __HERE__
       <language  rdf:resource="http://www.w3.org/2000/01/rdf-schema" />
   </OntologySpec>
 __HERE__
-  done < <(getOntologyIRIsFromDirectoryOfRDFXMLFiles /input/LCC)
+  done < <(
+    getOntologyIRIsFromDirectoryOfRDFXMLFiles ${INPUT}/LCC && \
+    getOntologyIRIsFromDirectoryOfRDFXMLFiles ${INPUT}/fibo/etc/imports
+  )
 
 
   cat >> "${tag_root}/ont-policy.rdf" << __HERE__
