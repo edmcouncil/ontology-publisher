@@ -290,7 +290,7 @@ function vocabularyGetOntologies() {
   require vocabulary_script_dir || return $?
   require module_directories || return $?
 
-  logRule "Step: vocabularyGetOntologies"
+  logStep "vocabularyGetOntologies"
 
   #
   # Set the memory for ARQ
@@ -323,7 +323,7 @@ function vocabularyGetOntologies() {
     --query="${vocabulary_script_dir}/skosecho.sparql" \
     --results=TTL > "${TMPDIR}/temp0.ttl"
 
-  if [ ${PIPESTATUS[0]} -ne 0 ] ; then
+  if [[ ${PIPESTATUS[0]} -ne 0 ]] ; then
     error "Could not get Dev ontologies"
     return 1
   fi
@@ -340,7 +340,7 @@ function vocabularyGetOntologies() {
     --query="${vocabulary_script_dir}/skosecho.sparql" \
     --results=TTL > "${TMPDIR}/temp0B.ttl"
 
-  if [ ${PIPESTATUS[0]} -ne 0 ] ; then
+  if [[ ${PIPESTATUS[0]} -ne 0 ]] ; then
     error "Could not get Prod ontologies"
     return 1
   fi

@@ -38,7 +38,8 @@ reference_skip_content=0 # 0=false 1=true in this case
 #
 # All document classes it needs to generate
 #
-reference_document_classes="book report"
+reference_all_document_classes="book report"
+reference_document_classes="${reference_all_document_classes}"
 #
 # All page sizes in needs to generate
 #
@@ -56,26 +57,22 @@ if ((reference_skip_content)) ; then
 fi
 
 #
+# Declare 2 arrays that we use to cache the results of the SPARQL queries
+#
+declare -A reference_array_ontologies
+declare -A reference_array_classes
+
+#
 # Produce all artifacts for the reference product
 #
 function publishProductReference() {
 
-
-    
   setProduct ontology || return $?
   export ontology_product_tag_root="${tag_root:?}"
 
   setProduct reference || return $?
   export reference_product_tag_root="${tag_root:?}"
   export reference_product_tag_root_url="${tag_root_url:?}"
-
-    #
-    # I'm not sure how to disable a product in the current setup.  This is a pretty tough way to do it .
-    #
-    touch ${reference_product_tag_root}/reference.log
-    touch ${reference_product_tag_root}/reference.pdf
-    return 0
-
 
   reference_script_dir="$(cd "${SCRIPT_DIR}/product/reference" && pwd)" ; export reference_script_dir
   reference_latex_dir="${reference_product_tag_root}"
@@ -84,58 +81,55 @@ function publishProductReference() {
 
   mkdir -p "${reference_data_dir}" "${reference_query_dir}" >/dev/null 2>&1
 
+  reference_query_file_classes="${reference_query_dir}/classes.sparql"
+  reference_query_file_ontologies="${reference_query_dir}/ontologies.sparql"
+  reference_query_file_superclasses="${reference_query_dir}/superclasses.sparql"
+  reference_results_file_classes=""
+  reference_results_file_ontologies=""
+  reference_results_file_superclasses=""
+  reference_results_file_number_of_classes="0"
+  reference_results_file_number_of_ontologies="0"
+  reference_results_file_number_of_superclasses="0"
+
   export BIBINPUTS="${reference_script_dir}"
-
-  #
-  # Various stats that we maintain during generation of the reference, to be printed in the Statistics chapter
-  #
-  reference_stat_number_of_ontologies=0
-  reference_stat_number_of_ontologies_without_label=0
-  reference_stat_number_of_classes_without_superclass=0
-  reference_stat_number_of_classes=0
-  reference_stat_number_of_classes_without_label=0
-  reference_stat_number_of_namespaces=0
-
-  declare -A reference_array_ontologies
-  declare -A reference_array_classes
 
   logBoolean reference_skip_content
 
   referenceGenerateTdb2Database || return $?
   referenceGeneratePrefixesAsSparqlValues || return $?
-  referenceQueryListOfClasses || return $?
 
-  #
-  # Remove all generated files
-  #
-  for documentClass in ${reference_document_classes} ; do
-    rm -vf "${documentClass}-"*
-  done
+  referenceCleanupGeneratedFiles
 
   for documentClass in ${reference_document_classes} ; do
     for pageSize in ${reference_page_sizes} ; do
       for sides in ${reference_sides_options} ; do
-        reference_base_name="${documentClass}-${pageSize}-${sides}"
-        logRule "${reference_base_name} - Step: referenceGenerate"
-        reference_file_noext="${reference_latex_dir}/${reference_base_name}"
-        glos_file_noext="${reference_latex_dir}/${reference_base_name}-glossary"
-        reference_tex_file="${reference_file_noext}.tex"
-        glos_tex_file="${glos_file_noext}.tex"
-        exec 3<> "${reference_tex_file}"
-        exec 4<> "${glos_tex_file}"
         referenceGenerateLaTex "${documentClass}" "${pageSize}" "${sides}" || return $?
-        exec 3>&-
-        exec 4>&-
-        #
-        # Sort the glossary and filter out duplicates
-        #
-        sort --unique --key=1,2 --field-separator='}' --output="${glos_tex_file}" "${glos_tex_file}"
         referenceCompile "${documentClass}" "${pageSize}" "${sides}" || return $?
       done
     done
   done
 
   return 0
+}
+
+#
+# Remove all generated files of a previous run
+#
+function referenceCleanupGeneratedFiles() {
+
+  (
+    cd "${reference_latex_dir}" || return $?
+
+    for documentClass in ${reference_all_document_classes} ; do
+      rm -vf "${documentClass}-"* >/dev/null 2>&1
+    done
+  )
+  return $?
+}
+
+function logReferenceStep() {
+
+  logRule "${reference_base_name} - Step: $*"
 }
 
 function referenceGeometry() {
@@ -175,6 +169,53 @@ function referenceGenerateLaTexDocumentClass() {
 }
 
 function referenceGenerateLaTex() {
+
+  local -r reference_base_name="${documentClass}-${pageSize}-${sides}"
+
+  logReferenceStep "referenceGenerate" # uses reference_base_name
+
+  #
+  # Various stats that we maintain during generation of the reference, to be printed in the Statistics chapter
+  #
+  local reference_stat_number_of_ontologies=0
+  local reference_stat_number_of_ontologies_without_label=0
+  local reference_stat_number_of_classes_without_superclass=0
+  local reference_stat_number_of_classes=0
+  local reference_stat_number_of_classes_without_label=0
+  local reference_stat_number_of_namespaces=0
+  #
+  # The names of the two files that we generate per combination of documentClass/pageSize/sides
+  #
+  local -r reference_file_noext="${reference_latex_dir}/${reference_base_name}"
+  local -r glos_file_noext="${reference_latex_dir}/${reference_base_name}-glossary"
+  local -r reference_tex_file="${reference_file_noext}.tex"
+  local -r glos_tex_file="${glos_file_noext}.tex"
+  #
+  # Open file handles 3 and 4 to keep them permanently open so that streaming content into these
+  # files goes faster.
+  #
+  exec 3<> "${reference_tex_file}"
+  exec 4<> "${glos_tex_file}"
+
+  referenceGenerateLaTexWithOpenFileHandles "${documentClass}" "${pageSize}" "${sides}"
+  local -r rc=$?
+  #
+  # Close file handles 3 and 4
+  #
+  exec 3>&-
+  exec 4>&-
+
+  [[ "${rc}" -ne 0 ]] && return ${rc}
+
+  #
+  # Sort the glossary and filter out duplicates
+  #
+  sort --unique --key=1,2 --field-separator='}' --output="${glos_tex_file}" "${glos_tex_file}"
+
+  return 0
+}
+
+function referenceGenerateLaTexWithOpenFileHandles() {
 
   local -r documentClass="$1"
   local -r pageSize="$2"
@@ -325,8 +366,8 @@ __HERE__
 %
 \sloppy
 \begin{document}
-%\setmainfont{Nimbus Sans L}
-\setmainfont{TeX Palladio L}
+\setmainfont{Nimbus Sans L}
+%\setmainfont{TeX Palladio L}
 %\setmainfont{TeXGyreHerosCondensed}
 %\setmainfont{TeX Gyre Adventor}
 %\maketitle
@@ -359,8 +400,6 @@ __HERE__
   referenceGenerateSectionStatistics || return $?
   referenceGenerateSectionVersion || return $?
   referenceGenerateSectionGitContributors || return $?
-
-  git log --pretty="%an %n%cn" | sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//' | sort -u
 
   cat >&3 << __HERE__
 \setglossarystyle{altlist}
@@ -491,6 +530,8 @@ __HERE__
 
 function referenceGenerateSectionConclusion() {
 
+  logReferenceStep "referenceGenerateSectionConclusion"
+
   cat >&3 << __HERE__
 \chapter*{Conclusion}
 \blindtext
@@ -511,11 +552,9 @@ function referenceGenerateSectionOntologies() {
   local preferredPrefix
   local maturityLevel
 
-  logRule "${reference_base_name} - Step: referenceGenerateSectionOntologies"
+  logReferenceStep "referenceGenerateSectionOntologies"
 
-  referenceQueryListOfOntologies || return $?
-
-  logVar reference_results_file
+  referenceExecuteQueryOntologies || return $?
 
   cat >&3 << __HERE__
 \chapter{Ontologies}
@@ -525,7 +564,10 @@ function referenceGenerateSectionOntologies() {
 
 __HERE__
 
-  ((reference_skip_content)) && return 0
+  if ((reference_skip_content)) ; then
+    warning "Skipping generation of ontologies chapter"
+    return 0
+  fi
 
   #
   # Process each line of the TSV file with "read -a" which properly deals
@@ -549,12 +591,12 @@ __HERE__
     preferredPrefix="$(stripQuotes "${preferredPrefix}")"
     maturityLevel="$(stripQuotes "${maturityLevel}")"
 
-    logRule "Ontology:"
+    logRule "Ontology #${reference_stat_number_of_ontologies}:"
     logVar ontologyIRI
     logVar ontologyVersionIRI
     logVar prefix
     logVar ontologyLabel
-    logVar abstract
+#   logVar abstract
     logVar preferredPrefix
     logVar maturityLevel
 
@@ -570,6 +612,12 @@ __HERE__
       ontologyLaTexLabel="$(escapeLaTexLabel "${ontologyLabel}")"
       ontologyLabel="$(escapeLaTex "${ontologyLabel}")"
     fi
+
+      cat >&3 << __HERE__
+%
+% Ontology #${reference_stat_number_of_ontologies}: ${ontologyIRI}
+%
+__HERE__
 
     if [[ -n "${prefix}" ]] ; then
       cat >&3 << __HERE__
@@ -634,7 +682,7 @@ __HERE__
 
     reference_stat_number_of_ontologies=$((reference_stat_number_of_ontologies + 1))
 
-  done < "${reference_results_file}"
+  done < "${reference_results_file_ontologies}"
 
   return 0
 }
@@ -644,30 +692,39 @@ function referenceGenerateSectionClasses() {
   local -r documentClass="$1"
   local -r pageSize="$2"
 
-  logRule "${reference_base_name} - Step: referenceGenerateSectionClasses"
+  logReferenceStep "referenceGenerateSectionClasses - query"
 
-  local reference_results_file # will get the name of the results value after the call to bookQueryListOfClasses()
-  local reference_results_file_number_of_lines # also set by bookQueryListOfClasses()
+  referenceExecuteQueryClasses || return $?
 
-  referenceQueryListOfClasses || return $?
+  logReferenceStep "referenceGenerateSectionClasses - content"
 
   cat >&3 << __HERE__
 \chapter{Classes}
 \index{Classes}
 
-  This chapter enumerates all the (OWL) classes\index{OWL classes} that play a role in ${ONTPUB_FAMILY}.
-  Per Class we show the following information:
+This chapter enumerates all the ${reference_results_file_number_of_classes} (OWL) classes\index{OWL classes} that play
+a role in ${ONTPUB_FAMILY}.
 
-  \begin{description}
-    \item [Title] The so-called "local name" of the OWL class, prefixed with the standard prefix for its namespace. See Namespace below.
-    \item [Label] The english label of the given OWL Class.
-    \item [Namespace] The namespace in which the OWL Class resides, leaving out the local name.
-    \item [Definition] The definition of the OWL Class.
-    \item [Explanatory Note] An optional explanatory note.
-  \end{description}
+Per class we show the following information:
+
+\begin{description}
+  \item [Title] The so-called "local name" of the OWL class, prefixed with the standard prefix for its namespace. See Namespace below.
+  \item [Label] The english label of the given OWL Class.
+  \item [Namespace] The namespace in which the OWL Class resides, leaving out the local name.
+  \item [Definition] The definition of the OWL Class.
+  \item [Explanatory Note] An optional explanatory note.
+\end{description}
 __HERE__
 
-  ((reference_skip_content)) && return 0
+  if ((reference_skip_content)) ; then
+    warning "Skipping generation of classes chapter"
+    return 0
+  fi
+
+  if [[ ! -f "${reference_results_file_classes}" ]] ; then
+    error "${reference_results_file_classes} does not exist"
+    return 1
+  fi
 
   local classIRI
   local prefName
@@ -763,10 +820,12 @@ __HERE__
     cat >&3 <<< "\end{description}"
 
     if ((reference_stat_number_of_classes % 100 == 0)) ; then
-      logItem "Progress Classes Chapter" "$((100 * reference_stat_number_of_classes / reference_results_file_number_of_lines))% (${reference_stat_number_of_classes}/${reference_results_file_number_of_lines})"
-      break
+      logItem \
+        "Progress Classes Chapter" \
+        "$((100 * reference_stat_number_of_classes / reference_results_file_number_of_classes))%" \
+        "(${reference_stat_number_of_classes}/${reference_results_file_number_of_classes})"
     fi
-  done < "${reference_results_file}"
+  done < "${reference_results_file_classes}"
 
   if ((reference_stat_number_of_classes == 0)) ; then
     error "Didn't process any classes, something went wrong"
@@ -784,7 +843,7 @@ function referenceGenerateSectionProperties() {
   local -r documentClass="$1"
   local -r pageSize="$2"
 
-  logRule "${reference_base_name} - Step: referenceGenerateSectionProperties"
+  logReferenceStep "referenceGenerateSectionProperties"
 
   cat >&3 << __HERE__
 \chapter{Properties}
@@ -804,7 +863,7 @@ function referenceGenerateSectionIndividuals() {
   local -r documentClass="$1"
   local -r pageSize="$2"
 
-  logRule "${reference_base_name} - Step: referenceGenerateSectionIndividuals"
+  logReferenceStep "referenceGenerateSectionIndividuals"
 
   cat >&3 << __HERE__
 \chapter{Individuals}
@@ -821,11 +880,13 @@ __HERE__
 
 function referenceGenerateSectionPrefixes() {
 
+  logReferenceStep "referenceGenerateSectionPrefixes"
+
   [[ -f "${TMPDIR}/reference-prefixes.txt" ]] || return 0
 
   reference_stat_number_of_namespaces=$(cat "${TMPDIR}/reference-prefixes.txt" | wc -l)
 
-  logVar numberOfPrefixes
+  logVar reference_stat_number_of_namespaces
 
   ((reference_stat_number_of_namespaces == 0)) && return 0
 
@@ -853,6 +914,8 @@ __HERE__
 
 function referenceGenerateSectionStatistics() {
 
+  logReferenceStep "referenceGenerateSectionStatistics"
+
     cat >&3 << __HERE__
 \chapter{Statistics}
 
@@ -876,6 +939,8 @@ __HERE__
 }
 
 function referenceGenerateSectionVersion() {
+
+  logReferenceStep "referenceGenerateSectionVersion"
 
   local -r maxLogLines=100
 
@@ -954,6 +1019,15 @@ __HERE__
   return 0
 }
 
+function referenceGenerateSectionVersionGitLog() {
+
+  cd "${source_family_root}"
+
+  git log --date=short --pretty=format:"%h%x09%an%x09%ad%x09%s" | \
+    head -n ${maxLogLines} | \
+    ${SED} -e 's/DennisWisnosky/Dennis Wisnosky/g'
+}
+
 function referenceGenerateSectionVersionGitAuthors() {
 
   cd "${source_family_root}" || return 1
@@ -980,6 +1054,8 @@ function referenceGenerateSectionVersionGitAuthors() {
 
 function referenceGenerateSectionGitContributors() {
 
+  logReferenceStep "referenceGenerateSectionGitContributors"
+
   cat >&3 << __HERE__
 \section*{Git Contributors}
 The following list of people has committed one or more changes to the FIBO Github\cite{fibogithub} repository (which is
@@ -1001,31 +1077,21 @@ __HERE__
   return 0
 }
 
-function referenceGenerateSectionVersionGitLog() {
-
-  cd "${source_family_root}"
-  git log --date=short --pretty=format:"%h%x09%an%x09%ad%x09%s" | \
-    head -n ${maxLogLines} | \
-    ${SED} -e 's/DennisWisnosky/Dennis Wisnosky/g'
-}
-
 function referenceGenerateListOfSuperclasses() {
 
   local -r classIRI="$1"
   local line
 
-  local reference_results_file # will get the name of the results value after the call to bookQueryListOfClasses
+  referenceExecuteQuerySuperClasses || return $?
 
-  referenceQueryListOfSuperClasses || return $?
-
-  if [[ ! -f "${reference_results_file}" ]] ; then
-    error "Could not find ${reference_results_file}"
+  if [[ ! -f "${reference_results_file_superclasses}" ]] ; then
+    error "Could not find ${reference_results_file_superclasses}"
     return 1
   fi
 
   local -a superClassArray
 
-  mapfile -t superClassArray < <(${SED} -n -e "s@^\"${classIRI}\"\(.*\)@\1@p" "${reference_results_file}")
+  mapfile -t superClassArray < <(${SED} -n -e "s@^\"${classIRI}\"\(.*\)@\1@p" "${reference_results_file_superclasses}")
 
   local -r numberOfSuperClasses=${#superClassArray[*]}
 
@@ -1087,21 +1153,22 @@ function referenceGenerateListOfSubclasses() {
 
   local -r classIRI="$1"
 
-  local reference_results_file # will get the name of the results value after the call to bookQueryListOfClasses
-
   #
   # We use the super classes list to find the subclasses of a given class
   #
-  referenceQueryListOfSuperClasses || return $?
+  referenceExecuteQuerySuperClasses || return $?
 
-  if [[ ! -f "${reference_results_file}" ]] ; then
-    error "Could not find ${reference_results_file}"
+  if [[ ! -f "${reference_results_file_superclasses}" ]] ; then
+    logVar reference_query_file_superclasses
+    logVar reference_results_file_superclasses
+    logVar reference_results_file_number_of_superclasses
+    error "Could not find [${reference_results_file_superclasses}]"
     return 1
   fi
 
   local -a subclassArray
 
-  mapfile -t subclassArray < <(${SED} -n -e "s@^\"\(.*\)\"\t\"${classIRI}\".*@\1@p" "${reference_results_file}")
+  mapfile -t subclassArray < <(${SED} -n -e "s@^\"\(.*\)\"\t\"${classIRI}\".*@\1@p" "${reference_results_file_superclasses}")
 
   local -r numberOfSubclasses=${#subclassArray[*]}
 
@@ -1182,8 +1249,9 @@ function referenceCompile() {
   local -r documentClass="$1"
   local -r pageSize="$2"
   local -r sides="$3"
+  local -r reference_base_name="${documentClass}-${pageSize}-${sides}"
 
-  log "referenceCompile documentClass=${documentClass} pageSize=${pageSize} sides=${sides}"
+  logReferenceStep "referenceCompile"
 
   (
     cd "${reference_latex_dir}" || return $?

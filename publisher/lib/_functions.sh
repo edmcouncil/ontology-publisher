@@ -6,6 +6,41 @@
 
 export GREP=grep
 
+function checkShell() {
+
+  if ((BASH_VERSINFO < 4)) ; then
+    error "You're not using Bash 4"
+    if isMacOSX ; then
+      log "Install bash 4 with HomeBrew: https://brew.sh/"
+    fi
+    return 1
+  fi
+
+  return 0
+}
+
+function isMacOSX() {
+
+  test "$(uname -s)" == "Darwin"
+}
+
+function isDebian() {
+
+  test -f "/etc/debian_version"
+}
+
+function isWindowsWSL() {
+
+  test -f '/mnt/c/Windows/System32/cmd.exe'
+}
+
+function getWindowsEnvironmentVariable() {
+
+  local variableName="$1"
+
+  /mnt/c/Windows/System32/cmd.exe /C echo %${variableName}% | tr -d '\r'
+}
+
 #
 # Generic function that returns 1 if the variable with the given name does not exist (as a local or global Bash variable or
 # as an environment variable)
@@ -171,6 +206,11 @@ function logRule() {
     printf "\e[34m${rule} \e[1m%b\e[0m\n" "$*" >&2
   fi
 #  echo $(printf '=%.0s' {1..40}) $(bold "$@") >&2
+}
+
+function logStep() {
+
+  logRule "Step: $*"
 }
 
 function logItem() {
@@ -774,21 +814,22 @@ function setProduct() {
   export product_root="${spec_family_root}/${ontology_publisher_current_product}"
   export product_root_url="${spec_family_root_url}/${ontology_publisher_current_product}"
 
-  if [ ! -d "${product_root}" ] ; then
+  if [[ ! -d "${product_root}" ]] ; then
     mkdir -p "${product_root}" || return $?
   fi
 
   ((verbose)) && logDir product_root
+  ((verbose)) && logVar product_root_url
 
-  if [ "${GIT_BRANCH}" == "head" ] ; then
-    error "Git repository not checked out to a local branch, GIT_BRANCH = head which is wrong"
+  if [[ "${GIT_BRANCH}" == "head" ]] ; then
+    error "Git repository has not been checked out to a local branch, GIT_BRANCH = head which is wrong"
     return 1
   fi
 
   export branch_root="${product_root}/${GIT_BRANCH}"
   export branch_root_url="${product_root_url}/${GIT_BRANCH}"
 
-  if [ ! -d "${branch_root}" ] ; then
+  if [[ ! -d "${branch_root}" ]] ; then
     mkdir -p "${branch_root}" || return $?
   fi
 
@@ -797,14 +838,17 @@ function setProduct() {
   export tag_root="${branch_root}/${GIT_TAG_NAME}"
   export tag_root_url="${branch_root_url}/${GIT_TAG_NAME}"
 
-  if [ ! -d "${tag_root}" ] ; then
+  if [[ ! -d "${tag_root}" ]] ; then
     mkdir -p "${tag_root}" || return $?
   fi
 
   ((verbose)) && logDir tag_root
 
-  export product_branch_tag="${ontology_publisher_current_product}/${GIT_BRANCH}/${GIT_TAG_NAME}"
+  export branch_tag="${GIT_BRANCH}/${GIT_TAG_NAME}"
+  export product_branch_tag="${ontology_publisher_current_product}/${branch_tag}"
   export family_product_branch_tag="${ONTPUB_FAMILY}/${product_branch_tag}"
+
+  ((verbose)) && logVar tag_root_url
 
   return 0
 }
@@ -1040,10 +1084,28 @@ function getDevOntologies() {
   requireValue ontology_product_tag_root || return $?
 
   ${FIND} "${ontology_product_tag_root}" \
+    -name 'ont-policy.rdf' -prune -o \
     -path '*/etc*' -prune -o \
     -name '*About*' -prune -o \
-    -name 'ont-policy.rdf' -prune -o \
+    -name 'All*' -prune -o \
+    -name 'Metadata*' -prune -o \
+    -name '*Load*' -prune -o \
+    -name '*.rdfX' -prune -o \
+    -name '*.rdf.orig' -prune -o \
     -name '*.rdf' -print
+}
+
+function getDevOntologiesInRDFXMLFormatInCurrentDirectory() {
+
+  ls -1 *.rdf | \
+    ${GREP} -v ont-policy.rdf | \
+    ${GREP} -v ".*/etc.*" | \
+    ${GREP} -v ".*About.*" | \
+    ${GREP} -v "All.*" | \
+    ${GREP} -v ".*Metadata.*" | \
+    ${GREP} -v ".*Load.*" | \
+    ${GREP} -v ".*\.rdfX" | \
+    ${GREP} -v "\.rdf\.orig"
 }
 
 #
@@ -1056,6 +1118,11 @@ function getProdOntologies() {
   ${GREP} -rl 'utl-av[:;.]Release' "${ontology_product_tag_root}" | \
     ${GREP} -F ".rdf" | \
     ${GREP} -v ont-policy.rdf | \
+    ${GREP} -v "*About*" | \
+    ${GREP} -v "*Metadata*" | \
+    ${GREP} -v "*Load*" | \
+    ${GREP} -v "*.rdfX" | \
+    ${GREP} -v ".rdf.orig" | \
     ${GREP} -v '*About*' | \
     ${GREP} -v '/etc/'
 }
@@ -1086,5 +1153,7 @@ function getIsDarkMode() {
 
   return 1
 }
+
+checkShell || return $?
 
 declare -r -g is_dark_mode=$(getIsDarkMode ; echo $?)

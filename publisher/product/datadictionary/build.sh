@@ -13,8 +13,7 @@ false && source ../../lib/_functions.sh
 #
 function publishProductDataDictionary() {
 
-    logRule "Start with unabridged"
-  logRule "Publishing the datadictionary product"
+  logRule "Start with unabridged"
 
   setProduct ontology || return $?
   export ontology_product_tag_root="${tag_root}"

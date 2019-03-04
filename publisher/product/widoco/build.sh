@@ -20,6 +20,8 @@ function publishProductWidoco() {
 
   setProduct ontology || return $?
   ontology_product_tag_root="${tag_root:?}"
+  ontology_tag_root_url="${tag_root_url:?}"
+  ontology_product_root_url="${product_root_url:?}"
 
   setProduct widoco || return $?
   widoco_product_tag_root="${tag_root:?}"
@@ -28,13 +30,20 @@ function publishProductWidoco() {
 
   logDir widoco_product_tag_root
   logDir widoco_script_dir
-
+  #
+  # Build the "vowltreeDev.html" and "vowltreeProd.html" files.
+  #
+  # JG>Dean, those file names are terribly ugly. Not only mixed case but also mixing vowl and widoco as two
+  #    product names is not really consistent. Should be all widoco. We can do vowl separately next to widoco later.
+  #    Also, I think that vowltreeDev.html should be just index.html (and look much better, but not only that,
+  #    also show the maturity level (prod or dev) in a column or filter it on/off)
+  #
   ((test_widoco)) || buildVowlIndex || return $?
 
   generateWidocoLog4jConfig || return $?
   generateWidocoLog4j2Config || return $?
 
-  logRule "Step: generateWidocoDocumentation"
+  logStep "generateWidocoDocumentation"
   #
   # Seems that widoco can leave tmp* directories around in the output ontology directories,
   # so if we are rerunning widoco we better make sure that those temporary directories are
@@ -64,31 +73,34 @@ function generateWidocoLog4jConfig() {
   #
   # Don't overwrite an existing one created by a previous (or parallel) run of this script
   #
-  [[ -f "${TMPDIR}/widoco-log4j.properties" ]] && return 0
+#  [[ -f "${TMPDIR}/widoco-log4j.properties" ]] && return 0
 
   logItem "Widoco log4j config" "$(logFileName "${TMPDIR}/widoco-log4j.properties")"
 
   cat > "${TMPDIR}/widoco-log4j.properties" << __HERE__
-log4j.rootLogger=DEBUG, stdlog
+log4j.rootLogger=INFO, stdlog
 
 log4j.appender.stdlog=org.apache.log4j.ConsoleAppender
 log4j.appender.stdlog.target=System.err
 log4j.appender.stdlog.layout=org.apache.log4j.PatternLayout
 log4j.appender.stdlog.layout.ConversionPattern=%d{HH:mm:ss} %-5p %-20c{1} :: %m%n
-log4j.appender.stdout.Threshold=TRACE
+log4j.appender.stdout.Threshold=INFO
 
-log4j.appender.org.apache.logging.log4j.simplelog.StatusLogger.level=TRACE
+log4j.appender.org.apache.logging.log4j.simplelog.StatusLogger.level=INFO
 
-log4j.appender.org.semanticweb.owlapi=TRACE
-log4j.appender.widoco.JenaCatalogIRIMapper=DEBUG
+log4j.appender.org.semanticweb.owlapi=INFO
+log4j.appender.widoco.JenaCatalogIRIMapper=INFO
 
-log4j.logger.org.semanticweb.owlapi=DEBUG
+log4j.logger.org.semanticweb.owlapi=INFO
 log4j.logger.org.semanticweb.owlapi.util.SAXParsers=OFF
 log4j.logger.org.semanticweb.owlapi.utilities.Injector=OFF
+log4j.logger.org.semanticweb.owlapi.rdf.rdfxml.parser.TripleHandlers=OFF
 log4j.logger.org.eclipse.rdf4j.rio=OFF
 RDFParserRegistry
 #
 __HERE__
+
+  return 0
 }
 
 function generateWidocoLog4j2Config() {
@@ -111,6 +123,7 @@ function generateWidocoLog4j2Config() {
 </configuration>
 __HERE__
 
+  return 0
 }
 
 #
@@ -132,14 +145,18 @@ function generateWidocoDocumentation() {
       done
     fi
 
-    if ls *.ttl >/dev/null 2>&1 ; then
+    if getDevOntologiesInRDFXMLFormatInCurrentDirectory >/dev/null 2>&1 ; then
       while read ontologyFile ; do
         generateWidocoDocumentationForFile "${directory}" "${ontologyFile}" || return $?
-      done < <(ls -1 *.ttl)
+      done < <(getDevOntologiesInRDFXMLFormatInCurrentDirectory)
     else
-      warning "Directory $(pwd) does not have any turtle files to process"
+      warning "Directory $(pwd) does not have any .rdf files to process"
     fi
   )
+
+  #
+  # uncomment this exit here if you just want to run widoco on the first ontology for testing
+#  exit
 
   return $?
 }
@@ -160,30 +177,28 @@ function generateWidocoDocumentationForFile() {
 
   local -r directory="$1"
   local -r outputDir="${directory/ontology/widoco}"
-  local -r turtleFile="$2"
-  local -r rdfFileNoExtension="${turtleFile/.ttl/}"
+  local -r ontologyFile="$2"
+  local -r rdfFileNoExtension="${ontologyFile/.rdf/}"
   local widocoJar ; widocoJar="$(widocoLauncherJar)" || return $?
   local -r ontologyPolicyFile="${ontology_product_tag_root:?}/ont-policy.rdf"
 
-  local -r extension="$([[ "${turtleFile}" = *.* ]] && echo ".${turtleFile##*.}" || echo '')"
+  local -r extension="$([[ "${ontologyFile}" = *.* ]] && echo ".${ontologyFile##*.}" || echo '')"
 
   logRule "Running widoco in $(logFileName "${directory}")"
 
-  if [[ "${turtleFile}" =~ ^[0-9].* || "${turtleFile}" =~ ^About.* || "${turtleFile}" =~ ^Metadata.* ]] ; then
-    logItem  "skipping" "$(logFileName "${turtleFile}") in $(logFileName "${directory}") with extension ${extension}"
+  if [[ \
+    "${ontologyFile}" =~ ^[0-9].* || \
+    "${ontologyFile}" =~ ^ont-policy.* \
+  ]] ; then
+    logItem  "skipping" "$(logFileName "${ontologyFile}") in $(logFileName "${directory}") with extension ${extension}"
     return 0
   fi
 
-  logItem "Widoco processing"  "$(logFileName "${turtleFile}")"
-  logItem "Current Directory"  "$(logFileName "${directory}")"
-  logItem "Output Directory"   "$(logFileName "${outputDir}")"
+  logItem "Widoco is processing"  "$(logFileName "${ontologyFile}")"
+  logDir  directory
+  logDir  outputDir
 
   mkdir -p "${outputDir}" >/dev/null 2>&1 || return $?
-
-#  if [ "${turtleFile}" = "AboutFIBODev.ttl" ] || [ "${turtleFile}" = "Corporations.ttl" ] ; then
-#    log "Printing contents of file ${turtleFile} "
-#    cat "${turtleFile}" | pipelog
-#  fi
 
   #    -licensius \
 
@@ -206,7 +221,7 @@ function generateWidocoDocumentationForFile() {
     -Dlog4j.configuration="file:${TMPDIR}/widoco-log4j.properties" \
     -Dlog4j.configurationFile="file:${TMPDIR}/widoco-log4j2.xml" \
     -jar "${widocoJar}" \
-    -ontFile "${turtleFile}" \
+    -ontFile "${ontologyFile}" \
     -outFolder "${outputDir}/${rdfFileNoExtension}" \
     -rewriteAll \
     -doNotDisplaySerializations \
@@ -227,7 +242,7 @@ function generateWidocoDocumentationForFile() {
 
   if [[ ${rc} -ne 0 ]] ; then
     find ${outputDir} -ls
-    error "Could not run widoco on ${turtleFile} "
+    error "Could not run widoco on ${ontologyFile} "
     #log "Printing contents of file ${rdfFile} "
     #contents=$(<${rdfFile})
     #log "${contents}"
@@ -243,6 +258,7 @@ function generateWidocoDocumentationForFile() {
   fi
 
   widocoRemoveIntroductionSection || return $?
+  widocoReplaceOntologyIRIs "${outputDir}/${rdfFileNoExtension}" || return $?
 
   # KG: Need to figure out why it fails on fibo/ontology/master/latest/SEC/SecuritiesExt/SecuritiesExt.ttl
   #
@@ -355,6 +371,11 @@ function widocoRemoveIntroductionSection() {
     return 0
   fi
 
+  if [[ ! -d "${outputDir}/${rdfFileNoExtension}/sections/" ]] ; then
+    error "Directory $(logFileName "${outputDir}/${rdfFileNoExtension}/sections/") does not exist"
+    return 1
+  fi
+
   if [[ "${turtleFile}" = "AboutFIBODev.ttl" ]] || [[ "${turtleFile}" = "Corporations.ttl" ]] ; then
     log "Printing contents of file before modification ${outputDir}/${rdfFileNoExtension}/index-en.html "
     cat "${indexHtml}"
@@ -368,7 +389,7 @@ function widocoRemoveIntroductionSection() {
 #  log "Contents of widoco-sections folder $(logFileName "${widoco_script_dir}/widoco-sections")"
 #  ls -al ${widoco_script_dir}/widoco-sections
 
-  ${CP} "${widoco_script_dir}/widoco-sections/acknowledgements-en.html" "${outputDir}/${rdfFileNoExtension}/sections"
+  ${CP} "${widoco_script_dir}/widoco-sections/acknowledgements-en.html" "${outputDir}/${rdfFileNoExtension}/sections/"
 
 #  log "Contents of folder ${outputDir}/${rdfFileNoExtension}/sections"
 #  ls -al "${outputDir}/${rdfFileNoExtension}/sections"
@@ -396,6 +417,47 @@ function widocoRemoveIntroductionSection() {
 }
 
 #
+# Replace all "hrefs" that refer to URLs with .../ontology/.. in it to their .../widoco/.. equivalents so that
+# everyone can navigate around through all the widoco docs that we generate for each ontology
+#
+function widocoReplaceOntologyIRIs() {
+
+  local -r outputFolder="$1"
+
+  if [[ ! -f "${outputFolder}/index-en.html" ]] ; then
+    error "index-en.html has not been generated"
+    return 1
+  fi
+
+  #
+  # TODO: If we even are going to support multi-lingual widoco output we would need to refer to index-<language>
+  #       rather than index-en.html
+  #
+  for htmlFile in "${outputFolder}"/**/*.html ; do
+    logItem "Replacing IRIs in" "$(logFileName "${htmlFile}")"
+    ${SED} \
+      -i \
+      `# replace all ../ontology/.. urls used in hrefs with their ../widoco/.. counterparts` \
+      `# note that we leave out href=#<url> because those are not real urls but fragment IDs` \
+      -e 's@href="\([^#][^"]*\)/ontology/\([^"]*\)"@href="\1/widoco/\2/index-en.html"@g' \
+      `# stich index-en.html at the end` \
+      -e 's@//index-en.html@/index-en.html@g' \
+      `# replace any visible references to version IRIs` \
+      -e "s@title=\"${ontology_tag_root_url}@title=\"${ontology_product_root_url}@g" \
+      `# replace all hrefs with versioned IRIs` \
+      -e "s@href=\"${product_root_url}@href=\"${tag_root_url}@g" \
+      `# remove duplicates` \
+      -e "s@${branch_tag}/${branch_tag}@${branch_tag}@g" \
+      -e "s@${branch_tag}/${branch_tag}@${branch_tag}@g" \
+      `# make all hrefs relative so that we can host this locally via http://localhost` \
+      -e "s@<a href=\"https://spec.edmcouncil.org@<a href=\"@g" \
+      "${htmlFile}"
+  done
+
+  return 0
+}
+
+#
 # Called by buildVowlIndex() exclusively
 #
 function buildVowlIndexInvokeTree() {
@@ -412,7 +474,7 @@ function buildVowlIndexInvokeTree() {
   #
   ${TREE} \
     -P "*.rdf${type}" \
-    -I  "[0-9]*|*Ext|About*|All*|Metadata*" \
+    -I  "[0-9]*|*Ext|About*|All*|Metadata*|ont-policy.rdf" \
     -T "${title}" \
     --noreport \
     --dirsfirst \
@@ -420,8 +482,9 @@ function buildVowlIndexInvokeTree() {
     ${SED} \
       -e "s@${GIT_BRANCH}\/${GIT_TAG_NAME}\/\(/[^/]*/\)@${GIT_BRANCH}\/${GIT_TAG_NAME}/\\U\\1@" \
       -e "s@\(${product_branch_tag:?}/.*\)\.rdf${type}\">@\1/index-en.html\">@" \
+      -e "s@href=\"${tag_root_url:?}/@href=\"@g" \
       -e "s@rdf${type}@rdf@g" \
-      -e 's@\(.*\).rdf@\1 vowl@' \
+      -e 's@\(.*\).rdf@\1@' \
       -e 's/<a[^>]*\/\">\([^<]*\)<\/a>/\1/g' \
       -e 's/.VERSION { font-size: small;/.VERSION { display: none; font-size: small;/g' \
       -e 's/BODY {.*}/BODY { font-family : \"Courier New\"; font-size: 12pt ; line-height: 0.90}/g' \
@@ -433,6 +496,37 @@ function buildVowlIndexInvokeTree() {
 }
 
 #
+# Called by buildVowlIndex() exclusively
+#
+function buildVowlIndexInvokeTreeForJson() {
+
+  local -r title="$1"
+  local -r type="$2" # RELEASE or empty
+  local -r outputFile="$3"
+
+  #
+  # JG>Saving original call to tree util (for json output) here
+  #
+  #${TREE} -J -P '*.rdf' > "${vowlTreeDjson}"
+
+  logItem "Generating" "$(logFileName "${outputFile}")"
+
+  #
+  # KG>Do we need this -I '*Ext'
+  # JG>I don't know, PR knows more about this
+  #
+  ${TREE} \
+    -P "*.rdf${type}" \
+    -I  "[0-9]*|*Ext|About*|All*|Metadata*|ont-policy.rdf" \
+    -J \
+    --noreport \
+    --dirsfirst | \
+    ${SED} \
+      -e "s@rdf${type}@rdf@g" \
+      > "${outputFile}"
+}
+
+#
 # The vowl "index" of fibo is a list of all the ontology files, in their
 # directory structure and link to the vowl documentation.  This is an attempt to automatically produce
 # this.
@@ -441,13 +535,14 @@ function buildVowlIndex () {
 
   local -r vowlTreeP="${widoco_product_tag_root}/vowltreeProd.html"
   local -r vowlTreeD="${widoco_product_tag_root}/vowltreeDev.html"
+  local -r vowlTreePjson="${widoco_product_tag_root}/vowltreeProd.json"
   local -r vowlTreeDjson="${widoco_product_tag_root}/vowltreeDev.json"
   local -r titleP="FIBO Widoco File Directory (Production)"
   local -r titleD="FIBO Widoco File Directory (Development)"
 
   touch "${widoco_product_tag_root}"/widoco.log
   
-  logRule "Step: buildVowlIndex"
+  logStep "buildVowlIndex"
 
   (
     cd "${ontology_product_tag_root}" || return $?
@@ -474,14 +569,15 @@ function buildVowlIndex () {
 
     buildVowlIndexInvokeTree "${titleP}" "RELEASE" "${vowlTreeP}"
 
-    cat ${pfiles} | while read file ; do mv ${file}RELEASE ${file} ; done
-    rm ${pfiles}
-
     #
     # Also create a JSON version of the tree file so that we can later easily add a browsing function to the new
     # SPA (single page application) front end
     #
-    ${TREE} -J -P '*.rdf' > "${vowlTreeDjson}"
+    buildVowlIndexInvokeTreeForJson "${titleD}" "" "${vowlTreeDjson}"
+    buildVowlIndexInvokeTreeForJson "${titleP}" "RELEASE" "${vowlTreePjson}"
+
+    cat ${pfiles} | while read file ; do mv ${file}RELEASE ${file} ; done
+    rm ${pfiles}
   )
 
 	return 0

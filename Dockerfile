@@ -52,7 +52,7 @@ RUN \
   echo ================================= install basics >&2 && \
   apk --no-cache add \
     curl wget \
-    bash git grep sed findutils coreutils tree jq bc \
+    bash git grep sed findutils coreutils tree jq bc xmlstarlet \
     zip tar xz \
     python python3 py3-setuptools \
     perl perl-utils \
@@ -104,6 +104,14 @@ ENV \
   MANPATH=/usr/local/texlive/2018/texmf-dist/doc/man:${MANPATH} \
   INFOPATH=/usr/local/texlive/2018/texmf-dist/doc/info:${INFOPATH} \
   PATH=${PATH}:/usr/local/texlive/2018/bin/x86_64-linuxmusl:/usr/local/texlive/2018/bin/x86_64-linux
+
+#
+# Installing biblatex manually
+#
+COPY /usr/share/scripts/install-biber.sh /usr/share/scripts/install-biber.sh
+RUN \
+  echo ================================= install biblatex-biber >&2 && \
+  /usr/share/scripts/install-biber.sh
 
 #
 # Installing pandoc
@@ -265,7 +273,7 @@ RUN \
 ## Installing Widoco
 ##
 RUN \
-  widoco_version="1.4.7" ; \
+  widoco_version="1.4.8" ; \
   widoco_root_url="https://jenkins.edmcouncil.org/view/widoco/job/widoco-build/lastStableBuild/es.oeg\$widoco/artifact/es.oeg" ; \
   echo ================================= install widoco ${widoco_version} >&2 && \
   #
@@ -361,12 +369,6 @@ RUN \
   echo PATH=${PATH} && \
   sed -i -e 's/export PATH=\(.*\)/export PATH=${PATH}/g' /etc/profile && \
   echo "export PATH=${PATH}" >> /etc/bashrc
-
-COPY /usr/share/scripts/install-biber.sh /usr/share/scripts/install-biber.sh
-RUN \
-  echo ================================= install biblatex-biber >&2 && \
-  /usr/share/scripts/install-biber.sh
-
 
 CMD ["./publish.sh"]
 

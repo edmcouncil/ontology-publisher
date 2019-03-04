@@ -8,6 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)" || exit 1
 
 export ONTPUB_FAMILY="${ONTPUB_FAMILY:-fibo}"
 export ONTPUB_SPEC_HOST="${ONTPUB_SPEC_HOST:-spec.edmcouncil.org}"
+export ONTPUB_INPUT_REPOS="${ONTPUB_INPUT_REPOS:-${ONTPUB_FAMILY} LCC}"
 
 if [[ -f ${SCRIPT_DIR}/publisher/lib/_functions.sh ]] ; then
   # shellcheck source=publisher/lib/_functions.sh
@@ -16,20 +17,24 @@ else # This else section is to trick IntelliJ Idea to actually load _functions.s
   source publisher/lib/_functions.sh || exit $?
 fi
 
-#
-# Get the directory of your local git clone of your ontologies that we need to use
-# as input to the publisher.
-#
-# Add your own directory to this list with another "elif" statement.
-#
-# TODO: Make this configurable outside this script
-#
-function inputDirectory() {
+function getDirectoryOfGitRepo() {
 
-  # JG>Dean, to make this work from inside your shell-container we need
-  # to have a detection here whether we're running inside that container
-  # or not. When you're IN the container, we cannot check for the existence
-  # of /cygdrive/c/Users/Dean/Documents/${ONTPUB_FAMILY}
+  local -r gitRepoName="$1" # names like "fibo" or "LCC" etc
+
+  #
+  # First check some common places as they're used on Mac OS X or Linux desktops/laptops.
+  # Then if that fails check whether we're running in a separate docker container or in Windows WSL
+  #
+  if [[ -d "${HOME}/Work/${gitRepoName}" ]] ; then # Used by Jacobus Geluk
+    echo -n "${HOME}/Work/${gitRepoName}"
+    return 0
+  elif [[ -d "${HOME}/Documents/${gitRepoName}" ]] ; then
+    echo -n "${HOME}/Documents/${gitRepoName}"
+    return 0
+  elif [[ -d "${HOME}/${gitRepoName}" ]] ; then
+    echo -n "${HOME}/${gitRepoName}"
+    return 0
+  fi
 
   if isRunningInDockerContainer ; then
     #
@@ -42,25 +47,78 @@ function inputDirectory() {
     #    that contains your user name as RivettPJ or Dean so that we can automate at least part of the
     #    path name below?
     #
-    # echo -n "/c/Users/RivettPJ/Documents/FIBO-Development"
-      echo -n "/c/Users/Dean/Documents/fibo"
+    # echo -n "/c/Users/RivettPJ/Documents/${gitRepoName}"
+      echo -n "/c/Users/Dean/Documents/${gitRepoName}"
     return 0
   fi
 
-  if [[ -d "${HOME}/Work/${ONTPUB_FAMILY}" ]] ; then # Used by Jacobus
-    echo -n "${HOME}/Work/${ONTPUB_FAMILY}"
-  elif [[ -d "/c/Users/RivettPJ/Documents/FIBO-Development" ]] ; then
-    echo -n "/c/Users/RivettPJ/Documents/FIBO-Development"
-  elif [[ -d "${HOME}/${ONTPUB_FAMILY}" ]] ; then
-    echo -n "${HOME}/Work/${ONTPUB_FAMILY}"
-  elif [[ -d "/cygdrive/c/Users/Dean/Documents/${ONTPUB_FAMILY}" ]] ; then
-    echo -n "c:/Users/Dean/Documents/${ONTPUB_FAMILY}"
-  else
-    error "No ${ONTPUB_FAMILY} root found"
-    return 1
+  local -r windowsUserName="$(getWindowsEnvironmentVariable USERNAME)"
+
+  if [[ -n "${windowsUserName}" ]] ; then
+    if [[ -d "/c/Users/${windowsUserName}/Documents/${gitRepoName}" ]] ; then
+      echo -n "/c/Users/${windowsUserName}/Documents/${gitRepoName}"
+      return 0
+    elif [[ -d "/cygdrive/c/Users/${windowsUserName}/Documents/${gitRepoName}" ]] ; then
+      echo -n "c:/Users/${windowsUserName}/Documents/${gitRepoName}"
+      return 0
+    fi
   fi
 
-  return 0
+  if [[ -d "/c/Users/RivettPJ/Documents/${gitRepoName}" ]] ; then
+    echo -n "/c/Users/RivettPJ/Documents/${gitRepoName}"
+    return 0
+  elif [[ -d "/cygdrive/c/Users/Dean/Documents/${ONTPUB_FAMILY}" ]] ; then
+    echo -n "c:/Users/Dean/Documents/${ONTPUB_FAMILY}"
+    return 0
+  fi
+
+  error "No ${gitRepoName} root found"
+
+  return 1
+}
+
+#
+# Get the directory of your local git clone of your ontologies that we need to use
+# as input to the publisher.
+#
+# TODO: Make this configurable outside this script
+#
+function inputDirectory() {
+
+  local -r gitRepoName="$1" # names like "fibo" or "LCC" etc
+
+  #
+  # First try what you specified as the primary ontology name
+  #
+  if getDirectoryOfGitRepo "${gitRepoName}" >/dev/null 2>&1 ; then
+    getDirectoryOfGitRepo "${gitRepoName}"
+    return 0
+  fi
+  #
+  # Then try the lowercase version of it
+  #
+  if getDirectoryOfGitRepo "${gitRepoName,,}"  >/dev/null 2>&1 ; then
+    getDirectoryOfGitRepo "${gitRepoName,,}"
+    return 0
+  fi
+  #
+  # Then try the uppercase version of it
+  #
+  if getDirectoryOfGitRepo "${gitRepoName^^}"  >/dev/null 2>&1 ; then
+    getDirectoryOfGitRepo "${gitRepoName^^}"
+    return 0
+  fi
+  #
+  # Then try other variations like FIBO-Development
+  #
+  if getDirectoryOfGitRepo "${gitRepoName^^}-Development" >/dev/null 2>&1 ; then
+    getDirectoryOfGitRepo "${gitRepoName^^}-Development"
+    return 0
+  fi
+
+  error "Could not find the git repo directory for \"${gitRepoName}\""
+
+  return 1
 }
 
 #
@@ -244,9 +302,9 @@ function containerName() {
 
 function idOfRunningContainer() {
 
-  local containerName="$(containerName)"
+  local -r containerName="$(containerName)"
 
-  docker container ls --filter "name=$(containerName)" --quiet
+  docker ps -a --no-trunc --filter name=^/${containerName}$ --quiet
 }
 
 function isContainerRunning() {
@@ -260,14 +318,14 @@ function buildImage() {
 
   ((cli_option_buildimage)) || return 0
 
+  local -r containerName="$(containerName)"
+
   if isContainerRunning ; then
-    warning "Container is running so we skip the build"
+    warning "Container ${containerName} is running so we skip the build"
     return 0
   fi
 
   cd "${SCRIPT_DIR}" || return $?
-
-  local containerName="$(containerName)"
 
   local -a opts=()
 
@@ -322,7 +380,7 @@ function run() {
 
   cd "${SCRIPT_DIR}" || return $?
 
-  local inputDirectory ; inputDirectory=$(inputDirectory) || return $?
+  local inputDirectory
   local outputDirectory ; outputDirectory=$(outputDirectory) || return $?
   local temporaryFilesDirectory ; temporaryFilesDirectory=$(temporaryFilesDirectory) || return $?
   local containerName="ontology-publisher"
@@ -358,7 +416,7 @@ function run() {
   # The --read-only flag is set by default (by this script) to protect the image from being overwritten by anything
   # that runs inside the container itself.
   #
-#  opts+=('--read-only')
+  opts+=('--read-only')
   opts+=('--env')
   opts+=("ONTPUB_IS_DARK_MODE=${cli_option_dark}")
   opts+=('--env')
@@ -367,9 +425,17 @@ function run() {
   opts+=("ONTPUB_SPEC_HOST=${ONTPUB_SPEC_HOST}")
 
   logVar ONTPUB_FAMILY
+
+  #
+  # Now add the mount parameters to the docker command line that mount each given input ontology repo into the
+  # /input directory (so ontolory repo fibo ends up as /input/fibo inside the container)
+  #
   log "Mounted:"
-  logItem "/input/${ONTPUB_FAMILY}" "${inputDirectory}"
-  opts+=("--mount type=bind,source=${inputDirectory},target=/input/${ONTPUB_FAMILY},readonly,consistency=cached")
+  for inputOntologyRepoName in ${ONTPUB_INPUT_REPOS} ; do
+    inputDirectory=$(inputDirectory "${inputOntologyRepoName}") || return $?
+    logItem "/input/${inputOntologyRepoName}" "${inputDirectory}"
+    opts+=("--mount type=bind,source=${inputDirectory},target=/input/${inputOntologyRepoName},readonly,consistency=cached")
+  done
   logItem "/output" "${outputDirectory}"
   opts+=("--mount type=bind,source=${outputDirectory},target=/output,consistency=delegated")
 #  logItem "/var/tmp" "${temporaryFilesDirectory}"

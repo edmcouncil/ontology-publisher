@@ -18,15 +18,15 @@ function referenceGenerateTdb2Database() {
 
   ((reference_skip_content)) && return 0
 
-  logRule "Step: referenceGenerateTdb2Database"
+  logStep "referenceGenerateTdb2Database"
 
   requireValue reference_latex_dir || return $?
   requireValue ontology_product_tag_root || return $?
 
-  if [[ -d "${reference_latex_dir}/tdb2" ]] ; then
-    warning "Skipping recreation of ${reference_latex_dir}/tdb2"
-    return 0
-  fi
+#  if [[ -d "${reference_latex_dir}/tdb2" ]] ; then
+#    warning "Skipping recreation of ${reference_latex_dir}/tdb2"
+#    return 0
+#  fi
 
   if ! which tdb2.tdbloader >/dev/null 2>&1 ; then
     error "jena tdb2.tdbloader is not in the PATH"
@@ -44,14 +44,14 @@ function referenceGeneratePrefixesAsSparqlValues() {
 
   ((reference_skip_content)) && return 0
 
-  logRule "Step: referenceGeneratePrefixesAsSparqlValues"
+  logStep "referenceGeneratePrefixesAsSparqlValues"
 
-  if [[ -f "${TMPDIR}/reference-prefixes.txt" ]] ; then
-    warning "Skipping recreation of ${TMPDIR}/reference-prefixes.txt"
-    return 0
-  fi
+#  if [[ -f "${TMPDIR}/reference-prefixes.txt" ]] ; then
+#    warning "Skipping recreation of ${TMPDIR}/reference-prefixes.txt"
+#    return 0
+#  fi
 
-  grep --no-filename -r '<!ENTITY' /input/* | \
+  grep --no-filename -r '<!ENTITY' ${INPUT}/* | \
   grep -v "http://www.omg.org/spec/EDMC-FIBO" | \
   sort -u | \
   sed 's/.*<!ENTITY \(.*\) "\(.*\)">/("\1:" <\2>)/g' > \
@@ -60,11 +60,16 @@ function referenceGeneratePrefixesAsSparqlValues() {
   return 0
 }
 
-function referenceCreateQueryListOfClasses() {
+#
+# Create the SPARQL query file that gets all classes
+# Sets two variables:
+#
+# - reference_query_file_classes
+# - reference_results_file_classes
+#
+function referenceCreateQueryClasses() {
 
-  reference_query_file="${reference_query_dir}/list-of-classes.sq"
-
-  cat > "${reference_query_file}" << __HERE__
+  cat > "${reference_query_file_classes}" << __HERE__
 #
 # Get a list of all the class names
 #
@@ -149,36 +154,35 @@ GROUP BY ?classIRI ?namezpace ?classLabel ?definition ?explanatoryNote
 ORDER BY ?classIRI
 __HERE__
 
-  local -r checksum="$(md5sum "${reference_query_file}" | cut -f1 -d\  )"
+  local -r checksum="$(md5sum "${reference_query_file_classes}" | cut -f1 -d\  )"
 
-  reference_results_file="${reference_data_dir}/list-of-classes-${checksum}.tsv"
+  reference_results_file_classes="${reference_data_dir}/classes-${checksum}.tsv"
 
-  return 0
-
-}
-
-#
-# Execute the "list of classes" query and store the name of the results file in the caller's variable reference_results_file
-#
-function referenceQueryListOfClasses() {
-
-  ((reference_skip_content)) && return 0
-
-  local reference_query_file
-
-  referenceCreateQueryListOfClasses || return $?
-
-  #
-  # If the results file already exists then it doesn't make sense
-  # to run the query again.
-  #
-  [[ -z "${reference_results_file}" ]] && return 1
-  if [[ -f "${reference_results_file}" ]] ; then
-    referenceQueryListOfClassesInitArray
+  if [[ -f "${reference_results_file_classes}" ]] ; then
+    reference_results_file_number_of_classes="$(cat "${reference_results_file_classes}" | wc -l)"
+    logItem "Number of classes" ${reference_results_file_number_of_classes}
+    referenceExecuteQueryClassesInitArray
     return $?
   fi
 
-  logRule "Step: referenceQueryListOfClasses"
+  return 1
+}
+
+#
+# Execute the "list of classes" query
+#
+function referenceExecuteQueryClasses() {
+
+  if ((reference_skip_content)) ; then
+    log "No need to execute the query that gets all classes since we're skipping the actual content"
+    return 0
+  fi
+
+  logReferenceStep "referenceExecuteQueryClasses"
+
+  referenceCreateQueryClasses && return 0
+
+  logReferenceStep "referenceExecuteQueryClasses"
 
   #
   # Get the list of classes and some details per class, somehow the DISTINCT keyword
@@ -187,28 +191,39 @@ function referenceQueryListOfClasses() {
   # So we're now just using the brute force way of doing a "sort --unique" (on just the classIRI) to
   # ensure that we only have one line per class.
   #
-  logItem "Executing query" "${reference_query_file}"
+  logItem "Executing query" "${reference_query_file_classes}"
   tdb2.tdbquery \
     --loc="${reference_latex_dir}/tdb2" \
-    --query="${reference_query_file}" \
-    --results=TSV | sort --key=1,2 --unique | ${SED} 's/\(^\|\t\)\t/\1 \t/g' > "${reference_results_file}"
+    --query="${reference_query_file_classes}" \
+    --results=TSV | \
+    (read -r line; printf "%s\n" "${line}"; sort --key=1,2 --unique) | \
+    ${SED} 's/\(^\|\t\)\t/\1 \t/g' \
+    > "${reference_results_file_classes}"
   rc=$?
-  logItem "Finished query" "${reference_query_file}"
-  logItem "Results in" "${reference_results_file}"
+  logItem "Finished query" "${reference_query_file_classes}"
+  logItem "Results in"     "${reference_results_file_classes}"
 
   if ((rc > 0)) ; then
     logVar rc
     return ${rc}
   fi
 
-  return 0
+  reference_results_file_number_of_classes="$(cat "${reference_results_file_classes}" | wc -l)"
+  logItem "Number of classes" ${reference_results_file_number_of_classes}
+
+  if [[ ${reference_results_file_number_of_classes} -lt 1 ]] ; then
+    error "${reference_results_file_classes} is empty"
+    return 1
+  fi
+
+  return $?
 }
 
-function referenceQueryListOfClassesInitArray() {
+function referenceExecuteQueryClassesInitArray() {
 
   [[ ${#reference_array_classes[*]} -gt 0 ]] && return 0
 
-  logRule "Step: referenceQueryListOfClassesInitArray (should take less than 40 seconds)"
+  logReferenceStep "referenceExecuteQueryClassesInitArray (should take less than 40 seconds)"
 
   while IFS=$'\t' read -a line ; do
 
@@ -229,9 +244,9 @@ function referenceQueryListOfClassesInitArray() {
     reference_array_classes[${classIRI},definition]="${definition}"
     reference_array_classes[${classIRI},explanatoryNote]="${explanatoryNote}"
 
-  done < "${reference_results_file}"
+  done < "${reference_results_file_classes}"
 
-  log "Step: referenceQueryListOfClassesInitArray done"
+  logItem "Number of classes" ${reference_results_file_number_of_classes}
 
   classIRI="http://www.w3.org/2004/02/skos/core#Concept"
 
@@ -241,16 +256,17 @@ function referenceQueryListOfClassesInitArray() {
 }
 
 #
-# Generates query "list of super classes"
+# Create the SPARQL query file that gets all superclasses
+# Sets two variables:
 #
-# Stores name of query file in global variable reference_query_file and
-# name of results file in reference_results_file
+# - reference_query_file_superclasses
+# - reference_results_file_superclasses
 #
-function referenceCreateQueryListOfSuperClasses() {
+function referenceCreateQuerySuperClasses() {
 
-  reference_query_file="${reference_query_dir}/list-of-super-classes.sq"
+  ((reference_results_file_number_of_superclasses > 0)) && return 0
 
-  cat > "${reference_query_file}" << __HERE__
+  cat > "${reference_query_file_superclasses}" << __HERE__
 #
 # Get a list of all the class IRIs and their super class IRIs
 #
@@ -312,56 +328,63 @@ GROUP BY ?classIRI ?superClassIRI ?superClassNamespace
 ORDER BY ?classIRI ?superClassIRI
 __HERE__
 
-  local -r checksum="$(md5sum "${reference_query_file}" | cut -f1 -d\  )"
+  local -r checksum="$(md5sum "${reference_query_file_superclasses}" | cut -f1 -d\  )"
 
-  reference_results_file="${reference_data_dir}/list-of-super-classes-${checksum}.tsv"
-  reference_results_file_number_of_lines="$(cat "${reference_results_file}" | wc -l)"
+  reference_results_file_superclasses="${reference_data_dir}/superclasses-${checksum}.tsv"
 
-  return 0
+  if [[ -f "${reference_results_file_superclasses}" ]] ; then
+    reference_results_file_number_of_superclasses="$(cat "${reference_results_file_superclasses}" | wc -l)"
+    logItem "Number of superclasses (1)" ${reference_results_file_number_of_superclasses}
+    return 0
+  fi
+
+  return 1
 }
 
 #
 # Execute the "list of super classes" query
 #
-# Assumes that var reference_results_file exists
-#
-function referenceQueryListOfSuperClasses() {
+function referenceExecuteQuerySuperClasses() {
 
-  local reference_query_file   # set by bookCreateQueryListOfSuperClasses
+  referenceCreateQuerySuperClasses && return 0
 
-  referenceCreateQueryListOfSuperClasses || return $?
+  logReferenceStep "referenceExecuteQuerySuperClasses"
 
-  #
-  # If the results file already exists then it doesn't make sense
-  # to run the query again.
-  #
-  [[ -z "${reference_results_file}" ]] && return 1
-  [[ -f "${reference_results_file}" ]] && return 0
-
-  logRule "Step: referenceQueryListOfSuperClasses"
-
-  logItem "Executing query" "${reference_query_file}"
+  logItem "Executing query" "${reference_query_file_superclasses}"
   tdb2.tdbquery \
     --loc="${reference_latex_dir:?}/tdb2" \
-    --query="${reference_query_file}" \
-    --results=TSV | ${SED} 's/\(^\|\t\)\t/\1 \t/g' > "${reference_results_file}"
+    --query="${reference_query_file_superclasses}" \
+    --results=TSV | ${SED} 's/\(^\|\t\)\t/\1 \t/g' > "${reference_results_file_superclasses}"
   rc=$?
-  logItem "Finished query" "${reference_query_file}"
-  logItem "Results in" "${reference_results_file}"
+  logItem "Finished query"  "${reference_query_file_superclasses}"
+  logItem "Results in"      "${reference_results_file_superclasses}"
 
   if ((rc > 0)) ; then
     logVar rc
     return ${rc}
   fi
 
-  return 0
+  reference_results_file_number_of_superclasses="$(cat "${reference_results_file_superclasses}" | wc -l)"
+  logItem "Number of superclasses (2)" ${reference_results_file_number_of_superclasses}
+
+  if [[ ${reference_results_file_number_of_superclasses} -lt 1 ]] ; then
+    error "${reference_results_file_superclasses} is empty"
+    return 1
+  fi
+
+  return $?
 }
 
-function referenceCreateQueryListOfOntologies() {
+#
+# Create the SPARQL query file that gets all ontologies
+# Sets two variables:
+#
+# - reference_query_file_ontologies
+# - reference_results_file_ontologies
+#
+function referenceCreateQueryOntologies() {
 
-  reference_query_file="${reference_query_dir}/list-of-ontologies.sq"
-
-  cat > "${reference_query_file}" << __HERE__
+  cat > "${reference_query_file_ontologies}" << __HERE__
 #
 # Get a list of all the ontologies
 #
@@ -458,58 +481,61 @@ WHERE {
 ORDER BY ?ontologyIRI
 __HERE__
 
-  local -r checksum="$(md5sum "${reference_query_file}" | cut -f1 -d\  )"
+  local -r checksum="$(md5sum "${reference_query_file_ontologies}" | cut -f1 -d\  )"
 
-  reference_results_file="${reference_data_dir}/list-of-ontologies-${checksum}.tsv"
+  reference_results_file_ontologies="${reference_data_dir}/ontologies-${checksum}.tsv"
 
-  return 0
+  if [[ -f "${reference_results_file_ontologies}" ]] ; then
+    reference_results_file_number_of_ontologies="$(cat "${reference_results_file_ontologies}" | wc -l)"
+    logItem "Number of ontologies" ${reference_results_file_number_of_ontologies}
+    referenceExecuteQueryOntologiesInitArray
+    return $?
+  fi
+
+  return 1
 }
 
 #
 # Execute the "list of super classes" query
 #
-function referenceQueryListOfOntologies() {
+function referenceExecuteQueryOntologies() {
 
   ((reference_skip_content)) && return 0
 
-  local reference_query_file
+  referenceCreateQueryOntologies && return 0
 
-  referenceCreateQueryListOfOntologies || return $?
+  logReferenceStep "referenceExecuteQueryOntologies"
 
-  #
-  # If the results file already exists then it doesn't make sense
-  # to run the query again.
-  #
-  [[ -z "${reference_results_file}" ]] && return 1
-  if [[ -f "${reference_results_file}" ]] ; then
-    referenceQueryListOfOntologiesInitArray
-    return $?
-  fi
-
-  logRule "Step: referenceQueryListOfOntologies"
-
-  logItem "Executing query" "${reference_query_file}"
+  logItem "Executing query" "${reference_query_file_ontologies}"
   tdb2.tdbquery \
     --loc="${reference_latex_dir:?}/tdb2" \
-    --query="${reference_query_file}" \
-    --results=TSV | ${SED} 's/\(^\|\t\)\t/\1 \t/g' > "${reference_results_file}"
+    --query="${reference_query_file_ontologies}" \
+    --results=TSV | ${SED} 's/\(^\|\t\)\t/\1 \t/g' > "${reference_results_file_ontologies}"
   rc=$?
-  logItem "Finished query" "${reference_query_file}"
-  logItem "Results in" "${reference_results_file}"
+  logItem "Finished query"  "${reference_query_file_ontologies}"
+  logItem "Results in"      "${reference_results_file_ontologies}"
 
   if ((rc > 0)) ; then
     logVar rc
     return ${rc}
   fi
 
+  reference_results_file_number_of_ontologies="$(cat "${reference_results_file_ontologies}" | wc -l)"
+  logItem "Number of ontologies" ${reference_results_file_number_of_ontologies}
+
+  if [[ ${reference_results_file_number_of_ontologies} -lt 1 ]] ; then
+    error "${reference_results_file_ontologies} is empty"
+    return 1
+  fi
+
   return 0
 }
 
-function referenceQueryListOfOntologiesInitArray() {
+function referenceExecuteQueryOntologiesInitArray() {
 
   [[ ${#reference_array_ontologies[*]} -gt 0 ]] && return 0
 
-  logRule "Step: referenceQueryListOfOntologiesInitArray (should take less than 40 seconds)"
+  logStep "referenceExecuteQueryOntologiesInitArray (should take less than 40 seconds)"
 
   while IFS=$'\t' read -a line ; do
 
@@ -532,9 +558,7 @@ function referenceQueryListOfOntologiesInitArray() {
     reference_array_ontologies[${ontologyIRI},preferredPrefix]="${preferredPrefix}"
     reference_array_ontologies[${ontologyIRI},maturityLevel]="${maturityLevel}"
 
-  done < "${reference_results_file}"
-
-  log "Step: referenceQueryListOfOntologiesInitArray done"
+  done < "${reference_results_file_ontologies}"
 
   return 0
 }
