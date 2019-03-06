@@ -43,7 +43,6 @@ class TBCGraph(rdflib.Graph):
         data = str(data, ENCODING)
         
         subsetSink.saveSubset(data, onturi, fmt, verbose)
-        
 
 class OntologySource(ABC):
     
@@ -147,6 +146,7 @@ class Factor():
         self.out.serialize(subsetSink=subsetSink, fmt=self.fmt, verbose=self.verbose)
 
 def parseArgs():
+    # todo: perhaps we should infer the format from the OntologySource, unless it's forced with -f?
     argParser = argparse.ArgumentParser()
     argParser.add_argument('ontology', help='Root directory of the ontology to subset')
     argParser.add_argument('base', help='Base URI of subset')
