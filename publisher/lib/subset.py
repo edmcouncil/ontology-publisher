@@ -24,8 +24,10 @@
 
 """
 import sys
+import re
 import argparse
 from os import walk, path, makedirs
+from os.path import splitext, isdir, basename
 from abc import ABC, abstractmethod
 
 import rdflib
@@ -47,22 +49,45 @@ class TBCGraph(rdflib.Graph):
 class OntologySource(ABC):
     
     @abstractmethod
-    def getGraphList(self):
+    def getGraphList(self, verbose):
         pass
     
 class FileOntologySource(OntologySource):
     
-    def __init__(self, directory):
-        self.directory = directory
+    def __init__(self, sourceFile):
+        self.sourceFile = sourceFile
     
-    def getGraphList(self):
-        return [TBCGraph().parse(path.join(root, name)) for root, dirs, files in walk(self.directory) if root != self.directory for name in files
-            if name.endswith(".rdf") and
-            "etc" not in root and
-            "git" not in root and
-            "About" not in name and
-            "All" not in name
-            and "Metadata" not in name]
+    def getGraphList(self, verbose):
+        
+        ret = []
+        
+        if isdir(self.sourceFile):
+            for root, dirs, files in walk(self.sourceFile):
+                if root != self.sourceFile and not re.search('etc|git', root):
+                    for name in files:
+                        fullName = path.join(root, name)
+                        g = self.parseFile(fullName)
+                        if g:
+                            ret.append(g)
+        else:
+            g = self.parseFile(self.sourceFile)
+            if g:
+                ret.append(g)
+                            
+        return ret
+    
+    def parseFile(self, fileName):
+        ret = None
+        name = basename(fileName)
+        if not re.search('About|All|Metadata', name):
+            ff, fe = splitext(name)
+            fe = fe.replace('.', '')
+            if fe=='rdf' or fe=='ttl' or fe=='nt':
+                if fe=='rdf':
+                    fe = 'xml'
+                ret = TBCGraph().parse(fileName, format=fe)
+        return ret
+        
         
 class SubsetSink(ABC):
     
@@ -95,11 +120,11 @@ class FileSubsetSink(SubsetSink):
 
 class Factor():
     
-    def __init__(self, ontologySource, base, verbose, fmt):
+    def __init__(self, ontologySource, base, verbose):
         
         self.base = base
         
-        gs = ontologySource.getGraphList()
+        gs = ontologySource.getGraphList(verbose)
 
         self.out = TBCGraph()
         self.all = TBCGraph()
@@ -115,19 +140,31 @@ class Factor():
         
         self.done = []
         self.verbose = verbose
-        self.fmt = fmt
 
-    def save(self, subsetSink):
-        self.all.serialize(subsetSink=subsetSink, fmt=self.fmt, verbose=self.verbose)
+    def save(self, subsetSink, fmt):
+        self.all.serialize(subsetSink=subsetSink, fmt=fmt, verbose=self.verbose)
 
-    def prime(self, seed):
-        if (self.verbose): print('Reading subset requirements from seeds file at: ' + seed)
-        with open(seed, 'r', encoding=ENCODING,) as original:
-            s = original.readline()
-            while (s != ""):
-                if (not s.startswith("#")):
-                    self.copy(rdflib.URIRef(s.strip()), "")
+    def prime(self, seedFile=None, seedList=None):
+        
+        if seedFile is not None:
+            seedList = []
+            if (self.verbose): print('Reading subset requirements from seeds file at: ' + seedFile)
+            with open(seedFile, 'r', encoding=ENCODING,) as original:
                 s = original.readline()
+                while (s != ""):
+                    seedList.append(s)
+                    s = original.readline()
+                    
+        filteredSeedList = []
+        for seed in seedList:
+            if (not seed.startswith("#")):
+                filteredSeedList.append(seed)
+        
+        if (self.verbose): print('Subsetting ontology for ' + str(len(filteredSeedList)) + ' seeds')
+        
+        for seed in filteredSeedList:
+            self.copy(rdflib.URIRef(seed.strip()), "")     
+                  
         return self
 
     def copy(self, concept, level):
@@ -141,14 +178,13 @@ class Factor():
                 self.out.add(t)
                 self.copy(t[0], level + " ")
 
-    def writeSubset(self, subsetSink):
+    def writeSubset(self, subsetSink, fmt):
         self.out.add((rdflib.URIRef(self.base), RDF.type, OWL.Ontology))
-        self.out.serialize(subsetSink=subsetSink, fmt=self.fmt, verbose=self.verbose)
+        self.out.serialize(subsetSink=subsetSink, fmt=fmt, verbose=self.verbose)
 
 def parseArgs():
-    # todo: perhaps we should infer the format from the OntologySource, unless it's forced with -f?
     argParser = argparse.ArgumentParser()
-    argParser.add_argument('ontology', help='Root directory of the ontology to subset')
+    argParser.add_argument('ontology', help='Root directory of the ontology to subset, or a single file containing the ontology')
     argParser.add_argument('base', help='Base URI of subset')
     argParser.add_argument('-f', '--format', help='Subset format (default is ttl/turtle)', default='turtle')
     argParser.add_argument('-s', '--seeds', help='Seeds file; full subset will result if not specified')
@@ -166,9 +202,9 @@ if __name__ == '__main__':
     ontologySource = FileOntologySource(args.ontology)
     destination = FileSubsetSink(destination)
     
-    f = Factor(ontologySource, args.base, args.verbose, args.format)
+    f = Factor(ontologySource, args.base, args.verbose)
     
     if seeds is None:
-        f.save(destination)
+        f.save(destination, args.format)
     else:
-        f.prime(seeds).writeSubset(destination)
+        f.prime(seedFile=seeds).writeSubset(destination, args.format)
