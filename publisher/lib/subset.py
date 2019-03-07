@@ -34,6 +34,7 @@ import rdflib
 from rdflib.namespace import RDF, OWL
 
 ENCODING = 'utf-8'
+FIBO_FILE_IGNORE_REGEX = 'About|All|Metadata|catalog-'
 
 class TBCGraph(rdflib.Graph):
     
@@ -79,7 +80,7 @@ class FileOntologySource(OntologySource):
     def parseFile(self, fileName):
         ret = None
         name = basename(fileName)
-        if not re.search('About|All|Metadata', name):
+        if not re.search(FIBO_FILE_IGNORE_REGEX, name):
             ff, fe = splitext(name)
             fe = fe.replace('.', '')
             if fe=='rdf' or fe=='ttl' or fe=='nt':
