@@ -425,8 +425,10 @@ function widocoReplaceOntologyIRIs() {
   local -r outputFolder="$1"
 
   if [[ ! -f "${outputFolder}/index-en.html" ]] ; then
-    error "index-en.html has not been generated"
-    return 1
+#    error "index-en.html has not been generated"
+#    return 1
+      echo "index-en.html has not been generated"
+      return 0 
   fi
 
   #
