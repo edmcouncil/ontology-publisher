@@ -10,6 +10,7 @@ false && source ../../lib/_functions.sh
 
 export SCRIPT_DIR="${SCRIPT_DIR}" # Yet another hack to silence IntelliJ
 export speedy="${speedy:-0}"
+export speedy=1
 
 if [[ -f ${SCRIPT_DIR}/product/ontology/build-cats.sh ]] ; then
   # shellcheck source=build-cats.sh
@@ -53,7 +54,6 @@ function publishProductOntology() {
 #  else
     ontologyConvertRdfToAllFormats || return $?
 #  fi
-# ontologyAnnotateTopBraidBaseURL || return $?
   ontologyCreateTheAllTtlFile || return $?
   #
   # JG>Who's using "ontology-zips.log"?
@@ -329,15 +329,15 @@ __HERE__
   #
   # We want to add in a rdfs:isDefinedBy link from every class back to the ontology.
   #
-# if ((speedy)) ; then
-#	  log "speedy=true -> Leaving out isDefinedBy because it is slow"
-#	else
+  if ((speedy)) ; then
+	  log "speedy=true -> Leaving out isDefinedBy because it is slow"
+	else
 	  #${tag_root}/ -type f  -name '*.rdf' -not -name '*About*'  -print | \
 	  #xargs -P $(nproc) -I fileName
 	  ${FIND} ${tag_root}/ -type f  -name '*.rdf' -not -name '*About*'  -print | while read file ; do
 	    ontologyAddIsDefinedBy "${file}"
     done
-# fi
+  fi
 
   return 0
 }
@@ -393,36 +393,6 @@ function ontologyFixTopBraidBaseURICookie() {
   uri="# baseURI: ${baseURI}"
 
   ${SED} -i "1s;^;${uri}\n;" "${ontologyFile}"
-}
-
-#
-# Add the '# baseURI' line to the top of all turtle files with the versioned ontology IRI
-#
-
-function ontologyAnnotateTopBraidBaseURL() {
-
-  local -r queryFile="$(mktemp ${TMPDIR}/ontXXXXXX.sq)"
-
-  log "Add versioned baseURI to all turtle files"
-
-  #
-  # Create a file with a SPARQL query that gets the OntologyIRIs in a given model/file.
-  #
-  cat > "${queryFile}" << __HERE__
-SELECT ?o WHERE {
-  ?o a <http://www.w3.org/2002/07/owl#Ontology> .
-}
-__HERE__
-
-  cat "${queryFile}"
-
-  #
-  # Now iterate through all turtle files that we're going to publish
-  # and call ontologyFixTopBraidBaseURICookie() for each.
-  #
-  ${FIND} ${tag_root}/ -type f -name "*.ttl" | while read file ; do
-    ontologyFixTopBraidBaseURICookie "${file}" "${queryFile}"
-  done
 }
 
 function ontologyConvertMarkdownToHtml() {
@@ -490,7 +460,6 @@ function ontologyBuildIndex () {
 #
 function ontologyConvertRdfToAllFormats() {
 
-
   require tag_root || return $?
 
   logStep "ontologyConvertRdfToAllFormats"
@@ -499,12 +468,19 @@ function ontologyConvertRdfToAllFormats() {
 
   local -r maxParallelJobs=2
   local numberOfParallelJobs=0
+  local formats
+
+  if ((speedy)) ; then
+    formats="turtle"
+  else
+    formats="turtle json-ld"
+  fi
 
   log "Running ${maxParallelJobs} converter jobs in parallel:"
 
   for rdfFile in **/*.rdf ; do
     ontologyIsInTestDomain "${rdfFile}" || continue
-    for format in json-ld turtle ; do
+    for format in ${formats} ; do
       if ((maxParallelJobs == 1)) ; then
         ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${rdfFile}" "${format}" || return $?
       else

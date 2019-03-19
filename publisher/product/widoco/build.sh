@@ -84,15 +84,15 @@ log4j.appender.stdlog=org.apache.log4j.ConsoleAppender
 log4j.appender.stdlog.target=System.err
 log4j.appender.stdlog.layout=org.apache.log4j.PatternLayout
 log4j.appender.stdlog.layout.ConversionPattern=%d{HH:mm:ss} %-5p %-20c{1} :: %m%n
-log4j.appender.stdout.Threshold=INFO
+log4j.appender.stdout.Threshold=ALL
 
 log4j.appender.org.apache.logging.log4j.simplelog.StatusLogger.level=INFO
 
-log4j.appender.org.semanticweb.owlapi=INFO
+log4j.appender.org.semanticweb.owlapi=ALL
 log4j.appender.widoco.JenaCatalogIRIMapper=INFO
 
 log4j.logger.org.semanticweb.owlapi=INFO
-log4j.logger.org.semanticweb.owlapi.util.SAXParsers=OFF
+log4j.logger.org.semanticweb.owlapi.util.SAXParsers=ALL
 log4j.logger.org.semanticweb.owlapi.utilities.Injector=OFF
 log4j.logger.org.semanticweb.owlapi.rdf.rdfxml.parser.TripleHandlers=OFF
 log4j.logger.org.eclipse.rdf4j.rio=OFF
@@ -145,18 +145,18 @@ function generateWidocoDocumentation() {
       done
     fi
 
-    if getDevOntologiesInRDFXMLFormatInCurrentDirectory >/dev/null 2>&1 ; then
+    if getDevOntologiesInTurtleFormatInCurrentDirectory >/dev/null 2>&1 ; then
       while read ontologyFile ; do
         generateWidocoDocumentationForFile "${directory}" "${ontologyFile}" || return $?
-      done < <(getDevOntologiesInRDFXMLFormatInCurrentDirectory)
+      done < <(getDevOntologiesInTurtleFormatInCurrentDirectory)
     else
-      warning "Directory $(pwd) does not have any .rdf files to process"
+      warning "Directory $(pwd) does not have any .ttl files to process"
     fi
   )
 
   #
   # uncomment this exit here if you just want to run widoco on the first ontology for testing
-#  exit
+  exit
 
   return $?
 }
@@ -178,7 +178,7 @@ function generateWidocoDocumentationForFile() {
   local -r directory="$1"
   local -r outputDir="${directory/ontology/widoco}"
   local -r ontologyFile="$2"
-  local -r rdfFileNoExtension="${ontologyFile/.rdf/}"
+  local -r rdfFileNoExtension="${ontologyFile/.ttl/}"
   local widocoJar ; widocoJar="$(widocoLauncherJar)" || return $?
   local -r ontologyPolicyFile="${ontology_product_tag_root:?}/ont-policy.rdf"
 
@@ -217,6 +217,7 @@ function generateWidocoDocumentationForFile() {
     -Xmx4g \
     -Xms4g \
     -Dfile.encoding=UTF-8 \
+    -Djdk.xml.entityExpansionLimit=0 \
     -Dlog4j.debug=false \
     -Dlog4j.configuration="file:${TMPDIR}/widoco-log4j.properties" \
     -Dlog4j.configurationFile="file:${TMPDIR}/widoco-log4j2.xml" \
@@ -229,6 +230,7 @@ function generateWidocoDocumentationForFile() {
     -lang en  \
     -getOntologyMetadata \
     -webVowl 2>&1 | \
+    grep -v "JenaCatalogIRIMapper.* -> " | \
     grep -v 'WIzard' | \
     grep -v 'https://w3id.org/widoco/' | \
     grep -v 'Generating documentation' | \
@@ -331,6 +333,7 @@ function testWidoco() {
       -Xmx4g \
       -Xms4g \
       -Dfile.encoding=UTF-8 \
+      -Djdk.xml.entityExpansionLimit=0 \
       -Dlog4j.debug=false \
       -Dlog4j.configuration="file:${TMPDIR}/widoco-log4j.properties" \
       -Dlog4j.configurationFile="file:${TMPDIR}/widoco-log4j2.xml" \

@@ -1108,6 +1108,19 @@ function getDevOntologiesInRDFXMLFormatInCurrentDirectory() {
     ${GREP} -v "\.rdf\.orig"
 }
 
+function getDevOntologiesInTurtleFormatInCurrentDirectory() {
+
+  ls -1 *.ttl | \
+    ${GREP} -v ont-policy.ttl | \
+    ${GREP} -v ".*/etc.*" | \
+    ${GREP} -v ".*About.*" | \
+    ${GREP} -v "All.*" | \
+    ${GREP} -v ".*Metadata.*" | \
+    ${GREP} -v ".*Load.*" | \
+    ${GREP} -v ".*\.rdfX" | \
+    ${GREP} -v "\.rdf\.orig"
+}
+
 #
 # Return all the .rdf files that go into "prod"
 #

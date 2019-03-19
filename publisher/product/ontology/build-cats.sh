@@ -210,8 +210,7 @@ __HERE__
   ],
 __HERE__
   done < <(
-    getOntologyIRIsFromDirectoryOfRDFXMLFiles ${INPUT}/LCC && \
-    getOntologyIRIsFromDirectoryOfRDFXMLFiles ${INPUT}/fibo/etc/imports
+    getOntologyIRIsFromDirectoryOfRDFXMLFiles ${INPUT}/LCC
   )
 
   #
@@ -293,6 +292,71 @@ __HERE__
       <publicURI rdf:resource="http://www.topbraid.org/2007/05/composite.owl" />
       <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/composite.rdf" />
   </OntologySpec>
+
+  <OntologySpec>
+      <publicURI rdf:resource="http://www.w3.org/2004/02/skos/core" />
+      <altURL    rdf:resource="file:///publisher/lib/ontologies/w3c/skos.rdf" />
+  </OntologySpec>
+
+  <OntologySpec>
+      <publicURI rdf:resource="http://spinrdf.org/sp" />
+      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/sp.rdf" />
+  </OntologySpec>
+
+  <OntologySpec>
+      <publicURI rdf:resource="http://spinrdf.org/spl" />
+      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/spl.rdf" />
+  </OntologySpec>
+
+  <OntologySpec>
+      <publicURI rdf:resource="http://spinrdf.org/spr" />
+      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/spr.rdf" />
+  </OntologySpec>
+
+  <OntologySpec>
+      <publicURI rdf:resource="http://spinrdf.org/spra" />
+      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/spra.rdf" />
+  </OntologySpec>
+
+  <OntologySpec>
+      <publicURI rdf:resource="http://uispin.org/ui" />
+      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/uispin.rdf" />
+  </OntologySpec>
+
+  <OntologySpec>
+      <publicURI rdf:resource="http://uispin.org/ui" />
+      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/uispin.rdf" />
+  </OntologySpec>
+
+  <OntologySpec>
+      <publicURI rdf:resource="http://topbraid.org/sparqlmotion" />
+      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/sparqlmotion.rdf" />
+  </OntologySpec>
+
+  <OntologySpec>
+      <publicURI rdf:resource="http://topbraid.org/sparqlmotion" />
+      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/sparqlmotion.rdf" />
+  </OntologySpec>
+
+  <OntologySpec>
+      <publicURI rdf:resource="http://topbraid.org/sparqlmotionlib" />
+      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/sparqlmotionlib.rdf" />
+  </OntologySpec>
+
+  <OntologySpec>
+      <publicURI rdf:resource="http://topbraid.org/email" />
+      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/email.rdf" />
+  </OntologySpec>
+
+  <OntologySpec>
+      <publicURI rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/" />
+      <altURL    rdf:resource="file:///publisher/lib/ontologies/omg/SpecificationMetadata.rdf" />
+  </OntologySpec>
+
+  <OntologySpec>
+      <publicURI rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/" />
+      <altURL    rdf:resource="file:///publisher/lib/ontologies/edmcouncil/AnnotationVocabulary.rdf" />
+  </OntologySpec>
 __HERE__
 
   (
@@ -350,8 +414,7 @@ __HERE__
   </OntologySpec>
 __HERE__
   done < <(
-    getOntologyIRIsFromDirectoryOfRDFXMLFiles ${INPUT}/LCC && \
-    getOntologyIRIsFromDirectoryOfRDFXMLFiles ${INPUT}/fibo/etc/imports
+    getOntologyIRIsFromDirectoryOfRDFXMLFiles ${INPUT}/LCC
   )
 
 
