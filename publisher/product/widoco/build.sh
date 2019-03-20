@@ -155,7 +155,7 @@ function generateWidocoDocumentation() {
 
   #
   # uncomment this exit here if you just want to run widoco on the first ontology for testing
-  exit
+  # exit
 
   return $?
 }
@@ -271,6 +271,14 @@ function generateWidocoDocumentationForFile() {
   #  error "Could not run widoco on $1/$i "
   #  return 1
   #fi
+
+  #
+  # Remove the default ontologies that come with WebVowl
+  #
+  (
+    cd "${outputDir}/webvowl/data" || return $?
+    rm -vf foaf.json goodrelations.json muto.json new_ontology.json ontovibe.json personasonto.json sioc.json template.json
+  )
 
   return 0
 }

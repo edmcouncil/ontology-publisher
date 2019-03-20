@@ -274,7 +274,7 @@ RUN \
 ##
 RUN \
   widoco_version="1.4.9" ; \
-  edmc_widoco_build_number="20" ; \
+  edmc_widoco_build_number="21" ; \
   widoco_root_url="https://jenkins.edmcouncil.org/view/widoco/job/widoco-build" ; \
   echo ================================= install widoco ${widoco_version} build ${edmc_widoco_build_number} >&2 && \
   #
