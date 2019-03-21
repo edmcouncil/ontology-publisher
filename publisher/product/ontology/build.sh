@@ -318,7 +318,7 @@ s@/ontology/ontology/@/ontology/@g
 #
 __HERE__
 
-  #cat "${sedfile}"
+  cat "${sedfile}"
 
   (
     ${FIND} ${tag_root}/ -type f \( -name '*.rdf' -o -name '*.ttl' -o -name '*.md' \) -exec ${SED} -i -f ${sedfile} {} \;
@@ -562,16 +562,14 @@ function buildquads () {
   local ProdQuadsFile="${tag_root}/prod.fibo.nq"
   local DevQuadsFile="${tag_root}/dev.fibo.nq"
 
-  log "starting buildquads"
+  log "starting buildquads with the new quadify"
 
   (
     cd ${spec_root}
 
-	  ${FIND} . -name '*.rdf' -print | while read file; do quadify "$file"; done > "${DevQuadsFile}"
+	  ${FIND} . -name '*.ttl' -print | while read file; do quadify "$file"; done > "${DevQuadsFile}"
 
-	  ${GREP} -r 'utl-av[:;.]Release' "${family_product_branch_tag}" | \
-	    ${GREP} -F ".rdf" | \
-	    ${SED} 's/:.*$//' | \
+	  ${GREP} -rl 'fibo-fnd-utl-av:hasMaturityLevel fibo-fnd-utl-av:Release' | \
 	    while read file ; do quadify $file ; done > ${ProdQuadsFile}
 
 	  zip ${ProdQuadsFile}.zip ${ProdQuadsFile}

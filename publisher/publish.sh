@@ -262,26 +262,9 @@ function vocabularyGetModules() {
 # Stuff for building nquads files
 #
 function quadify () {
-
-  local tmpont="$(mktemp ${TMPDIR}/ontology.XXXXXX.sq)"
-
-  #
-  # Set the memory for ARQ
-  #
-  export JVM_ARGS=${JVM_ARGS:--Xmx4G}
-
-  cat >"${tmpont}" << __HERE__
-SELECT ?o WHERE {?o a <http://www.w3.org/2002/07/owl#Ontology> }
-__HERE__
-    
-  ${JENA_RIOT} "$1" | \
-    ${SED} "s@[.]\$@ <$(${JENA_ARQ} --results=csv --data=$1 --query=${tmpont} | ${GREP} -v '^o' | tr -d '\n\r')> .@"
-  local rc=$?
-
-  rm "${tmpont}"
-
-  return ${rc}
-}
+  sed 's/^<.*$/& { &/;$a}' "$1" | serdi -p $(cat /proc/sys/kernel/random/uuid) -o nquads - 
+  }
+  
 
 function main() {
 
