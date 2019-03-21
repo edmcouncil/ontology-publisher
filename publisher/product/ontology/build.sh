@@ -99,7 +99,7 @@ function runHygieneTests() {
   log "Merging all dev ontologies into one RDF file"
   "${JENA_ARQ}" $(find "${source_family_root}" -name "*.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${OUTPUT}/DEV.ttl
+    --results=TTL > ${tag_root}/DEV.ttl
 
   #
   # Get ontologies for Prod
@@ -108,7 +108,7 @@ function runHygieneTests() {
   "${JENA_ARQ}" \
     $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${OUTPUT}/PROD.ttl
+    --results=TTL > ${tag_root}/PROD.ttl
 
   logRule "Will run the following tests:"
 
@@ -123,7 +123,7 @@ function runHygieneTests() {
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
     logItem "Running test" "${banner}"
     ${JENA_ARQ} \
-      --data=${OUTPUT}/DEV.ttl \
+      --data=${tag_root}/DEV.ttl \
       --results=csv \
       --query="${hygieneTestSparqlFile}" | \
       grep -v "^s,o,error$" | \
@@ -139,7 +139,7 @@ function runHygieneTests() {
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
     logItem "Running test" "${banner}"
     ${JENA_ARQ} \
-      --data=${OUTPUT}/PROD.ttl \
+      --data=${tag_root}/PROD.ttl \
       --results=csv \
       --query="${hygieneTestSparqlFile}" | \
       grep -v "^s,o,error$" | \
@@ -466,7 +466,7 @@ function ontologyConvertRdfToAllFormats() {
 
   pushd "${tag_root:?}" >/dev/null || return $?
 
-  local -r maxParallelJobs=2
+  local -r maxParallelJobs=8
   local numberOfParallelJobs=0
   local formats
 

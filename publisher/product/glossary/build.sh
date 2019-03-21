@@ -79,7 +79,7 @@ function publishProductGlossaryReactApp() {
 
     npm run build || return $?
 
-    ${CP} -vR publisher/* "${glossary_product_tag_root}/" > "${OUTPUT}/glossary-build-directory.log" 2>&1
+    ${CP} -vR publisher/* "${glossary_product_tag_root}/" > "${glossary_product_tag_root}/glossary-build-directory.log" 2>&1
   )
   rc=$?
 

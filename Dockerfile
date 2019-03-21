@@ -274,8 +274,9 @@ RUN \
 ##
 RUN \
   widoco_version="1.4.9" ; \
-  widoco_root_url="https://jenkins.edmcouncil.org/view/widoco/job/widoco-build/lastStableBuild/es.oeg\$widoco/artifact/es.oeg" ; \
-  echo ================================= install widoco ${widoco_version} >&2 && \
+  edmc_widoco_build_number="22" ; \
+  widoco_root_url="https://jenkins.edmcouncil.org/view/widoco/job/widoco-build" ; \
+  echo ================================= install widoco ${widoco_version} build ${edmc_widoco_build_number} >&2 && \
   #
   # Creating widoco and its config directory and storing an empty config file in there which suppresses
   # an annoying log message at each invocation of widoco
@@ -289,7 +290,7 @@ RUN \
     --silent \
     --show-error \
     --output /usr/share/java/widoco/widoco-launcher.jar \
-    --url ${widoco_root_url}/widoco/${widoco_version}/widoco-${widoco_version}-launcher.jar && \
+    --url "${widoco_root_url}/${edmc_widoco_build_number}/es.oeg\$widoco/artifact/es.oeg/widoco/${widoco_version}/widoco-${widoco_version}-launcher.jar" && \
   test -f /usr/share/java/widoco/widoco-launcher.jar
 
 #

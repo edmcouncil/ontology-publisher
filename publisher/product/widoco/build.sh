@@ -92,11 +92,10 @@ log4j.appender.org.semanticweb.owlapi=ALL
 log4j.appender.widoco.JenaCatalogIRIMapper=INFO
 
 log4j.logger.org.semanticweb.owlapi=INFO
-log4j.logger.org.semanticweb.owlapi.util.SAXParsers=ALL
+log4j.logger.org.semanticweb.owlapi.util.SAXParsers=OFF
 log4j.logger.org.semanticweb.owlapi.utilities.Injector=OFF
 log4j.logger.org.semanticweb.owlapi.rdf.rdfxml.parser.TripleHandlers=OFF
 log4j.logger.org.eclipse.rdf4j.rio=OFF
-RDFParserRegistry
 #
 __HERE__
 
@@ -156,7 +155,7 @@ function generateWidocoDocumentation() {
 
   #
   # uncomment this exit here if you just want to run widoco on the first ontology for testing
-  exit
+  # exit
 
   return $?
 }
@@ -211,6 +210,8 @@ function generateWidocoDocumentationForFile() {
   #
   cp "${ontologyPolicyFile}" .
 
+  java -version 2>&1 | pipelog
+
   java \
     -classpath /usr/share/java/log4j/log4j-core.jar:/usr/share/java/log4j/log4j-1.2-api.jar:/usr/share/java/log4j/log4j-api.jar \
     -Dxxx=widoco \
@@ -244,7 +245,7 @@ function generateWidocoDocumentationForFile() {
 
   if [[ ${rc} -ne 0 ]] ; then
     find ${outputDir} -ls
-    error "Could not run widoco on ${ontologyFile} "
+    error "Could not run widoco (rc == ${rc}) on ${ontologyFile}"
     #log "Printing contents of file ${rdfFile} "
     #contents=$(<${rdfFile})
     #log "${contents}"
@@ -253,7 +254,7 @@ function generateWidocoDocumentationForFile() {
     cp "${widoco_script_dir}/widoco-sections/index-en.html" "${outputDir}/${rdfFileNoExtension}" || echo $?
     ${SED} -i "s/OntologyName/${rdfFileNoExtension}/g" "${outputDir}/${rdfFileNoExtension}/index-en.html" || echo $?
     #
-    # JG>I commented this line below out because I do not se where the file failedOntologies is being used and
+    # JG>I commented this line below out because I do not see where the file failedOntologies is being used and
     #    it can't be written in the container to the read-only directory SCRIPT_DIR
     #
     #echo ${directory} "${rdfFileNoExtension}" >> "${SCRIPT_DIR}/failedOntologies"
@@ -270,6 +271,14 @@ function generateWidocoDocumentationForFile() {
   #  error "Could not run widoco on $1/$i "
   #  return 1
   #fi
+
+  #
+  # Remove the default ontologies that come with WebVowl
+  #
+  (
+    cd "${outputDir}/webvowl/data" || return $?
+    rm -vf foaf.json goodrelations.json muto.json new_ontology.json ontovibe.json personasonto.json sioc.json template.json
+  )
 
   return 0
 }
