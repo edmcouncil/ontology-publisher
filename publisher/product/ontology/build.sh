@@ -35,7 +35,7 @@ fi
 # Produce all artifacts for the ontology product
 #
 function publishProductOntology() {
-
+  if [ 1 == 0 ] then 
   require spec_family_root || return $?
   require tag_root || return $?
 
@@ -59,7 +59,7 @@ function publishProductOntology() {
   # JG>Who's using "ontology-zips.log"?
   #
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
-
+fi
   if ((speedy)) ; then
     log "speedy=true -> Not doing quads because they are slow"
   else
@@ -562,6 +562,53 @@ function buildquads () {
   local ProdQuadsFile="${tag_root}/prod.fibo.nq"
   local DevQuadsFile="${tag_root}/dev.fibo.nq"
 
+  local ProdFlatNT="${tag_root}/prod.fibo.nt"
+  local DevFlatNT="${tag_root}/dev.fibo.nt"
+
+  local ProdFlatTTL="${tag_root}/prod.fibo.ttl"
+  local DevFlatTTL="${tag_root}/dev.fibo.ttl"
+
+  local ProdTMPTTL="${tag_root}/prod.temp.ttl"
+  local DevTMPTTL="${tag_root}/dev.temp.ttl"
+
+
+  local TTLPrefixes="${tag_root}/prefixes.fibo.ttl"
+  local SPARQLPrefixes="${tag_root}/prefixes.fibo.sq"
+
+
+
+  local tmpflat="$(mktemp ${tmp_dir}/flatten.XXXXXX.sq)"
+  cat >"${tmpflat}" << __HERE__
+PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+
+CONSTRUCT {?s ?p ?o}
+WHERE {GRAPH ?g {?s ?p ?o
+FILTER NOT EXISTS {?s a owl:Ontology}
+}
+}
+__HERE__
+
+
+  local tmppx="$(mktemp ${tmp_dir}/px.XXXXXX.sq)"
+  cat >"${tmppx}" << __HERE__
+prefix sm: <http://www.omg.org/techprocess/ab/SpecificationMetadata/>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+
+SELECT ?line
+WHERE {graph ?g {?o a owl:Ontology ;
+sm:fileAbbreviation ?px
+BIND (CONCAT ("prefix ", ?px, ": <", xsd:string(?o), ">") AS ?line)
+}
+__HERE__
+
+  local tmpecho="$(mktemp ${tmp_dir}/echo.XXXXXX.sq)"
+  cat >"${tmpecho}" << __HERE__
+CONSTRUCT {?s ?p ?o}
+WHERE {?s ?p ?o}
+__HERE__
+
+
+  local prefixes="$(mktemp ${tmp_dir}/prefixes.XXXXXX)"
   log "starting buildquads with the new quadify"
 
   (
@@ -570,10 +617,33 @@ function buildquads () {
 	  ${FIND} . -name '*.ttl' -print | while read file; do quadify "$file"; done > "${DevQuadsFile}"
 
 	  ${GREP} -rl 'fibo-fnd-utl-av:hasMaturityLevel fibo-fnd-utl-av:Release' | \
-	    while read file ; do quadify $file ; done > ${ProdQuadsFile}
+	      while read file ; do quadify $file ; done > ${ProdQuadsFile}
+
+	  ${JENA_ARQ} --query="${tmpflat}" --data=${ProdQuadsFile} > ${ProdFlatNT}
+	  ${JENA_ARQ} --query="${tmpflat}" --data=${DevQuadsFile} > ${DevFlatNT}
+
+	  ${JENA_ARQ} --query="${tmppx}" --data=${ProdQuadsFile} --results=CSV | tail +2 > ${prefixes}
+
+	  cp ${prefixes} ${SPARQLprefixes}
+	  sed 's/^/@/;s/$/ ./' ${prefixes} > ${TTLPrefixes}
+
+	  cat ${TTLPrefixes} ${ProdFlatFile} > ${ProdTMPTTL}
+	  cat ${TTLPrefixes} ${DevFlatFile} > ${DevTMPTTL}
+
+	  ${jena_arq} --data=${ProdTMPTTL} --query=${tmpecho} --results=TTL > ${ProdFlatTTL}
+	  ${jena_arq} --data=${DevTMPTTL} --query=${tmpecho} --results=TTL > ${DevFlatTTL}
+	  
 
 	  zip ${ProdQuadsFile}.zip ${ProdQuadsFile}
 	  zip ${DevQuadsFile}.zip ${DevQuadsFile}
+
+	  zip ${ProdFlatNT}.zip ${ProdFlatNT}
+	  zip ${DevFlatNT}.zip ${DevFlatNT}
+
+
+	  
+
+	  
   )
 
   log "finished buildquads"
