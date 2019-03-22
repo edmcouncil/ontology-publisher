@@ -42,7 +42,7 @@ function publishProductOntology() {
 
   ontology_product_tag_root="${tag_root:?}"
 
-  if [ 1 == 0 ]; then 
+
 
   ontologyCopyRdfToTarget || return $?
   ontologySearchAndReplaceStuff || return $?
@@ -60,7 +60,7 @@ function publishProductOntology() {
   # JG>Who's using "ontology-zips.log"?
   #
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
-fi
+
 
   if ((speedy)) ; then
     log "speedy=true -> Not doing quads because they are slow"
@@ -626,7 +626,7 @@ __HERE__
 	  ${JENA_ARQ} --query="${tmpflat}" --data=${ProdQuadsFile} --results=NT > ${ProdFlatNT}
 	  ${JENA_ARQ} --query="${tmpflat}" --data=${DevQuadsFile}  --results=NT > ${DevFlatNT}
 
-	  ${JENA_ARQ} --query="${tmppx}" --data=${DevQuadsFile} --results=CSV | tail +2 | tr "\m" " " > ${prefixes}
+	  ${JENA_ARQ} --query="${tmppx}" --data=${DevQuadsFile} --results=CSV | tail +2 | tr --delete "\015"  > ${prefixes}
 
 	  cat ${prefixes} > "${SPARQLPrefixes}"
 	  sed 's/^/@/;s/$/ ./' ${prefixes} > ${TTLPrefixes}
