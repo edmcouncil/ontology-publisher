@@ -35,13 +35,14 @@ fi
 # Produce all artifacts for the ontology product
 #
 function publishProductOntology() {
-  if [ 1 == 0 ] then 
   require spec_family_root || return $?
   require tag_root || return $?
 
   setProduct ontology || return $?
 
   ontology_product_tag_root="${tag_root:?}"
+
+  if [ 1 == 0 ]; then 
 
   ontologyCopyRdfToTarget || return $?
   ontologySearchAndReplaceStuff || return $?
@@ -60,6 +61,7 @@ function publishProductOntology() {
   #
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
 fi
+
   if ((speedy)) ; then
     log "speedy=true -> Not doing quads because they are slow"
   else
@@ -576,8 +578,7 @@ function buildquads () {
   local SPARQLPrefixes="${tag_root}/prefixes.fibo.sq"
 
 
-
-  local tmpflat="$(mktemp ${tmp_dir}/flatten.XXXXXX.sq)"
+  local tmpflat="$(mktemp ${TMPDIR}/flatten.XXXXXX.sq)"
   cat >"${tmpflat}" << __HERE__
 PREFIX owl: <http://www.w3.org/2002/07/owl#> 
 
@@ -589,49 +590,57 @@ FILTER NOT EXISTS {?s a owl:Ontology}
 __HERE__
 
 
-  local tmppx="$(mktemp ${tmp_dir}/px.XXXXXX.sq)"
+  local tmppx="$(mktemp ${TMPDIR}/px.XXXXXX.sq)"
   cat >"${tmppx}" << __HERE__
 prefix sm: <http://www.omg.org/techprocess/ab/SpecificationMetadata/>
 prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?line
 WHERE {graph ?g {?o a owl:Ontology ;
 sm:fileAbbreviation ?px
 BIND (CONCAT ("prefix ", ?px, ": <", xsd:string(?o), ">") AS ?line)
 }
+}
 __HERE__
 
-  local tmpecho="$(mktemp ${tmp_dir}/echo.XXXXXX.sq)"
+  local tmpecho="$(mktemp ${TMPDIR}/echo.XXXXXX.sq)"
   cat >"${tmpecho}" << __HERE__
 CONSTRUCT {?s ?p ?o}
 WHERE {?s ?p ?o}
 __HERE__
 
 
-  local prefixes="$(mktemp ${tmp_dir}/prefixes.XXXXXX)"
+  local prefixes="$(mktemp ${TMPDIR}/prefixes.XXXXXX)"
   log "starting buildquads with the new quadify"
 
   (
-    cd ${spec_root}
+    cd ${ontology_product_tag_root}
+	  echo "starting dev"
 
-	  ${FIND} . -name '*.ttl' -print | while read file; do quadify "$file"; done > "${DevQuadsFile}"
-
+	  ${FIND} . -mindepth 2 -name '*.ttl' -print | while read file; do quadify "$file"; done > "${DevQuadsFile}"
+	  echo "starting prod"
 	  ${GREP} -rl 'fibo-fnd-utl-av:hasMaturityLevel fibo-fnd-utl-av:Release' | \
 	      while read file ; do quadify $file ; done > ${ProdQuadsFile}
 
-	  ${JENA_ARQ} --query="${tmpflat}" --data=${ProdQuadsFile} > ${ProdFlatNT}
-	  ${JENA_ARQ} --query="${tmpflat}" --data=${DevQuadsFile} > ${DevFlatNT}
+	  ${JENA_ARQ} --query="${tmpflat}" --data=${ProdQuadsFile} --results=NT > ${ProdFlatNT}
+	  ${JENA_ARQ} --query="${tmpflat}" --data=${DevQuadsFile}  --results=NT > ${DevFlatNT}
 
-	  ${JENA_ARQ} --query="${tmppx}" --data=${ProdQuadsFile} --results=CSV | tail +2 > ${prefixes}
+	  ${JENA_ARQ} --query="${tmppx}" --data=${DevQuadsFile} --results=CSV | tail +2 | tr "\m" " " > ${prefixes}
 
-	  cp ${prefixes} ${SPARQLprefixes}
+	  cat ${prefixes} > "${SPARQLPrefixes}"
 	  sed 's/^/@/;s/$/ ./' ${prefixes} > ${TTLPrefixes}
 
-	  cat ${TTLPrefixes} ${ProdFlatFile} > ${ProdTMPTTL}
-	  cat ${TTLPrefixes} ${DevFlatFile} > ${DevTMPTTL}
 
-	  ${jena_arq} --data=${ProdTMPTTL} --query=${tmpecho} --results=TTL > ${ProdFlatTTL}
-	  ${jena_arq} --data=${DevTMPTTL} --query=${tmpecho} --results=TTL > ${DevFlatTTL}
+	  cat ${TTLPrefixes} ${ProdFlatNT} > "${ProdTMPTTL}"
+
+	  cat ${TTLPrefixes} ${DevFlatNT} > "${DevTMPTTL}"
+
+          
+
+	  
+	  ${JENA_ARQ} --data="${ProdTMPTTL}" --query="${tmpecho}" --results=TTL > "${ProdFlatTTL}"
+	  ${JENA_ARQ} --data="${DevTMPTTL}" --query="${tmpecho}" --results=TTL > "${DevFlatTTL}"
 	  
 
 	  zip ${ProdQuadsFile}.zip ${ProdQuadsFile}
@@ -640,8 +649,6 @@ __HERE__
 	  zip ${ProdFlatNT}.zip ${ProdFlatNT}
 	  zip ${DevFlatNT}.zip ${DevFlatNT}
 
-
-	  
 
 	  
   )

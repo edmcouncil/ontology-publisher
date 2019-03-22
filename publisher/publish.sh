@@ -262,7 +262,8 @@ function vocabularyGetModules() {
 # Stuff for building nquads files
 #
 function quadify () {
-  sed 's/^<.*$/& { &/;$a}' "$1" | serdi -p $(cat /proc/sys/kernel/random/uuid) -o nquads - 
+
+    sed 's/^<.*$/& { &/;$a}' "$1" | serdi -p $(cat /proc/sys/kernel/random/uuid) -o nquads - 
   }
   
 
