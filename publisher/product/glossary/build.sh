@@ -174,7 +174,6 @@ function publishProductGlossaryContent() {
             --top=http://www.omg.org/spec/LCC/Countries/CountryRepresentation/ \
             --top=http://www.omg.org/spec/LCC/Languages/LanguageRepresentation/ \
 	    --top=http://spec.edmcouncil.org/owlnames \
-	    --verbose \
 	    --format=ttl
 
     
