@@ -35,13 +35,14 @@ fi
 # Produce all artifacts for the ontology product
 #
 function publishProductOntology() {
-
   require spec_family_root || return $?
   require tag_root || return $?
 
   setProduct ontology || return $?
 
   ontology_product_tag_root="${tag_root:?}"
+
+
 
   ontologyCopyRdfToTarget || return $?
   ontologySearchAndReplaceStuff || return $?
@@ -59,6 +60,7 @@ function publishProductOntology() {
   # JG>Who's using "ontology-zips.log"?
   #
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
+
 
   if ((speedy)) ; then
     log "speedy=true -> Not doing quads because they are slow"
@@ -318,7 +320,7 @@ s@/ontology/ontology/@/ontology/@g
 #
 __HERE__
 
-  #cat "${sedfile}"
+  cat "${sedfile}"
 
   (
     ${FIND} ${tag_root}/ -type f \( -name '*.rdf' -o -name '*.ttl' -o -name '*.md' \) -exec ${SED} -i -f ${sedfile} {} \;
@@ -562,20 +564,93 @@ function buildquads () {
   local ProdQuadsFile="${tag_root}/prod.fibo.nq"
   local DevQuadsFile="${tag_root}/dev.fibo.nq"
 
-  log "starting buildquads"
+  local ProdFlatNT="${tag_root}/prod.fibo.nt"
+  local DevFlatNT="${tag_root}/dev.fibo.nt"
+
+  local ProdFlatTTL="${tag_root}/prod.fibo.ttl"
+  local DevFlatTTL="${tag_root}/dev.fibo.ttl"
+
+  local ProdTMPTTL="${tag_root}/prod.temp.ttl"
+  local DevTMPTTL="${tag_root}/dev.temp.ttl"
+
+
+  local TTLPrefixes="${tag_root}/prefixes.fibo.ttl"
+  local SPARQLPrefixes="${tag_root}/prefixes.fibo.sq"
+
+
+  local tmpflat="$(mktemp ${TMPDIR}/flatten.XXXXXX.sq)"
+  cat >"${tmpflat}" << __HERE__
+PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+
+CONSTRUCT {?s ?p ?o}
+WHERE {GRAPH ?g {?s ?p ?o
+FILTER NOT EXISTS {?s a owl:Ontology}
+}
+}
+__HERE__
+
+
+  local tmppx="$(mktemp ${TMPDIR}/px.XXXXXX.sq)"
+  cat >"${tmppx}" << __HERE__
+prefix sm: <http://www.omg.org/techprocess/ab/SpecificationMetadata/>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?line
+WHERE {graph ?g {?o a owl:Ontology ;
+sm:fileAbbreviation ?px
+BIND (CONCAT ("prefix ", ?px, ": <", xsd:string(?o), ">") AS ?line)
+}
+}
+__HERE__
+
+  local tmpecho="$(mktemp ${TMPDIR}/echo.XXXXXX.sq)"
+  cat >"${tmpecho}" << __HERE__
+CONSTRUCT {?s ?p ?o}
+WHERE {?s ?p ?o}
+__HERE__
+
+
+  local prefixes="$(mktemp ${TMPDIR}/prefixes.XXXXXX)"
+  log "starting buildquads with the new quadify"
 
   (
-    cd ${spec_root}
+    cd ${ontology_product_tag_root}
+	  echo "starting dev"
 
-	  ${FIND} . -name '*.rdf' -print | while read file; do quadify "$file"; done > "${DevQuadsFile}"
+	  ${FIND} . -mindepth 2 -name '*.ttl' -print | while read file; do quadify "$file"; done > "${DevQuadsFile}"
+	  echo "starting prod"
+	  ${GREP} -rl 'fibo-fnd-utl-av:hasMaturityLevel fibo-fnd-utl-av:Release' | \
+	      while read file ; do quadify $file ; done > ${ProdQuadsFile}
 
-	  ${GREP} -r 'utl-av[:;.]Release' "${family_product_branch_tag}" | \
-	    ${GREP} -F ".rdf" | \
-	    ${SED} 's/:.*$//' | \
-	    while read file ; do quadify $file ; done > ${ProdQuadsFile}
+	  ${JENA_ARQ} --query="${tmpflat}" --data=${ProdQuadsFile} --results=NT > ${ProdFlatNT}
+	  ${JENA_ARQ} --query="${tmpflat}" --data=${DevQuadsFile}  --results=NT > ${DevFlatNT}
+
+	  ${JENA_ARQ} --query="${tmppx}" --data=${DevQuadsFile} --results=CSV | tail +2 | tr --delete "\015"  > ${prefixes}
+
+	  cat ${prefixes} > "${SPARQLPrefixes}"
+	  sed 's/^/@/;s/$/ ./' ${prefixes} > ${TTLPrefixes}
+
+
+	  cat ${TTLPrefixes} ${ProdFlatNT} > "${ProdTMPTTL}"
+
+	  cat ${TTLPrefixes} ${DevFlatNT} > "${DevTMPTTL}"
+
+          
+
+	  
+	  ${JENA_ARQ} --data="${ProdTMPTTL}" --query="${tmpecho}" --results=TTL > "${ProdFlatTTL}"
+	  ${JENA_ARQ} --data="${DevTMPTTL}" --query="${tmpecho}" --results=TTL > "${DevFlatTTL}"
+	  
 
 	  zip ${ProdQuadsFile}.zip ${ProdQuadsFile}
 	  zip ${DevQuadsFile}.zip ${DevQuadsFile}
+
+	  zip ${ProdFlatNT}.zip ${ProdFlatNT}
+	  zip ${DevFlatNT}.zip ${DevFlatNT}
+
+
+	  
   )
 
   log "finished buildquads"

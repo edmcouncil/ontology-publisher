@@ -9,7 +9,8 @@
 false && source ../../lib/_functions.sh
 
 export SCRIPT_DIR="${SCRIPT_DIR}" # Yet another hack to silence IntelliJ
-export speedy="${speedy:-0}"
+#export speedy="${speedy:-0}"
+export speedy="0"
 
 declare -r -g test_widoco=0
 
@@ -52,11 +53,12 @@ function publishProductWidoco() {
   # shellcheck disable=SC2038
   find "${ontology_product_tag_root}" -type d -name 'tmp*' | xargs rm -rf
 
-  if ((test_widoco)) ; then
-    testWidoco
-  else
+#  if ((test_widoco)) ; then
+#    testWidoco
+#  else
+   echo "running generateWidocoDocumentation on ${ontology_product_tag_root}"
     generateWidocoDocumentation "${ontology_product_tag_root}"
-  fi
+#  fi
   local -r rc=$?
 
   #
@@ -129,7 +131,7 @@ __HERE__
 # This function is called recursively so do not add "logRule" in here
 #
 function generateWidocoDocumentation() {
-
+  echo "generateWidocoDocumentation $1"
   local -r directory="$(cd $1 && pwd -L)"
 
   (
@@ -230,7 +232,8 @@ function generateWidocoDocumentationForFile() {
     -displayDirectImportsOnly \
     -lang en  \
     -getOntologyMetadata \
-    -webVowl 2>&1 | \
+#    -webVowl \
+    2>&1 | \
     grep -v "JenaCatalogIRIMapper.* -> " | \
     grep -v 'WIzard' | \
     grep -v 'https://w3id.org/widoco/' | \
@@ -355,8 +358,8 @@ function testWidoco() {
       -includeImportedOntologies \
       -includeAnnotationProperties \
       -lang en  \
+#      -webVowl \
       -getOntologyMetadata \
-      -webVowl
     local -r rc=$?
 
     logVar rc
