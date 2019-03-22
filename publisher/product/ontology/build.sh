@@ -320,7 +320,7 @@ s@/ontology/ontology/@/ontology/@g
 #
 __HERE__
 
-  cat "${sedfile}"
+#   cat "${sedfile}"
 
   (
     ${FIND} ${tag_root}/ -type f \( -name '*.rdf' -o -name '*.ttl' -o -name '*.md' \) -exec ${SED} -i -f ${sedfile} {} \;

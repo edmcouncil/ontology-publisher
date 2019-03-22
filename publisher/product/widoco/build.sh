@@ -9,8 +9,7 @@
 false && source ../../lib/_functions.sh
 
 export SCRIPT_DIR="${SCRIPT_DIR}" # Yet another hack to silence IntelliJ
-#export speedy="${speedy:-0}"
-export speedy="0"
+export speedy="${speedy:-0}"
 
 declare -r -g test_widoco=0
 
@@ -53,12 +52,12 @@ function publishProductWidoco() {
   # shellcheck disable=SC2038
   find "${ontology_product_tag_root}" -type d -name 'tmp*' | xargs rm -rf
 
-#  if ((test_widoco)) ; then
-#    testWidoco
-#  else
+  if ((test_widoco)) ; then
+    testWidoco
+  else
    echo "running generateWidocoDocumentation on ${ontology_product_tag_root}"
     generateWidocoDocumentation "${ontology_product_tag_root}"
-#  fi
+  fi
   local -r rc=$?
 
   #
