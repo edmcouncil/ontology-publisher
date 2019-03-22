@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <link type="text/css" href="https://spec.edmcouncil.org/fibo/edmcouncil.css" rel="stylesheet"/>
     <title>EDM Council FIBO Release Notess</title>
@@ -8,14 +8,349 @@
     </script>
   </head>
   <body>
-    <img src="../static/image/EDM-coucil-RGB.png" height="75" />
+    <img src="../static/image/EDM-council-RGB.png" height="75" alt="EDM Council"/>
     <h1>EDM Council FIBO Release Notes</h1>
 
 
 
 <h2>Release Notes:  </h2>
 
- <b>2018 Q2.5 (omg-finance-18-08-04)</b>
+
+
+
+
+<b>2018 Q4</b>
+    <p><i>Full change record</i></p>
+    <ul>
+      <li><p>Business Entities</p>
+	<p><i>Highlights</i></p>
+	<ul>
+	  
+	  <li>Integrated support for GLEIF LEI Level 2 accounting consolidation relationships and made other revisions with respect to GLEIF LEI representation to better support automation of reference data and reflect the nature of the GLIEF published information with respect to entity legal forms</li>
+	  <li>Simplified the hierarchies involving formal organizations and legal entities substantially, including deprecating 'formally constituted organization' and 'juridical person', and adding the latter as a synonym of 'legal entity'</li>
+	  <li>Clarified the distinction between a natural person and legally competent natural person</li>
+	  
+	</ul>
+	<p>Detailed Changes:</p>
+	<ul>
+<li>    BE-195 - moved the restriction that an entity may be identified by a legal entity identifier from LEIEligibleEntity to LegalPerson and deprecated LEIEligibleEntity as a part of organization hierarchy simplification</li>
+<li>    BE-181  - replaced 'natural person' with 'legally competent natural person' across ontologies where that concept was required</li>
+<li>    BE-181  - added a new class to replace 'natural person', called 'legally competent natural person', for the sake of clarity</li>
+<li>    BE-181  - deprecate legally capable person in favor of natural person, which includes a more general definition of the concept of legal competence.  Legal competence is jurisdiction and situation specific - in some jurisdictions, people that are under the age of 'maturity' can apply for jobs, can enter into contracts, are considered competent to make certain decisions for themselves in a court of law, etc.  For the purposes of FIBO, legal competence generally means that an individual can take on liabilities, such as taxes on earnings, or fees associated with an account, or potentially take on a debt, or own property or join the military.  The revised definition of natural person includes the concept of liability capacity and is jurisdiction specific.  Merging these two concepts in favor of natural person simplifies the conceptual representation and hierarchy and clarifies what is intended.</li>
+<li>    BE-180  - as a part of the organizational hierarchy simplification, replaced uses of FormallyConstitutedOrganization with either FormalOrganization, LegalPerson or LegalEntity, as appropriate, across FIBO domains</li>
+<li>    BE-180  - merged the concept of FormallyConstitutedOrganization with LegalEntity in BE, given that the definitions were almost identical and that FormallyConstitutedOrganization simply added complexity without significant value to the organizational hierarchy</li>
+<li>    BE-180  - replaced references to FormallyConstitutedOrganization with FormalOrganization from FND, which eliminated a number of out-of-domain references in FND informative ontologies</li>
+<li>    BE-180  - merge the definitions of legal entity and juridical person to simplify the legal persons and organizations hierarchies; make Polity a child of GovernmentBody, again to simplify the hierarchy</li>
+<li>    BE-178  - revised the definition of supranational entity to use the definition from ISO 20275, added adapted from the ISO standard</li>
+<li>    BE-156  - revised property naming from parent / child to direct ownership and investment, loosened certain ownership relationships to allow business entities (including sole proprietorships), legal entities, and not for profit organizations (such as certain foundations used for tax purposes primarily) but not ownership of people (i.e., broader than legal entity but not as broad as legal person)</li>
+<li>    BE-156  - added a relationship period qualifier and made active and inactive relationships status individuals of that qualifier, revised definitions accordingly; reorganized the two individuals of relationship status so that the status itself is at the end of the name and revised definitions to be closer to the GLIEF definitions for these status indicators; simplified names of consolidatation related properties</li>
+<li>    BE-156  - added new records property to Documents to allow a record to reference the thing that it is recording</li>
+<li>    BE-156  - added restriction on entity ownership for relationship classifier (which would cover the information relevant to the time frame for the relationship)</li>
+<li>    BE-156  - loosened constraints on properties in Contracts - is evidenced by and is evidence for; slight revisions to representation in ownership parties based on testing</li>
+<li>    BE-156  - added a couple of missing concepts, revised restrictions after review of test data</li>
+<li>    BE-156  - initial version of a revised entity ownership reified relation for the purposes of GLEIF level 2 support</li>
+<li>    BE-141  - added synonyms for code sets (also addresses FBC-172)</li>
+<li>    BE-141  - added the registry / registry entry for entity legal forms; added the entity legal form identifier and scheme, as well as individuals for ISO 20275 code set and ISO 17442 code set (LEI)</li>
+<li>    BE-114  - added explanatory note indicating that a license may also be an agreement or contract, depending on the license and jurisdiction</li>
+<li>    BE-141  - moved restriction on hasLegalFormAbbreviation to EntityLegalForm; added new property hasTransliteratedLegalFormAbbreviation and other restrictions to EntityLegalForm to correspond to the GLIEF ELF standard</li>
+<li>    BE-114  - modified the parent of License from Agreement to LegalDocument, which is more appropriate (all licenses, including fishing licenses, business licenses, and software licenses are legal documents, but not necessarily agreements since they are often unilateral)</li>
+<li>    BE-141  - deprecated hasLegalFormAbbreviation in Corporations per BE-141; moved it to LEIEntities where the actual legal form is referenced and added the hasLegalFormAbbreviation and restriction there in parallel with the reference to the actual legal form</li>
+<li>    BE-115  - revised the definition of power of attorney to eliminate a restriction that the authoritiy is limited to the lifetime of the principal; moved some of the content to an explanatory note, added another source and a restriction that it has an effective date (in most cases, not all, thus min 0)</li>
+<li>    BE-110  - modified the definition of responsible party to correspond to its intended usage, i.e. with respect to people rather than organizations as well as people</li>
+<li>    BE-88  - generalized the parents of beneficial owner to be beneficiary and owner; revised the definition to move an explanatory component out to an explanatory note, updated annotation properties as appropriate</li>
+
+	</ul>
+      </li>
+  
+      <li><p>Derivatives</p>
+	
+	<p><i>Highlights</i></p>
+	<ul><li>Primary changes this quarter in DER were bug fixes.</li></ul>
+	
+	<p>Detailed Changes:</p>
+	<ul>
+	  <li>    DER-59  - eliminated improperly defined valuationTime property which is not referenced by anything</li>
+	  <li>    DER-59  - eliminated the extraneous property for relativeNotionalAmount, as the class that it was used on already had a restriction on notional amount</li>
+	  <li>      DER-20  - made having a notional step schedule optional on an interest rate swap leg to cover the simpler cases where that level of complexity is not required; the notional is already available at the leg level to support calculation of a basic payment</li>
+	  <li>    DER-20  - made having a notional step schedule optional on an interest rate swap leg to cover the simpler cases where that level of complexity is not required; the notional is already available at the leg level to support calculation of a basic payment</li>
+	</ul>
+      </li>
+      
+      <li><p>Business and Commerce</p>
+	<p><i>Highlights</i></p>
+	<ul><li>Primary changes this quarter in FBC were related to inclusion of ISO 10383 MIC codes, which is now entirely automated. three months were processed, with September 2018 initially, followed by November and finally December 2018, which allowed for refinement of the automation process.</li>
+	  <li>FBC-194 covers the initial integration work for the FpML Business Centers, additional MIC code municipalities and 9/2018 codes</li>
+	  <li>FBC-206 covers the revision for November 2018</li>
+	  <li>FBC-209 brings the codes up to date for December 2018</li>
+	  <p>In addition to the MIC codes, other changes to FBC include:</p>
+	  <li>Moving provisional credit events to FBC/Debt</li>
+	  <li>Adding support for NAICS and SIC industry classification codes (high-level model only at this point without reference data)</li>
+	  <li>Miscellaneous bug fixing</li>
+	</ul>
+
+	<p>Detailed Changes:</p>
+	<ul>
+	  <li>FBC-209  - corrected duplicate Deutsche Bank Systemmatic Internalizer to add a suffix on the one in London</li>
+	  <li>FBC-209  - revised MIC codes (generated) as of December 12, 2018</li>
+	  <li>FBC-209  - added Reggio Emilia to support the December revision to the MIC codes</li>
+	  <li>FBC-206  - replaced "NewJersey" with Summit as the proper municipality for one of the exchanges</li>
+	  <li>FBC-206  - revised MIC codes to eliminate long hyphens; revised two new business centers per the latest generation algorithm</li>
+	  <li>FBC-206  - revised MIC codes generated from the 11/13/2018 revision</li>
+	  <li>FBC-206  - revised business centers individuals per the latest revision (11/13/2018) of the ISO MIC codes</li>
+	  <li>FBC-203  - moved the CreditEvents ontology from MD/TemporalCore to FBC/DebtAndEquities; revised all references to point to the new location; updated the ontology to eliminate references to other provisional ontologies and better integrated content with the current FIBO class hierarchy as a first pass to clean it up a bit</li>
+	  <li>FBC-202  - added support for NAICS and SIC codes (model only, not individuals) for use in several PoCs (CFTC, Wells Fargo, etc.)</li>
+	  <li>FBC-201  - corrected restrictions that caused a controlled company (relative entity) to be inferred to be an organization (independent entity)</li>
+	  <li>FBC-197  - relaxed the super class for credit union to be a depository institution, made slight modification to the definition and added a reference to the federal credit union act that was the source of the definition</li>
+	  <li>FBC-194  - corrected long dashes in some Nordic auction on demand markets and related codes</li>
+	  <li>FBC-194  - corrected prefix on US states in business centers individuals</li>
+	  <li>FBC-194  - corrected the following references for municipalities: Ebene_City --> Ebene, Frankfurt_Am_Main --> Frankfurt, Klagenfurt_Am_Woerthersee --> Klagenfurt_am_Woerthersee, New_Jersey --> Summit, Nicosia_lefkosia --> Nicosia, S-hertogenbosch --> s-Hertogenbosch, Saint-petersburg--> Saint-Petersburg, St__Peter_Port --> Saint_Peter_Port, and Washington_new_York --> Washington_New_York</li>
+	  <li>FBC-194  - eliminated references to non-existent markets for codes for XXXX, BILT, and XOFF</li>
+	  <li>FBC-194  - integrated the markets individuals with the FBC European all file</li>
+	  <li>FBC-194  - corrected another issue with the market codes related to SWISS CANTO</li>
+	  <li>FBC-194  - added the example US markets individuals to the metadata for FBC Functional Entities</li>
+	  <li>FBC-194  - revised US examples to reuse the codes and references in the primary market individuals ontology</li>
+	  <li>FBC-194  - fixed additional issues in the generated codes, e.g. characters that were not proper in URIs, ampersands that were not escaped, etc.</li>
+	  <li>FBC-194  - relaxed restriction on exchange name so that we can map detailed individuals that reflect the nature and other facts about an exchange to the generated content</li>
+	  <li>FBC-194  - revised market identifiers to correct various issues</li>
+	  <li>FBC-194  - corrected business centers that were modeled to be in Taiwan that are actually in India</li>
+	  <li>FBC-194  - eliminated parent of 'has' on 'has municipality'</li>
+	  <li>FBC-194  - replaced use of hasCity for those municipalities that are available in the new business centers individuals in US regulatory agencies</li>
+	  <li>FBC-194  - replaced hasCity with hasMunicipality for addresses of US financial entities that are encoded in the new business centers individuals ontology</li>
+	  <li>FBC-194  - replaced hasCity with hasMunicipality with the proper reference for the address of the Bank of Canada</li>
+	  <li>FBC-194  - added a property for hasMunicipality to allow registration addresses to incorporate a business center or municipality as a first class object rather than strictly as a text string (as in hasCity); both are needed for cases where some city has not been represented as a municipality individual in FIBO (although geonames could be referenced as an alternative source, as desired)</li>
+	  <li>FBC-194  revised business centers, municipalities, and markets based on issues uncovered by Pellet (unknown references, cities that were missing "_City" when referenced by markets or with other slight changes in their names, a couple of duplicates, etc.)</li>
+	  <li>FBC-194  - added new ontologies for business centers and markets to the Functional Entities metadata for FBC</li>
+	  <li>FBC-194  - Added new reference markets all file and imported it into the North American individuals all file rather than importing the individual ontologies</li>
+	  <li>FBC-194  - revised the status of the business centers ontology to released</li>
+	  <li>FBC-194  - corrected Ukranian INNEX exchange name and MIC code to address smart quotes in the source</li>
+	  <li>FBC-194  - corrected various syntactic bugs: embedded "&", messed up URIs embedded as websites mainly</li>
+	  <li>FBC-194  - preliminary version of the market individuals, plus loading it into an all file for testing</li>
+	  <li>FBC-194  - manual updates to municipalities to eliminate duplicates (e.g., St. Peter Port and Saint Peter Port) and add synonyms as appropriate, encoding issues present in the source file (e.g., Washington_new_York --> Washington_New_York), change New_Jersey to Summit, etc.</li>
+	  <li>FBC-194 Add municipalities (auto-generated) referenced in ISO 10383 MIC codes, that are not included in FpML business centers, as of the 2018-09-11T15:57:43 publication of the ISO 10383 MIC codes on the ISO web site</li>
+	  <li>FBC-194  - revised business centers, including all of those processed automatically from FpML (a couple still need tweaking and 3 business day adjustments to be added)</li>
+	  <li>FBC-194  - revised individuals to add business days for certain entities and business centers; eliminated unneeded references in the markets and exchanges individuals</li>
+	  <li>FBC-194  - modified approach to representing cities as parts of subdivisions rather than as subdivisions of subdivisions to get desired reasoning results</li>
+	  <li>FBC-194  - initial pass at encoding FpML business centers, starting with those in the U.S.</li>
+	  <li>FBC-194  - revised the definition of holding company to be a child of functional business entity rather than business, which is more appropriate given the function of a holding company</li>
+	  <li>FBC-194  - revised business dates to allow the property, has business center, to be used by more than the class called business day adjustment; revised the definition of business day adjustment to allow for the same adjustment to apply to multiple business centers (also agrees with the FpML specification); added a new ontology called business centers in FBC to support the set of FpML business centers, required for specifying the business center in which a given exchange operates</li>
+	  <li>FBC-194  - added general holding company to certain organization definitions</li>
+	  <li>FBC-194  - created the notion of a generic holding company, needed to represent the structures present in the various exchange corporate hierarchies</li>
+	  <li>FBC-194  - modified the relationship between market segment and the operating level market it is a part of; changed the reference from operatesInCity to operatesInMunicipality (strings to things) to allow us to reference FpML business centers</li>
+	  <li>FBC-194  - see prior comment re: definitions, the addition of New York Stock Exchange LLC, etc.</li>
+	  <li>FBC-194  - added market segment-level and operating level markets under exchange; eliminated "individual representing" from various definitions, added New York Stock Exchange LLC and revised other definitions accordingly</li>
+	  <li>FBC-194  - deprecated the class called "market" and made market a synonym of exchange; added exchanges to the example exchanges and markets in the US</li>
+	  <li>FBC-117  - broadened the definition of underwriter in financial services entities to cover insurance, mortgage, securities, and other kinds of underwriters and did the same with underwriting arrangement; revised the definition of security underwriter in securities issuance to correspond to the regulations better and added security underwriting arrangement such that there is a parallel structure for securities with the structure in FBC, as a guide to addressing mortgage underwriting in loans</li>
+	</ul>	
+      </li>
+      
+
+      <li><p>Foundations</p>
+	<p><i>Highlights</i></p>
+	<p>The primary modification to FND this quarter are related to automation of generation of the ISO 4217 currency codes and integration of the latest version.  Other modifications include:</p>
+	<ul>
+	  <li>Revised annotations on agreement and contract</li>
+	  <li>Deprecation of the nameOrigin annotation</li>
+	  <li>Miscellaneous bug fixing</li>
+	</ul>
+
+	<p>Detailed Changes:</p>
+	<ul>
+	  <li>    FND-227 - eliminated the domain of hasCurrency to correct reasoning issues and revised the definition accordingly</li>
+	  <li>    FND-223 changes to Agreement and FND-224 changes to Contract. Includes changes to Agreement in response to comments in FND-335 on Contract. All changes are to annotations only.</li>
+	  <li>    FND-211 - Automated generation of currency codes from ISO XML file</li>
+	  <li>    FND-211 - changed restrictions on currency, unit of account, precious metal to allow for multiple names, particularly multilingual names</li>
+	  <li>    FND-221 - revised definitions for Currency, CurrencyIdentifier, Funds, FundsIdentifier to use generic hasName and hasTag, deprecated the more specific properties</li>
+	  <li>    FND-211 - modified currency amount to update definitions for currency and funds, add unit of account, and add a unit of account identifier per the latest ISO 4217 definitions and as needed to generate the latest ISO 4217 codes; added precious metal and precious metal identifier to products and services also to support generation of the latest ISO 4217 codes</li>
+	  <li>    FND-210 updated with deprecation approach - nameOrigin retained, added deprecated indictor.</li>
+	  <li>    FND-210 remove the annotation property nameOrigin</li>
+	  <li>    FND-41 changes to cardinality of the two restrictions on MonetaryAmount in CurrencyAmount.</li>
+	</ul>
+      </li>
+
+
+      <li><p>Loans</p>
+	<p><i>Highlights</i></p>
+	<p>Primary changes this quarter in LOAN involved staging with respect to some of the older LOAN provisional content in preparation for further integration work in 2019.</p>
+	<p>Detailed Changes:</p>	
+	<ul>
+	  <li>LOAN-138 Move Informative LOAN ontologies to a new module LoanExt</li>
+	  <li>Generally replace unofficial use of fibo-ln- abbreviation for the domain by official fibo-loan-</li>
+	  <li>Use consistent official abbreviation fibo-loan rather than previous fibo-ln- for the domain</li>
+	  <li>Update all references to LoansGeneral</li>
+	  <li>Move LoansGeneral to LoanExt and update metadata</li>
+	  <li>Update all references to LoanGeneric to use LoanExt</li>
+	  <li>Update metadata to represent movement of LoanGeneric and create new Metadata file for LoanExt</li>
+	  <li>Move LoanGeneric to new module LoanExt</li>
+	  <li>LOAN-142 change 2 ontologies to maturity level Informative</li>
+	</ul>
+      </li>
+
+
+      <li><p>Securities</p>
+	<p><i>Highlights</i></p>
+	<p>The revisions to SEC content this quarter include minor changes to released ontologies as well as significant development of some of the content in provisional debt instruments planned for release in 2019:</p>
+	<ul>
+	  <li>Integrated 6 SEC/Debt/Bonds ontologies into a single coherent ontology, eliminating circular references between them</li>
+	  <li>Eliminated redundant content in SEC/Debt/DebtFoundations and SEC/Debt/MoneyMarkets and moved the resulting ontologies, including 'traded short-term debt' and 'exercise conventions' to the SEC/Debt level and moved remaining concepts that were not redundant into the SEC/Debt/DebtInstruments ontology or to other provisional ontologies under LOAN, DER, or SEC/Debt/AssetBackedSecurities</li>
+	</ul>
+	<p>Detailed Changes:</p>	
+	<ul>
+	  <li>SEC-75  - clean up some of the labels and definitions, add missing definitions (not all, just some per the concepts relevant to FINRA), bridge a few properties to the proper concepts in the debt instruments ontology, etc.</li>
+	  <li>SEC-75  - correct label and definition on has scheduled maturity date</li>
+	  <li>SEC-71  - completed integration of CallEvent as a RedemptionEvent in DebtInstruments and eliminated the related axiom in Bonds</li>
+	  <li>SEC-67  - eliminate circular reference to traded short term debt in the TimeExt/Time ontology as well as unused notions related to up to one year and more than one year durations</li>
+	  <li>SEC-67  - eliminate references to the TimeExt/Time ontology from exchange traded options to facliltate minimal clean up of the TimeExt/Time ontology</li>
+	  <li>SEC-67  - renamed MoneyMarketDebtInstrument to MoneyMarketInstrument, which is the name it is commonly known by; eliminated the equivalence in that class and made various other instruments children of money market instrument given that the set included in the union was incomplete (so the logic would disallow other kinds of money market instruments), revised the definition to use one from the OECD Glossary (Organisation for Economic Co-operation and Development)</li>
+	  <li>SEC-67  - eliminated asset repurchase agreement and liability repurchase agreement as they are not used in the relevant literature (though there are kinds of REPOs missing from this ontology)</li>
+	  <li>SEC-67  - eliminate references to the TimeExt/Time ontology in Debt/DebtFoundations, Debt/MoneyMarkets, and Debt/AssetBackedSecurities, and merge the small REPOs ontology into TradedShortTermDebt</li>
+	  <li>SEC-67  - eliminated additional redundancy in the TimeExt/Time ontology related to business day conventions and business calendars made moot by recent changes to import all FpML business day conventions and business centers in FBC (and due to their lack of usage by anything else)</li>
+	  <li>SEC-65  - revised metadata for the SEC/Debt/AssetBackedSecurities module to reflect the name change</li>
+	  <li>SEC-65  - renamed the module called "AssetBacked" to "AssetBackedSecurities" to align with FIBO naming conventions and per SEC-65; modified URIs in all ontologies that reference anything in this module accordingly</li>
+	  <li>SEC-63  - corrected namespace prefix on TreasuryBill</li>
+	  <li>SEC-63  - eliminated the domain of hasTypicalDurationToMaturity which seemed too narrow</li>
+	  <li>SEC-63  - revised the range of hasTypicalDurationToMaturity to be the same as it's parent property and added a definition for it</li>
+	  <li>SEC-63  - eliminated circularity in TradedShortTermDebt, refined content, and moved it to SEC/Debt; updated references to it, and eliminated the MoneyMarkets subdomain</li>
+	  <li>SEC-62  - moved the contents of the term deposits ontology to clients and accounts in FBC; revised the definitions related to 'term deposit' according to regulatory definitions provided by the FDIC, which regulates deposit accounts in the US, and whose definitions other countries rely on as the source for the same or similar concepts</li>
+	  <li>SEC-61  - moved LoanParticipationNotes to AssetBackedSecurities, noting that it is (1) lacking concepts about loan participation (which small and medium sized banks do to spread risk for a given loan that is larger than what they can or want to commit funds to), which should be in loans, and (2) a basic syndicated loan, typically issued to a large company and which is a very large loan, again used to spread risk across institutions, which should also be in loans, where this ontology includes the concept of a security based on a syndicated loan</li>
+	  <li>SEC-61  - eliminated the redundant hasUnderlying property (given that it is in derivatives and has access to that property) from participation notes and moved it to DER/DerivativesContracts</li>
+	  <li>SEC-60  - corrected prefix for FloatingInterestRate and added a definition to hasNotificationProvision</li>
+	  <li>SEC-60  - eliminate the remaining DebtCashflowTerms ontology and related DebtFoundatations metadata file</li>
+	  <li>SEC-60  - move remaining properties in DebtCashflowTerms to their proper homes</li>
+	  <li>SEC-60  - corrected restriction with respect to repayment date</li>
+	  <li>SEC-60  - eliminated spurious restrictions in bonds cashflow variants and unused imports (references) to debt cashflow terms where they occurred</li>
+	  <li>SEC-60  - eliminate remaining references to the DebtCashflowTerms ontology</li>
+	  <li>SEC-60  - revised payment schedule to use occurrence rather than occurrence kind (i.e., payment), added property has payment schedule to support integration of debt, debt cashflow terms, and loans</li>
+	  <li>SEC-59  - normalize spelling of issuance programme using 'mme' spelling specifically due to its appropriateness and usage in this case from the domain perspective</li>
+	  <li>SEC-59  - clean up remaining content from DebtFoundations/DebtIssuanceTerms and move it all to BP/SecuritiesIssuance/DebtIssuance where it is used</li>
+	  <li>SEC-59  - eliminate references to debt issuance terms in mortgage-backed and pool-backed securities</li>
+	  <li>SEC-59  - additional redundancy elimination in Debt Issuance Terms</li>
+	  <li>SEC-59  - moved terms from Debt Issuance to Asset backed SPVs where they were used and started eliminating duplication in Debt Issuance Terms related to bonds</li>
+	  <li>SEC-59  - eliminated references to securities issuance SPV in participation notes (extends issuer which is already inherited via a restriction, and the need for that level of specificity overly complicates the model), eliminated unused references to other ontologies</li>
+	  <li>SEC-56  - eliminate the now redundant DebtInstrumentGuaranties ontology and revise module metadata accordingly</li>
+	  <li>SEC-56  - moved the bond insurance class from debt instrument guaranties to bonds common, since bond insurance can impact pricing</li>
+	  <li>SEC-56  - clean up and move most of the non-redundant contents of the DebtInstrumentGuarantees ontology to the Guaranty ontology in FBC/Debt</li>
+	  <li>SEC-55  - moved relevant restrictions from DebtFinance to the various loan and asset-backed securities ontologies where they belong, and then eliminated references remaining to the DebtFinance ontology and finally eliminated the ontology itself</li>
+	  <li>SEC-42  - eliminated now redundant DER/DerivativesContracts ExerciseConventions (replaced with SEC/Debt/ExerciseConventions or concepts moved to Options)</li>
+	  <li>SEC-42  - eliminate now redundant STRIPs and Bonds metadata ontologies</li>
+	  <li>SEC-42  - integrated basic concepts related to strips and revised the metadata to account for the migration of bonds to the higher level Debt ontology</li>
+	  <li>SEC-42  - eliminate restriction error in DebtPricingYields (this was there previously, perhaps highlighted by corrections in the bonds ontology)</li>
+	  <li>SEC-42  - eliminate references to the DER/DerivativesContracts/ExerciseConventions ontology and replace them with the revised SEC/Debt/ExerciseConventions ontology</li>
+	  <li>SEC-42  - integrated a new exercise conventions that can be used both in SEC/Debt and DER/Options; but have not integrated/replaced those concepts that are duplicate in DER yet</li>
+	  <li>SEC-42  - eliminate redundancies in DebtInterestAmounts due to migration of concepts to Bonds</li>
+	  <li>SEC-42  - eliminate all of the SEC/Debts/Bonds/ ontologies that have been merged into the higher level Bonds ontology</li>
+	  <li>SEC-42  - replace all uses of any SEC/Debt/Bonds/xxx ontology with the merged SEC/Debt/Bonds/ ontology if it occurs outside of SEC/Debt/Bonds</li>
+	  <li>SEC-42  - eliminated additional references to informative ontologies, integrated certain concepts from those ontologies, eliminated additional redundancy and circular internal references</li>
+	  <li>SEC-42  - streamlined certain names based on approach taken elsewhere in the released ontologies, e.g., TermsSet --> Terms; merged content from MD/DebtTemporal/DebtInterestAmounts into bonds which is where they belong, e.g., BondCoupon and it's children</li>
+	  <li>SEC-42  - eliminated tax-related concepts per the SEC FCT on-line review, additional duplication and some references to informative ontologies</li>
+	  <li>SEC-42  - eliminate references to informative Math ontology</li>
+	  <li>SEC-42  - eliminate unnecessary references to BP - IssuanceProcessTerms (provisional / informative)</li>
+	  <li>SEC-42  - Bring all of the bonds ontologies, which involve many circular references, together into a single ontology with a common prefix, etc. (aside from STRIPs)</li>
+	  <li>SEC-34  - revised property hasJurisdiction to use the new hasCoverageArea property instead</li>
+	  <li>SEC-18  - declare the three individuals of relative price all different from one another</li>
+	</ul>
+      </li>
+
+      <li><p>Infrastructure</p>
+	<p><i>Highlights</i></p>
+	<p>Infrastructure modifications this quarter were related to (1) revising and normalizing metadata, and (2) integrating additional hygiene testing.	</p>
+	<p>The functionality of the product formerly called "VOWL" has been integrated into FIBOpedia.  Links to the widoco/VOWL documentation are available from FIBOPedia.</p>
+	<ul>
+	  <li>INFRA-268 Remove rdfs:range from isAbout.  Also, fix a namespace deprecation in the hygiene queries.</li>
+	  <li>INFRA-268 Create test for explicit use of owl:Thing</li>
+	  <li>INFRA-266  - updated about FIBO Prod to include missing business centers and market identifiers ontologies</li>
+	  <li>INFRA-214  Change rdfs:comment to skos:definition for maturity levels.  Also add logicalDefinition annotation property to support publication of natural language explanations of logic.</li>
+	  <li>INFRA-153 INFRA-153 Renamed all top-module directories in fibo git repo to uppercase
+	    Further additions and corrections from testing.
+	    Update Metadata files for Modules and Domains to reference all parts regardless of their maturity.</li>
+	  <li>INFRA-114 Add hygeine test for bad characters</li>
+	  <li>INFRA-114 Change smart quotes and dashes to dumb ones.</li>
+	</ul>
+	
+      </li>
+    </ul>
+    
+
+
+ <b>2018 Q3</b>
+<p>Quarterly release. Because of the interim release (omg-finance-18-08-04) in August, this release is releatively brief. </p>
+    <p><i>Highlights</i></p>
+    <ul>
+<li>Modified the existing model for market identifiers to comply with ISO 10303</li> 
+<li>Integrated reference data for: All FpML Business Centers and Business Day Adjustments, based on http://www.fpml.org/coding-scheme/business-center as of 2018-06-29,</li>
+<li>All Municipalities in addition to the Business Centers referenced in the ISO 10383 Codes for exchanges and market identification (MIC) as of 2018-09-11T15:57:43 and </li>
+<li>All markets and exchanges and related MIC codes as defined in ISO 10383 Codes for exchanges and market identification (MIC) as of 2018-09-11T15:57:43 </li>
+<li>Added model-level support for representation of industry classification codes including the North American Industry Classification System (NAICS) and Standard Industrial Classification (SIC) codes (not including the reference individuals)</li>
+</ul>
+    <p><i>Full change record</i></p>
+    <ul>
+<li><p>FBC</p>
+<p>Integrated reference data for FpML business centers and ISO 10383 MIC Codes, including:</p>
+  <ul>
+<li>corrected long dashes in some Nordic auction on demand markets and related codes</li>
+<li>corrected prefix on US states in business centers individuals</li>
+<li>corrected the following references for municipalities: Ebene_City --> Ebene, Frankfurt_Am_Main --> Frankfurt, Klagenfurt_Am_Woerthersee --> Klagenfurt_am_Woerthersee, New_Jersey --> Summit, Nicosia_lefkosia --> Nicosia, S-hertogenbosch --> s-Hertogenbosch, Saint-petersburg--> Saint-Petersburg, St__Peter_Port --> Saint_Peter_Port, and Washington_new_York --> Washington_New_York</li>
+<li>eliminated references to non-existent markets for codes for XXXX, BILT, and XOFF</li>
+<li>integrated the markets individuals with the FBC European all file</li>
+<li>corrected another issue with the market codes related to SWISS CANTO</li>
+<li>added the example US markets individuals to the metadata for FBC Functional Entities</li>
+<li>revised US examples to reuse the codes and references in the primary market individuals ontology</li>
+<li>fixed additional issues in the generated codes, e.g. characters that were not proper in URIs, ampersands that were not escaped, etc.</li>
+<li>relaxed restriction on exchange name so that we can map detailed individuals that reflect the nature and other facts about an exchange to the generated content</li>
+<li>revised market identifiers to correct various issues</li>
+<li>corrected business centers that were modeled to be in Taiwan that are actually in India</li>
+<li>eliminated parent of 'has' on 'has municipality'</li>
+<li>replaced use of hasCity for those municipalities that are available in the new business centers individuals in US regulatory agencies</li>
+<li>replaced hasCity with hasMunicipality for addresses of US financial entities that are encoded in the new business centers individuals ontology</li>
+<li>replaced hasCity with hasMunicipality with the proper reference for the address of the Bank of Canada</li>
+<li>added a property for hasMunicipality to allow registration addresses to incorporate a business center or municipality as a first class object rather than strictly as a text string (as in hasCity); both are needed for cases where some city has not been represented as a municipality individual in FIBO (although geonames could be referenced as an alternative source, as desired)</li>
+<li>revised business centers, municipalities, and markets based on issues uncovered by Pellet (unknown references, cities that were missing "_City" when referenced by markets or with other slight changes in their names, a couple of duplicates, etc.)</li>
+<li>added new ontologies for business centers and markets to the Functional Entities metadata for FBC</li>
+<li>Added new reference markets all file and imported it into the North American individuals all file rather than importing the individual ontologies</li>
+<li>changed status to release and added US states to municipalities and cities in the United States</li>
+<li>revised the status of the business centers ontology to released</li>
+<li>corrected Ukranian INNEX exchange name and MIC code to address smart quotes in the source</li>
+<li>preliminary version of the market individuals, plus loading it into an all file for testing</li>
+<li>manual updates to municipalities to eliminate duplicates (e.g., St. Peter Port and Saint Peter Port) and add synonyms as appropriate, encoding issues present in the source file (e.g., Washington_new_York --> Washington_New_York), change New_Jersey to Summit, etc.</li>
+<li>corrected misspellings, added systematic internaliser</li>
+<li>revised to add more market segment level codes</li>
+<li>revised the type on several business center codes to business day adjustment codes</li>
+<li>corrected references to the two modified business days</li>
+<li>revised 2 business centers to normalize the names of two of them; added business day adjustments for a few that were missing</li>
+<li>revised business centers, including all of those processed automatically from FpML (a couple still need tweaking and 3 business day adjustments to be added)</li>
+<li>revised individuals to add business days for certain entities and business centers; eliminated unneeded references in the markets and exchanges individuals</li>
+<li>added business day adjustment code</li>
+<li>added business center to exchange definitions to test reasoning</li>
+<li>modified approach to representing cities as parts of subdivisions rather than as subdivisions of subdivisions to get desired reasoning results</li>
+<li>initial pass at encoding FpML business centers, starting with those in the U.S.</li>
+<li>revised the definition of holding company to be a child of functional business entity rather than business, which is more appropriate given the function of a holding company</li>
+<li>revised business dates to allow the property, has business center, to be used by more than the class called business day adjustment; revised the definition of business day adjustment to allow for the same adjustment to apply to multiple business centers (also agrees with the FpML specification); added a new ontology called business centers in FBC to support the set of FpML business centers, required for specifying the business center in which a given exchange operates</li>
+<li>added general holding company to certain organization definitions</li>
+<li>created the notion of a generic holding company, needed to represent the structures present in the various exchange corporate hierarchies</li>
+<li>modified the relationship between market segment and the operating level market it is a part of; changed the reference from operatesInCity to operatesInMunicipality (strings to things) to allow us to reference FpML business centers</li>
+<li>see prior comment re: definitions, the addition of New York Stock Exchange LLC, etc.</li>
+<li>added market segment-level and operating level markets under exchange; eliminated "individual representing" from various definitions, added New York Stock Exchange LLC and revised other definitions accordingly</li>
+<li>deprecated the class called "market" and made market a synonym of exchange; added exchanges to the example exchanges and markets in the US</li>
+<li>corrected prefix for hasWebsite</li>
+<li>minor revisions to the markets ontology to better reflect the standard; introduction of individuals defining the NYSE as an example</li>
+<li>add support for ISO 10383 Codes for exchanges and market identification (MIC) - model only, not including individuals</li>
+<li>0 - made having a notional step schedule optional on an interest rate swap leg to cover the simpler cases where that level of complexity is not required; the notional is already available at the leg level to support calculation of a basic payment</li>
+<li>02 - added support for NAICS and SIC codes (model only, not individuals) for use in several PoCs (CFTC, Wells Fargo, etc.)</li>
+<li>    FBC-202 - added support for NAICS and SIC codes (model only, not individuals) for use in several PoCs (CFTC, Wells Fargo, etc.)</li>
+  </ul>
+</li>
+<li><p>DER</p>
+<ul>
+  <li>    DER-20 - made having a notional step schedule optional on an interest rate swap leg to cover the simpler cases where that level of complexity is not required; the notional is already available at the leg level to support calculation of a basic payment</li>
+</ul>
+</li>
+<li><p>INFRA</p>
+<ul>
+<li>INFRA-214  Change rdfs:comment to skos:definition for maturity levels</li>
+<li>Add logicalDefinition annotation property to support publication of natural language explanations of logic.</li>
+</ul>
+</li>
+</ul>
+<b>2018 Q2.5 (omg-finance-18-08-04)</b>
     <p><i>Highlights</i></p>
     <ul>
 <li>Normalized metadata across domains, modules and ontologies - the 
@@ -37,7 +372,7 @@ identifiers (ISO 13616)</li>
 <li>improved representation of volatility and related statistical measures</li>
       
     </ul>
-    <p><i>Full change record</i>
+    <p><i>Full change record</i></p>
     <ul>
 
 <li><p>BE</p>
@@ -187,22 +522,12 @@ identifiers (ISO 13616)</li>
     <li>Remove Metadata imports from files in BE,FND and FBC.    Tidy up extraneous MetadataArrangements import in ClassificationSchemes.</li>
 
 </ul>
-</ul>
-
-
-
-
-
+</li>
 
   <li><b>2018 Q2</b>
     <p><i>Highlights</i></p>
-    <ul>
-
-Primary changes this quarter include new regulatory reporting material, clean-up of open issues, elimination of informative/provisional content that was redundant or has been incorporated into released ontologies, and a revised metadata strategy to support several FIBO products such as FIBOpedia.  The work performed this quarter will help with integration of Level 2 GLEIF Legal Entity Identifier (LEI) support in Q3, as well as integration of equities and additional debt-related concepts in the Securities domain.
-
-
-    </ul>
-    <p><i>Full change record</i>
+<p>Primary changes this quarter include new regulatory reporting material, clean-up of open issues, elimination of informative/provisional content that was redundant or has been incorporated into released ontologies, and a revised metadata strategy to support several FIBO products such as FIBOpedia.  The work performed this quarter will help with integration of Level 2 GLEIF Legal Entity Identifier (LEI) support in Q3, as well as integration of equities and additional debt-related concepts in the Securities domain.</p>
+    <p><i>Full change record</i></p>
     <ul>
 
 <li><p>BE</p>
@@ -320,8 +645,7 @@ Primary changes this quarter include new regulatory reporting material, clean-up
 <ul>
     <li>IND-18  added a property on statistical measure that allows for a high-level description of the calculation used to arrive at a result and incorporated that as a restriction on the class statistical measure (optional)</li>
     <li>IND-18  added a property on statistical measure that allows f...</li>
-    <li>IND-19  - deprecated the two has <x> context properties in favor of is characterized by, with the proper semantics to define a statistical population</li>
-    <li>IND-19  - deprecated the two has <x> context properties in fa...</li>
+    <li>IND-19  - deprecated the two has &lt;x&gt; context properties in favor of is characterized by, with the proper semantics to define a statistical population</li>
     <li>IND-38  - updated the about file for the entire IND domain area to reflect current policies and participants</li>
     <li>IND-48  - added a restriction to FloatingInterestRate inside of the interest rates ontology to connect it to a reference rate</li>
     <li>IND-48  - added about files for FIBO 2.0 indicators and indices, similar to what we have done for FND, BE, and FBC, which are helpful in testing and in loading subsets of the released FIBO ontologies</li>
@@ -387,11 +711,10 @@ Primary changes this quarter include new regulatory reporting material, clean-up
     <li>SEC-43  - eliminated numerous duplicate concepts and properties from LoansEvents and replaced them with their equivalents from released ontologies</li>
 
 
-</p>
+  </ul>
   </li>
-</ul></ul>
-
-<ul>
+</ul>
+</li>
   <li><b>2018 Q1</b>
     <p><i>Highlights</i></p>
     <ul>
@@ -403,14 +726,15 @@ Primary changes this quarter include new regulatory reporting material, clean-up
       <li>Continued integration of provisional content for Derivatives, sufficient for prototyping Swap Data Repository reporting of Interest Rate Swaps, with testing of Options-specific content underway</li>
     </ul>
     <p><i>Full change record</i>
-    <ul>
+    </p>
+<ul>
 
 <li><p>BE</p>
 
 <ul> 
 <li>BE-170 - changed rdfs:subclass for LEI Registered Entity to owl:equivalentClass</li>
 <li>BE-170 - incorporated LEI eligible entity and LEI registered entity (note that for LEI registered entity we may want to consider adding more restrictions in FBC, e.g. the LOU / registry in which it is registered)</li>
-<li>FBC-145 - revised the super property of several has<x>Address properties in formal business organizations to be hasAddress rather than 'has'</li>
+<li>FBC-145 - revised the super property of several has&lt;x&gt;Address properties in formal business organizations to be hasAddress rather than 'has'</li>
 <li>BE-169 - moved the CorporationEquity ontology, which still needs review, to SEC/Equities, since it depends heavily on other ontologies in that subdomain and thus cannot be in BE due to circular dependencies</li>
 <li>BE-168 - eliminated unused ontology, corporations extras, which contained only one class not referenced anywhere</li>
 <li>Delete malformed SKOS import statement and declarations as per the JIRA ticket.</li>
@@ -754,7 +1078,6 @@ Ind 54</li>
 <li>FBC-160 - integrate changes responding to comments from Pete and Jeff Braswell on requirements for and implementation of the LEI-CDF v2.1 (incomplete but closer - address changes and testing are todo for Level 1 data, also to investigate relationships)
 </li></ul>
 
-</p>
   </li>
 
 
@@ -765,7 +1088,7 @@ Ind 54</li>
 
 <li>Integrate ISO 6523 for organizations</li>
 
-</li></ul>
+</ul></li>
 <li><h3>Foundations (FND)</h3>
 <ul>
 
@@ -778,7 +1101,7 @@ Ind 54</li>
 <li>Unify identifiers with LCC practice</li>
 <li>Update dates to include times without specified date</li>
 <li>Include lifecycle as a general concept</li>
-</li></ul>
+</ul></li>
 <li><h3>Financial Business and Commerce (FBC)</h3>
 <ul>
 
@@ -787,19 +1110,19 @@ Ind 54</li>
 <li>Fill in the Bloomberg reference</li>
 <li>Separate contracts from products based on contracts</li>
 
-</li></ul>
+</ul></li>
 <li><h3>Indices and Indicators (IND)</h3>
 <ul>
 
 <li>Include FpML schemes in Reference Floating Interest Rate</li>
 
-</li></ul>
+</ul></li>
 <li><h3>Securities (SEC)</h3>
 <ul>
 
 <li>Remove "puns" about CUSIP and Euroclear</li>
 
-</li></ul>
+</ul></li>
 <li><h3>All</h3>
 <ul>
 
@@ -820,5 +1143,6 @@ Ind 54</li>
 
 </ul>
 
-  </body>
-</html>
+</li>
+</ul>
+</body></html>
