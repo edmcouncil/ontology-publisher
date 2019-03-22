@@ -55,7 +55,6 @@ function publishProductWidoco() {
   if ((test_widoco)) ; then
     testWidoco
   else
-   echo "running generateWidocoDocumentation on ${ontology_product_tag_root}"
     generateWidocoDocumentation "${ontology_product_tag_root}"
   fi
   local -r rc=$?
@@ -130,7 +129,7 @@ __HERE__
 # This function is called recursively so do not add "logRule" in here
 #
 function generateWidocoDocumentation() {
-  echo "generateWidocoDocumentation $1"
+
   local -r directory="$(cd $1 && pwd -L)"
 
   (
@@ -211,8 +210,6 @@ function generateWidocoDocumentationForFile() {
   #
   cp "${ontologyPolicyFile}" .
 
-  java -version 2>&1 | pipelog
-
   java \
     -classpath /usr/share/java/log4j/log4j-core.jar:/usr/share/java/log4j/log4j-1.2-api.jar:/usr/share/java/log4j/log4j-api.jar \
     -Dxxx=widoco \
@@ -230,9 +227,7 @@ function generateWidocoDocumentationForFile() {
     -doNotDisplaySerializations \
     -displayDirectImportsOnly \
     -lang en  \
-    -getOntologyMetadata \
-#    -webVowl \
-    2>&1 | \
+    -getOntologyMetadata 2>&1 | \
     grep -v "JenaCatalogIRIMapper.* -> " | \
     grep -v 'WIzard' | \
     grep -v 'https://w3id.org/widoco/' | \
@@ -275,12 +270,15 @@ function generateWidocoDocumentationForFile() {
   #fi
 
   #
-  # Remove the default ontologies that come with WebVowl
+  # If webvowl output was generated,
+  # remove the default ontologies that come with WebVowl
   #
-  (
-    cd "${outputDir}/webvowl/data" || return $?
-    rm -vf foaf.json goodrelations.json muto.json new_ontology.json ontovibe.json personasonto.json sioc.json template.json
-  )
+  if [[ -d "${outputDir}/${rdfFileNoExtension}/webvowl" ]] ; then
+    (
+      cd "${outputDir}/${rdfFileNoExtension}/webvowl/data" || return $?
+      rm -vf foaf.json goodrelations.json muto.json new_ontology.json ontovibe.json personasonto.json sioc.json template.json
+    )
+  fi
 
   return 0
 }
@@ -357,8 +355,8 @@ function testWidoco() {
       -includeImportedOntologies \
       -includeAnnotationProperties \
       -lang en  \
-#      -webVowl \
       -getOntologyMetadata \
+      -webVowl
     local -r rc=$?
 
     logVar rc

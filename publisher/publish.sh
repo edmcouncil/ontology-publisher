@@ -94,6 +94,24 @@ function ontologyIsInTestDomain() {
 }
 
 #
+# Clean up before publishing
+#
+function cleanupBeforePublishing() {
+
+  require spec_root || return $?
+  require tag_root || return $?
+
+  find "${tag_root}" -type f -name 'ont-policy.rdf' -delete
+  find "${tag_root}" -type f -name 'location-mapping.n3' -delete
+  #
+  # find all empty files in /tmp directory and delete them
+  #
+  find "${tag_root}" -type f -empty -delete
+
+  return $?
+}
+
+#
 # We need to put the output of this job in a directory next to all other branches and never delete any of the
 # other formerly published branches.
 #
@@ -339,6 +357,7 @@ function main() {
         # all the products have been run
         #
         logRule "Final publish stage"
+        cleanupBeforePublishing || return $?
         zipWholeTagDir || return $?
         copySiteFiles || return $?
         ;;
