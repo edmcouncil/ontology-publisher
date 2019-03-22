@@ -5,6 +5,8 @@
 
         Add isDefinedBy links to everything in an ontology
 
+        3/22/19  Also add a comment to annotate the qname of every resource
+
 """
 import pdb
 import sys
@@ -21,8 +23,13 @@ import re
 from os import scandir, walk, path
 
 DCT = Namespace("http://purl.org/dc/terms/")
+VANN = Namespace("http://purl.org/vocab/vann/")
+SM = Namespace("http://www.omg.org/techprocess/ab/SpecificationMetadata/")
 
 verbose = False
+
+def localname (resource):
+        return str(resource).split("/")[-1].split("#")[-1]
 
 class Adder():
   
@@ -37,6 +44,17 @@ class Adder():
                 for t in ts:
                         if (type(t)!=rdflib.BNode):
                                 self.g.add((t, RDFS.isDefinedBy, onturi))
+
+        def addQName (self):
+                onturi=list(self.g.triples((None, RDF.type, OWL.Ontology)))[0][0]
+                ontstring=str(onturi)
+                prefix=(([str(t[2]) for t in self.g.triples((onturi, VANN.preferredNamespacePrefix, None))] +
+                         [str(t[2]) for t in self.g.triples((onturi, SM.fileAbbreviation, None))] +
+                         ["NONE"]) [0]) + ":"
+                ts=[t[0] for t in self.g.triples((None, RDF.type, None)) if str(t[0]).startswith(ontstring)]
+                for t in ts:
+                        if (type(t)!=rdflib.BNode):
+                                self.g.add((t, RDFS.comment, Literal("&lt;b&gt;QName: &lt;/b&gt;"+prefix+localname(t))))
 
 
                 
@@ -61,5 +79,6 @@ if __name__ == "__main__":
   
         f = Adder(args, file)
         f.addIDB()
+        f.addQName()
         f.dump(file)
         
