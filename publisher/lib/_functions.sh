@@ -1083,7 +1083,7 @@ function getDevOntologies() {
 
   requireValue ontology_product_tag_root || return $?
 
-  ${FIND} "${ontology_product_tag_root}" \
+  ${FIND} -mindepth 2 "${ontology_product_tag_root}" \
     -name 'ont-policy.rdf' -prune -o \
     -path '*/etc*' -prune -o \
     -name '*About*' -prune -o \
@@ -1098,6 +1098,7 @@ function getDevOntologies() {
 function getDevOntologiesInRDFXMLFormatInCurrentDirectory() {
 
   ls -1 *.rdf | \
+    ${GREP} " [A-Z][^ ]*.rdf" | \
     ${GREP} -v ont-policy.rdf | \
     ${GREP} -v ".*/etc.*" | \
     ${GREP} -v ".*About.*" | \
@@ -1111,6 +1112,7 @@ function getDevOntologiesInRDFXMLFormatInCurrentDirectory() {
 function getDevOntologiesInTurtleFormatInCurrentDirectory() {
 
   ls -1 *.ttl | \
+    ${GREP} " [A-Z][^ ]*.ttl" | \
     ${GREP} -v ont-policy.ttl | \
     ${GREP} -v ".*/etc.*" | \
     ${GREP} -v ".*About.*" | \
