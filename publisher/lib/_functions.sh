@@ -1098,10 +1098,12 @@ function getDevOntologies() {
 function getDevOntologiesInRDFXMLFormatInCurrentDirectory() {
 
   ls -1 *.rdf | \
-    ${GREP} " [A-Z][^ ]*.rdf" | \
     ${GREP} -v ont-policy.rdf | \
     ${GREP} -v ".*/etc.*" | \
     ${GREP} -v ".*About.*" | \
+    ${GREP} -v ".*temp.*" | \
+    ${GREP} -v "dev.*" | \
+    ${GREP} -v "prod.*" | \
     ${GREP} -v "All.*" | \
     ${GREP} -v ".*Metadata.*" | \
     ${GREP} -v ".*Load.*" | \
@@ -1112,10 +1114,12 @@ function getDevOntologiesInRDFXMLFormatInCurrentDirectory() {
 function getDevOntologiesInTurtleFormatInCurrentDirectory() {
 
   ls -1 *.ttl | \
-    ${GREP} " [A-Z][^ ]*.ttl" | \
     ${GREP} -v ont-policy.ttl | \
     ${GREP} -v ".*/etc.*" | \
     ${GREP} -v ".*About.*" | \
+    ${GREP} -v ".*temp.*" | \
+    ${GREP} -v "dev.*" | \
+    ${GREP} -v "prod.*" | \
     ${GREP} -v "All.*" | \
     ${GREP} -v ".*Metadata.*" | \
     ${GREP} -v ".*Load.*" | \
