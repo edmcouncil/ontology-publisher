@@ -40,7 +40,7 @@ class Adder():
 
         def addIDB (self):
                 onturi=list(self.g.triples((None, RDF.type, OWL.Ontology)))[0][0]
-                ts=[t[0] for t in self.g.triples((None, RDF.type, None)) if "edmcouncil" in str(t[0])]
+                ts=[t[0] for t in self.g.triples((None, RDF.type, None)) if str(t[0]).startswith(ontstring)]  
                 for t in ts:
                         if (type(t)!=rdflib.BNode):
                                 self.g.add((t, RDFS.isDefinedBy, onturi))
