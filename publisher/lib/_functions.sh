@@ -1083,7 +1083,8 @@ function getDevOntologies() {
 
   requireValue ontology_product_tag_root || return $?
 
-  ${FIND} -mindepth 2 "${ontology_product_tag_root}" \
+  ${FIND} "${ontology_product_tag_root}" \
+    -mindepth 2 \
     -name 'ont-policy.rdf' -prune -o \
     -path '*/etc*' -prune -o \
     -name '*About*' -prune -o \

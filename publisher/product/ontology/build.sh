@@ -10,7 +10,7 @@ false && source ../../lib/_functions.sh
 
 export SCRIPT_DIR="${SCRIPT_DIR}" # Yet another hack to silence IntelliJ
 export speedy="${speedy:-0}"
-export speedy=1
+export speedy=0
 
 if [[ -f ${SCRIPT_DIR}/product/ontology/build-cats.sh ]] ; then
   # shellcheck source=build-cats.sh
