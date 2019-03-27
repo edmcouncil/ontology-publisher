@@ -56,11 +56,11 @@ if [ -f ${SCRIPT_DIR}/product/datadictionary/build.sh ] ; then
 else
   source product/datadictionary/build.sh # This line is only there to make the IntelliJ Bash plugin see product/datadictionary/build.sh
 fi
-if [ -f ${SCRIPT_DIR}/product/book/build.sh ] ; then
-  # shellcheck source=product/book/build.sh
-  source ${SCRIPT_DIR}/product/book/build.sh
+if [ -f ${SCRIPT_DIR}/product/reference/build.sh ] ; then
+  # shellcheck source=product/reference/build.sh
+  source ${SCRIPT_DIR}/product/reference/build.sh
 else
-  source product/book/build.sh # This line is only there to make the IntelliJ Bash plugin see product/book/build.sh
+  source product/reference/build.sh # This line is only there to make the IntelliJ Bash plugin see product/reference/build.sh
 fi
 if [ -f ${SCRIPT_DIR}/product/fibopedia/build.sh ] ; then
   # shellcheck source=product/fibopedia/build.sh
@@ -348,8 +348,8 @@ function main() {
       fibopedia)
         publishProductFIBOpedia || return $?
         ;;
-      book)
-        publishProductBook || return $?
+      refe*)
+        publishProductReference || return $?
         ;;
       publish)
         #

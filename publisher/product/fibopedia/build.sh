@@ -46,8 +46,7 @@ function publishProductFIBOpedia () {
     net.sf.saxon.Transform \
       -o:${fibopedia_product_tag_root}/FIBOpedia.html \
       -xsl:${fibopedia_script_dir}/format-modules.xsl \
-      ${fibopedia_product_tag_root}/modules-clean.rdf \
-      GIT_BRANCH=${GIT_BRANCH} GIT_TAG_NAME=${GIT_TAG_NAME}
+      ${fibopedia_product_tag_root}/modules-clean.rdf
 
   logItem "Generating" "$(logFileName "${fibopedia_product_tag_root}/FIBOpedia.csv")"
 
@@ -65,4 +64,5 @@ logItem "Generating" "$(logFileName "${fibopedia_product_tag_root}/FIBOpedia.xsl
     "${fibopedia_product_tag_root}/FIBOpedia.xlsx" \
     "${fibopedia_script_dir}/csvconfig"
 
+  touch "${fibopedia_product_tag_root}/fibopedia.log"
 }
