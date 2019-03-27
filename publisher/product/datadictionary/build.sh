@@ -99,7 +99,7 @@ WHERE {
   FIlTER (REGEX (xsd:string (?class), "edmcouncil"))
   ?class rdfs:subClassOf* ?base1 .
   ?b1 edm:pseudodomain ?base1; a edm:PR ; edm:p ?p ; edm:pseudorange ?r1  .
-  ?p av:forDD "true"^^xsd:boolean .
+#  ?p av:forDD "true"^^xsd:boolean .
   FILTER NOT EXISTS {
     ?class rdfs:subClassOf* ?base2 .
 # FILTER (?base2 != ?base1)
@@ -297,7 +297,7 @@ WHERE {
   BIND (REPLACE (REPLACE(xsd:string (?class), "^.*fibo/ontology/[^/]*/", ""), "/.*$", "")   AS ?submodule)
   ?class rdfs:subClassOf* ?base1 .
   ?b1 edm:pseudodomain ?base1. ?b1  edm:p ?p ; edm:pseudorange ?r1  .
-  ?p av:forDD "true"^^xsd:boolean .
+#   ?p av:forDD "true"^^xsd:boolean .
   FILTER NOT EXISTS {
     ?class rdfs:subClassOf+ ?base2 .
 # FILTER (?base2 != ?base1)
@@ -354,8 +354,6 @@ EOF
   
   ${SED} 's/"\t"/","/g; s/^\t"/,"/' "${TMPDIR}/output2.tsv" >> "${datadictionary_product_tag_root}/${fname}.csv"
 
-  touch "${datadictionary_product_tag_root}/datadictionary.log"
-  
   ${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py \
     "${datadictionary_product_tag_root}/${fname}.csv" \
     "${datadictionary_product_tag_root}/${fname}.xlsx" \

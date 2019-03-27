@@ -24,6 +24,9 @@
        That is covered here https://codepen.io/marcomtr/pen/eJOepz -->
     <!-- It will show modules and ontologies with a tooltip for the abstract, and for the latter link to the widoco page-->
     
+    <xsl:param name="GIT_BRANCH" select="'master'"/> <!-- Used for generating the WIDOCO link -->
+    <xsl:param name="GIT_TAG_NAME" select="'latest'"/> <!-- Ditto -->
+    
     <xsl:output method="html" indent="yes" media-type="text/html"/>
     <xsl:strip-space elements="*"/>
 
@@ -88,7 +91,7 @@
                <xsl:choose>
                  <xsl:when test="contains(name(), 'Ontology')">
                    <xsl:value-of select="concat(substring-before(@rdf:about, '/ontology/'),
-                     '/widoco/master/latest/',substring-after(@rdf:about, '/ontology/'), 'index-en.html')"/>                
+                     '/widoco/', $GIT_BRANCH, '/', $GIT_TAG_NAME, '/', substring-after(@rdf:about, '/ontology/'), 'index-en.html')"/>                
                  </xsl:when>
                  <xsl:otherwise>#</xsl:otherwise>
                </xsl:choose>

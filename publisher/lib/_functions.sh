@@ -198,14 +198,7 @@ function log() {
 
 function logRule() {
 
-  local -r rule="======================================="
-
-  if getIsDarkMode ; then
-    printf "\e[92m${rule} \e[1m%b\e[0m\n" "$*" >&2
-  else
-    printf "\e[34m${rule} \e[1m%b\e[0m\n" "$*" >&2
-  fi
-#  echo $(printf '=%.0s' {1..40}) $(bold "$@") >&2
+  echo $(printf '=%.0s' {1..40}) $(bold "$@") >&2
 }
 
 function logStep() {
@@ -573,7 +566,7 @@ function initRootProcess() {
   #
   # TMPDIR
   #
-  if [[ -z "${TMPDIR}" ]] ; then
+  if [ -z "${TMPDIR}" ] ; then
     error "Missing TMPDIR"
     return 1
   fi
@@ -589,7 +582,7 @@ function initOSBasedTools() {
 
   if ((bashMajorVersion != 4)) ; then
     error "We need to run this with Bash 4, not version: ${BASH_VERSINFO:?}"
-    if [[ "$(uname -s)" == "Darwin" ]] ; then
+    if [ "$(uname -s)" == "Darwin" ] ; then
       log "Run 'brew install bash' to get this installed"
       return 1
     fi
@@ -712,13 +705,9 @@ function initWorkspaceVars() {
   # We use logVar here and not logDir because we really want to show the actual WORKSPACE directory
   # and not the shorthand version of it (which is <ws>)
   #
-  if [[ "${WORKSPACE}" ]] ; then
-    logVar WORKSPACE
-  else
-    logItem WORKSPACE "not available since we're not started via Jenkins"
-  fi
+  logVar WORKSPACE
 
-  if [[ -n "${WORKSPACE}" && -d "${WORKSPACE}/input" ]] ; then
+  if [ -n "${WORKSPACE}" ] && [ -d "${WORKSPACE}/input" ] ; then
     INPUT="${WORKSPACE}/input"
   else
     INPUT="${INPUT:?}"
@@ -727,7 +716,7 @@ function initWorkspaceVars() {
 
   ((verbose)) && logDir INPUT
 
-  if [[ "${WORKSPACE}" ]] ; then
+  if [ -n "${WORKSPACE}" ] ; then
     OUTPUT="${WORKSPACE}/output"
     mkdir -p "${OUTPUT}" || return $?
   else
@@ -743,7 +732,7 @@ function initWorkspaceVars() {
   # If we're running in Jenkins, the environment variable WORKSPACE should be there
   # and the tmp directory is assumed to be there..
   #
-  if [[ "${WORKSPACE}" ]] ; then
+  if [ -n "${WORKSPACE}" ] ; then
     TMPDIR="${WORKSPACE}/tmp"
     mkdir -p "${TMPDIR}" || return $?
   else
@@ -761,7 +750,7 @@ function initWorkspaceVars() {
   #
   # Add your own directory locations above if you will
   #
-  if [[ ! -d "${source_family_root}" ]] ; then
+  if [ ! -d "${source_family_root}" ] ; then
     error "source_family_root directory not found (${source_family_root})"
     return 1
   fi
@@ -949,12 +938,12 @@ function initGitVars() {
     tagBranchSection="${BASH_REMATCH[1]}"
     tagVersionSection="${BASH_REMATCH[2]}"
 
-    if [[ -n "${tagBranchSection}" ]] ; then
+    if [ -n "${tagBranchSection}" ] ; then
       tagBranchSection=$(echo ${tagBranchSection} | tr '[:upper:]' '[:lower:]')
       logItem "Branch in git tag" "${tagBranchSection}"
       export GIT_BRANCH="${tagBranchSection}"
     fi
-    if [[ -n "${tagVersionSection}" ]] ; then
+    if [ -n "${tagVersionSection}" ] ; then
       logItem "Version in git tag" "${tagVersionSection}"
       export GIT_TAG_NAME="${tagVersionSection}"
     fi

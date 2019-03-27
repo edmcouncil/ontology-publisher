@@ -59,7 +59,7 @@ OPTIONAL {?type rdfs:label ?rlabel }
 }
 
 }
-?p av:forDD "true"^^xsd:boolean .
+# ?p av:forDD "true"^^xsd:boolean .
 OPTIONAL {?p skos:definition ?pdef .}
 ?p rdfs:label ?plabel . 
 BIND ((IRI (CONCAT (xsd:string (?p), "-", REPLACE (?dlabel, " ", "") , "-", REPLACE (?rlabel, " ", ""))))  as ?thisp)

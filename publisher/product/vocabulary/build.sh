@@ -143,7 +143,7 @@ EOF
     --syntax=turtle \
     --output=turtle > \
     "${tag_root}/fibo-vP.ttl"
-  touch ${vocabulary_product_tag_root}/vocabulary.log
+
   #
   # JG>Dean I didn't find any hygiene*.sparql files anywhere
   #

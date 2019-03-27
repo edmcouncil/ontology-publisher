@@ -56,7 +56,7 @@ function convertRdfFileTo() {
     org.edmcouncil.rdf_toolkit.SesameRdfFormatter \
     --source "${rdfFile}" \
     --source-format "${sourceFormat}" \
-    --target "${targetFile}.tmp" \
+    --target "${targetFile}X" \
     --target-format "${targetFormat}" \
     --inline-blank-nodes \
     --infer-base-iri \
@@ -64,17 +64,12 @@ function convertRdfFileTo() {
     > "${logfile}" 2>&1
   rc=$?
 
-  #
-  # We write the output to a temp file in case the input and the
-  # output are the same file (which happens a lot) since the
-  # serializer can't handle that situation. 
-  #
-  mv "${targetFile}.tmp" "${targetFile}"
+  mv "${targetFile}X" "${targetFile}" \
   
   #
   # For the turtle files, we want the base annotations to be the versionIRI
   #
-  if [[ "${targetFormat}" == "turtle" ]] ; then
+  if [ "${targetFormat}" == "turtle" ] ; then
 #   ((verbose)) && logItem "Adjusting ttl base IRI" "$(logFileName "${rdfFile}")"
     ${SED} -i "s?^\(\(# baseURI:\)\|\(@base\)\).*ontology/?&${branch_tag}/?" "${targetFile}"
     ${SED} -i "s@${branch_tag}/${branch_tag}/@${branch_tag}/@" \
@@ -103,7 +98,7 @@ function main() {
   local -r rc=$?
 
   ((rc == 0)) && return 0
-  error "convertRdfFile.sh $@ returned ${rc}"
+  warning "convertRdfFile.sh $@ returned ${rc}"
 
   return ${rc}
 }

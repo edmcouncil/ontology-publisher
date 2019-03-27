@@ -30,7 +30,7 @@ class TBCGraph(rdflib.Graph):
   
 	def ontologyIRI(self):
 		return list(self.subjects(RDF.type, OWL.Ontology))[0]
-
+  
 	def serialize(self, **kwargs):
 		dest = kwargs["destination"]
 		px = "# baseURI: %s\n" % (str(self.ontologyIRI()))
@@ -44,7 +44,6 @@ class Trigger():
 	def __init__(self, args, directories, tops):
 	
 		self.verbose = args.verbose
-		self.noimports = args.noimports
 		gs = self.__loadGraphs(directories)
 		self.__createDictionary(gs)
 		self.undefined = []
@@ -224,11 +223,9 @@ class Trigger():
 					for prefix, namespace in NamespaceManager(graph).namespaces():
 						NamespaceManager(cg).bind(prefix, namespace)
 					for trip in graph.triples((None, None, None)):
-						if not(self.noimports and trip[1]==OWL.imports):
-						        cg.add((trip[0], trip[1], trip[2]))
+						cg.add((trip[0], trip[1], trip[2]))
 			else:
 				print(" - Not included: {}".format(key))
-		cg.add((rdflib.URIRef("http://example.org/output"), RDF.type, OWL.Ontology))
 		NamespaceManager(cg).bind("dc", "http://purl.org/dc/elements/1.1/")
 		cg.serialize(destination = out, format = 'ttl')
 
@@ -237,7 +234,6 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description='Flattens some ontologies into one file.')
 	parser.add_argument('--verbose', '-v', help='verbose output', default=False, action='store_true')
 	parser.add_argument('--format', '-f', help='Specify either ttl for Turtle or nq for NQuads')
-	parser.add_argument('--noimports', '-ni', help='Suppress imports triples in output. Default is to include them.', default=False, action='store_true')
 	parser.add_argument(
 		'--dir', help='The root directory where to find ontology files', metavar='DIR')
 	parser.add_argument(

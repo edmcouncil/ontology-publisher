@@ -118,14 +118,14 @@ pipeline {
       }
     } // end of stage 'Prepare'
 
-    stage('Build Image 1') {
-      agent {
-        label 'docker'
-      }
-      steps {
-        sh "docker build --tag ${env.ONTOLOGY_BUILDER_IMAGE}:${env.GIT_HASH_BUILDER} ."
-      }
-    }
+//    stage('Build Image 1') {
+//      agent {
+//        label 'docker'
+//      }
+//      steps {
+//        sh "docker build --tag ${env.ONTOLOGY_BUILDER_IMAGE}:${env.GIT_HASH_BUILDER} ."
+//      }
+//    }
 
     stage('Build image') {
       agent {
