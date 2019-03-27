@@ -110,12 +110,12 @@ function spinRunInferences() {
 
   setProduct "${savedProduct}" || return $?
 
-  if [ -f "${locationMappingFile}" ] ; then
+  if [[ -f "${locationMappingFile}" ]] ; then
     logItem "JENA location mapping" "$(logFileName "${locationMappingFile}")"
   else
     error "Could not find ${locationMappingFile}"
   fi
-  if [ -f "${ontologyPolicyFile}" ] ; then
+  if [[ -f "${ontologyPolicyFile}" ]] ; then
     logItem "JENA ontology policy" "$(logFileName "${ontologyPolicyFile}")"
   else
     error "Could not find ${ontologyPolicyFile}"
