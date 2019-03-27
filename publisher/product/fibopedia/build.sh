@@ -13,8 +13,6 @@ export speedy="${speedy:-0}"
 
 function publishProductFIBOpedia () {
 
-  logRule "Publishing the fibopedia product"
-
   setProduct ontology || return $?
   export ontology_product_tag_root="${tag_root:?}"
 

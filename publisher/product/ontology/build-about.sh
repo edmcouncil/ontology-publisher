@@ -17,7 +17,7 @@ function ontologyCreateAboutFiles () {
   require TMPDIR || return $?
   require tag_root || return $?
 
-  logRule "Step: ontologyCreateAboutFiles"
+  logStep "ontologyCreateAboutFiles"
 
   local -r tmpAboutFileDev="$(createTempFile ABOUTD ttl)"
   local -r tmpAboutFileProd="$(createTempFile ABOUTP ttl)"

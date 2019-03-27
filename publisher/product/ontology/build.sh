@@ -10,20 +10,21 @@ false && source ../../lib/_functions.sh
 
 export SCRIPT_DIR="${SCRIPT_DIR}" # Yet another hack to silence IntelliJ
 export speedy="${speedy:-0}"
+export speedy=0
 
-if [ -f ${SCRIPT_DIR}/product/ontology/build-cats.sh ] ; then
+if [[ -f ${SCRIPT_DIR}/product/ontology/build-cats.sh ]] ; then
   # shellcheck source=build-cats.sh
   source ${SCRIPT_DIR}/product/ontology/build-cats.sh
 else
   source build-cats.sh # This line is only there to make the IntelliJ Bash plugin see build-cats.sh
 fi
-if [ -f ${SCRIPT_DIR}/product/ontology/build-about.sh ] ; then
+if [[ -f ${SCRIPT_DIR}/product/ontology/build-about.sh ]] ; then
   # shellcheck source=build-about.sh
   source ${SCRIPT_DIR}/product/ontology/build-about.sh
 else
   source build-about.sh # This line is only there to make the IntelliJ Bash plugin see build-about.sh
 fi
-if [ -f ${SCRIPT_DIR}/product/ontology/build-theallfile.sh ] ; then
+if [[ -f ${SCRIPT_DIR}/product/ontology/build-theallfile.sh ]] ; then
   # shellcheck source=build-theallfile.sh
   source ${SCRIPT_DIR}/product/ontology/build-theallfile.sh
 else
@@ -34,17 +35,14 @@ fi
 # Produce all artifacts for the ontology product
 #
 function publishProductOntology() {
-
   require spec_family_root || return $?
   require tag_root || return $?
 
   setProduct ontology || return $?
 
   ontology_product_tag_root="${tag_root:?}"
-  #
-  # Show the ontology root directory
-  #
-  logItem "Ontology Root" "$(logFileName "${ontology_product_tag_root}")"
+
+
 
   ontologyCopyRdfToTarget || return $?
   ontologySearchAndReplaceStuff || return $?
@@ -57,12 +55,12 @@ function publishProductOntology() {
 #  else
     ontologyConvertRdfToAllFormats || return $?
 #  fi
-# ontologyAnnotateTopBraidBaseURL || return $?
   ontologyCreateTheAllTtlFile || return $?
   #
   # JG>Who's using "ontology-zips.log"?
   #
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
+
 
   if ((speedy)) ; then
     log "speedy=true -> Not doing quads because they are slow"
@@ -74,13 +72,28 @@ function publishProductOntology() {
 }
 
 #
+# Every hygiene test file has a '# banner <banner>' message, fetch that with this function
+#
+function getBannerFromSparqlTestFile() {
+
+  local -r hygieneTestSparqlFile="$1"
+
+  grep "banner" "${hygieneTestSparqlFile}" | cut -d\  -f 3-
+}
+
+function getHygieneTestFiles() {
+
+  find "${source_family_root}/etc" -name 'testHygiene*.sparql'
+}
+
+#
 # JG>Dean, I just copied the code from the old hygiene test into this function...
 #
 function runHygieneTests() {
 
-  setProduct ontology || return $?
+  local banner
 
-  ontology_product_tag_root="${tag_root:?}"
+  setProduct ontology || return $?
 
   #
   # Get ontologies for Dev
@@ -88,7 +101,7 @@ function runHygieneTests() {
   log "Merging all dev ontologies into one RDF file"
   "${JENA_ARQ}" $(find "${source_family_root}" -name "*.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${OUTPUT}/DEV.ttl
+    --results=TTL > ${tag_root}/DEV.ttl
 
   #
   # Get ontologies for Prod
@@ -97,40 +110,46 @@ function runHygieneTests() {
   "${JENA_ARQ}" \
     $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${OUTPUT}/PROD.ttl
+    --results=TTL > ${tag_root}/PROD.ttl
 
-  log "Running tests:"
-  while read -r hygieneTestSparqlFile ; do
-    logItem "$(basename "${hygieneTestSparqlFile}")" "$(grep "banner" "${hygieneTestSparqlFile}" | cut -d\  -f 3- )"
-  done < <(find "${source_family_root}/etc" -name 'testHygiene*.sq')
-
-  log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-  log "Errors in DEV:"
-  log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  logRule "Will run the following tests:"
 
   while read -r hygieneTestSparqlFile ; do
-    logItem "Running test" "$(grep "banner" "${hygieneTestSparqlFile}" | cut -d\  -f 3- )"
+    banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
+    logItem "$(basename "${hygieneTestSparqlFile}")" "${banner}"
+  done < <(getHygieneTestFiles)
+
+  logRule "Errors in DEV:"
+
+  while read -r hygieneTestSparqlFile ; do
+    banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
+    logItem "Running test" "${banner}"
     ${JENA_ARQ} \
-      --data=${OUTPUT}/DEV.ttl \
+      --data=${tag_root}/DEV.ttl \
+      --results=csv \
       --query="${hygieneTestSparqlFile}" | \
+      grep -v "^s,o,error$" | \
+      grep -v "^error$" | \
       sed 's/PRODERROR/WARN/g' > \
       ${TMPDIR}/console1.txt
     cat ${TMPDIR}/console1.txt
-  done < <(find "${source_family_root}/etc" -name 'testHygiene*.sq')
+  done < <(getHygieneTestFiles)
 
-  log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-  log "Errors in PROD:"
-  log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  logRule "Errors in PROD:"
 
   while read -r hygieneTestSparqlFile ; do
-    logItem "Running test" "$(grep "banner" "${hygieneTestSparqlFile}" | cut -d\  -f 3- )"
+    banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
+    logItem "Running test" "${banner}"
     ${JENA_ARQ} \
-      --data=${OUTPUT}/PROD.ttl \
+      --data=${tag_root}/PROD.ttl \
+      --results=csv \
       --query="${hygieneTestSparqlFile}" | \
+      grep -v "^s,o,error$" | \
+      grep -v "^error$" | \
       sed 's/PRODERROR/ERROR/g' > \
       ${TMPDIR}/console2.txt
     cat ${TMPDIR}/console2.txt
-  done < <(find "${source_family_root}/etc" -name 'testHygiene*.sq')
+  done < <(getHygieneTestFiles)
 
   grep "ERROR:" ${TMPDIR}/console1.txt && return 1
   grep "ERROR:" ${TMPDIR}/console2.txt && return 1
@@ -138,7 +157,7 @@ function runHygieneTests() {
   rm ${TMPDIR}/console1.txt
   rm ${TMPDIR}/console2.txt
 
-  log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  logRule "Passed all the hygiene tests"
 
   return 0
 }
@@ -155,7 +174,7 @@ function ontologyCopyRdfToTarget() {
   local module
 #  local upperModule
 
-  logRule "Step: ontologyCopyRdfToTarget"
+  logStep "ontologyCopyRdfToTarget"
 
   log "Copying all artifacts that we publish straight from git into $(logFileName "${tag_root}")"
 
@@ -169,15 +188,16 @@ function ontologyCopyRdfToTarget() {
       fi
     done < <(
       find . \
-        -name '*.rdf'  -o \
-        -name '*.ttl'  -o \
-        -name '*.md'   -o \
-        -name '*.jpg'  -o \
-        -name '*.png'  -o \
-        -name '*.gif'  -o \
-        -name '*.docx' -o \
-        -name '*.pdf'  -o \
-        -name '*.sq'
+        -name '*.rdf'   -o \
+        -name '*.ttl'   -o \
+        -name '*.md'    -o \
+        -name '*.jpg'   -o \
+        -name '*.png'   -o \
+        -name '*.gif'   -o \
+        -name '*.docx'  -o \
+        -name '*.pdf'   -o \
+        -name '*.sq'    -o \
+        -name '*.sparql'
     )
   )
 
@@ -242,7 +262,7 @@ function ontologyCopyRdfToTarget() {
 
 function ontologySearchAndReplaceStuff() {
 
-  logRule "Step: ontologySearchAndReplaceStuff"
+  logStep "ontologySearchAndReplaceStuff"
 
   require ONTPUB_SPEC_HOST || return $?
   require spec_family_root_url || return $?
@@ -288,11 +308,11 @@ s@${product_root_url}/\([A-Z]*\)/[0-9]*/@${product_root_url}/\1/@g
 # - <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/InformationExt/InfoCore/"/> becomes:
 # - <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/master/latest/FND/InformationExt/InfoCore/"/>
 #
-s@\(owl:imports rdf:resource="${product_root_url}/\)@\1${GIT_BRANCH}/${GIT_TAG_NAME}/@g
+s@\(owl:imports rdf:resource="${product_root_url}/\)@\1${branch_tag}/@g
 #
 # And then the same for the owl:versionIRI.
 #
-s@\(owl:versionIRI rdf:resource="${product_root_url}/\)@\1${GIT_BRANCH}/${GIT_TAG_NAME}/@g
+s@\(owl:versionIRI rdf:resource="${product_root_url}/\)@\1${branch_tag}/@g
 #
 # Just to be sure that we don't see any 'ontology/ontology' IRIs:
 #
@@ -300,7 +320,7 @@ s@/ontology/ontology/@/ontology/@g
 #
 __HERE__
 
-  #cat "${sedfile}"
+#   cat "${sedfile}"
 
   (
     ${FIND} ${tag_root}/ -type f \( -name '*.rdf' -o -name '*.ttl' -o -name '*.md' \) -exec ${SED} -i -f ${sedfile} {} \;
@@ -311,15 +331,15 @@ __HERE__
   #
   # We want to add in a rdfs:isDefinedBy link from every class back to the ontology.
   #
-# if ((speedy)) ; then
-#	  log "speedy=true -> Leaving out isDefinedBy because it is slow"
-#	else
+  if ((speedy)) ; then
+	  log "speedy=true -> Leaving out isDefinedBy because it is slow"
+	else
 	  #${tag_root}/ -type f  -name '*.rdf' -not -name '*About*'  -print | \
 	  #xargs -P $(nproc) -I fileName
 	  ${FIND} ${tag_root}/ -type f  -name '*.rdf' -not -name '*About*'  -print | while read file ; do
 	    ontologyAddIsDefinedBy "${file}"
     done
-# fi
+  fi
 
   return 0
 }
@@ -368,8 +388,8 @@ function ontologyFixTopBraidBaseURICookie() {
       --data="${ontologyFile}" \
       --results=csv | \
       ${GREP} edmcouncil | \
-      ${SED} "s@\(${product_root_url}/\)@\1${GIT_BRANCH}/${GIT_TAG_NAME}/@" | \
-      ${SED} "s@${GIT_BRANCH}/${GIT_TAG_NAME}/${GIT_BRANCH}/${GIT_TAG_NAME}/@${GIT_BRANCH}/${GIT_TAG_NAME}/@" \
+      ${SED} "s@\(${product_root_url}/\)@\1${branch_tag}/@" | \
+      ${SED} "s@${branch_tag}/${branch_tag}/@${branch_tag}/@" \
   )
 
   uri="# baseURI: ${baseURI}"
@@ -377,39 +397,9 @@ function ontologyFixTopBraidBaseURICookie() {
   ${SED} -i "1s;^;${uri}\n;" "${ontologyFile}"
 }
 
-#
-# Add the '# baseURI' line to the top of all turtle files with the versioned ontology IRI
-#
-
-function ontologyAnnotateTopBraidBaseURL() {
-
-  local -r queryFile="$(mktemp ${TMPDIR}/ontXXXXXX.sq)"
-
-  log "Add versioned baseURI to all turtle files"
-
-  #
-  # Create a file with a SPARQL query that gets the OntologyIRIs in a given model/file.
-  #
-  cat > "${queryFile}" << __HERE__
-SELECT ?o WHERE {
-  ?o a <http://www.w3.org/2002/07/owl#Ontology> .
-}
-__HERE__
-
-  cat "${queryFile}"
-
-  #
-  # Now iterate through all turtle files that we're going to publish
-  # and call ontologyFixTopBraidBaseURICookie() for each.
-  #
-  ${FIND} ${tag_root}/ -type f -name "*.ttl" | while read file ; do
-    ontologyFixTopBraidBaseURICookie "${file}" "${queryFile}"
-  done
-}
-
 function ontologyConvertMarkdownToHtml() {
 
-  logRule "Step: ontologyConvertMarkdownToHtml"
+  logStep "ontologyConvertMarkdownToHtml"
 
   if ((pandoc_available == 0)) ; then
     error "Could not convert Markdown files to HTML since pandoc is missing"
@@ -439,7 +429,7 @@ function ontologyBuildIndex () {
   require tag_root_url || return $?
   require GIT_TAG_NAME || return $?
 
-  logRule "Step: build tree.html files"
+  logStep "build tree.html files"
 
   (
   	cd ${tag_root:?} || return $?
@@ -472,21 +462,27 @@ function ontologyBuildIndex () {
 #
 function ontologyConvertRdfToAllFormats() {
 
-
   require tag_root || return $?
 
-  logRule "Step: ontologyConvertRdfToAllFormats"
+  logStep "ontologyConvertRdfToAllFormats"
 
   pushd "${tag_root:?}" >/dev/null || return $?
 
-  local -r maxParallelJobs=2
+  local -r maxParallelJobs=8
   local numberOfParallelJobs=0
+  local formats
+
+  if ((speedy)) ; then
+    formats="turtle"
+  else
+    formats="turtle json-ld"
+  fi
 
   log "Running ${maxParallelJobs} converter jobs in parallel:"
 
   for rdfFile in **/*.rdf ; do
     ontologyIsInTestDomain "${rdfFile}" || continue
-    for format in json-ld turtle ; do
+    for format in ${formats} ; do
       if ((maxParallelJobs == 1)) ; then
         ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${rdfFile}" "${format}" || return $?
       else
@@ -515,7 +511,7 @@ function ontologyZipFiles () {
   require family_product_branch_tag || return $?
   require tag_root || return $?
 
-  logRule "Step: ontologyZipFiles"
+  logStep "ontologyZipFiles"
 
   local zipttlDevFile="${tag_root}/dev.ttl.zip"
   local ziprdfDevFile="${tag_root}/dev.rdf.zip"
@@ -568,20 +564,93 @@ function buildquads () {
   local ProdQuadsFile="${tag_root}/prod.fibo.nq"
   local DevQuadsFile="${tag_root}/dev.fibo.nq"
 
-  log "starting buildquads"
+  local ProdFlatNT="${tag_root}/prod.fibo.nt"
+  local DevFlatNT="${tag_root}/dev.fibo.nt"
+
+  local ProdFlatTTL="${tag_root}/prod.fibo.ttl"
+  local DevFlatTTL="${tag_root}/dev.fibo.ttl"
+
+  local ProdTMPTTL="${tag_root}/prod.temp.ttl"
+  local DevTMPTTL="${tag_root}/dev.temp.ttl"
+
+
+  local TTLPrefixes="${tag_root}/prefixes.fibo.ttl"
+  local SPARQLPrefixes="${tag_root}/prefixes.fibo.sq"
+
+
+  local tmpflat="$(mktemp ${TMPDIR}/flatten.XXXXXX.sq)"
+  cat >"${tmpflat}" << __HERE__
+PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+
+CONSTRUCT {?s ?p ?o}
+WHERE {GRAPH ?g {?s ?p ?o
+FILTER NOT EXISTS {?s a owl:Ontology}
+}
+}
+__HERE__
+
+
+  local tmppx="$(mktemp ${TMPDIR}/px.XXXXXX.sq)"
+  cat >"${tmppx}" << __HERE__
+prefix sm: <http://www.omg.org/techprocess/ab/SpecificationMetadata/>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?line
+WHERE {graph ?g {?o a owl:Ontology ;
+sm:fileAbbreviation ?px
+BIND (CONCAT ("prefix ", ?px, ": <", xsd:string(?o), ">") AS ?line)
+}
+}
+__HERE__
+
+  local tmpecho="$(mktemp ${TMPDIR}/echo.XXXXXX.sq)"
+  cat >"${tmpecho}" << __HERE__
+CONSTRUCT {?s ?p ?o}
+WHERE {?s ?p ?o}
+__HERE__
+
+
+  local prefixes="$(mktemp ${TMPDIR}/prefixes.XXXXXX)"
+  log "starting buildquads with the new quadify"
 
   (
-    cd ${spec_root}
+    cd ${ontology_product_tag_root}
+	  echo "starting dev"
 
-	  ${FIND} . -name '*.rdf' -print | while read file; do quadify "$file"; done > "${DevQuadsFile}"
+	  ${FIND} . -mindepth 2 -name '*.ttl' -print | while read file; do quadify "$file"; done > "${DevQuadsFile}"
+	  echo "starting prod"
+	  ${GREP} -rl 'fibo-fnd-utl-av:hasMaturityLevel fibo-fnd-utl-av:Release' | \
+	      while read file ; do quadify $file ; done > ${ProdQuadsFile}
 
-	  ${GREP} -r 'utl-av[:;.]Release' "${family_product_branch_tag}" | \
-	    ${GREP} -F ".rdf" | \
-	    ${SED} 's/:.*$//' | \
-	    while read file ; do quadify $file ; done > ${ProdQuadsFile}
+	  ${JENA_ARQ} --query="${tmpflat}" --data=${ProdQuadsFile} --results=NT > ${ProdFlatNT}
+	  ${JENA_ARQ} --query="${tmpflat}" --data=${DevQuadsFile}  --results=NT > ${DevFlatNT}
+
+	  ${JENA_ARQ} --query="${tmppx}" --data=${DevQuadsFile} --results=CSV | tail +2 | tr --delete "\015"  > ${prefixes}
+
+	  cat ${prefixes} > "${SPARQLPrefixes}"
+	  sed 's/^/@/;s/$/ ./' ${prefixes} > ${TTLPrefixes}
+
+
+	  cat ${TTLPrefixes} ${ProdFlatNT} > "${ProdTMPTTL}"
+
+	  cat ${TTLPrefixes} ${DevFlatNT} > "${DevTMPTTL}"
+
+          
+
+	  
+	  ${JENA_ARQ} --data="${ProdTMPTTL}" --query="${tmpecho}" --results=TTL > "${ProdFlatTTL}"
+	  ${JENA_ARQ} --data="${DevTMPTTL}" --query="${tmpecho}" --results=TTL > "${DevFlatTTL}"
+	  
 
 	  zip ${ProdQuadsFile}.zip ${ProdQuadsFile}
 	  zip ${DevQuadsFile}.zip ${DevQuadsFile}
+
+	  zip ${ProdFlatNT}.zip ${ProdFlatNT}
+	  zip ${DevFlatNT}.zip ${DevFlatNT}
+
+
+	  
   )
 
   log "finished buildquads"

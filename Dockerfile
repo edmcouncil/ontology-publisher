@@ -51,10 +51,22 @@ RUN mkdir -p /publisher ${TMPDIR} || true
 RUN \
   echo ================================= install basics >&2 && \
   apk --no-cache add \
-    bash curl git grep sed findutils coreutils tree jq \
-    zip tar \
+    curl wget \
+    bash git grep sed findutils coreutils tree jq bc xmlstarlet \
+    zip tar xz \
     python python3 py3-setuptools \
-    gcc linux-headers libc-dev wget xz && \
+    perl perl-utils \
+    perl-log-log4perl perl-class-accessor perl-datetime perl-datetime-format-builder \
+    perl-datetime-calendar-julian perl-text-csv perl-data-compare perl-data-dump perl-file-slurper \
+    perl-list-allutils perl-autovivification perl-xml-libxml-simple perl-regexp-common \
+    perl-data-uniqid perl-text-roman perl-unicode-linebreak perl-sort-key perl-text-bibtex \
+    perl-module-build perl-business-isbn perl-business-ismn perl-business-issn perl-encode-eucjpascii \
+    perl-encode-hanextra perl-encode-jis2k perl-lingua-translit perl-text-csv_xs perl-perlio-utf8_strict \
+    perl-xml-libxslt perl-xml-writer perl-lwp-protocol-https perl-list-moreutils-xs perl-mozilla-ca \
+    perl-unicode-collate perl-unicode-linebreak perl-unicode-normalize perl-config-autoconf \
+    perl-extutils-libbuilder perl-file-which perl-test-differences \
+    fontconfig \
+    gcc linux-headers libc-dev && \
   #
   # Clean up
   #
@@ -64,13 +76,42 @@ RUN \
 # Installing LaTex seperately since it's such a giant layer (3GB)
 # We'll have to figure out how to make it smaller.
 #
+
+# The standard alpine version of texlive is the 2017 version and it's not properly installed, so commenting
+# this section out until its fixed in Alpine and installing TexLive 2018 manually.
+#RUN \
+#  echo ================================= install LaTex >&2 && \
+#  apk --no-cache add biber texlive-full && \
+#  #
+#  # Clean up
+#  #
+#  rm -rf /var/lib/apt/lists/*
+
+#
+# Installing TexLive 2018 manually
+#
+# NOTE: It took a LONG time to figure this one out: this version of Aline is based on "musl" which is in a way making
+#       it a new operating system for which certain packages that are part of TexLive are not built. Such as biber,
+#       which we use for citations in the generated LaTex reference. So we need to install TexLive for 2 platforms and
+#       give preference to the x86_64-linuxmusl binaries if they exist and otherwise use the x86_64-linux binaries.
+#       Hence the weird PATH statement below.
+#
+COPY /usr/share/scripts/install-texlive.sh /usr/share/scripts/install-texlive.sh
 RUN \
   echo ================================= install LaTex >&2 && \
-  apk --no-cache add biber texlive-full && \
-  #
-  # Clean up
-  #
-  rm -rf /var/lib/apt/lists/*
+  /usr/share/scripts/install-texlive.sh
+ENV \
+  MANPATH=/usr/local/texlive/2018/texmf-dist/doc/man:${MANPATH} \
+  INFOPATH=/usr/local/texlive/2018/texmf-dist/doc/info:${INFOPATH} \
+  PATH=${PATH}:/usr/local/texlive/2018/bin/x86_64-linuxmusl:/usr/local/texlive/2018/bin/x86_64-linux
+
+#
+# Installing biblatex manually
+#
+COPY /usr/share/scripts/install-biber.sh /usr/share/scripts/install-biber.sh
+RUN \
+  echo ================================= install biblatex-biber >&2 && \
+  /usr/share/scripts/install-biber.sh
 
 #
 # Installing pandoc
@@ -126,8 +167,9 @@ RUN \
 ENV RDFTOOLKIT_JAR=/usr/share/java/rdf-toolkit/rdf-toolkit.jar
 RUN \
   echo ================================= install the RDF toolkit >&2 && \
+  toolkit_build="23" ; \
   url="https://jenkins.edmcouncil.org/view/rdf-toolkit/job/rdf-toolkit-build/" ; \
-  url="${url}lastSuccessfulBuild/artifact/target/scala-2.12/rdf-toolkit.jar" ; \
+  url="${url}${toolkit_build}/artifact/target/scala-2.12/rdf-toolkit.jar" ; \
   echo "Downloading ${url}:" >&2 ; \
   mkdir -p /usr/share/java/rdf-toolkit ; \
   curl --location --silent --show-error --output ${RDFTOOLKIT_JAR} --url "${url}"
@@ -231,9 +273,10 @@ RUN \
 ## Installing Widoco
 ##
 RUN \
-  widoco_version="1.4.7" ; \
-  widoco_root_url="https://jenkins.edmcouncil.org/view/widoco/job/widoco-build/lastStableBuild/es.oeg\$widoco/artifact/es.oeg" ; \
-  echo ================================= install widoco ${widoco_version} >&2 && \
+  widoco_version="1.4.9" ; \
+  edmc_widoco_build_number="22" ; \
+  widoco_root_url="https://jenkins.edmcouncil.org/view/widoco/job/widoco-build" ; \
+  echo ================================= install widoco ${widoco_version} build ${edmc_widoco_build_number} >&2 && \
   #
   # Creating widoco and its config directory and storing an empty config file in there which suppresses
   # an annoying log message at each invocation of widoco
@@ -247,14 +290,14 @@ RUN \
     --silent \
     --show-error \
     --output /usr/share/java/widoco/widoco-launcher.jar \
-    --url ${widoco_root_url}/widoco/${widoco_version}/widoco-${widoco_version}-launcher.jar && \
+    --url "${widoco_root_url}/${edmc_widoco_build_number}/es.oeg\$widoco/artifact/es.oeg/widoco/${widoco_version}/widoco-${widoco_version}-launcher.jar" && \
   test -f /usr/share/java/widoco/widoco-launcher.jar
 
 #
 # Installing log4j (needed by widoco)
 #
 RUN \
-  log4j_version="2.11.1" ; \
+  log4j_version="2.11.2" ; \
   log4j_mirror="http://apache.javapipe.com/logging/log4j" ; \
   log4j_targz_url="${log4j_mirror}/${log4j_version}/apache-log4j-${log4j_version}-bin.tar.gz" ; \
   echo ================================= install log4j ${log4j_version} >&2 && \
@@ -318,6 +361,10 @@ VOLUME ["${OUTPUT}"]
 VOLUME ["${TMPDIR}"]
 
 WORKDIR /publisher
+
+ENV \
+  PERL5LIB=/usr/local/biber/lib \
+  PATH=/usr/local/biber/bin:${PATH}
 
 RUN \
   echo PATH=${PATH} && \
