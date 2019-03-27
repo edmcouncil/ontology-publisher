@@ -208,7 +208,7 @@ function generateWidocoDocumentationForFile() {
   #
   # ont-policy.rdf has to be in current directory unfortunately
   #
-  cp "${ontologyPolicyFile}" .
+  cat "${ontologyPolicyFile}" | sed "s#file://./#file://${WORKSPACE}/#g" > ont-policy.rdf
 
   java \
     -classpath /usr/share/java/log4j/log4j-core.jar:/usr/share/java/log4j/log4j-1.2-api.jar:/usr/share/java/log4j/log4j-api.jar \

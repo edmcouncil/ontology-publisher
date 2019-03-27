@@ -69,6 +69,15 @@ function ontologyBuildProtegeCatalogs () {
   return $?
 }
 
+function makeFileUrl() {
+
+  local -r absolutePath="$1"
+
+  local relativePath="${absolutePath/${WORKSPACE}/.}"
+
+  echo -n "file://${relativePath}"
+}
+
 function getOntologyIRIsFromDirectoryOfRDFXMLFiles() {
 
   local -r rootDirectoryWithRDFXMLFiles="$1"
@@ -180,11 +189,11 @@ __HERE__
       cat >> "${tag_root}/location-mapping.n3" << __HERE__
   [
     lm:name "${ontologyIRI}/" ;
-    lm:altName "file://${ontologyRdfFile}"
+    lm:altName "$(makeFileUrl ${ontologyRdfFile})"
   ],
   [
     lm:name "${ontologyVersionIRI}/" ;
-    lm:altName "file://${ontologyRdfFile}"
+    lm:altName "$(makeFileUrl ${ontologyRdfFile})"
   ],
 __HERE__
     done < <(getDevOntologies)
@@ -202,11 +211,11 @@ __HERE__
     cat >> "${tag_root}/location-mapping.n3" << __HERE__
   [
     lm:name "${ontologyIRI}/" ;
-    lm:altName "file://${ontologyRdfFile}"
+    lm:altName "$(makeFileUrl ${ontologyRdfFile})"
   ],
   [
     lm:name "${ontologyVersionIRI}/" ;
-    lm:altName "file://${ontologyRdfFile}"
+    lm:altName "$(makeFileUrl ${ontologyRdfFile})"
   ],
 __HERE__
   done < <(
@@ -382,13 +391,13 @@ __HERE__
 
   <OntologySpec>
       <publicURI rdf:resource="${ontologyIRI}" />
-      <altURL    rdf:resource="file://${ontologyRdfFile}" />
+      <altURL    rdf:resource="$(makeFileUrl ${ontologyRdfFile})" />
       <language  rdf:resource="http://www.w3.org/2000/01/rdf-schema" />
   </OntologySpec>
 
   <OntologySpec>
       <publicURI rdf:resource="${ontologyVersionIRI}" />
-      <altURL    rdf:resource="file://${ontologyRdfFile}" />
+      <altURL    rdf:resource="$(makeFileUrl ${ontologyRdfFile})" />
       <language  rdf:resource="http://www.w3.org/2000/01/rdf-schema" />
   </OntologySpec>
 __HERE__
@@ -409,7 +418,7 @@ __HERE__
 
   <OntologySpec>
       <publicURI rdf:resource="${ontologyIRI}" />
-      <altURL    rdf:resource="file://${ontologyRdfFile}" />
+      <altURL    rdf:resource="$(makeFileUrl ${ontologyRdfFile})" />
       <language  rdf:resource="http://www.w3.org/2000/01/rdf-schema" />
   </OntologySpec>
 __HERE__
