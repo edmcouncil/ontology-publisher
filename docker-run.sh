@@ -7,8 +7,11 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)" || exit 1
 
 export ONTPUB_FAMILY="${ONTPUB_FAMILY:-fibo}"
-export ONTPUB_SPEC_HOST="${ONTPUB_SPEC_HOST:-spec.edmcouncil.org}"
+export ONTPUB_ORG="edmcouncil"
+export ONTPUB_ORG_TLD="org"
+export ONTPUB_SPEC_HOST="${ONTPUB_SPEC_HOST:-spec.${ONTPUB_ORG}.${ONTPUB_ORG_TLD}}"
 export ONTPUB_INPUT_REPOS="${ONTPUB_INPUT_REPOS:-${ONTPUB_FAMILY} LCC}"
+export ONTPUB_VERSION="$(< ${SCRIPT_DIR}/VERSION)"
 
 if [[ -f ${SCRIPT_DIR}/publisher/lib/_functions.sh ]] ; then
   # shellcheck source=publisher/lib/_functions.sh
@@ -337,17 +340,21 @@ function buildImage() {
   opts+=("ONTPUB_SPEC_HOST=${ONTPUB_SPEC_HOST}")
   opts+=('--build-arg')
   opts+=("ONTPUB_IS_DARK_MODE=${cli_option_dark}")
+  opts+=('--build-arg')
+  opts+=("ONTPUB_VERSION=${ONTPUB_VERSION}")
   opts+=('--label')
-  opts+=('org.edmcouncil.ontology-publisher.version="0.0.1"')
+  opts+=('${ONTPUB_ORG_TLD}.${ONTPUB_ORG}.ontology-publisher.version="${ONTPUB_VERSION/v/}"')
   opts+=('--label')
-  opts+=("org.edmcouncil.ontology-publisher.release-date="$(date "+%Y-%m-%d")"")
+  opts+=("${ONTPUB_ORG_TLD}.${ONTPUB_ORG}.ontology-publisher.release-date="$(date "+%Y-%m-%d")"")
   opts+=('--tag')
-  opts+=("edmcouncil/${containerName}:latest")
+  opts+=("${ONTPUB_ORG}/${containerName}:latest")
+  opts+=('--tag')
+  opts+=("${ONTPUB_ORG}/${containerName}:${ONTPUB_VERSION}")
   opts+=('--file')
   opts+=("$(dockerFile) .")
 
   #
-  # Build the image and tag it as ontology-publisher:latest
+  # Build the image and tag it as ontology-publisher:latest and ontology-publisher:VERSION (see content of VERSION file)
   #
   log "docker ${opts[@]}"
   if docker ${opts[@]} ; then
@@ -363,9 +370,9 @@ function pushImage() {
 
   ((cli_option_pushimage == 0)) && return 0
 
-  log "docker push edmcouncil/ontology-publisher:latest"
+  log "docker push ${ONTPUB_ORG}/ontology-publisher:${ONTPUB_VERSION}"
 
-  docker push edmcouncil/ontology-publisher:latest
+  docker push "${ONTPUB_ORG}/ontology-publisher:${ONTPUB_VERSION}"
 }
 
 function run() {
@@ -460,7 +467,7 @@ function run() {
     log "Launching the container"
   fi
 
-  opts+=("edmcouncil/${containerName}:latest")
+  opts+=("${ONTPUB_ORG}/${containerName}:latest")
 
   if ((cli_option_shell)) ; then
     opts+=('-l')

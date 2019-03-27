@@ -13,11 +13,20 @@
 # Using Alpine linux because it's ultra-lightweight, designed for running in a Docker
 # container.
 #
-#FROM maven:3-jdk-12-alpine
-FROM openjdk:13-ea-1-jdk-alpine3.8
+# About the base image: we're using the latest and greatest version of OpenJDK:
+#
+# - 13-ea means Java 13 early access build (see https://jdk.java.net/13/)
+#   We want this version because it works best in a docker container, respecting CPU and memory limits.
+#   It'll also be more likely to be the fastest Java available.
+# - jdk means that we're using the Java Developer Kit (JDK) and not just the Java Runtime Engine (JRE)
+#   TODO: Please document which parts of the ontology-publisher actually need this
+# - alpine is the name of the Linux brand we're using, which is the smallest linux keeping the image as small
+#   as possible.
+#
+FROM openjdk:13-ea-jdk-alpine
 
 #
-# Some meta data, can only have one maintainer
+# Some meta data, can only have one maintainer unfortunately
 #
 LABEL maintainer="jacobus.geluk@agnos.ai"
 LABEL authors="jacobus.geluk@agnos.ai,dallemang@workingontologist.com,kartgk@gmail.com,pete.rivett@adaptive.com"
@@ -31,16 +40,14 @@ LABEL owner="Enterprise Data Management Council"
 ARG ONTPUB_FAMILY
 ARG ONTPUB_SPEC_HOST
 ARG ONTPUB_IS_DARK_MODE
+ARG ONTPUB_VERSION
 
-#
-# TODO: Move the ONTPUB_FAMILY env to ARGS so that this can be used for other ontologies than FIBO
-#
 ENV \
   ONTPUB_FAMILY=${ONTPUB_FAMILY:-fibo} \
+  ONTPUB_VERSION=${ONTPUB_VERSION:-latest} \
+  ONTPUB_IS_DARK_MODE=${ONTPUB_IS_DARK_MODE:-1} \
   INPUT=/input \
   OUTPUT=/output \
-  ONTPUB_IS_DARK_MODE=${ONTPUB_IS_DARK_MODE:-1} \
-  RUNNING_IN_DOCKER=1 \
   TMPDIR=/var/tmp
 
 RUN mkdir -p /publisher ${TMPDIR} || true
