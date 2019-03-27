@@ -73,9 +73,7 @@ function makeFileUrl() {
 
   local -r absolutePath="$1"
 
-  local relativePath="${absolutePath/${WORKSPACE}/.}"
-
-  echo -n "file://${relativePath}"
+  echo -n "file://${absolutePath}"
 }
 
 function getOntologyIRIsFromDirectoryOfRDFXMLFiles() {

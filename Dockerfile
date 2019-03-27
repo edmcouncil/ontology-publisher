@@ -355,13 +355,13 @@ RUN find /publisher/ -name '*.sh' | xargs sed -i 's/\r//'
 #
 
 #
-# Mount your local git clone containing all the OWL files here
+# Your ontology repos are supposed to be under /input
 #
-VOLUME ["${INPUT}/${ONTPUB_FAMILY}"]
+#VOLUME ["${INPUT}" ]
 #
 # Mount your "target directory", the place where all published files end up, here
 #
-VOLUME ["${OUTPUT}"]
+#VOLUME ["${OUTPUT}"]
 #
 # Mount a directory for temporary files
 #

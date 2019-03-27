@@ -206,9 +206,13 @@ function generateWidocoDocumentationForFile() {
     return 1
   fi
   #
-  # ont-policy.rdf has to be in current directory unfortunately
+  # ont-policy.rdf has to be in current directory unfortunately.
   #
-  cat "${ontologyPolicyFile}" | sed "s#file://./#file://${WORKSPACE}/#g" > ont-policy.rdf
+  if [[ ! -f "${ontologyPolicyFile}" ]] ; then
+    error "Could not find ${ontologyPolicyFile}"
+    return 1
+  fi
+  cp "${ontologyPolicyFile}" .
 
   java \
     -classpath /usr/share/java/log4j/log4j-core.jar:/usr/share/java/log4j/log4j-1.2-api.jar:/usr/share/java/log4j/log4j-api.jar \

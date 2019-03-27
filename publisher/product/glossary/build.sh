@@ -328,7 +328,7 @@ set -x
   log "Using RDF toolkit to convert Turtle to JSON-LD"
 
 #  if ((debug)) ; then
-#    log "Convert ${TMPDIR/${WORKSPACE}/}/glossary-test-nolabel.ttl to ${glossary_product_tag_root/${WORKSPACE}/}/glossary-test.jsonld"
+#    log "Convert glossary-test-nolabel.ttl to glossary-test.jsonld"
 #    (
 #    set -x
 #    java \
@@ -346,7 +346,7 @@ set -x
 #    )
 #  else
 #    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
-#      log "Convert ${TMPDIR/${WORKSPACE}/}/glossary-prod-nolabel.ttl to ${glossary_product_tag_root/${WORKSPACE}/}/glossary-prod.jsonld"
+#      log "Convert glossary-prod-nolabel.ttl to glossary-prod.jsonld"
 #      java \
 #        --add-opens java.base/java.lang=ALL-UNNAMED \
 #        -Xmx4G \
@@ -375,7 +375,7 @@ set -x
       --infer-base-iri \
       --use-dtd-subset -ibn \
       > "${glossary_product_tag_root}/rdf-toolkit-glossary-dev.log" 2>&1
-#    log "Convert ${TMPDIR/${WORKSPACE}/}/glossary-test-nolabel.ttl to ${glossary_product_tag_root/${WORKSPACE}/}/glossary-test.jsonld"
+#    log "Convert glossary-test-nolabel.ttl to glossary-test.jsonld"
 #    java \
 #      --add-opens java.base/java.lang=ALL-UNNAMED \
 #      -Xmx4G \

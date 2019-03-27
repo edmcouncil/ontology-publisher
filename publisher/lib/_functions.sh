@@ -516,10 +516,7 @@ function isJsonFile() {
 function sourceFile() {
 
   local sourceFile="$1"
-  #
-  # Strip the Jenkins workspace directory from the source file name if it's in there
-  #
-  sourceFile="${sourceFile/${WORKSPACE}/.}"
+
   #
   # Strip the current directory from the source file name if it's in there
   #
@@ -529,25 +526,19 @@ function sourceFile() {
 }
 
 #
-# Use this function to show any file or directory name, it shortens it drastically, especially when running
-# in a Jenkins job context where the WORKSPACE path sits in front of all directory and file names.
+# Use this function to show any file or directory name, it shortens it drastically
+#
+# TODO: Replace long path names with the various environment variable names
 #
 function logFileName() {
 
   local -r name0="$1"
 
-  if [ -n "${WORKSPACE}" ] ; then
-    local -r name1="${name0/${TMPDIR}/<ws>/tmp}"
-    local -r name2="${name1/${OUTPUT}/<ws>/output}"
-    local -r name3="${name2/${INPUT}/<ws>/input}"
-    local -r name4="${name3/${WORKSPACE}/<ws>}"
-    echo -n "${name4}"
-  else
-    local -r name1="${name0/${TMPDIR}/<tmp>}"
-    local -r name2="${name1/${OUTPUT}/<output>}"
-    local -r name3="${name2/${INPUT}/<input>}"
-    echo -n "${name3}"
-  fi
+  local -r name1="${name0/${tag_root}/<tag_root>}"
+  local -r name2="${name1/${branch_root}/<branch_root>}"
+  local -r name3="${name2/${product_root}/<product_root>}"
+
+  echo -n "${name3}"
 }
 
 #
@@ -718,39 +709,8 @@ function initWorkspaceVars() {
     logItem WORKSPACE "not available since we're not started via Jenkins"
   fi
 
-  if [[ -n "${WORKSPACE}" && -d "${WORKSPACE}/input" ]] ; then
-    INPUT="${WORKSPACE}/input"
-  else
-    INPUT="${INPUT:?}"
-  fi
-  export INPUT
-
   ((verbose)) && logDir INPUT
-
-  if [[ "${WORKSPACE}" ]] ; then
-    OUTPUT="${WORKSPACE}/output"
-    mkdir -p "${OUTPUT}" || return $?
-  else
-    OUTPUT="${OUTPUT:?}"
-  fi
-  export OUTPUT
-
   ((verbose)) && logDir OUTPUT
-
-  #
-  # TMPDIR
-  #
-  # If we're running in Jenkins, the environment variable WORKSPACE should be there
-  # and the tmp directory is assumed to be there..
-  #
-  if [[ "${WORKSPACE}" ]] ; then
-    TMPDIR="${WORKSPACE}/tmp"
-    mkdir -p "${TMPDIR}" || return $?
-  else
-    TMPDIR="${TMPDIR:?}"
-  fi
-  export TMPDIR
-
   ((verbose)) && logDir TMPDIR
 
   #
@@ -1150,14 +1110,14 @@ function getProdOntologies() {
 
 function getIsDarkMode() {
 
-  [ -n "${ONTPUB_IS_DARK_MODE}" ] && return ${ONTPUB_IS_DARK_MODE}
-  [ -n "${is_dark_mode}" ] && return ${is_dark_mode}
+  [[ -n "${ONTPUB_IS_DARK_MODE}" ]] && return ${ONTPUB_IS_DARK_MODE}
+  [[ -n "${is_dark_mode}" ]] && return ${is_dark_mode}
 
   if isMacOSX ; then
     #
     # In Mac OS X Mojave we can detect Dark mode
     #
-    if [ "$(defaults read -g AppleInterfaceStyle)" == "Dark" ] ; then
+    if [[ "$(defaults read -g AppleInterfaceStyle)" == "Dark" ]] ; then
       return 0
     fi
     return 1
@@ -1167,7 +1127,7 @@ function getIsDarkMode() {
   # In a Jenkins context we also use dark mode because the Blue Ocean logs show dark mode.
   # The normal Jenkins UI does not but can support it.
   #
-  if [ -n "${WORKSPACE}" ] ; then
+  if [[ -n "${WORKSPACE}" ]] ; then
     return 0
   fi
 

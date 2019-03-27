@@ -101,8 +101,8 @@ function cleanupBeforePublishing() {
   require spec_root || return $?
   require tag_root || return $?
 
-  find "${tag_root}" -type f -name 'ont-policy.rdf' -delete
-  find "${tag_root}" -type f -name 'location-mapping.n3' -delete
+  #find "${tag_root}" -type f -name 'ont-policy.*' -delete
+  #find "${tag_root}" -type f -name 'location-mapping.*' -delete
   #
   # find all empty files in /tmp directory and delete them
   #
