@@ -44,7 +44,8 @@ class Adder():
                 ts=[t[0] for t in self.g.triples((None, RDF.type, None)) if str(t[0]).startswith(ontstring)]  
                 for t in ts:
                         if (type(t)!=rdflib.BNode):
-                                self.g.add((t, RDFS.isDefinedBy, onturi))
+                                if (t != onturi):
+                                        self.g.add((t, RDFS.isDefinedBy, onturi))
 
         def addQName (self):
                 onturi=list(self.g.triples((None, RDF.type, OWL.Ontology)))[0][0]
