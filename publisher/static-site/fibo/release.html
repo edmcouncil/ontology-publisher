@@ -17,6 +17,169 @@
 
 
 
+<b>2019 Q1</b>
+    <p><i>Full change record</i></p>
+    <ul>
+      <li><p>Business Entities</p>
+	<p><i>Highlights</i></p>
+<p>bug fixes and continued simplification of the 
+legal entities hierarchy, enabling better support of the GLEIF LEI data
+</p>
+
+	<p>Detailed Changes:</p>
+	<ul>
+<li>    BE-196 - eliminate duplicate restriction on Shareholder</li>
+<li>    BE-197 - replaced union of legal entity and formal organization with formal organization</li>
+<li>    BE-198 - eliminate reasoning errors related to controlled party and controlled company - the issues have been in the ontology for awhile but only came to light after other things were corrected by BE-156</li>
+<li>    BE-199 - eliminated unused import of Corporations in FunctionalEntities</li>
+<li>    BE-200 - eliminated circular dependency by deleting older deprecated elements</li>
+<li>    BE-201 - corrected URI in prefixes in ownership parties</li>
+	</ul>
+      </li>
+  
+      <li><p>Derivatives</p>
+	
+	<p><i>Highlights</i></p>
+	<ul><li>bug fixes, minor change to the way USIs are interpreted</li></ul>
+	
+	<p>Detailed Changes:</p>
+	<ul>
+<li>    DER-52 - modified the parent for USI to financial instrument identifier, added a restriction on Swap that it optionally has a USI, since they apply primarily in the US</li>
+<li>    DER-60 - replaced references to the TimeExt ontology with those from the FinancialDates ontology, and cleaned up master agreement to define what early termination is rather referencing early termination date (which was not defined and used the TimeExt ontology for date determination agent)</li>
+<li>    DER-62 - augment the DerivativesContracts metadata with ParticipationNotes</li>
+	</ul>
+      </li>
+      
+      <li><p>Financial Business and Commerce</p>
+	<p><i>Highlights</i></p>
+<ul><li>bug fixes, </li>
+<li>updates to the GLEIF LEI related content to reflect recent insights and testing with actual data, </li>
+<li>migration of provisional credit events and credit ratings ontologies to FBC from other legacy domain areas, </li>
+<li>improved automation for MIC code processing allowing us to automatically update the ISO MIC codes on a monthly basis, corresponding to the ISO publication cycle, </li>
+<li>introduction of integrated support for ratings in concert with the migration of the credit ratings legacy content (provisional), </li>
+<li>revised  identifier strategy for functional entities,</li>
+  <li>revision of a number of properties and restrictions, especially related to names, to allow for  multi-lingual representation including language codes.</li>
+  </ul>
+
+	<p>Detailed Changes:</p>
+	<ul>
+<li>    FBC-143 - Revised registration authorities to loosen some of the restrictions on registrar, allow either a registration authority or registrar to actually register something, added properties to identify the registration authority independently of the registrar, with inverses, and revised the US examples related to IIN and RTN to demonstrate that</li>
+<li>    FBC-196 - added new individuals for GLEIF LEI entity expiration reason and validation level; revised properties to use these individuals and deprecated the related datatypes; revised individuals in North American and European jurisdictions accordingly</li>
+<li>    FBC-196 - replaced classifier with code element; corrected spelling error</li>
+<li>    FBC-207 - merged duplicate bankruptcy event in CAE with bankruptcy in credit events; moved default event and installment event from CAE to FBC</li>
+<li>    FBC-207 - revise definition of default event to generalize it to support events such as failure to provide certain documentation in a timely manner or to meet contractual obligations that include but are not limited to failure to pay events; revise hierarchy accordingly</li>
+<li>    FBC-210 - replaced markets individuals to use (1) 'MIC-' as the prefix for the codes and (2) 'Exchange-' followed by the code for the markets, to ensure uniqueness of URIs, and updated the markets and codes to reflect the Jan 2019 publication by ISO</li>
+<li>    FBC-210 - revised US examples to update URIs to match the new representation strategy in the basic MIC codes ontology</li>
+<li>    FBC-210 - revised automatically generated market individuals to address bug Pete found in testing</li>
+<li>    FBC-211 - add the new ratings and credit ratings ontologies to the relevant metadata files</li>
+<li>    FBC-211 - added an additional reports on property to the reporting ontology after review with the FND FCT</li>
+<li>    FBC-211 - added assessments ontology to the about FIBO development load file</li>
+<li>    FBC-211 - added domain to hasRatingScore, corrected label per reviewer request</li>
+<li>    FBC-211 - added numeric rating score and rating score code per Fannie Mae model; relaxed constraints around rating party, which could be anyone depending on the circumstances</li>
+<li>    FBC-211 - added rating service</li>
+<li>    FBC-211 - added restriction with respect to the issuer of a given rating and tweaked definitions</li>
+<li>    FBC-211 - added the notion of an assessment which could have a rating as an output</li>
+<li>    FBC-211 - added two additional properties to the Relations ontology, evaluates, and is evaluated by, after review with the FND FCT</li>
+<li>    FBC-211 - changed rating scheme to rating scale based on feedback and review of rating agency definitions</li>
+<li>    FBC-211 - delete the old MD/TemporalCore/CreditRatings ontology now that it is no longer referenced by anything</li>
+<li>    FBC-211 - eliminate now redundant rating and rating scheme classes from the informative temporal info ontology</li>
+<li>    FBC-211 - eliminated unnecessary restriction in credit ratings, incorporated changes from team meeting of 1/23/2019</li>
+<li>    FBC-211 - makes rating and rating score classifiers rather than of type 'reference', adds an effective date and period to rating, eliminates spurious restriction on rating score, adds a new property to allow users to reference the rating in addition to the score per feedback from CC and Fannie Mae</li>
+<li>    FBC-211 - move the MD/TemporalCore/CreditRatings ontology to FBC and revise it to use the new ratings ontology (initial pass only, not complete)</li>
+<li>    FBC-211 - preliminary version of general rating ontology for the FND component of this requirement</li>
+<li>    FBC-211 - pulled assessment-related concepts out into a separate ontology for further work, to include evaluation, outcome, opinion, etc.</li>
+<li>    FBC-211 - replace all references to the original MD/TemporalCore/CreditRatings ontology with the migrated FBC credit ratings ontology</li>
+<li>    FBC-211 - revise the CIV ontology to reference the new ratings ontology rather than an informative ontology for rating score</li>
+<li>    FBC-211 - separated the rating from the score, integrated a rating assessment as a child of assessment, rating assessment event as a child of assessment event, added a rating report</li>
+<li>    FBC-211 replace spurious imports and remaining references to the MD/TemporalCore/CreditRatings ontology with the migrated FBC ontology (URIs)</li>
+<li>    FBC-211 revised cardinalities, definitions per team discussions</li>
+<li>    FBC-212 - determined that one of the issues with the individuals was related to the identifiers for banking functions, which were originally organization identifiers, thus causing all functional entities that had such identifiers to be inferred to be formal organizations (introducing a logical inconsistency); added a new financial service provider identifier that is determined by function, corrected a restriction in control parties, referenced the new identifier and eliminated redundant restrictions in US regulatory agencies and used (and tested) the fix with US financial services entities individuals and added new content to reflect the revised BE entity ownership properties</li>
+<li>    FBC-214 - added USMarketsAndExchanges to the metadata for FBC Functional Entities (eliminated an erroneous imports statement)</li>
+<li>    FBC-217 - revised MIC codes as of February 11 2019</li>
+<li>    FBC-218 - revised MIC codes to support the March 11, 2019 ISO published codes</li>
+<li>    FBC-219 - eliminated all remaining explicit range restrictions using rdfs:Literal in the range, in qualified cardinality restrictions (made unqualified), and a couple of cases that were missed</li>
+<li>    FBC-219 - loosened range restrictions on names to rdfs:Literal to allow for either xsd:string or rdf:langString (i.e., language tagged strings), enabling multilingual representation of names of entities</li>
+	</ul>	
+      </li>
+      
+
+      <li><p>Foundations</p>
+	<p><i>Highlights</i></p>
+	<ul>
+<li>	  simplification of the party hierarchy,</li>
+<li>	  addition of a new combined date / date time / date time stamp datatype that can 
+be used as needed to map to inconsistent data and support time stamps 
+	  that include milliseconds or smaller increments,</li>
+<li>the introduction of  new, provisional assessments and ratings content</li>
+	</ul>
+
+	<p>Detailed Changes:</p>
+	<ul>
+<li>    FND-230 Make hasMaturityLevel an AnnotationProperty.</li>
+<li>    FND-232 - made independent party a child of autonomous agent; made person and organization direct subclasses of independent party - to assert the semantics previously only inferred</li>
+<li>    FND-232 - simplified the definition of independent party to correspond to its usage in general across FIBO</li>
+<li>    FND-235 - augment the financial dates ontology with a composite date value datatype that allows certain properties and restrictions to vary with respect to the precise datatype representation of a date for use in mappings and cases where the representation is ambiguous; leverage this new datatype in the definition of an occurrence (event)</li>
+<li>    FND-235 - renamed the datatype from composite date value to combined date time, per FND FCT discussion, and eliminated the corresponding property</li>
+<li>    FND-235 - replace declarations of the same composite date value datatype across FIBO domains with the new base datatype</li>
+<li>    FND-236 - added Assessments to the metadata for Arrangements (Ratings was already there)</li>
+	</ul>
+      </li>
+
+
+      <li><p>Loans</p>
+	<p><i>Highlights</i></p>
+	<p>minor bug fixes only</p>
+	<p>Detailed Changes:</p>
+	<ul>
+<li>	      LOAN-144 - corrected URI for metadata ontology in header declarations</li>
+<li>    LOAN-145 - replace references to the informative TimeExt ontology with those in the released FinancialDates ontology, as appropriate</li>
+</ul>
+      </li>
+
+
+      <li><p>Securities</p>
+	<p><i>Highlights</i></p>
+	<p>bug fixes and clean up of several provisional 
+debt-specific ontologies in preparation for release
+</p>
+	<p>Detailed Changes:</p>	
+	<ul>
+<li>    SEC-69 - move the restriction from discounted commercial paper up to commercial paper and delete the two unnecessary subclasses per FCT discussion of 2/4/2019</li>
+<li>    SEC-76 - based on usage of exercise conventions across FIBO, separated the notion of the convention from the contractual terms that specify a given convention so that both concepts are now part of this ontology</li>
+<li>    SEC-76 - integrated metadata, revised definitions to be ISO 704 compliant in preparation for integration into release</li>
+<li>    SEC-76 - integrated revised terminology for exercise conventions and contractual terms with the ontologies that use them as appropriate</li>
+<li>    SEC-77 - replace the 'specifies' property with 'uses' for better semantic alignment</li>
+<li>    SEC-77 - revised load files to include exercise conventions</li>
+<li>    SEC-79 - addressed hygiene errors</li>
+<li>    SEC-79 - eliminated duplicate definitions for maturity in provisional / informative ontologies, added missing axiom to debt instruments that was in one of the analytics ontologies</li>
+<li>    SEC-79 - moved has scheduled maturity date and has duration to maturity to financial instruments; added has time to maturity; revised debt instruments to deprecate the two properties, and revised traded short term debt to use the new has duration to maturity property</li>
+<li>    SEC-80 - eliminated extra / duplicate restriction from tradable debt instrument</li>
+	</ul>
+      </li>
+
+      <li><p>Infrastructure</p>
+	<p><i>Highlights</i></p>
+	<p>2019Q1 marks a sea-change in the FIBO publication process, whereby all publishing activities have been migrated to docker.
+	  This makes the process more portable, repeatable, and simplifies testing. .
+	<p>Detailed Changes:</p>	
+	  <ul>
+	<li>Addition of "quickstart" products that allow FIBO to be read in a single file. </li>
+	<li>rdf-toolkit can now work on whole directories </li>
+	<li>Fixed issue with rdf-toolkit output being the same as the input </li>
+	<li>Migrate to newer version of widoco</li>
+	<li>New XSLT to create CSV file of FIBOpedia content with a row per ontology and columns for Domain label, Module label, Ontology label, Ontology abstract, Maturity</li>
+	<li>Add a file that publishes official namespace prefixes for FIBO</li>
+</ul></p>
+
+	<ul>
+	</ul>
+	
+      </li>
+    </ul>
+    
+
+
+
 
 
 <b>2018 Q4</b>
