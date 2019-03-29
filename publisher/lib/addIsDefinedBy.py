@@ -56,7 +56,7 @@ class Adder():
                 ts=[t[0] for t in self.g.triples((None, RDF.type, None)) if str(t[0]).startswith(ontstring)]
                 for t in ts:
                         if (type(t)!=rdflib.BNode):
-                                self.g.add((t, RDFS.comment, Literal("<b>QName: </b>"+prefix+localname(t))))
+                                self.g.add((t, RDFS.comment, Literal("QName: "+prefix+localname(t))))
 
 
                 
