@@ -625,8 +625,16 @@ __HERE__
   local lcccr="$(mktemp ${TMPDIR}/LCCCR.XXXXXX.nt)"
   local lcccc="$(mktemp ${TMPDIR}/LCCCC.XXXXXX.nt)"
   
-  ${JENA_RIOT} ${INPUT}/LCC/Countries/CountryRepresentation.rdf > "$lcccr"
-  ${JENA_RIOT} ${INPUT}/LCC/Languages/LanguageRepresentation.rdf    > "$lcccc"
+  ${JENA_ARQ} \
+      --query=${tmpflat} \
+      --data=${INPUT}/LCC/Countries/CountryRepresentation.rdf \
+      --results=NT \
+      --> "$lcccr"
+  ${JENA_ARQ} \
+      --query=${tmpflat} \
+      --data=${INPUT}/LCC/Languages/LanguageRepresentation.rdf \
+      --results=NT \
+      > "$lcccc"
 
   local prefixes="$(mktemp ${TMPDIR}/prefixes.XXXXXX)"
 
