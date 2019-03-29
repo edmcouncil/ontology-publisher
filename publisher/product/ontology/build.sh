@@ -43,7 +43,6 @@ function publishProductOntology() {
   ontology_product_tag_root="${tag_root:?}"
 
 
-
   ontologyCopyRdfToTarget || return $?
   ontologySearchAndReplaceStuff || return $?
   ontologyBuildCatalogs  || return $?
@@ -61,7 +60,7 @@ function publishProductOntology() {
   #
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
 
-
+  
   if ((speedy)) ; then
     log "speedy=true -> Not doing quads because they are slow"
   else
@@ -564,15 +563,14 @@ function buildquads () {
   local ProdQuadsFile="${tag_root}/prod.fibo.nq"
   local DevQuadsFile="${tag_root}/dev.fibo.nq"
 
-  local ProdFlatNT="${tag_root}/prod.fibo.nt"
-  local DevFlatNT="${tag_root}/dev.fibo.nt"
+  local ProdFlatNT="${tag_root}/prod.fibo-quickstart.nt"
+  local DevFlatNT="${tag_root}/dev.fibo-quickstart.nt"
 
-  local ProdFlatTTL="${tag_root}/prod.fibo.ttl"
-  local DevFlatTTL="${tag_root}/dev.fibo.ttl"
+  local ProdFlatTTL="${tag_root}/prod.fibo-quickstart.ttl"
+  local DevFlatTTL="${tag_root}/dev.fibo-quickstart.ttl"
 
-  local ProdTMPTTL="${tag_root}/prod.temp.ttl"
-  local DevTMPTTL="${tag_root}/dev.temp.ttl"
-
+  local ProdTMPTTL="$(mktemp ${TMPDIR}/prod.temp.XXXXXX.ttl)"
+  local DevTMPTTL="$(mktemp ${TMPDIR}/dev.temp.XXXXXX.ttl)"
 
   local TTLPrefixes="${tag_root}/prefixes.fibo.ttl"
   local SPARQLPrefixes="${tag_root}/prefixes.fibo.sq"
@@ -611,8 +609,33 @@ WHERE {?s ?p ?o}
 __HERE__
 
 
+  local tmpbasic="$(mktemp ${TMPDIR}/basic.XXXXXX.ttl)"
+  cat >"${tmpbasic}" << __HERE__
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix lcc-lr: <https://www.omg.org/spec/LCC/Languages/LanguageRepresentation/>
+@prefix lcc-cr: <https://www.omg.org/spec/LCC/Countries/CountryRepresentation/>
+
+__HERE__
+
+
+  local lcccr="$(mktemp ${TMPDIR}/LCCCR.XXXXXX.nt)"
+  local lcccc="$(mktemp ${TMPDIR}/LCCCC.XXXXXX.nt)"
+  
+  ${JENA_RIOT} ${INPUT}/LCC/Countries/CountryRepresentation.rdf > "$lcccr"
+  ${JENA_RIOT} ${INPUT}/LCC/Languages/LanguageRepresentation.rdf    > "$lcccc"
+
   local prefixes="$(mktemp ${TMPDIR}/prefixes.XXXXXX)"
+
+  local tmpmodule="$(mktemp ${TMPDIR}/module.XXXXXX.nt)"
+
+
   log "starting buildquads with the new quadify"
+
+
 
   (
     cd ${ontology_product_tag_root}
@@ -623,15 +646,53 @@ __HERE__
 	  ${GREP} -rl 'fibo-fnd-utl-av:hasMaturityLevel fibo-fnd-utl-av:Release' | \
 	      while read file ; do quadify $file ; done > ${ProdQuadsFile}
 
-	  ${JENA_ARQ} --query="${tmpflat}" --data=${ProdQuadsFile} --results=NT > ${ProdFlatNT}
-	  ${JENA_ARQ} --query="${tmpflat}" --data=${DevQuadsFile}  --results=NT > ${DevFlatNT}
+	  ${FIND} ${INPUT} -name "Metadata*.rdf" -exec \
+               ${JENA_RIOT} \
+                 --syntax=RDF/XML \
+		 > ${tmpmodule}
 
-	  ${JENA_ARQ} --query="${tmppx}" --data=${DevQuadsFile} --results=CSV | tail +2 | tr --delete "\015"  > ${prefixes}
+	  cat $lcccr > ${ProdFlatNT}
+	  cat $lcccc >> ${ProdFlatNT}
 
+
+	  cat $lcccr > ${DevFlatNT}
+	  cat $lcccc >> ${DevFlatNT}
+
+
+	  
+	  ${JENA_ARQ} \
+               --query="${tmpflat}" \
+               --data=${ProdQuadsFile} \
+	       --data=${tmpmodule}  \
+               --results=NT                >> ${ProdFlatNT}
+	  ${JENA_ARQ} \
+               --query="${tmpflat}" \
+               --data=${DevQuadsFile}  \
+	       --data=${tmpmodule}  \
+               --results=NT 		   >> ${DevFlatNT}
+
+	  ${JENA_ARQ} \
+               --query="${tmppx}" \
+	       --data=${DevQuadsFile} \
+	       --results=CSV |\
+                   tail +2 |\
+                   tr --delete "\015"     > ${prefixes}
+
+	  
 	  cat ${prefixes} > "${SPARQLPrefixes}"
-	  sed 's/^/@/;s/$/ ./' ${prefixes} > ${TTLPrefixes}
+	  cat ${tmpbasic} > ${TTLPrefixes} 
+	  sed 's/^/@/;s/$/ ./' ${prefixes} >> ${TTLPrefixes}
+	  
 
+	  cat > "${ProdTMPTTL}" <<EOF
+<${tag_root_url}/Prod.fibo-quickstart> a owl:Ontology .
+EOF
 
+	  cat > "${DevTMPTTL}" <<EOF
+<${tag_root_url}/Dev.fibo-quickstart> a owl:Ontology .
+EOF
+
+	  
 	  cat ${TTLPrefixes} ${ProdFlatNT} > "${ProdTMPTTL}"
 
 	  cat ${TTLPrefixes} ${DevFlatNT} > "${DevTMPTTL}"
