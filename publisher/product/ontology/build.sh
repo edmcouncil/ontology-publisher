@@ -42,7 +42,6 @@ function publishProductOntology() {
 
   ontology_product_tag_root="${tag_root:?}"
 
-
   ontologyCopyRdfToTarget || return $?
   ontologySearchAndReplaceStuff || return $?
   ontologyBuildCatalogs  || return $?
@@ -60,7 +59,9 @@ function publishProductOntology() {
   #
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
 
-  
+
+
+
   if ((speedy)) ; then
     log "speedy=true -> Not doing quads because they are slow"
   else
@@ -656,7 +657,7 @@ __HERE__
 
 	  ${FIND} ${INPUT} -name "Metadata*.rdf" -exec \
                ${JENA_RIOT} \
-                 --syntax=RDF/XML \
+                 --syntax=RDF/XML {} \; \
 		 > ${tmpmodule}
 
 	  cat $lcccr > ${ProdFlatNT}
