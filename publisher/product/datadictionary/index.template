@@ -6,7 +6,7 @@
     <link rel="Shortcut Icon" href="favicon.ico"/>
   </head>
   <body>
-    <img src="../../../../static/image/EDM-coucil-RGB.png" />
+    <img src="../../../../static/image/EDM-coucil-RGB.png" height=100 />
     <h1>
 EDM Council FIBO Data Dictionary
     </h1>

@@ -39,8 +39,22 @@ FIBO <i>Quickstart</i>   (see <a href="quickstart">below</a>)
 FIBO content is available in a single file, that can be loaded into an ontology
       tool or into a database.  The <i>FIBO Quickstart</i> does not include all the content structuring of FIBO, but does include all the
       content.  <i>FIBO Quickstart</i> is most appropriate for read-only applications of FIBO and for users who are new to FIBO and are
-      evaluating it to determine future use</p>          
+      evaluating it.</p>
+    <p>
+      Quickstart is currently only avaiable in <a href="https://www.w3.org/TR/turtle/">RDF Turtle(.ttl)</a> and <a href="https://www.w3.org/TR/n-triples/">N-Triples(.nt)</a>.  More formats coming soon.
+      <h4>Using quickstart in Prot&eacute;g&eacute;</h4>
+      <ul><li>Download either the <a href="https://spec.edmcouncil.org/fibo/ontology/master/latest/dev.fibo-quickstart.ttl">Development</a> or <a href="https://spec.edmcouncil.org/fibo/ontology/master/2019Q1/prod.fibo-quickstart.ttl">Production</a> version of Quickstart. </li>
+	<li>From the Protege menu, Choose "Open", and navigate to where you downloaded the file.</li></ul>
+      <h4>Using quickstart in TopBraid Composer</h4>
+      <ul>
+	<li>Download either the <a href="https://spec.edmcouncil.org/fibo/ontology/master/latest/dev.fibo-quickstart.ttl">Development</a> or <a href="https://spec.edmcouncil.org/fibo/ontology/master/2019Q1/prod.fibo-quickstart.ttl">Production</a> version of Quickstart.</li>
+	<li>Open TopBraid Composer.  Create a project (File>New>Project) called <i>spec.edmcouncil.org</i>.</li>
+	<li>Drag and drop the file into your the project you just created</li>
+	<li>Double-click the file you just dropped in the TopBraid Navigator pane</li>
+	</ul>
+      
 
+    
       
     <h3>Using FIBO online</h3>
       FIBO is published using the Web Ontology Language (<a href="https://www.w3.org/TR/owl-primer/">OWL</a>).
@@ -57,7 +71,7 @@ FIBO content is available in a single file, that can be loaded into an ontology
 </pre>
 	 <p/>
       <a href="http://protege.stanford.edu/">Prot&eacute;g&eacute;</a> is an open-source ontology editor that can be used to
-      view and edit FIBO.  Prot&eacute;g&eacute; works well in online mode, so you can point it to an AboutFIBO file,
+      view and edit FIBO.  Prot&eacute;g&eacute; works well in online mode, so you can point it to an LoadFIBO file,
       and it will load the rest.
       <ol>
 	<li>In Prot&eacute;g&eacute;, select File>Open from URL</li>
@@ -110,7 +124,7 @@ Many semantic tools can read OWL files that have been downloaded to local storag
     <li>Open TopBraid Composer.  Create a project (File>New>Project) called <i>spec.edmcouncil.org</i>.</li>
 <li>Drag and drop the <i>fibo</i> directory from your filesystem onto the project <i>spec.edmcouncil.org</i>
   in the TopBraid Composer Navigator pane.  If prompted, select "Copy files"</li>
-<li>Navigate through the fibo directory in the Navigator pane to fibo/ontology/master/latest/AboutFIBODev.ttl or fibo/ontology/master/2019Q1/AboutFIBOProd.ttl (development and production, respectively)  Double-click on AboutFIBO.ttl to open all FIBO files.  
+<li>Navigate through the fibo directory in the Navigator pane to fibo/ontology/master/latest/LoadFIBODev.ttl or fibo/ontology/master/2019Q1/LoadFIBOProd.ttl (development and production, respectively)  Double-click on LoadFIBO.ttl to open all FIBO files.  
 </ol>
 <h4>No Magic CCM Cameo Concept Modeler</h4>
 <p>
@@ -124,8 +138,8 @@ Many semantic tools can read OWL files that have been downloaded to local storag
     <li>In MagicDraw, create a new project:  File/New Project.  Select "Concept Modeling Project" as the project type. Select a name for the project  and click "OK"</li>
     <li>Set the catalog file; from the <i>Options</i> menu, select <i>Project</i>. Navigate in the pop-up to <i>General/Concept Modeling</i> find the entry for "OWL Import Catalog", and click the three dots at the right to open a file navigator.  Navigate to where you unzipped FIBO, Navigate down the tree until you can select the file catalog-v001.xml.</li>
     <li>Set the Project URI Construction Strategy to "303 URI": from the Options menu, select Project. Navigate in the pop-up to General/Concept Modeling, find the entry for "URI Construction Strategy", click the drop down menu at the right and select "303 URI".</li>
-    <li>Import the FIBO Master:  File/Import From/OWL Ontology File,  and navigate to the folder where you unzipped FIBO. Navigate to AboutFIBODev.rdf, or AboutFIBOProd.ttl, depending on your preference, and import it.</li>
-    MagicDraw will import all of FIBO ontologies contained in the AboutFIBO file.
+    <li>Import the FIBO Master:  File/Import From/OWL Ontology File,  and navigate to the folder where you unzipped FIBO. Navigate to LoadFIBODev.rdf, or LoadFIBOProd.ttl, depending on your preference, and import it.</li>
+    MagicDraw will import all of FIBO ontologies contained in the LoadFIBO file.
   </ol>
   <b>Note:</b> FIBO makes reference to <a href="http://www.omg.org/spec/LCC/">LCC (Languages, Countries and Codes)</a>
   from the OMG, which includes information about these things from other standards bodies.
