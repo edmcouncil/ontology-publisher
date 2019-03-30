@@ -573,6 +573,7 @@ function buildquads () {
   local ProdTMPTTL="$(mktemp ${TMPDIR}/prod.temp.XXXXXX.ttl)"
   local DevTMPTTL="$(mktemp ${TMPDIR}/dev.temp.XXXXXX.ttl)"
 
+  local CSVPrefixes="${tag_root}/prefixes.fibo.csv"
   local TTLPrefixes="${tag_root}/prefixes.fibo.ttl"
   local SPARQLPrefixes="${tag_root}/prefixes.fibo.sq"
 
@@ -687,7 +688,7 @@ __HERE__
                    tail +2 |\
                    tr --delete "\015"     > ${prefixes}
 
-	  
+	  cat ${prefixes} > "${CSVPrefixes}"
 	  cat ${prefixes} > "${SPARQLPrefixes}"
 	  cat ${tmpbasic} > ${TTLPrefixes} 
 	  sed 's/^/@/;s/$/ ./' ${prefixes} >> ${TTLPrefixes}
