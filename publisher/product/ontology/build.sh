@@ -41,7 +41,7 @@ function publishProductOntology() {
   setProduct ontology || return $?
 
   ontology_product_tag_root="${tag_root:?}"
-if ((1 == 0)); then 
+
   ontologyCopyRdfToTarget || return $?
   ontologySearchAndReplaceStuff || return $?
   ontologyBuildCatalogs  || return $?
@@ -60,7 +60,7 @@ if ((1 == 0)); then
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
 
 
-fi
+
 
   if ((speedy)) ; then
     log "speedy=true -> Not doing quads because they are slow"
