@@ -41,7 +41,7 @@ function publishProductOntology() {
   setProduct ontology || return $?
 
   ontology_product_tag_root="${tag_root:?}"
-
+if ((1 == 0)); then 
   ontologyCopyRdfToTarget || return $?
   ontologySearchAndReplaceStuff || return $?
   ontologyBuildCatalogs  || return $?
@@ -60,7 +60,7 @@ function publishProductOntology() {
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
 
 
-
+fi
 
   if ((speedy)) ; then
     log "speedy=true -> Not doing quads because they are slow"
@@ -589,6 +589,16 @@ FILTER NOT EXISTS {?s a owl:Ontology}
 }
 __HERE__
 
+  local tmpflatecho="$(mktemp ${TMPDIR}/flattecho.XXXXXX.sq)"
+  cat >"${tmpflatecho}" << __HERE__
+PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+
+CONSTRUCT {?s ?p ?o}
+WHERE {?s ?p ?o
+FILTER NOT EXISTS {?s a owl:Ontology}
+}
+__HERE__
+
 
   local tmppx="$(mktemp ${TMPDIR}/px.XXXXXX.sq)"
   cat >"${tmppx}" << __HERE__
@@ -628,12 +638,12 @@ __HERE__
   local lcccc="$(mktemp ${TMPDIR}/LCCCC.XXXXXX.nt)"
   
   ${JENA_ARQ} \
-      --query=${tmpflat} \
+      --query=${tmpflatecho} \
       --data=${INPUT}/LCC/Countries/CountryRepresentation.rdf \
       --results=NT \
       > "$lcccr"
   ${JENA_ARQ} \
-      --query=${tmpflat} \
+      --query=${tmpflatecho} \
       --data=${INPUT}/LCC/Languages/LanguageRepresentation.rdf \
       --results=NT \
       > "$lcccc"
@@ -655,7 +665,7 @@ __HERE__
 	  echo "starting prod"
 	  ${GREP} -rl 'fibo-fnd-utl-av:hasMaturityLevel fibo-fnd-utl-av:Release' | \
 	      while read file ; do quadify $file ; done > ${ProdQuadsFile}
-
+set -x
 	  ${FIND} ${INPUT} -name "Metadata*.rdf" -exec \
                ${JENA_RIOT} \
                  --syntax=RDF/XML {} \; \
