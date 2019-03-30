@@ -630,7 +630,7 @@ __HERE__
       --query=${tmpflat} \
       --data=${INPUT}/LCC/Countries/CountryRepresentation.rdf \
       --results=NT \
-      --> "$lcccr"
+      > "$lcccr"
   ${JENA_ARQ} \
       --query=${tmpflat} \
       --data=${INPUT}/LCC/Languages/LanguageRepresentation.rdf \
