@@ -124,6 +124,7 @@ class Factor():
     def __init__(self, ontologySource, base, verbose, log=lambda msg: print(msg)):
 
         self.base = base
+        self.ontologyPrefixURIDictionary = {}
 
         gs = ontologySource.getGraphList(verbose)
 
@@ -132,6 +133,7 @@ class Factor():
 
         for g in gs:
             for n in g.namespace_manager.namespaces():
+                self.ontologyPrefixURIDictionary[n[0]] = n[1]
                 self.out.namespace_manager.bind(n[0], n[1])
                 self.all.namespace_manager.bind(n[0], n[1])
             for t in g.triples((None, None, None)):
@@ -165,6 +167,16 @@ class Factor():
         if (self.verbose): self.log('Subsetting ontology for ' + str(len(filteredSeedList)) + ' seeds')
 
         for seed in filteredSeedList:
+            seed = seed.strip()
+            qnameMatch = re.match("^([a-zA-Z_][\w.-]*:)?([a-zA-Z_][\w.-]*)$", seed)
+            if (qnameMatch):
+                prefix = qnameMatch.group(1)
+                prefix = re.sub(":", "", prefix)
+                nsURL = self.ontologyPrefixURIDictionary.get(prefix)
+                if not nsURL:
+                    self.log("warning: prefix " + prefix + " not found in ontology (seed " + seed + ")")
+                    nsURL = ""
+                seed = nsURL + qnameMatch.group(2)
             self.copy(rdflib.URIRef(seed.strip()), "")
 
         return self
