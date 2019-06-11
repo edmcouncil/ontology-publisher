@@ -1,156 +1,216 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>EDM Council - FIBO Specifications</title>
-    <link rel="Shortcut Icon" href="/favicon.ico"/>
-    <link type="text/css" href="edmcouncil.css" rel="stylesheet"/>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-    <script src='https://www.google.com/recaptcha/api.js' async defer></script>
-    <script src="emailform.js" type="text/javascript" async defer></script>
-  </head>
-  <body>
-    <img src="../static/image/EDM-council-RGB.png" height="75"/>
-    <h1>
-      EDM Council - FIBO
-    </h1>
-    <h2>Products</h2>
-    <p>
-FIBO is being developed in a continuous process by FIBO Content Teams (FCT) according to the FIBO <a href="doc/FIBO_BTDM.pdf">Build-Test-Deploy-Maintain Methodology</a>. 
-All of FIBO is continuously published with the maturity level indicated as <b>Development</b>. This is all of FIBO. 
-In addition, the parts of FIBO that have been substantially vetted and tested are published at the end of each calendar quarter in a maturity level indicated as <b>Production</b>.  
-All other content, including parts of these domains in published FIBO Development, are for information only, and should not be relied upon except as raw material. </p>
 
-    <p><b>Release Notes</b> See FIBO <a href="release.html">Release Notes</a> for a listing of specific content at this time.
-    </p>
+<head>
+  <title>EDM Council - FIBO Specifications</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="Shortcut Icon" href="/favicon.ico" />
+  <link type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    rel="stylesheet" />
+  <!--<link type="text/css" href="static/css/bootstrap.min.css" rel="stylesheet" />-->
+  <link type="text/css" href="./css/style.css" rel="stylesheet" />
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src='https://www.google.com/recaptcha/api.js' async defer></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:200,300,400,500,700&display=swap" rel="stylesheet">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-124531442-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-124531442-2');
+</script>
+
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <div w3-include-html="menu.html"></div>
+    </div>
+  </header>
+  <div class="container-fluid slider">
+    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+      <ol class="carousel-indicators">
+        <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+        <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+        <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+      </ol>
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img class="d-block w-100" src="./images/baner2.png" alt="First slide">
+          <div class="carousel-caption d-none d-md-block">
+            <h2>What is an ontology?</h2>
+            <p>An ontology is a formal, explicit specification of a shared conceptualization</p>
+            <a href="products.html" class="btn-sl">DOWNLOAD FIBO PRODUCTS</a>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img class="d-block w-100" src="./images/baner2.png" alt="Second slide">
+          <div class="carousel-caption d-none d-md-block">
+            <h2>What is FIBO?</h2>
+            <p>FIBO gives meaning to any data that describe the business of finance</p>
+            <a href="products.html" class="btn-sl">DOWNLOAD FIBO PRODUCTS</a>            
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img class="d-block w-100" src="./images/baner2.png" alt="Third slide">
+          <div class="carousel-caption d-none d-md-block">
+            <h2>FIBO Structure</h2>
+            <p>FIBO covers Derivatives, Loans, Indices and Indicators, Securities, Business Entities, Financial Business and Commerce and Foundations</p>
+            <a href="products.html" class="btn-sl">DOWNLOAD FIBO PRODUCTS</a>
+          </div>
+        </div>
+
+
+      </div>
+      <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+      <div class="fill-image-fibo"></div>
+    </div>
+  </div>
+  <div class="container">
+    <main>
+
+      <article>
+        <h1><span>What is FIBO?</span></h1>
+
+        <h3>What is an ontology?</h3>
+        <p>An ontology in OWL is made up of statements about Classes (i.e. sets of things) and Properties (ways that
+          things relate to other things). FIBO defines the sets of things that are of interest in financial business
+          applications, and the ways that those things can relate to one another. In this way, FIBO can give meaning to
+          any data (e.g., spreadsheets, relational databases, XML documents) that describe the business of finance. FIBO
+          considers both Classes and Properties to be Concepts. The languages of Ontologies were originally developed by
+          the US DoD and are codified by the World Wide Web Consortium (W3C).</p>
+
+
+
+        <h3>What is FIBO?</h3>
+        <p>
+          <img src="./images/FIBO_logo.jpg" class="fibo-logo img-fluid" />
+          <strong>The Financial Industry Business Ontology (FIBO)</strong> is the industry standard resource for the
+          definitions of business concepts in the financial services industry. It is developed and hosted by the
+          Enterprise Data Management Council (EDMC) and is published in a number for formats for operating use and for
+          business definitions. <a href="fibo_owl.html"> FIBO is developed as an ontology in the Web Ontology Language
+            (OWL)</a>. As such it is not a data model but a representation of the "things in the world" of financial
+          services. The use of logic ensures that each real-world concept is framed in a way that is unambiguous and
+          that is readable both by humans and machines. These common concepts have been reviewed by EDM Council member
+          firms over a period of years and represent a consensus of the common concepts as understood in the industry
+          and as reflected in industry data models and message standards. FIBO is developed according to a rigorous and
+          well-defined process, referred to as the <a href="development.html">"Build-Test-Deploy-Maintain"
+            methodology</a>. In essence, the FIBO ontology is developed and maintained by FIBO Content Teams which are
+          coordinated by a single FIBO Leadership Team, with process and automation support provided by a FIBO Process
+          team.
+        </p>
+
+        <p class="pt-5 pb-5">
+        The figure below shows FIBO Domains: Derivatives, Loans, Indices and Indicators, Securities, Business Entities, Financial Business and Commerce and Foundations.
+       </p>
+        </p>
+        <center>
+          <img src="./images/fiibo_modules.png" width="500" height="400" class="img-fluid">
+        </center>
+
+
+        <p>
+          The <a
+            href="https://edmcouncil.org/resource/collection/16D6DC67-430E-4F75-9E07-08B1EC228091/FIBO_Primer_v0.2.pdf">FIBO
+            Primer</a> provides a layman's version of what is FIBO and how to use its content.
+
+        </p>
+
+
+
+
+      </article>
+    </main>
+  </div>
+  </div>
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="footer-sitemap col-md-4">
+          <span class="footer-header">Sitemap</span>
+          <div class="row">
     
-    <p><b>Using FIBO</b> Please see <a href="../static/ontology/index.html#Using">Using FIBO</a> for instructions on how to use FIBO. 
-You may also want to look at the <a href="doc/FIBO_Primer.pdf">FIBO Primer</a> for a layman's description of what FIBO is and how to use its content.  
-    </p>
-    <p><b>Frequently Asked Questions</b> Find answers to <a href="doc/FrequentlyAskedQuestions.pdf">frequently asked questions here</a>.
-    </p>
-    <p><b>OMG Spec</b> Some FIBO domains are also available as <a href="https://www.omg.org/hot-topics/finance.htm">OMG specifications</a> for FND, FBC, BE and IND.
-    </p>
-
-    <p><b>FIBO Products</b> Today, FIBO is available as the products below, with more soon to follow. All FIBO products are generated or derived from the W3C OWL System of Record. Be aware that flaws in the OWL will be reflected in all other products. 
-We are making all of FIBO available now because we have already seen amazing work done with FIBO and we welcome, almost demand, your feedback.
-      <a href="mailto:dwisnosky@edmcouncil.org">dwisnosky@edmcouncil.org</a>.
-    </p>
-    <Table>
-      <tr>
-       <td><a href="../fibo/fibopedia/master/2019Q1/FIBOpedia.html">fibopedia</a></td>
-        <td>
-          Annotated structure of FIBO ontologies and modules. 
-       </td>
-	<td>Includes web navigation as well as a <a href="../fibo/fibopedia/master/latest/modules-clean.rdf">machine-readable module structure (in RDF)</a>.  FIBOPedia provides access to ontology documentation generated using <a href="https://github.com/dgarijo/Widoco">WIzard for DOCumenting Ontologies (WIDOCO)</a> software, which includes a graphical visualization  using <a href="http://vowl.visualdataweb.org/v2/">Visual Notation for OWL Ontologies (VOWL)</a>.
-	</td>
-      </tr>
-      <tr>
-       <td><a href="../static/glossary/">glossary</a></td>
-        <td>
-          Web searchable, downloadable in CSV and/or Excel
-       </td>
-	<td>Includes web-searchable people and machine generated definitions, and as a spreadsheet that may be downloaded and worked with offline
-	</td>
-      </tr>
-<!--
-      <tr>
-       <td><a href="../static/reference/">glossary</a></td>
-        <td>
-          Downloadable FIBO reference book
-       </td>
-	<td>A reference for all FIBO content, formatted as a book with table of contents.  (this product is in beta, and might not yet be comprehensive)
-	</td>
-      </tr>
--->
-      <tr>
-       <td><a href="../../fibo/datadictionary/master/2019Q1/">data dictionary</a></td>
-        <td>data dictionary searchable from
-the Web and down loadable in  csv or .xls</td>
-        <td>
-          A summary of each operational class in FIBO, with its properties, presented in the form of tables and fields for viewers familiar with relational data dictionaries. 
-        </td>
-      </tr>
-      
-      <tr>
-        <td><a href="../static/vocabulary/">vocabulary</a></td>
-        <td>The FIBO Vocabulary in SKOS</td>
-        <td>FIBO rendered using the W3C <a href="https://www.w3.org/2004/02/skos/intro">SKOS</a> standard, using extensions to represent FIBO relationships. 
-        </td>
-      </tr>
-      <tr>
-        <td><a href="../static/smif/Production SMIF UML Diagrams-new links.html">smif</a></td>
-        <td>Sample UML Diagrams of FIBO.</td>
-        <td>The Semantic Modeling for Information Federation (SMIF) specification allows round tripping between UML and OWL</td>
-      </tr>
-      <tr>
-        <td><a href="../static/ontology">ontology</a></td>
-        <td>The FIBO Ontologies</td>
-        <td>
-          These are the ontologies for the FIBO Domains developed by the FIBO Team for nearly a
-          decade. They are in W3C OWL and can be opened with any RDF-compliant tool. 
-          FIBO is published in multiple RDF serializations, including <a href="https://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML</a>, <a href="https://www.w3.org/TR/turtle/">Turtle</a>, <a href="https://json-ld.org/spec/latest/json-ld/">JSON-LD</a> and <a href="https://www.w3.org/TR/n-quads/">N-Quads<a>. 
-          See the <a href="#allformats">Supported Formats table</a> below to access FIBO in these forms. 
-          To see individual FIBO ontology files, please see the <a href="./ontology/master/latest/tree.html">FIBO Ontology File Directory</a>
-        </td>
-      </tr>
-      <tr>
-        <td style="white-space:nowrap;"><a href="../static/ldf/">linked data fragments</a></td>
-        <td style="white-space:nowrap;">The FIBO Linked Data Fragments</td>
-        <td>
-	  This provides a dynamic query interface to the FIBO content using  <a href="http://linkeddatafragments.org/">Linked Data Fragments</a>. 
-        </td>
-      </tr>
-
-      <tr>
-        <td style="white-space:nowrap;"><a href="../UMLCMP/index.html">UMLCMP</a></td>
-        <td style="white-space:nowrap;">UML Concept Modeling Profile</td>
-        <td>
-	  The Unified Modeling Language (UML) Concept Modeling Profile (UCMP) displays FIBO as hyperlinked class diagrams in a UML model.
-        </td>
-      </tr>      
-      
-      <tr>
-        <td><a href="http://schema.org/docs/financial.html">schema.org</a></td>
-        <td>The FIBO schema.org files</td>
-        <td>This page provides background information on the use of <a href="http://schema.org/">schema.org</a> for marking up banks and their products.</td>
-      </tr>
-    </table>
-<h2><a name="developers">I want to contribute!</a></h2>
-<p>FIBO is a community effort - we want to get many well-informed people from the Finance Industry involved. This includes subject matter experts, 
-architects, ontologists and even the "just curious". In the style of collaborative, open source projects, FIBO collaboration is managed through GitHub, Jenkins 
-and by our use of Atlassian JIRA and Confluence. The FIBO Team has developed many tools and practices to help your contributions work well with FIBO.  
-For information on how to get them, please see the <a href="../static/developers.html">Developers' Guide</a>. 
-
-
-<h2><a name="allformats">All supported formats</a></h2>
-<p>FIBO and FIBO-V are available in a number of RDF formats. These are available for offline use (i.e., download all of FIBO as a zip), or online use. 
-Each FIBO ontology file is available for <i>follow your nose</i> treatment, a general description of which is available <a href="http://patterns.dataincubator.org/book/follow-your-nose.html">here</a>. 
-<table>
-<tr><th>Product/Level</th><th>RDF-XML</th><th>Turtle</th><th>JSON-LD</th><th>N-Quads/N-Triples</th></tr>
-
-<tr><td>FIBO (Production) (zip)</td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/2019Q1/prod.rdf.zip">prod.rdf.zip</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/2019Q1/prod.ttl.zip">prod.ttl.zip</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/2019Q1/prod.jsonld.zip">prod.jsonld.zip</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/2019Q1/prod.fibo.nq">prod.fibo.nq</a> (<a href="https://spec.edmcouncil.org/fibo/ontology/master/2019Q1/prod.fibo.nq.zip">prod.fibo.nq.zip</a>)</td></tr>
-
-<tr><td>FIBO (Development) (zip)</td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/latest/dev.rdf.zip">dev.rdf.zip</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/latest/dev.ttl.zip">dev.ttl.zip</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/latest/dev.jsonld.zip">dev.jsonld.zip</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/latest/dev.fibo.nq">dev.fibo.nq</a> (<a href="https://spec.edmcouncil.org/fibo/ontology/master/latest/dev.fibo.nq.zip">dev.fibo.nq.zip</a>)</td></tr>
-
-<tr><td>FIBO (Production) (<a href="http://patterns.dataincubator.org/book/follow-your-nose.html">follow-your-nose</a> starting point)</td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/2019Q1/AboutFIBOProd.rdf">AboutFIBOProd.rdf</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/2019Q1/AboutFIBOProd.ttl">AboutFIBOProd.ttl</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/2019Q1/AboutFIBOProd.jsonld">AboutFIBOProd.jsonld</a></td><td>N/A</td></tr>
-
-<tr><td>FIBO (Development) (<a href="http://patterns.dataincubator.org/book/follow-your-nose.html">follow your nose</a> starting point)</td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/latest/AboutFIBODev.rdf">AboutFIBODev.rdf</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/latest/AboutFIBODev.ttl">AboutFIBODev.ttl</a></td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/latest/AboutFIBODev.jsonld">AboutFIBODev.jsonld</a></td><td>N/A</td></tr>
-
-<tr><td>FIBO (Production) (Quickstart)</td><td>coming soon</td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/2019Q1/prod.fibo-quickstart.ttl">prod.fibo-quickstart.ttl</a></td><td>coming soon</td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/2019Q1/prod.fibo-quickstart.nt">prod.fibo-quickstart.nt</a>(<a href="https://spec.edmcouncil.org/fibo/ontology/master/2019Q1/prod.fibo-quickstart.nt.zip">prod.fibo-quickstart.nt.zip</a>)</td></tr>
-
-
-<tr><td>FIBO (Development) (Quickstart)</td><td>coming soon</td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/latest/dev.fibo-quickstart.ttl">dev.fibo-quickstart.ttl</a></td><td>coming soon</td><td><a href="https://spec.edmcouncil.org/fibo/ontology/master/latest/dev.fibo-quickstart.nt">dev.fibo-quickstart.nt</a>(<a href="https://spec.edmcouncil.org/fibo/ontology/master/latest/dev.fibo-quickstart.nt.zip">dev.fibo-quickstart.nt.zip</a>)</td></tr>
-
-
-<tr><td>FIBO-V (Development)</td><td><a href="http://spec.edmcouncil.org/fibo/vocabulary/master/latest/fibo-vD.rdf">fibo-vD.rdf</a> (<a href="http://spec.edmcouncil.org/fibo/vocabulary/master/latest/fibo-vD.rdf.zip">zip</a>)</td><td><a href="http://spec.edmcouncil.org/fibo/vocabulary/master/latest/fibo-vD.ttl">fibo-vD.ttl</a> (<a href="http://spec.edmcouncil.org/fibo/vocabulary/master/latest/fibo-vD.ttl.zip">zip</a>)</td><td><a href="http://spec.edmcouncil.org/fibo/vocabulary/master/latest/fibo-vD.jsonld">fibo-vD.jsonld</a> (<a href="http://spec.edmcouncil.org/fibo/vocabulary/master/latest/fibo-vD.jsonld.zip">zip</a>)</td><td>N/A</td></tr>
-
-<tr><td>FIBO-V (Production)</td><td><a href="http://spec.edmcouncil.org/fibo/vocabulary/master/2019Q1/fibo-vP.rdf">fibo-vP.rdf</a> <a href="http://spec.edmcouncil.org/fibo/vocabulary/master/2019Q1/fibo-vP.rdf.zip">(zip)</a></td><td><a href="http://spec.edmcouncil.org/fibo/vocabulary/master/2019Q1/fibo-vP.ttl">fibo-vP.ttl</a> <a href="http://spec.edmcouncil.org/fibo/vocabulary/master/2019Q1/fibo-vP.ttl.zip">(zip)</a></td><td><a href="http://spec.edmcouncil.org/fibo/vocabulary/master/2019Q1/fibo-vP.jsonld">fibo-vP.jsonld</a> <a href="http://spec.edmcouncil.org/fibo/vocabulary/master/2019Q1/fibo-vP.jsonld.zip">(zip)</a></td><td>N/A</td></tr>
-
-</table>
-
-
-
-
+              <div class="col-md-6">
+                <ul>
+                  <li><a href="index.html">About</a></li>
+                  <li><a href="development.html">Development</a></li>
+                  <li><a href="working-group.html">FIBO Working Groups</a></li>
+                  <li><a href="ontology_tools.html">Ontology Tools</a></li>
+                  <li><a href="production_SMIF_UML_diagrams_new_links.html">SMIF / UML Diagrams</a></li>
+                  <li><a href="ldf.html">FIBO Linked Data Fragments</a></li>
+                 
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <ul>
+                    <li><a href="products.html">All Products</a></li>
+                    <li><a href="fibo_owl.html">FIBO OWL</a></li>
+                    <li><a href="glossary_index.html">FIBO Glossary</a></li>
+                    <li><a href="vocabulary.html">FIBO Vocabulary</a></li>
+                    <li><a href="fibo_schema_org.html">FIBO Extension To Schema.org</a></li>                  
+                </ul>
+              </div>
+     
+            <!-- end content -->
+          </div>
+          <!-- end row -->
+        </div>
+        <!-- end footer-sitemap -->
+        <div class="footer-contact col-md-3">
+            <span class="footer-header">Contact Us</span>
+          <ul>
+            <li class="mail"><a href="mailto:info@edmcouncil.org">info@edmcouncil.org</a></li>
+            <li class="phone">USA +1 <span style="color: #ffffff;">(646) 722-4381</span></li>
+            <li class="phone">UK +44 (0) 1794 390044</li>
+          </ul>
+        </div>
+        <!-- end footer-contact -->
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col-md-8">
+  
+      <p>
+        © 2019 EDM Council. All rights reserved. DCAM and FIBO are registered trademarks of EDM Council.
+        All other marks are the property of their respective owners. Membership Management Software Powered by
+        YourMembership
+      </p>
+   
+    <div class="footer-links">
+      <ul>
+<li><a href="https://cdn.ymaws.com/edmcouncil.org/resource/resmgr/Featured_Documents/Legal/EDMC__Terms_of_Use_032318.pdf" target="_blank">Terms of Use</a></li>
+        <li><a href="https://cdn.ymaws.com/edmcouncil.org/resource/resmgr/Featured_Documents/Legal/EDMC_Privacy_Policy_032318.pdf" target="_blank">Privacy Policy</a></li>
+        <li><a href="https://cdn.ymaws.com/edmcouncil.org/resource/resmgr/Featured_Documents/Legal/EDMC_Copyright_Policy_032318.pdf" target="_blank">Copyright</a></li>
+      </ul>
+    </div>
+    </div>
+    <div class="col-md-4">
+        <div class="footer-social-links">
+            <ul>
+                <li class="twitter"><a href="https://twitter.com/edmcouncil" target="_blank">   </a> </li>
+                <li class="linkedin"><a href="https://www.linkedin.com/company/edm-council/" target="_blank">   </a> </li>
+            </ul>
+            </div>
+    </div>
+    </div>
+  </div>
+  </footer>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" type="text/javascript" async
+    defer></script>
+  <script src="./js/menu.js" type="text/javascript"></script>
+  <script>
+    includeHTML();
+  </script>
 </body>
 </html>
