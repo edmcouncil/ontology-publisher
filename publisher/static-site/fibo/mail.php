@@ -81,10 +81,10 @@ $doneRight = <<<EOD
 
 	<!-- Favicons
 	================================================== -->
-	<link rel="shortcut icon" href="images/favicon.ico">
-	<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
-	<link rel="apple-touch-icon" size="72x72" href="images/apple-touch-icon-72x72.png">
-	<link rel="apple-touch-icon" size="114x114" href="images/apple-touch-icon-114x114.png">
+	<link rel="shortcut icon" href="./images/favicon.ico">
+	<link rel="apple-touch-icon" href="./images/apple-touch-icon.png">
+	<link rel="apple-touch-icon" size="72x72" href="./images/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" size="114x114" href="./images/apple-touch-icon-114x114.png">
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
@@ -144,7 +144,7 @@ $doneRight = <<<EOD
 		<div class="container">
 		
 			<div class="one-third column">
-				<p align="center"><img src="images/DeanSpeakHandCapt.jpg"   class="scale-with-grid"></p>
+				<p align="center"><img src="./images/DeanSpeakHandCapt.jpg"   class="scale-with-grid"></p>
 			</div>
 				
 <!--===============Begin two thirds column==================-->			  
@@ -160,7 +160,7 @@ Message:<br/>$enteredMessage<br/><br/>
 <br/>
 $enteredName, thanks for your interest.<br/>
 Dr. Allemang will respond to your email as soon as possible</p>
-<p><img src="images/verticalSpacer.jpg"></p>
+<p><img src="./images/verticalSpacer.jpg"></p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
  
@@ -257,10 +257,10 @@ $theResults = <<<EOD
 
 	<!-- Favicons
 	================================================== -->
-	<link rel="shortcut icon" href="images/favicon.ico">
-	<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
-	<link rel="apple-touch-icon" size="72x72" href="images/apple-touch-icon-72x72.png">
-	<link rel="apple-touch-icon" size="114x114" href="images/apple-touch-icon-114x114.png">
+	<link rel="shortcut icon" href="./images/favicon.ico">
+	<link rel="apple-touch-icon" href="./images/apple-touch-icon.png">
+	<link rel="apple-touch-icon" size="72x72" href="./images/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" size="114x114" href="./images/apple-touch-icon-114x114.png">
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
@@ -320,7 +320,7 @@ $theResults = <<<EOD
 		<div class="container">
 		
 			<div class="one-third column">
-				<p align="center"><img src="images/DeanSpeakHandCapt.jpg" width="371" height="452"   class="scale-with-grid"></p>
+				<p align="center"><img src="./images/DeanSpeakHandCapt.jpg" width="371" height="452"   class="scale-with-grid"></p>
 		  </div>
 				
 <!--===============Begin two thirds column==================-->			  
