@@ -146,7 +146,8 @@ function copySiteFiles() {
   require spec_root || return $?
 
   (
-    cd "/publisher/static-site" || return $?
+      #    cd "/publisher/static-site" || return $?
+      cd "/input/${ONTPUB_FAMILY}/etc/site" || return $?
 
     #Replace GIT BRANCH and TAG in the glossary index html
     #
