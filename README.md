@@ -89,9 +89,4 @@ machines, validating that change.
   The `bin/` directory contains scripts and executable tools (like jena) that
   can be used on your own computer or in a Jenkins job context.
   
-- [`static-site/`](../static-site/README.md)
-
-  All static files that are published on `spec.edmcouncil.org`.
-  
-  NOTE: Please do NOT store generated files here!
   
