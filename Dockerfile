@@ -304,7 +304,7 @@ RUN \
 # Installing log4j (needed by widoco)
 #
 RUN \
-  log4j_version="2.11.2" ; \
+  log4j_version="2.12.1" ; \
   log4j_mirror="http://apache.javapipe.com/logging/log4j" ; \
   log4j_targz_url="${log4j_mirror}/${log4j_version}/apache-log4j-${log4j_version}-bin.tar.gz" ; \
   echo ================================= install log4j ${log4j_version} >&2 && \
