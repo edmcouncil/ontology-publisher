@@ -68,6 +68,12 @@ if [ -f ${SCRIPT_DIR}/product/fibopedia/build.sh ] ; then
 else
   source product/fibopedia/build.sh # This line is only there to make the IntelliJ Bash plugin see product/fibopedia/build.sh
 fi
+if [ -f ${SCRIPT_DIR}/product/htmlpages/build.sh ] ; then
+  # shellcheck source=product/htmlpages/build.sh
+  source ${SCRIPT_DIR}/product/htmlpages/build.sh
+else
+  source product/htmlpages/build.sh # This line is only there to make the IntelliJ Bash plugin see product/htmlpages/build.sh
+fi
 
 #
 # This function returns true if the given file name resides in the test/dev "domain" (a root directory)
@@ -348,6 +354,9 @@ function main() {
         ;;
       fibopedia)
         publishProductFIBOpedia || return $?
+        ;;
+      htmlpages)
+        publishProductHTMLPages || return $?
         ;;
       refe*)
         publishProductReference || return $?

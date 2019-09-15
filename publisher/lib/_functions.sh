@@ -578,7 +578,7 @@ function initOSBasedTools() {
 
   local bashMajorVersion="${BASH_VERSINFO:-0}"
 
-  if ((bashMajorVersion != 4)) ; then
+  if [[ "${BASH_VERSINFO:-0}" -lt 4 ]] ; then
     error "We need to run this with Bash 4, not version: ${BASH_VERSINFO:?}"
     if [[ "$(uname -s)" == "Darwin" ]] ; then
       log "Run 'brew install bash' to get this installed"

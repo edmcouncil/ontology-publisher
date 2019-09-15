@@ -72,7 +72,7 @@ RUN \
     perl-xml-libxslt perl-xml-writer perl-lwp-protocol-https perl-list-moreutils-xs perl-mozilla-ca \
     perl-unicode-collate perl-unicode-linebreak perl-unicode-normalize perl-config-autoconf \
     perl-extutils-libbuilder perl-file-which perl-test-differences \
-    fontconfig \
+    fontconfig npm \
     gcc linux-headers libc-dev && \
   #
   # Clean up
@@ -259,7 +259,7 @@ RUN \
 #
 RUN \
   echo ================================= install XlsxWriter, rdflib, PyLD >&2 && \
-  easy_install-3.6 XlsxWriter rdflib PyLD
+  easy_install-3.7 XlsxWriter rdflib PyLD
 
 #
 # Installing Saxon
@@ -304,7 +304,7 @@ RUN \
 # Installing log4j (needed by widoco)
 #
 RUN \
-  log4j_version="2.11.2" ; \
+  log4j_version="2.12.0" ; \
   log4j_mirror="http://apache.javapipe.com/logging/log4j" ; \
   log4j_targz_url="${log4j_mirror}/${log4j_version}/apache-log4j-${log4j_version}-bin.tar.gz" ; \
   echo ================================= install log4j ${log4j_version} >&2 && \
