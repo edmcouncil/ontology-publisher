@@ -28,13 +28,13 @@ function publishProductHTMLPages () {
   cp -a "${source_family_root:?}${FVUE_SRC_PATH:?}" "${FVUE_PATH:?}"
 
   logItem "npm --unsafe-perm install" "$(logFileName "${FVUE_PATH:?}")"
-  env HOME="${TMPDIR:?}" npm --unsafe-perm --prefix "${FVUE_PATH:?}" install > "${TMPDIR:?}/htmlpages.log" 2>&1 || return $?
+  env HOME="${TMPDIR:?}" npm --unsafe-perm --prefix "${FVUE_PATH:?}" install 2>&1 | tee "${TMPDIR:?}/htmlpages.log" || return $?
   logItem "npm run build" "$(logFileName "${FVUE_PATH:?}")"
-  env HOME="${TMPDIR:?}" PATH="${FVUE_PATH:?}/node_modules/.bin:${PATH}" npm --prefix "${FVUE_PATH:?}" run build >> "${TMPDIR:?}/htmlpages.log" 2>&1 || return $?
+  env HOME="${TMPDIR:?}" PATH="${FVUE_PATH:?}/node_modules/.bin:${PATH}" npm --prefix "${FVUE_PATH:?}" run build 2>&1 | tee "${TMPDIR:?}/htmlpages.log" || return $?
 
   logItem "copy" "$(logFileName "${FVUE_PATH}/dist/${product_branch_tag} -> ${tag_root}")"
   rm -rf "${tag_root:?}"
-  cp -av "${FVUE_PATH:?}/dist/${product_branch_tag:?}" "${tag_root:?}" >> "${TMPDIR:?}/htmlpages.log" 2>&1 || return $?
+  cp -av "${FVUE_PATH:?}/dist/${product_branch_tag:?}" "${tag_root:?}" 2>&1 | tee "${TMPDIR:?}/htmlpages.log" || return $?
   mv -f "${TMPDIR:?}/htmlpages.log" "${tag_root:?}"/htmlpages.log
 
   return $?
