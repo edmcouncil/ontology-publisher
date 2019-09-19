@@ -51,5 +51,7 @@ function publishProductHTMLPages () {
   logItem "copy" "$(logFileName "${FVUE_PATH:?}/dist/${product_branch_tag:?} -> ${tag_root}")"
   rm -rf "${tag_root:?}" && cp -a "${FVUE_PATH:?}/dist/${product_branch_tag:?}" "${tag_root:?}" 2>&1 || return $?
 
+  touch "${tag_root:?}/htmlpages.log"
+
   return $?
 }
