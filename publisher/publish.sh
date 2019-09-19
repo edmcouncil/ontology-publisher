@@ -176,7 +176,8 @@ function copySiteFiles() {
     #log "Replacing GIT_TAG_NAME  $GIT_TAG_NAME"
     #${SED} -i "s/GIT_TAG_NAME/$GIT_TAG_NAME/g" "static/glossary/index.html"
 
-    ${CP} -r * "${spec_root}/"
+    # PG, do not override "${spec_root}/"
+    #${CP} -r * "${spec_root}/"
   )
 
   if [[ -f ${INPUT}/${ONTPUB_FAMILY}/LICENSE ]] ; then

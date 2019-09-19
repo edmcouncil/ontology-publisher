@@ -72,7 +72,7 @@ RUN \
     perl-xml-libxslt perl-xml-writer perl-lwp-protocol-https perl-list-moreutils-xs perl-mozilla-ca \
     perl-unicode-collate perl-unicode-linebreak perl-unicode-normalize perl-config-autoconf \
     perl-extutils-libbuilder perl-file-which perl-test-differences \
-    fontconfig npm \
+    fontconfig make npm \
     gcc linux-headers libc-dev && \
   #
   # Clean up
@@ -304,7 +304,7 @@ RUN \
 # Installing log4j (needed by widoco)
 #
 RUN \
-  log4j_version="2.12.0" ; \
+  log4j_version="2.12.1" ; \
   log4j_mirror="http://apache.javapipe.com/logging/log4j" ; \
   log4j_targz_url="${log4j_mirror}/${log4j_version}/apache-log4j-${log4j_version}-bin.tar.gz" ; \
   echo ================================= install log4j ${log4j_version} >&2 && \
@@ -377,6 +377,17 @@ RUN \
   echo PATH=${PATH} && \
   sed -i -e 's/export PATH=\(.*\)/export PATH=${PATH}/g' /etc/profile && \
   echo "export PATH=${PATH}" >> /etc/bashrc
+
+#RUN \
+#	install -o root -g root -m0755 /etc/verdaccio.sh /var/cache/verdaccio.sh && \
+#	install -o root -g root -m0644 /etc/verdaccio.yaml /var/cache/verdaccio.yaml && \
+#	cd "${TMPDIR:?}" && env HOME="${TMPDIR:?}" npm --unsafe-perm -g install verdaccio npm-offline-packager && \
+#	env HOME="${TMPDIR:?}" /var/cache/verdaccio.sh && \
+#	( test -s /etc/packages.tar || env HOME="${TMPDIR:?}" npo f -p /etc/package.json -d /etc/packages ) && \
+#	env HOME="${TMPDIR:?}" npo p -s -r http://127.0.0.1:4873 /etc/packages.tar && killall Verdaccio && \
+
+RUN \
+	cp -av /etc/node_modules.tar.gz /var/cache/ && cp -av /etc/.npm.tar.gz /var/cache/
 
 CMD ["./publish.sh"]
 
