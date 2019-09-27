@@ -25,23 +25,12 @@ function publishProductHTMLPages () {
   # return success if "fibo-vue" doesn't exist
   test -d "${source_family_root:?}${FVUE_SRC_PATH:?}" || return 0
 
-  #logItem "Run Verdaccio and sleep 3 seconds" "$(logFileName "/var/cache/verdaccio.sh")"
-  #/var/cache/verdaccio.sh || return $?
-  #sleep 3
-
   logItem "Prepare" "$(logFileName "${FVUE_PATH:?}")"
   rm -rf "${FVUE_PATH:?}" &>/dev/null || return $?
   logItem "Copy" "$(logFileName "${source_family_root:?}${FVUE_SRC_PATH:?} -> ${FVUE_PATH:?}")"
   cp -a "${source_family_root:?}${FVUE_SRC_PATH:?}" "${FVUE_PATH:?}"
-  #logItem "Copy" "$(logFileName "/var/cache/node_modules -> ${FVUE_PATH:?}/")"
-  #cp -a "/var/cache/node_modules" "${FVUE_PATH:?}/"
-  #logItem "npm set registry" "$(logFileName "http://127.0.0.1:4873")"
-  #env HOME="${TMPDIR:?}" npm set registry http://127.0.0.1:4873
-
-  #tar xzpf /var/cache/.npm.tar.gz -C "${TMPDIR:?}/"
 
   pushd "${FVUE_PATH:?}"
-  #tar xzpf /var/cache/node_modules.tar.gz
   logItem "npm --unsafe-perm install" "$(logFileName "${FVUE_PATH:?}")"
   env HOME="${TMPDIR:?}" npm --unsafe-perm install 2>&1 || return $?
   logItem "npm run build" "$(logFileName "${FVUE_PATH:?}")"

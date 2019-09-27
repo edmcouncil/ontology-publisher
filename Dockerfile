@@ -378,16 +378,5 @@ RUN \
   sed -i -e 's/export PATH=\(.*\)/export PATH=${PATH}/g' /etc/profile && \
   echo "export PATH=${PATH}" >> /etc/bashrc
 
-#RUN \
-#	install -o root -g root -m0755 /etc/verdaccio.sh /var/cache/verdaccio.sh && \
-#	install -o root -g root -m0644 /etc/verdaccio.yaml /var/cache/verdaccio.yaml && \
-#	cd "${TMPDIR:?}" && env HOME="${TMPDIR:?}" npm --unsafe-perm -g install verdaccio npm-offline-packager && \
-#	env HOME="${TMPDIR:?}" /var/cache/verdaccio.sh && \
-#	( test -s /etc/packages.tar || env HOME="${TMPDIR:?}" npo f -p /etc/package.json -d /etc/packages ) && \
-#	env HOME="${TMPDIR:?}" npo p -s -r http://127.0.0.1:4873 /etc/packages.tar && killall Verdaccio && \
-
-RUN \
-	cp -av /etc/node_modules.tar.gz /var/cache/ && cp -av /etc/.npm.tar.gz /var/cache/
-
 CMD ["./publish.sh"]
 
