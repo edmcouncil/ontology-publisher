@@ -32,15 +32,15 @@ function publishProductHTMLPages () {
   logItem "Copy" "$(logFileName "${source_family_root:?}${FVUE_SRC_PATH:?} -> ${FVUE_PATH:?}")"
   cp -av "${source_family_root:?}${FVUE_SRC_PATH:?}" "${FVUE_PATH:?}" >> "${tag_root:?}/htmlpages.log" 2>&1 || return $?
 
-  pushd "${FVUE_PATH:?}"
+  pushd "${FVUE_PATH:?}" &>/dev/null || return $?
   logItem "npm --unsafe-perm install" "$(logFileName "${FVUE_PATH:?}")"
   env HOME="${TMPDIR:?}" npm --unsafe-perm install >> "${tag_root:?}/htmlpages.log" 2>&1 || return $?
   logItem "npm run build" "$(logFileName "${FVUE_PATH:?}")"
   env HOME="${TMPDIR:?}" npm --unsafe-perm run build >> "${tag_root:?}/htmlpages.log" 2>&1 || return $?
-  popd
+  popd &>/dev/null || return $?
 
   logItem "copy" "$(logFileName "${FVUE_PATH:?}/dist/${product_branch_tag:?} -> ${tag_root}")"
-  rm -rf "${tag_root:?}" && cp -av "${FVUE_PATH:?}/dist/${product_branch_tag:?}" "${tag_root:?}" >> "${tag_root:?}/htmlpages.log" 2>&1 || return $?
+  mv -f "${tag_root:?}/htmlpages.log" "${FVUE_PATH:?}/dist/${product_branch_tag:?}/" && rm -rf "${tag_root:?}" && cp -a "${FVUE_PATH:?}/dist/${product_branch_tag:?}" "${tag_root:?}"
 
   return $?
 }
