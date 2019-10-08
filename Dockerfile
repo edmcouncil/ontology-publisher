@@ -103,10 +103,10 @@ RUN \
 #       give preference to the x86_64-linuxmusl binaries if they exist and otherwise use the x86_64-linux binaries.
 #       Hence the weird PATH statement below.
 #
-COPY /usr/share/scripts/install-texlive.sh /usr/share/scripts/install-texlive.sh
-RUN \
-  echo ================================= install LaTex >&2 && \
-  /usr/share/scripts/install-texlive.sh
+#COPY /usr/share/scripts/install-texlive.sh /usr/share/scripts/install-texlive.sh
+#RUN \
+#  echo ================================= install LaTex >&2 && \
+#  /usr/share/scripts/install-texlive.sh
 ENV \
   MANPATH=/usr/local/texlive/2018/texmf-dist/doc/man:${MANPATH} \
   INFOPATH=/usr/local/texlive/2018/texmf-dist/doc/info:${INFOPATH} \
@@ -115,10 +115,10 @@ ENV \
 #
 # Installing biblatex manually
 #
-COPY /usr/share/scripts/install-biber.sh /usr/share/scripts/install-biber.sh
-RUN \
-  echo ================================= install biblatex-biber >&2 && \
-  /usr/share/scripts/install-biber.sh
+#COPY /usr/share/scripts/install-biber.sh /usr/share/scripts/install-biber.sh
+#RUN \
+#  echo ================================= install biblatex-biber >&2 && \
+#  /usr/share/scripts/install-biber.sh
 
 #
 # Installing pandoc
@@ -126,22 +126,22 @@ RUN \
 ENV \
   pandoc_available=1 \
   pandoc_bin=/usr/local/bin/pandoc
-RUN \
-  pandoc_version="2.2.2.1" ; \
-  echo ================================= install pandoc ${pandoc_version} >&2 && \
-  targz="pandoc-${pandoc_version}-linux.tar.gz" ; \
-  url="https://github.com/jgm/pandoc/releases/download/${pandoc_version}/${targz}" ; \
-  echo "Downloading ${url}:" >&2 ; \
-  curl --location --silent --show-error --output /var/tmp/${targz} --url "${url}" && \
-  mkdir -p /usr/share/pandoc && \
-  cd /usr/share/pandoc && \
-  tar xzf /var/tmp/${targz} --strip-components 1 -C . && \
-  cd bin && \
-  mv * .. && \
-  cd .. && \
-  rm -rf bin share && \
-  ln -s /usr/share/pandoc/pandoc /usr/local/bin/pandoc && \
-  ./pandoc --version
+#RUN \
+#  pandoc_version="2.2.2.1" ; \
+#  echo ================================= install pandoc ${pandoc_version} >&2 && \
+#  targz="pandoc-${pandoc_version}-linux.tar.gz" ; \
+#  url="https://github.com/jgm/pandoc/releases/download/${pandoc_version}/${targz}" ; \
+#  echo "Downloading ${url}:" >&2 ; \
+#  curl --location --silent --show-error --output /var/tmp/${targz} --url "${url}" && \
+#  mkdir -p /usr/share/pandoc && \
+#  cd /usr/share/pandoc && \
+#  tar xzf /var/tmp/${targz} --strip-components 1 -C . && \
+#  cd bin && \
+#  mv * .. && \
+#  cd .. && \
+#  rm -rf bin share && \
+#  ln -s /usr/share/pandoc/pandoc /usr/local/bin/pandoc && \
+#  ./pandoc --version
 
 #
 # Install serd
@@ -185,7 +185,7 @@ RUN \
 # Installing Apache Jena
 #
 ENV \
-  JENA_VERSION="3.12.0" \
+  JENA_VERSION="3.13.0" \
   JENA_HOME=/usr/share/java/jena/latest \
   PATH=${PATH}:/usr/share/java/jena/latest/bin
 RUN \
@@ -259,7 +259,7 @@ RUN \
 #
 RUN \
   echo ================================= install XlsxWriter, rdflib, PyLD >&2 && \
-  easy_install-3.7 XlsxWriter rdflib PyLD
+  python3 -m  easy_install XlsxWriter rdflib PyLD
 
 #
 # Installing Saxon
