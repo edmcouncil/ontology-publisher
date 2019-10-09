@@ -126,22 +126,22 @@ ENV \
 ENV \
   pandoc_available=1 \
   pandoc_bin=/usr/local/bin/pandoc
-#RUN \
-#  pandoc_version="2.2.2.1" ; \
-#  echo ================================= install pandoc ${pandoc_version} >&2 && \
-#  targz="pandoc-${pandoc_version}-linux.tar.gz" ; \
-#  url="https://github.com/jgm/pandoc/releases/download/${pandoc_version}/${targz}" ; \
-#  echo "Downloading ${url}:" >&2 ; \
-#  curl --location --silent --show-error --output /var/tmp/${targz} --url "${url}" && \
-#  mkdir -p /usr/share/pandoc && \
-#  cd /usr/share/pandoc && \
-#  tar xzf /var/tmp/${targz} --strip-components 1 -C . && \
-#  cd bin && \
-#  mv * .. && \
-#  cd .. && \
-#  rm -rf bin share && \
-#  ln -s /usr/share/pandoc/pandoc /usr/local/bin/pandoc && \
-#  ./pandoc --version
+RUN \
+  pandoc_version="2.2.2.1" ; \
+  echo ================================= install pandoc ${pandoc_version} >&2 && \
+  targz="pandoc-${pandoc_version}-linux.tar.gz" ; \
+  url="https://github.com/jgm/pandoc/releases/download/${pandoc_version}/${targz}" ; \
+  echo "Downloading ${url}:" >&2 ; \
+  curl --location --silent --show-error --output /var/tmp/${targz} --url "${url}" && \
+  mkdir -p /usr/share/pandoc && \
+  cd /usr/share/pandoc && \
+  tar xzf /var/tmp/${targz} --strip-components 1 -C . && \
+  cd bin && \
+  mv * .. && \
+  cd .. && \
+  rm -rf bin share && \
+  ln -s /usr/share/pandoc/pandoc /usr/local/bin/pandoc && \
+  ./pandoc --version
 
 #
 # Install serd
