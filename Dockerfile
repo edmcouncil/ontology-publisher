@@ -72,7 +72,7 @@ RUN \
     perl-xml-libxslt perl-xml-writer perl-lwp-protocol-https perl-list-moreutils-xs perl-mozilla-ca \
     perl-unicode-collate perl-unicode-linebreak perl-unicode-normalize perl-config-autoconf \
     perl-extutils-libbuilder perl-file-which perl-test-differences \
-    fontconfig \
+    fontconfig make npm \
     gcc linux-headers libc-dev && \
   #
   # Clean up
@@ -103,10 +103,10 @@ RUN \
 #       give preference to the x86_64-linuxmusl binaries if they exist and otherwise use the x86_64-linux binaries.
 #       Hence the weird PATH statement below.
 #
-COPY /usr/share/scripts/install-texlive.sh /usr/share/scripts/install-texlive.sh
-RUN \
-  echo ================================= install LaTex >&2 && \
-  /usr/share/scripts/install-texlive.sh
+#COPY /usr/share/scripts/install-texlive.sh /usr/share/scripts/install-texlive.sh
+#RUN \
+#  echo ================================= install LaTex >&2 && \
+#  /usr/share/scripts/install-texlive.sh
 ENV \
   MANPATH=/usr/local/texlive/2018/texmf-dist/doc/man:${MANPATH} \
   INFOPATH=/usr/local/texlive/2018/texmf-dist/doc/info:${INFOPATH} \
@@ -115,10 +115,10 @@ ENV \
 #
 # Installing biblatex manually
 #
-COPY /usr/share/scripts/install-biber.sh /usr/share/scripts/install-biber.sh
-RUN \
-  echo ================================= install biblatex-biber >&2 && \
-  /usr/share/scripts/install-biber.sh
+#COPY /usr/share/scripts/install-biber.sh /usr/share/scripts/install-biber.sh
+#RUN \
+#  echo ================================= install biblatex-biber >&2 && \
+#  /usr/share/scripts/install-biber.sh
 
 #
 # Installing pandoc
@@ -185,7 +185,7 @@ RUN \
 # Installing Apache Jena
 #
 ENV \
-  JENA_VERSION="3.12.0" \
+  JENA_VERSION="3.13.0" \
   JENA_HOME=/usr/share/java/jena/latest \
   PATH=${PATH}:/usr/share/java/jena/latest/bin
 RUN \
@@ -259,7 +259,7 @@ RUN \
 #
 RUN \
   echo ================================= install XlsxWriter, rdflib, PyLD >&2 && \
-  easy_install-3.6 XlsxWriter rdflib PyLD
+  python3 -m  easy_install XlsxWriter rdflib PyLD
 
 #
 # Installing Saxon

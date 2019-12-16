@@ -68,6 +68,12 @@ if [ -f ${SCRIPT_DIR}/product/fibopedia/build.sh ] ; then
 else
   source product/fibopedia/build.sh # This line is only there to make the IntelliJ Bash plugin see product/fibopedia/build.sh
 fi
+if [ -f ${SCRIPT_DIR}/product/htmlpages/build.sh ] ; then
+  # shellcheck source=product/htmlpages/build.sh
+  source ${SCRIPT_DIR}/product/htmlpages/build.sh
+else
+  source product/htmlpages/build.sh # This line is only there to make the IntelliJ Bash plugin see product/htmlpages/build.sh
+fi
 
 #
 # This function returns true if the given file name resides in the test/dev "domain" (a root directory)
@@ -170,7 +176,8 @@ function copySiteFiles() {
     #log "Replacing GIT_TAG_NAME  $GIT_TAG_NAME"
     #${SED} -i "s/GIT_TAG_NAME/$GIT_TAG_NAME/g" "static/glossary/index.html"
 
-    ${CP} -r * "${spec_root}/"
+    # PG, do not override "${spec_root}/"
+    #${CP} -r * "${spec_root}/"
   )
 
   if [[ -f ${INPUT}/${ONTPUB_FAMILY}/LICENSE ]] ; then
@@ -348,6 +355,9 @@ function main() {
         ;;
       fibopedia)
         publishProductFIBOpedia || return $?
+        ;;
+      htmlpages)
+        publishProductHTMLPages || return $?
         ;;
       refe*)
         publishProductReference || return $?
