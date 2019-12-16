@@ -479,8 +479,8 @@ __HERE__
   ${SED} -i 's/"@../"/g; s/\t\t\t/\t""\t""\t/; s/\t\t/\t""\t/g; s/\t$/\t""/' "${glossaryBaseName}-dev.tsv"
   ${SED} -i 's/"@../"/g; s/\t\t\t/\t""\t""\t/; s/\t\t/\t""\t/g; s/\t$/\t""/' "${glossaryBaseName}-prod.tsv"
 
-  ${SED} 's/"\t"/","/g' "${glossaryBaseName}-dev.tsv" > "${glossaryBaseName}-dev.csv"
-  ${SED} 's/"\t"/","/g' "${glossaryBaseName}-prod.tsv" > "${glossaryBaseName}-prod.csv"
+  ${SED} 's/"\t"/","/g; s/\\"/""/g' "${glossaryBaseName}-dev.tsv" > "${glossaryBaseName}-dev.csv"
+  ${SED} 's/"\t"/","/g; s/\\"/""/g' "${glossaryBaseName}-prod.tsv" > "${glossaryBaseName}-prod.csv"
   ${SED} -i '1s/\t[?]/,/g;1s/^[?]//' "${glossaryBaseName}-dev.csv"
   ${SED} -i '1s/\t[?]/,/g;1s/^[?]//' "${glossaryBaseName}-prod.csv"
 
