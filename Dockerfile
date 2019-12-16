@@ -185,7 +185,7 @@ RUN \
 # Installing Apache Jena
 #
 ENV \
-  JENA_VERSION="3.13.0" \
+  JENA_VERSION="3.13.1" \
   JENA_HOME=/usr/share/java/jena/latest \
   PATH=${PATH}:/usr/share/java/jena/latest/bin
 RUN \
