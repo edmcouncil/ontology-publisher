@@ -368,7 +368,7 @@ set -x
       -Xms4G \
       -Dfile.encoding=UTF-8 \
       -jar "${RDFTOOLKIT_JAR}" \
-      --source "${TMPDIR}/glossary-dev-nolabel.ttl" \
+      --source "${TMPDIR}/glossary-dev.ttl" \
       --source-format turtle \
       --target "${glossary_product_tag_root}/glossary-dev.jsonld" \
       --target-format json-ld \
