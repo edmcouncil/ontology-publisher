@@ -1,3 +1,6 @@
+<img src="https://spec.edmcouncil.org/fibo/htmlpages/master/latest/img/logo.66a988fe.png" width="150" align="right"/>
+
+
 # Ontology Builder
 
 ## What is the Ontology Builder?
