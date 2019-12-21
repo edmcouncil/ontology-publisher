@@ -15,7 +15,7 @@
 #
 # About the base image: we're using the latest and greatest version of OpenJDK:
 #
-# - 13-ea means Java 13 early access build (see https://jdk.java.net/13/)
+# - 13 means Java 13 General-Availability build (see https://jdk.java.net/13/)
 #   We want this version because it works best in a docker container, respecting CPU and memory limits.
 #   It'll also be more likely to be the fastest Java available.
 # - jdk means that we're using the Java Developer Kit (JDK) and not just the Java Runtime Engine (JRE)
@@ -23,7 +23,7 @@
 # - alpine is the name of the Linux brand we're using, which is the smallest linux keeping the image as small
 #   as possible.
 #
-FROM openjdk:13-ea-jdk-alpine
+FROM openjdk:13-jdk-alpine
 
 #
 # Some meta data, can only have one maintainer unfortunately
@@ -171,15 +171,16 @@ RUN \
 #
 # Installing the rdf-toolkit
 #
-ENV RDFTOOLKIT_JAR=/usr/share/java/rdf-toolkit/rdf-toolkit.jar
-RUN \
-  echo ================================= install the RDF toolkit >&2 && \
-  toolkit_build="23" ; \
-  url="https://jenkins.edmcouncil.org/view/rdf-toolkit/job/rdf-toolkit-build/" ; \
-  url="${url}${toolkit_build}/artifact/target/scala-2.12/rdf-toolkit.jar" ; \
-  echo "Downloading ${url}:" >&2 ; \
-  mkdir -p /usr/share/java/rdf-toolkit ; \
-  curl --location --silent --show-error --output ${RDFTOOLKIT_JAR} --url "${url}"
+ENV RDFTOOLKIT_JAR=/publisher/lib/rdf-toolkit.jar
+#ENV RDFTOOLKIT_JAR=/usr/share/java/rdf-toolkit/rdf-toolkit.jar
+#RUN \
+#  echo ================================= install the RDF toolkit >&2 && \
+#  toolkit_build="23" ; \
+#  url="https://jenkins.edmcouncil.org/view/rdf-toolkit/job/rdf-toolkit-build/" ; \
+#  url="${url}${toolkit_build}/artifact/target/scala-2.12/rdf-toolkit.jar" ; \
+#  echo "Downloading ${url}:" >&2 ; \
+#  mkdir -p /usr/share/java/rdf-toolkit ; \
+#  curl --location --silent --show-error --output ${RDFTOOLKIT_JAR} --url "${url}"
 
 #
 # Installing Apache Jena
@@ -279,63 +280,63 @@ RUN \
 ##
 ## Installing Widoco
 ##
-RUN \
-  widoco_version="1.4.9" ; \
-  edmc_widoco_build_number="22" ; \
-  widoco_root_url="https://jenkins.edmcouncil.org/view/widoco/job/widoco-build" ; \
-  echo ================================= install widoco ${widoco_version} build ${edmc_widoco_build_number} >&2 && \
-  #
-  # Creating widoco and its config directory and storing an empty config file in there which suppresses
-  # an annoying log message at each invocation of widoco
-  #
-  mkdir -p /usr/share/java/widoco/config || true && \
-  touch /usr/share/java/widoco/config/config.properties && \
-  curl \
-    --fail \
-    --insecure \
-    --location \
-    --silent \
-    --show-error \
-    --output /usr/share/java/widoco/widoco-launcher.jar \
-    --url "${widoco_root_url}/${edmc_widoco_build_number}/es.oeg\$widoco/artifact/es.oeg/widoco/${widoco_version}/widoco-${widoco_version}-launcher.jar" && \
-  test -f /usr/share/java/widoco/widoco-launcher.jar
+#RUN \
+#  widoco_version="1.4.9" ; \
+#  edmc_widoco_build_number="22" ; \
+#  widoco_root_url="https://jenkins.edmcouncil.org/view/widoco/job/widoco-build" ; \
+#  echo ================================= install widoco ${widoco_version} build ${edmc_widoco_build_number} >&2 && \
+#  #
+#  # Creating widoco and its config directory and storing an empty config file in there which suppresses
+#  # an annoying log message at each invocation of widoco
+#  #
+#  mkdir -p /usr/share/java/widoco/config || true && \
+#  touch /usr/share/java/widoco/config/config.properties && \
+#  curl \
+#    --fail \
+#    --insecure \
+#    --location \
+#    --silent \
+#    --show-error \
+#    --output /usr/share/java/widoco/widoco-launcher.jar \
+#    --url "${widoco_root_url}/${edmc_widoco_build_number}/es.oeg\$widoco/artifact/es.oeg/widoco/${widoco_version}/widoco-${widoco_version}-launcher.jar" && \
+#  test -f /usr/share/java/widoco/widoco-launcher.jar
 
 #
 # Installing log4j (needed by widoco)
 #
-RUN \
-  log4j_version="2.12.1" ; \
-  log4j_mirror="http://apache.javapipe.com/logging/log4j" ; \
-  log4j_targz_url="${log4j_mirror}/${log4j_version}/apache-log4j-${log4j_version}-bin.tar.gz" ; \
-  echo ================================= install log4j ${log4j_version} >&2 && \
-  mkdir -p /usr/share/java/log4j || true && \
-  curl \
-    --fail \
-    --location \
-    --silent \
-    --show-error \
-    --output /usr/share/java/log4j/apache-log4j-bin.tar.gz \
-    --url "${log4j_targz_url}" && \
-  test -f /usr/share/java/log4j/apache-log4j-bin.tar.gz && \
-  ( \
-    cd /usr/share/java/log4j && \
-    ls -1 && \
-    tar \
-      --strip-components=1 \
-      --wildcards \
-      --exclude='*-javadoc.jar' \
-      --exclude='*-tests.jar' \
-      --exclude='*-sources.jar' \
-      -xvzf \
-      apache-log4j-bin.tar.gz \
-      '*/log4j-api*.jar' \
-      '*/log4j-1.2-api*.jar' \
-      '*/log4j-core-*.jar' && \
-    rm apache-log4j-bin.tar.gz && \
-    mv -v log4j-api-*.jar log4j-api.jar && \
-    mv -v log4j-core-*.jar log4j-core.jar && \
-    mv -v log4j-1.2-api-*.jar log4j-1.2-api.jar \
-  )
+#RUN \
+#  log4j_version="2.12.1" ; \
+#  log4j_mirror="http://apache.javapipe.com/logging/log4j" ; \
+#  log4j_targz_url="${log4j_mirror}/${log4j_version}/apache-log4j-${log4j_version}-bin.tar.gz" ; \
+#  echo ================================= install log4j ${log4j_version} >&2 && \
+#  mkdir -p /usr/share/java/log4j || true && \
+#  curl \
+#    --fail \
+#    --location \
+#    --silent \
+#    --show-error \
+#    --output /usr/share/java/log4j/apache-log4j-bin.tar.gz \
+#    --url "${log4j_targz_url}" && \
+#  test -f /usr/share/java/log4j/apache-log4j-bin.tar.gz && \
+#  ( \
+#    cd /usr/share/java/log4j && \
+#    ls -1 && \
+#    tar \
+#      --strip-components=1 \
+#      --wildcards \
+#      --exclude='*-javadoc.jar' \
+#      --exclude='*-tests.jar' \
+#      --exclude='*-sources.jar' \
+#      -xvzf \
+#      apache-log4j-bin.tar.gz \
+#      '*/log4j-api*.jar' \
+#      '*/log4j-1.2-api*.jar' \
+#      '*/log4j-core-*.jar' && \
+#    rm apache-log4j-bin.tar.gz && \
+#    mv -v log4j-api-*.jar log4j-api.jar && \
+#    mv -v log4j-core-*.jar log4j-core.jar && \
+#    mv -v log4j-1.2-api-*.jar log4j-1.2-api.jar \
+#  )
 
 COPY etc /etc
 COPY root /root
