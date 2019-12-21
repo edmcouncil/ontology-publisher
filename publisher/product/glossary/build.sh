@@ -367,8 +367,9 @@ set -x
       -Xmx4G \
       -Xms4G \
       -Dfile.encoding=UTF-8 \
-      -jar "${RDFTOOLKIT_JAR}" \
-      --source "${TMPDIR}/glossary-dev-nolabel.ttl" \
+      -cp "/publisher/lib/javax.xml.bind.jar:${RDFTOOLKIT_JAR}" \
+      org.edmcouncil.rdf_toolkit.SesameRdfFormatter \
+      --source "${TMPDIR}/glossary-dev.ttl" \
       --source-format turtle \
       --target "${glossary_product_tag_root}/glossary-dev.jsonld" \
       --target-format json-ld \
@@ -411,10 +412,10 @@ set -x
   #
   (
     cd "${glossary_product_tag_root}" || return $?
-    if ((debug)) ; then
-      rm -f glossary-test.json
-      ln -s "glossary-test.jsonld" "glossary-test.json"
-    else
+#    if ((debug)) ; then
+#      rm -f glossary-test.json
+#      ln -s "glossary-test.jsonld" "glossary-test.json"
+#    else
       rm -f glossary-prod.json
       rm -f glossary-dev.json
       ln -s "glossary-dev.jsonld" "glossary-dev.json"
@@ -423,7 +424,7 @@ set -x
       fi
       rm -f glossary-test.json
       ln -s "glossary-test.jsonld" "glossary-test.json"
-    fi
+#    fi
   )
 
   return 0
