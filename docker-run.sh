@@ -6,11 +6,11 @@
 #
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)" || exit 1
 
-export ONTPUB_FAMILY="${ONTPUB_FAMILY:-fibo}"
+export ONTPUB_FAMILY="${ONTPUB_FAMILY:-DynamicSpectrumAccess}"
 export ONTPUB_ORG="edmcouncil"
 export ONTPUB_ORG_TLD="org"
 export ONTPUB_SPEC_HOST="${ONTPUB_SPEC_HOST:-spec.${ONTPUB_ORG}.${ONTPUB_ORG_TLD}}"
-export ONTPUB_INPUT_REPOS="${ONTPUB_INPUT_REPOS:-${ONTPUB_FAMILY} LCC}"
+export ONTPUB_INPUT_REPOS="${ONTPUB_INPUT_REPOS:-${ONTPUB_FAMILY}}"
 export ONTPUB_VERSION="$(< ${SCRIPT_DIR}/VERSION)"
 
 if [[ -f ${SCRIPT_DIR}/publisher/lib/_functions.sh ]] ; then
@@ -509,6 +509,8 @@ function shell() {
 }
 
 function main() {
+
+set -x
 
   checkCommandLine "$@" || return $?
   buildImage || return $?

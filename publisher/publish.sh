@@ -32,12 +32,12 @@ if [ -f ${SCRIPT_DIR}/product/index/build.sh ] ; then
 else
   source product/index/build.sh # This line is only there to make the IntelliJ Bash plugin see product/index/build.sh
 fi
-if [ -f ${SCRIPT_DIR}/product/widoco/build.sh ] ; then
+#if [ -f ${SCRIPT_DIR}/product/widoco/build.sh ] ; then
   # shellcheck source=product/widoco/build.sh
-  source ${SCRIPT_DIR}/product/widoco/build.sh
-else
-  source product/widoco/build.sh # This line is only there to make the IntelliJ Bash plugin see product/widoco/build.sh
-fi
+#  source ${SCRIPT_DIR}/product/widoco/build.sh
+#else
+#  source product/widoco/build.sh # This line is only there to make the IntelliJ Bash plugin see product/widoco/build.sh
+#fi
 if [ -f ${SCRIPT_DIR}/product/glossary/build.sh ] ; then
   # shellcheck source=product/glossary/build.sh
   source ${SCRIPT_DIR}/product/glossary/build.sh
@@ -334,10 +334,10 @@ function main() {
         product="hygiene"
         runHygieneTests || return $?
         ;;
-      wido*)
-        product="widoco"
-        publishProductWidoco || return $?
-        ;;
+#      wido*)
+#        product="widoco"
+#        publishProductWidoco || return $?
+#        ;;
       index)
 	      publishProductIndex || return $?
 	      ;;
