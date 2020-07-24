@@ -12,6 +12,8 @@ export ONTPUB_ORG_TLD="org"
 export ONTPUB_SPEC_HOST="${ONTPUB_SPEC_HOST:-spec.${ONTPUB_ORG}.${ONTPUB_ORG_TLD}}"
 export ONTPUB_INPUT_REPOS="${ONTPUB_INPUT_REPOS:-${ONTPUB_FAMILY}}"
 export ONTPUB_VERSION="$(< ${SCRIPT_DIR}/VERSION)"
+export ONTPUB_EXEC="${ONTPUB_EXEC}"
+export ONTPUB_EXCLUDED="${ONTPUB_EXCLUDED:-/etc}"
 
 if [[ -f ${SCRIPT_DIR}/publisher/lib/_functions.sh ]] ; then
   # shellcheck source=publisher/lib/_functions.sh
@@ -430,6 +432,8 @@ function run() {
   opts+=("ONTPUB_FAMILY=${ONTPUB_FAMILY}")
   opts+=('--env')
   opts+=("ONTPUB_SPEC_HOST=${ONTPUB_SPEC_HOST}")
+  opts+=('--env')
+  opts+=("ONTPUB_EXCLUDED=${ONTPUB_EXCLUDED}")
 
   logVar ONTPUB_FAMILY
 
@@ -471,6 +475,8 @@ function run() {
 
   if ((cli_option_shell)) ; then
     opts+=('-l')
+  else
+    opts+=("${ONTPUB_EXEC}")
   fi
 
   log "docker ${opts[@]}"

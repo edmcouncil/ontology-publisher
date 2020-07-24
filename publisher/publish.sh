@@ -206,7 +206,7 @@ function zipOntologyFiles () {
   local zipttlProdFile="${tag_root}/prod.ttl.zip"
   local ziprdfProdFile="${tag_root}/prod.rdf.zip"
   local zipjsonldProdFile="${tag_root}/prod.jsonld.zip"
-    
+
   (
     cd "${spec_root}"
     #
@@ -289,9 +289,8 @@ function vocabularyGetModules() {
 #
 function quadify () {
 
-    sed 's/^<.*$/& { &/;$a}' "$1" | serdi -p $(cat /proc/sys/kernel/random/uuid) -o nquads - 
+    sed 's/^<.*$/& { &/;$a}' "$1" | serdi -p $(cat /proc/sys/kernel/random/uuid) -o nquads -
   }
-  
 
 function main() {
 

@@ -98,8 +98,9 @@ function runHygieneTests() {
   #
   # Get ontologies for Dev
   #
-  log "Merging all dev ontologies into one RDF file: $(logFileName ${tag_root}/DEV.ttl)"
-  "${JENA_ARQ}" $(find "${source_family_root}" -name "*.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
+  log "Merging all dev ontologies into one RDF file: ${tag_root}/DEV.ttl"
+  log "excluding ontologies matching \"${ONTPUB_EXCLUDED}\""
+  "${JENA_ARQ}" $(find "${source_family_root}" -regex '.*\.\(rdf\|ttl\|jsonld\)' | grep -v "${ONTPUB_EXCLUDED}" | sed "s/^/--data=/") \
     --query=/publisher/lib/echo.sparql \
     --results=TTL > ${tag_root}/DEV.ttl
 
@@ -154,8 +155,8 @@ function runHygieneTests() {
   grep "ERROR:" ${TMPDIR}/console1.txt && return 1
   grep "ERROR:" ${TMPDIR}/console2.txt && return 1
 
-  rm ${TMPDIR}/console1.txt
-  rm ${TMPDIR}/console2.txt
+  # rm ${TMPDIR}/console1.txt
+  # rm ${TMPDIR}/console2.txt
 
   logRule "Passed all the hygiene tests"
 
@@ -399,6 +400,9 @@ function ontologyFixTopBraidBaseURICookie() {
 
 function ontologyConvertMarkdownToHtml() {
 
+  # Short circuit because this is running on all of our npm dependencies in node_modules
+  return
+
   logStep "ontologyConvertMarkdownToHtml"
 
   if ((pandoc_available == 0)) ; then
@@ -540,7 +544,7 @@ function ontologyZipFiles () {
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipjsonldDevFile}
 
 
-    
+
 
     ${GREP} -r 'utl-av[:;.]Release' "${family_product_branch_tag}" | ${GREP} -F ".ttl" | ${SED} 's/:.*$//' | xargs zip -r ${zipttlProdFile}
     ${FIND}  "${family_product_branch_tag}" -name '*Load*.ttl' -print | ${GREP} -v "LoadFIBODev.ttl" |  xargs zip ${zipttlProdFile}
@@ -580,7 +584,7 @@ function buildquads () {
 
   local tmpflat="$(mktemp ${TMPDIR}/flatten.XXXXXX.sq)"
   cat >"${tmpflat}" << __HERE__
-PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
 CONSTRUCT {?s ?p ?o}
 WHERE {GRAPH ?g {?s ?p ?o
@@ -591,7 +595,7 @@ __HERE__
 
   local tmpflatecho="$(mktemp ${TMPDIR}/flattecho.XXXXXX.sq)"
   cat >"${tmpflatecho}" << __HERE__
-PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
 CONSTRUCT {?s ?p ?o}
 WHERE {?s ?p ?o
@@ -636,7 +640,7 @@ __HERE__
 
   local lcccr="$(mktemp ${TMPDIR}/LCCCR.XXXXXX.nt)"
   local lcccc="$(mktemp ${TMPDIR}/LCCCC.XXXXXX.nt)"
-  
+
   ${JENA_ARQ} \
       --query=${tmpflatecho} \
       --data=${INPUT}/LCC/Countries/CountryRepresentation.rdf \
@@ -679,7 +683,7 @@ set -x
 	  cat $lcccc >> ${DevFlatNT}
 
 
-	  
+
 	  ${JENA_ARQ} \
                --query="${tmpflat}" \
                --data=${ProdQuadsFile} \
@@ -700,9 +704,9 @@ set -x
 
 	  cat ${prefixes} > "${CSVPrefixes}"
 	  cat ${prefixes} > "${SPARQLPrefixes}"
-	  cat ${tmpbasic} > ${TTLPrefixes} 
+	  cat ${tmpbasic} > ${TTLPrefixes}
 	  sed 's/^/@/;s/$/ ./' ${prefixes} >> ${TTLPrefixes}
-	  
+
 
 	  cat > "${ProdTMPTTL}" <<EOF
 <${tag_root_url}/Prod.fibo-quickstart> a owl:Ontology .
@@ -712,17 +716,17 @@ EOF
 <${tag_root_url}/Dev.fibo-quickstart> a owl:Ontology .
 EOF
 
-	  
+
 	  cat ${TTLPrefixes} ${ProdFlatNT} > "${ProdTMPTTL}"
 
 	  cat ${TTLPrefixes} ${DevFlatNT} > "${DevTMPTTL}"
 
-          
 
-	  
+
+
 	  ${JENA_ARQ} --data="${ProdTMPTTL}" --query="${tmpecho}" --results=TTL > "${ProdFlatTTL}"
 	  ${JENA_ARQ} --data="${DevTMPTTL}" --query="${tmpecho}" --results=TTL > "${DevFlatTTL}"
-	  
+
 
 	  zip ${ProdQuadsFile}.zip ${ProdQuadsFile}
 	  zip ${DevQuadsFile}.zip ${DevQuadsFile}
@@ -731,7 +735,7 @@ EOF
 	  zip ${DevFlatNT}.zip ${DevFlatNT}
 
 
-	  
+
   )
 
   log "finished buildquads"
