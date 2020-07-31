@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export HOME="/home/sam/workspace"
+export HOME=${$HOME:-/home/sam/workspace}
 export ONTPUB_FAMILY="DynamicSpectrumAccess"
 export ONTPUB_EXEC="./publish.sh hygiene"
 export ONTPUB_SUBDIR="/ontologies"
