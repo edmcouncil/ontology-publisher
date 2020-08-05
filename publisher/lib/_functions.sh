@@ -783,7 +783,7 @@ function setProduct() {
 
   if [[ "${GIT_BRANCH}" == "head" ]] ; then
     error "Git repository has not been checked out to a local branch, GIT_BRANCH = head which is wrong"
-    return 1
+    # return 1
   fi
 
   export branch_root="${product_root}/${GIT_BRANCH}"
@@ -825,17 +825,17 @@ function initGitVars() {
   ) || return $?
 
   if [ -z "${GIT_COMMIT}" ] ; then
-    export GIT_COMMIT="$(cd ${source_family_root} && git rev-parse --short HEAD)"
+    export GIT_COMMIT=$(cd "${source_family_root}" && git rev-parse --short HEAD)
     ((verbose)) && logVar GIT_COMMIT
   fi
 
   if [ -z "${GIT_COMMENT}" ] ; then
-    export GIT_COMMENT=$(cd ${source_family_root} && git log --format=%B -n 1 ${GIT_COMMIT} | ${GREP} -v "^$")
+    export GIT_COMMENT=$(cd "${source_family_root}" && git log --format=%B -n 1 ${GIT_COMMIT} | ${GREP} -v "^$")
     ((verbose)) && logVar GIT_COMMENT
   fi
 
   if [ -z "${GIT_AUTHOR}" ] ; then
-    export GIT_AUTHOR=$(cd ${source_family_root} && git show -s --pretty=%an)
+    export GIT_AUTHOR=$(cd "${source_family_root}" && git show -s --pretty=%an)
     ((verbose)) && logVar GIT_AUTHOR
   fi
 
@@ -847,7 +847,7 @@ function initGitVars() {
   # might have specified the value for GIT_BRANCH which might need to be corrected.
   #
   if [ -z "${GIT_BRANCH}" ] ; then
-    GIT_BRANCH=$(cd ${source_family_root} && git rev-parse --abbrev-ref HEAD | tr '[:upper:]' '[:lower:]') ; export GIT_BRANCH
+    GIT_BRANCH=$(cd "${source_family_root}" && git rev-parse --abbrev-ref HEAD | tr '[:upper:]' '[:lower:]') ; export GIT_BRANCH
   fi
   #
   # Replace all slashes in a branch name with dashes so that we don't mess up the URLs for the ontologies
@@ -876,7 +876,7 @@ function initGitVars() {
     unset GIT_TAG_NAME
   fi
   if [ -z "${GIT_TAG_NAME}" ] ; then
-    GIT_TAG_NAME="$(cd ${source_family_root} ; echo $(git describe --contains --exact-match 2>/dev/null))"
+    GIT_TAG_NAME=$(cd "${source_family_root}" ; echo $(git describe --contains --exact-match 2>/dev/null))
     GIT_TAG_NAME="${GIT_TAG_NAME%^*}" # Strip the suffix
   fi
   export GIT_TAG_NAME="${GIT_TAG_NAME:-${GIT_BRANCH}_latest}"

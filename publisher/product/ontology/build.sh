@@ -102,7 +102,7 @@ function runHygieneTests() {
   log "excluding ontologies matching \"${ONTPUB_EXCLUDED}\""
   "${JENA_ARQ}" $(find "${source_family_root}" -regex '.*\.\(rdf\|ttl\|jsonld\)' | grep -v "${ONTPUB_EXCLUDED}" | sed "s/^/--data=/") \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${tag_root}/DEV.ttl
+    --results=TTL > "${tag_root}/DEV.ttl"
 
   #
   # Get ontologies for Prod
@@ -111,7 +111,7 @@ function runHygieneTests() {
   "${JENA_ARQ}" \
     $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${tag_root}/PROD.ttl
+    --results=TTL > "${tag_root}/PROD.ttl"
 
   logRule "Will run the following tests:"
 
@@ -126,7 +126,7 @@ function runHygieneTests() {
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
     logItem "Running test" "${banner}"
     ${JENA_ARQ} \
-      --data=${tag_root}/DEV.ttl \
+      --data="${tag_root}/DEV.ttl" \
       --results=csv \
       --query="${hygieneTestSparqlFile}" | \
       grep -v "^s,o,error$" | \
@@ -142,7 +142,7 @@ function runHygieneTests() {
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
     logItem "Running test" "${banner}"
     ${JENA_ARQ} \
-      --data=${tag_root}/PROD.ttl \
+      --data="${tag_root}/PROD.ttl" \
       --results=csv \
       --query="${hygieneTestSparqlFile}" | \
       grep -v "^s,o,error$" | \
