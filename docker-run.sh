@@ -6,8 +6,8 @@
 #
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)" || exit 1
 
-export ONTPUB_FAMILY="${ONTPUB_FAMILY:-DynamicSpectrumAccess}"
-export ONTPUB_ORG="edmcouncil"
+export ONTPUB_FAMILY="${ONTPUB_FAMILY:-fibo}"
+export ONTPUB_ORG="${ONTPUB_ORG:-edmcouncil}"
 export ONTPUB_ORG_TLD="org"
 export ONTPUB_SPEC_HOST="${ONTPUB_SPEC_HOST:-spec.${ONTPUB_ORG}.${ONTPUB_ORG_TLD}}"
 export ONTPUB_INPUT_REPOS="${ONTPUB_INPUT_REPOS:-${ONTPUB_FAMILY}}"
