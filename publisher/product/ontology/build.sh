@@ -100,14 +100,29 @@ function runHygieneTests() {
   #
   log "Merging all dev ontologies into one RDF file: ${tag_root}/DEV.ttl"
   log "excluding ontologies matching \"${ONTPUB_EXCLUDED}\""
-  "${JENA_ARQ}" $(find "${source_family_root}" -regex '.*\.\(rdf\|ttl\|jsonld\)' | grep -v "${ONTPUB_EXCLUDED}" | sed "s/^/--data=/") \
+
+  dev_ont_dir="${TMPDIR}/dev_ontologies"
+  mkdir "$dev_ont_dir"
+
+  dev_jena_command=( ${JENA_ARQ} )
+  while IFS= read -r -d '' ont_file_path ; do
+    if [[ ! "${ont_file_path}" =~ "${ONTPUB_EXCLUDED}" ]] ; then
+      # Each ontology file is copied to a temp dir.
+      # For some reason, Jena arq cannot read rdf files with paths that contain spaces.
+      tmp_file_path="${dev_ont_dir}/${ont_file_path##*/}"
+      cp "${ont_file_path}" "${tmp_file_path}"
+      dev_jena_command+=( --data="$tmp_file_path" )
+    fi
+  done < <(find "${source_family_root}${ONTPUB_SUBDIR}" -regex '.*\.\(rdf\|ttl\|jsonld\)' -print0)
+
+  "${dev_jena_command[@]}" \
     --query=/publisher/lib/echo.sparql \
     --results=TTL > "${tag_root}/DEV.ttl"
 
   #
   # Get ontologies for Prod
   #
-  log "Merging all prod ontologies into one RDF file: : $(logFileName ${tag_root}/PROD.ttl)"
+  log "Merging all prod ontologies into one RDF file: : ${tag_root}/PROD.ttl)"
   "${JENA_ARQ}" \
     $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
     --query=/publisher/lib/echo.sparql \
