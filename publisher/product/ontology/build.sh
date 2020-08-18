@@ -83,7 +83,9 @@ function getBannerFromSparqlTestFile() {
 
 function getHygieneTestFiles() {
 
-  find "${source_family_root}/etc" -name 'testHygiene*.sparql'
+  test_subdir=${HYGIENE_TEST_SUBDIR:-etc}
+
+  find "${source_family_root}/${HYGIENE_TEST_SUBDIR}" -name 'testHygiene*.sparql'
 }
 
 #
@@ -113,7 +115,7 @@ function runHygieneTests() {
       cp "${ont_file_path}" "${tmp_file_path}"
       dev_jena_command+=( --data="$tmp_file_path" )
     fi
-  done < <(find "${source_family_root}${ONTPUB_SUBDIR}" -regex '.*\.\(rdf\|ttl\|jsonld\)' -print0)
+  done < <(find "${source_family_root}/${ONTPUB_SUBDIR}" -regex '.*\.\(rdf\|ttl\|jsonld\)' -print0)
 
   "${dev_jena_command[@]}" \
     --query=/publisher/lib/echo.sparql \
