@@ -781,10 +781,10 @@ function setProduct() {
   ((verbose)) && logDir product_root
   ((verbose)) && logVar product_root_url
 
-  if [[ "${GIT_BRANCH}" == "head" ]] ; then
-    error "Git repository has not been checked out to a local branch, GIT_BRANCH = head which is wrong"
-    # return 1
-  fi
+  # if [[ "${GIT_BRANCH}" == "head" ]] ; then
+  #   error "Git repository has not been checked out to a local branch, GIT_BRANCH = head which is wrong"
+  #   return 1
+  # fi
 
   export branch_root="${product_root}/${GIT_BRANCH}"
   export branch_root_url="${product_root_url}/${GIT_BRANCH}"
