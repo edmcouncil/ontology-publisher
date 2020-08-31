@@ -295,13 +295,21 @@ s@${spec_family_root_url}/ext/@${product_root_url}/ext/@g
 #
 # Then replace some odd ones with a version number in it like:
 #
+# - https://spec.edmcouncil.org/fibo/ontology/20150201/
+#
+# with
+#
+# - https://spec.edmcouncil.org/fibo/ontology/
+#
+# or:
+#
 # - https://spec.edmcouncil.org/fibo/ontology/BE/20150201/
 #
 # with
 #
 # - https://spec.edmcouncil.org/fibo/ontology/BE/
 #
-s@${product_root_url}/\([A-Z]*\)/[0-9]*/@${product_root_url}/\1/@g
+s@${product_root_url}/\([A-Z]*/\)\?[0-9]*/@${product_root_url}/\1@g
 #
 # We only want the following types of IRIs to be versioned: owl:imports and owl:versionIRI.
 #
