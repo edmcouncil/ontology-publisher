@@ -73,7 +73,7 @@ RUN \
     perl-xml-libxslt perl-xml-writer perl-lwp-protocol-https perl-list-moreutils-xs perl-mozilla-ca \
     perl-unicode-collate perl-unicode-linebreak perl-unicode-normalize perl-config-autoconf \
     perl-extutils-libbuilder perl-file-which perl-test-differences \
-    fontconfig make npm \ 
+    fontconfig make npm \
     gcc linux-headers libc-dev && \
   #
   # Clean up
@@ -266,7 +266,7 @@ RUN \
 #
 # Installing Saxon
 #
-ENV SAXON_VERSION="9-9-0-2J"  
+ENV SAXON_VERSION="9-9-0-2J"
 RUN \
   echo ================================= install saxon ${SAXON_VERSION} >&2 && \
   curl --location --silent --show-error \
@@ -276,7 +276,11 @@ RUN \
   cd /usr/share/java/saxon && \
   unzip -q /var/tmp/SaxonHE${SAXON_VERSION}.zip && \
   rm /var/tmp/SaxonHE${SAXON_VERSION}.zip
-    
+
+#
+# Install Python libraries
+#
+RUN pip3.7 install junit-xml
 
 ##
 ## Installing Widoco

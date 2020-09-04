@@ -141,9 +141,13 @@ function runHygieneTests() {
 
   logRule "Errors in DEV:"
 
+  dev_log_file="${tag_root}/hygiene_test.$(date +%Y%m%d%H%M%S).dev.log"
+  dev_xml_file="${tag_root}/hygiene_test.dev.xml"
+
   while read -r hygieneTestSparqlFile ; do
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
     logItem "Running test" "${banner}"
+    echo "TEST: ${banner}" >> "${dev_log_file}"
     ${JENA_ARQ} \
       --data="${tag_root}/DEV.ttl" \
       --results=csv \
@@ -152,8 +156,19 @@ function runHygieneTests() {
       grep -v "^error$" | \
       sed 's/PRODERROR/WARN/g' > \
       ${TMPDIR}/console1.txt
-    cat ${TMPDIR}/console1.txt
+    cat ${TMPDIR}/console1.txt | tee -a "${dev_log_file}"
   done < <(getHygieneTestFiles)
+
+  generate_junit_command=( "${PYTHON3}" )
+  generate_junit_command+=( "${SCRIPT_DIR}/product/ontology/parse_hygiene_log.py" )
+  generate_junit_command+=( "${dev_log_file}" )
+  generate_junit_command+=( "${dev_xml_file}" )
+
+  if [ "${HYGIENE_FAIL_ON_WARNINGS}" = true ] ; then
+    generate_junit_command+=( "--include-warnings" )
+  fi
+
+  "${generate_junit_command[@]}"
 
   logRule "Errors in PROD:"
 
