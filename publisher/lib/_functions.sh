@@ -1107,6 +1107,37 @@ function getProdOntologies() {
     ${GREP} -v '/etc/'
 }
 
+#
+# Return true if STDIN content is "owl:Ontology"
+#
+function isOntology() {
+
+  xml c14n 2>/dev/null | xml -q sel -t -v '/rdf:RDF/owl:Ontology' 2>/dev/null && return 0
+
+  return 1
+}
+
+#
+# Returns ontology IRI=("owl:Ontology/@rdf:about" is not empty ? "owl:Ontology/@rdf:about" : "/rdf:RDF/@xml:base") from STDIN
+#	"/rdf:RDF/@xml:base" is workaround for empty "owl:Ontology/@rdf:about
+#
+function getOntologyIRI() {
+
+  xml -q c14n 2>/dev/null | xml sel \
+		-t -v '/rdf:RDF/owl:Ontology/@rdf:about' -nl
+		-t -v '/rdf:RDF/@xml:base' -nl 2>/dev/null \
+			| sed -r '/^\W*$/d' | head -n 1
+}
+
+#
+# Returns ontology versionIRI
+#
+function getOntologyVersionIRI() {
+
+  xml -q c14n 2>/dev/null | xml sel \
+		-t -v '/rdf:RDF/owl:Ontology/owl:versionIRI/@rdf:resource' -nl 2>/dev/null \
+			| sed -r '/^\W*$/d' | head -n 1
+}
 
 function getIsDarkMode() {
 
