@@ -184,6 +184,7 @@ ENV RDFTOOLKIT_JAR=/publisher/lib/rdf-toolkit.jar
 
 #
 # Installing Apache Jena
+# INFRA-496 jena-arq-${JENA_VERSION}.jar: workaround to change default JSON-LD output: JSONLD = JSONLD_EXPAND_PRETTY instead of JSONLD_COMPACT_PRETTY
 #
 ENV \
   JENA_VERSION="3.16.0" \
@@ -206,7 +207,12 @@ RUN \
   ln -s /usr/share/java/jena/latest/bin/sparql /usr/local/bin/sparql && \
   ln -s /usr/share/java/jena/latest/bin/turtle /usr/local/bin/turtle && \
   cd ${JENA_VERSION} && \
+  unzip lib-src/jena-arq-${JENA_VERSION}-sources.jar org/apache/jena/riot/RDFFormat.java && \
   rm -rf src-examples lib-src bat && \
+  perl -pi -e 's/(JSONLD\s+=\s+JSONLD)_COMPACT_(PRETTY)/\1_EXPAND_\2/g' org/apache/jena/riot/RDFFormat.java && \
+  javac -cp /usr/share/java/jena/${JENA_VERSION}/lib/jena-arq-${JENA_VERSION}.jar org/apache/jena/riot/RDFFormat.java && \
+  zip -u /usr/share/java/jena/${JENA_VERSION}/lib/jena-arq-${JENA_VERSION}.jar org/apache/jena/riot/RDFFormat.class && \
+  rm -rf org && \
   cd / && \
   version="$(echo $(tdb2.tdbloader --version | grep Jena | grep VERSION | cut -d: -f3))" && \
   echo "installed version="[${version}]"" && \

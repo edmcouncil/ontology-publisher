@@ -48,13 +48,12 @@ function convertRdfFileTo() {
   local logfile ; logfile="$(mktempWithExtension convertRdfFile log)" || return $?
 
   # [errors during conversion to "json-ld"](https://github.com/edmcouncil/ontology-publisher/issues/15,https://jira.edmcouncil.org/browse/INFRA-496)
-  #	* use "riot" to convert to "json-ld"
-  #	* workaround for [JSON-LD with @graph member fails to load (protégé 5.5.0)](https://github.com/protegeproject/protege/issues/866)
+  #	* use "fixed" riot to convert to json-ld in JSONLD_EXPAND_PRETTY format
+  #	  workaround for [JSON-LD with @graph member fails to load (protégé 5.5.0)](https://github.com/protegeproject/protege/issues/866)
  if [ "${targetFormat}" = "json-ld" ] ; then
-  ${JENA_RIOT} --output=jsonld "${rdfFile}" \
+  ${JENA_RIOT} --formatted=JSON-LD "${rdfFile}" \
     >  "${targetFile}.tmp" \
-    2> "${logfile}" && \
-   if isOntology < "${rdfFile}" ; then ${SED} -i "s#@graph#@$(getOntologyIRI < "${rdfFile}")#g" "${targetFile}.tmp" ; else true ; fi
+    2> "${logfile}"
   rc=$?
  else
   java \
