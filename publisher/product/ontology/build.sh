@@ -106,7 +106,7 @@ function runHygieneTests() {
   fi
 
   dev_ont_dir="${TMPDIR}/dev_ontologies"
-  mkdir "$dev_ont_dir"
+  mkdir -p "$dev_ont_dir"
 
   dev_jena_command=( ${JENA_ARQ} )
   while IFS= read -r -d '' ont_file_path ; do
