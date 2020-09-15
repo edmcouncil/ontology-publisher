@@ -142,7 +142,7 @@ function runHygieneTests() {
 
   "${dev_jena_command[@]}" \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > "${tag_root}/DEV.ttl"
+    --results=TTL > "${tag_root}/DEV.ttl" || return $?
 
   #
   # Get ontologies for Prod
