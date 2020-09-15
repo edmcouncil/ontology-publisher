@@ -81,11 +81,32 @@ function getBannerFromSparqlTestFile() {
   grep "banner" "${hygieneTestSparqlFile}" | cut -d\  -f 3-
 }
 
+#
+# List the templated hygiene test files
+#
 function getHygieneTestFiles() {
+
+  templated_hygiene_file_dir="${tag_root}/templated_hygiene_test_files"
+  find "${templated_hygiene_file_dir}" -name 'testHygiene*.sparql'
+}
+
+#
+# Perform templating on hygiene test files
+#
+function prepareHygieneTestFiles() {
 
   test_subdir=${HYGIENE_TEST_SUBDIR:-etc}
 
-  find "${source_family_root}/${HYGIENE_TEST_SUBDIR}" -name 'testHygiene*.sparql'
+  templated_hygiene_file_dir="${tag_root}/templated_hygiene_test_files"
+
+  # ensure directory for templated files is created and clear
+  mkdir -p "${templated_hygiene_file_dir}"
+  rm -rf "${templated_hygiene_file_dir}/*"
+
+  while IFS= read -r -d '' test_file_path ; do
+    filename=$(basename "${test_file_path}")
+    sed -e "s/\${NAMESPACE_REGEX}/${HYGIENE_NAMESPACE_REGEX}/g" "${test_file_path}" > "${templated_hygiene_file_dir}/${filename}"
+  done < <(find "${source_family_root}/${HYGIENE_TEST_SUBDIR}" -name 'testHygiene*.sparql' -print0)
 }
 
 #
@@ -132,6 +153,8 @@ function runHygieneTests() {
     --query=/publisher/lib/echo.sparql \
     --results=TTL > "${tag_root}/PROD.ttl"
 
+  prepareHygieneTestFiles
+
   logRule "Will run the following tests:"
 
   while read -r hygieneTestSparqlFile ; do
@@ -143,6 +166,8 @@ function runHygieneTests() {
 
   dev_log_file="${tag_root}/hygiene_test.$(date +%Y%m%d%H%M%S).dev.log"
   dev_xml_file="${tag_root}/hygiene_test.dev.xml"
+
+  touch "${dev_log_file}"
 
   while read -r hygieneTestSparqlFile ; do
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
