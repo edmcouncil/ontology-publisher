@@ -14,6 +14,9 @@ export ONTPUB_INPUT_REPOS="${ONTPUB_INPUT_REPOS:-${ONTPUB_FAMILY}}"
 export ONTPUB_VERSION="$(< ${SCRIPT_DIR}/VERSION)"
 export ONTPUB_EXEC="${ONTPUB_EXEC}"
 export ONTPUB_EXCLUDED="${ONTPUB_EXCLUDED:-/etc}"
+export HYGIENE_FAIL_ON_WARNINGS="${HYGIENE_FAIL_ON_WARNINGS:-false}"
+export HYGIENE_TEST_SUBDIR="${HYGIENE_TEST_SUBDIR}"
+export ONTPUB_SUBDIR="${ONTPUB_SUBDIR}"
 
 if [[ -f ${SCRIPT_DIR}/publisher/lib/_functions.sh ]] ; then
   # shellcheck source=publisher/lib/_functions.sh
@@ -434,6 +437,13 @@ function run() {
   opts+=("ONTPUB_SPEC_HOST=${ONTPUB_SPEC_HOST}")
   opts+=('--env')
   opts+=("ONTPUB_EXCLUDED=${ONTPUB_EXCLUDED}")
+
+  opts+=('--env')
+  opts+=("HYGIENE_FAIL_ON_WARNINGS=${HYGIENE_FAIL_ON_WARNINGS}")
+  opts+=('--env')
+  opts+=("HYGIENE_TEST_SUBDIR=${HYGIENE_TEST_SUBDIR}")
+  opts+=('--env')
+  opts+=("ONTPUB_SUBDIR=${ONTPUB_SUBDIR}")
 
   logVar ONTPUB_FAMILY
 
