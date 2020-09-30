@@ -162,6 +162,8 @@ function runHygieneTests() {
     logItem "$(basename "${hygieneTestSparqlFile}")" "${banner}"
   done < <(getHygieneTestFiles)
 
+  rm -f ${TMPDIR}/console.txt
+
   logRule "Errors in DEV:"
 
   dev_log_file="${tag_root}/hygiene_test.$(date +%Y%m%d%H%M%S).dev.log"
@@ -177,11 +179,11 @@ function runHygieneTests() {
       --data="${tag_root}/DEV.ttl" \
       --results=csv \
       --query="${hygieneTestSparqlFile}" | \
-      grep -v "^s,o,error$" | \
-      grep -v "^error$" | \
-      sed 's/PRODERROR/WARN/g' > \
-      ${TMPDIR}/console1.txt
-    cat ${TMPDIR}/console1.txt | tee -a "${dev_log_file}"
+      sed 's/^\W*PRODERROR:/WARN:/g' | \
+      grep -vP "^\W*error(|\W.*)$" | \
+      sed -e 's#^\W*\(ERROR:.*\)$#\t\x1b\x5b\x33\x31\x6d\1\x1b\x5b\x30\x6d#g' \
+          -e 's#^\W*\(WARN:.*\)$#\t\x1b\x5b\x33\x33\x6d\1\x1b\x5b\x30\x6d#g' | \
+      tee -a ${TMPDIR}/console.txt
   done < <(getHygieneTestFiles)
 
   generate_junit_command=( "${PYTHON3}" )
@@ -204,18 +206,16 @@ function runHygieneTests() {
       --data="${tag_root}/PROD.ttl" \
       --results=csv \
       --query="${hygieneTestSparqlFile}" | \
-      grep -v "^s,o,error$" | \
-      grep -v "^error$" | \
-      sed 's/PRODERROR/ERROR/g' > \
-      ${TMPDIR}/console2.txt
-    cat ${TMPDIR}/console2.txt
+      sed 's/^\W*PRODERROR:/ERROR:/g' | \
+      grep -vP "^\W*error(|\W.*)$" | \
+      sed -e 's#^\W*\(ERROR:.*\)$#\t\x1b\x5b\x33\x31\x6d\1\x1b\x5b\x30\x6d#g' \
+          -e 's#^\W*\(WARN:.*\)$#\t\x1b\x5b\x33\x33\x6d\1\x1b\x5b\x30\x6d#g' | \
+      tee -a ${TMPDIR}/console.txt
   done < <(getHygieneTestFiles)
 
-  grep "ERROR:" ${TMPDIR}/console1.txt && return 1
-  grep "ERROR:" ${TMPDIR}/console2.txt && return 1
+  grep -P "^\t\x1b\x5b\x33\x31\x6dERROR:" ${TMPDIR}/console.txt &>/dev/null && return 1
 
-  # rm ${TMPDIR}/console1.txt
-  # rm ${TMPDIR}/console2.txt
+  # rm -f ${TMPDIR}/console.txt
 
   logRule "Passed all the hygiene tests"
 
@@ -355,13 +355,21 @@ s@${spec_family_root_url}/ext/@${product_root_url}/ext/@g
 #
 # Then replace some odd ones with a version number in it like:
 #
+# - https://spec.edmcouncil.org/fibo/ontology/20150201/
+#
+# with
+#
+# - https://spec.edmcouncil.org/fibo/ontology/
+#
+# or:
+#
 # - https://spec.edmcouncil.org/fibo/ontology/BE/20150201/
 #
 # with
 #
 # - https://spec.edmcouncil.org/fibo/ontology/BE/
 #
-s@${product_root_url}/\([A-Z]*\)/[0-9]*/@${product_root_url}/\1/@g
+s@${product_root_url}/\([A-Z]*/\)\?[0-9]*/@${product_root_url}/\1@g
 #
 # We only want the following types of IRIs to be versioned: owl:imports and owl:versionIRI.
 #

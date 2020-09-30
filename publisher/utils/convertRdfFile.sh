@@ -47,6 +47,15 @@ function convertRdfFileTo() {
   local rc=0
   local logfile ; logfile="$(mktempWithExtension convertRdfFile log)" || return $?
 
+  # [errors during conversion to "json-ld"](https://github.com/edmcouncil/ontology-publisher/issues/15,https://jira.edmcouncil.org/browse/INFRA-496)
+  #	* use "fixed" riot to convert to json-ld in JSONLD_EXPAND_PRETTY format
+  #	  workaround for [JSON-LD with @graph member fails to load (protégé 5.5.0)](https://github.com/protegeproject/protege/issues/866)
+ if [ "${targetFormat}" = "json-ld" ] ; then
+  ${JENA_RIOT} --formatted=JSON-LD "${rdfFile}" \
+    >  "${targetFile}.tmp" \
+    2> "${logfile}"
+  rc=$?
+ else
   java \
     --add-opens java.base/java.lang=ALL-UNNAMED \
     -Xmx1G \
@@ -63,13 +72,14 @@ function convertRdfFileTo() {
     --use-dtd-subset \
     > "${logfile}" 2>&1
   rc=$?
+ fi
 
   #
   # We write the output to a temp file in case the input and the
   # output are the same file (which happens a lot) since the
   # serializer can't handle that situation. 
   #
-  mv "${targetFile}.tmp" "${targetFile}"
+  mv -f "${targetFile}.tmp" "${targetFile}"
   
   #
   # For the turtle files, we want the base annotations to be the versionIRI
@@ -82,7 +92,7 @@ function convertRdfFileTo() {
   fi
 
   if ${GREP} -q "ERROR" "${logfile}"; then
-    error "Found errors during conversion of$(logFileName "${rdfFile}") to \"${targetFormat}\":"
+    error "Found errors during conversion of $(logFileName "${rdfFile}") to \"${targetFormat}\":"
     cat "${logfile}"
     rc=1
   elif ${GREP} -q "WARNING" "${logfile}"; then

@@ -62,7 +62,7 @@ RUN \
     curl wget \
     bash git grep sed findutils coreutils tree jq bc xmlstarlet \
     zip tar xz \
-    python python3 py3-setuptools \
+    python python3 python3-dev py3-setuptools libxml2-dev libxslt-dev \
     perl perl-utils \
     perl-log-log4perl perl-class-accessor perl-datetime perl-datetime-format-builder \
     perl-datetime-calendar-julian perl-text-csv perl-data-compare perl-data-dump perl-file-slurper \
@@ -128,9 +128,9 @@ ENV \
   pandoc_available=1 \
   pandoc_bin=/usr/local/bin/pandoc
 RUN \
-  pandoc_version="2.2.2.1" ; \
+  pandoc_version="2.10.1" ; \
   echo ================================= install pandoc ${pandoc_version} >&2 && \
-  targz="pandoc-${pandoc_version}-linux.tar.gz" ; \
+  targz="pandoc-${pandoc_version}-linux-amd64.tar.gz" ; \
   url="https://github.com/jgm/pandoc/releases/download/${pandoc_version}/${targz}" ; \
   echo "Downloading ${url}:" >&2 ; \
   curl --location --silent --show-error --output /var/tmp/${targz} --url "${url}" && \
@@ -185,6 +185,7 @@ ENV RDFTOOLKIT_JAR=/publisher/lib/rdf-toolkit.jar
 
 #
 # Installing Apache Jena
+# INFRA-496 jena-arq-${JENA_VERSION}.jar: workaround to change default JSON-LD output: JSONLD = JSONLD_EXPAND_PRETTY instead of JSONLD_COMPACT_PRETTY
 #
 ENV \
   JENA_VERSION="3.16.0" \
@@ -194,7 +195,7 @@ RUN \
   echo ================================= install jena ${JENA_VERSION} >&2 && \
   name="apache-jena-${JENA_VERSION}" ; \
   targz="${name}.tar.gz" ; \
-  url="http://www-us.apache.org/dist/jena/binaries/${targz}" ; \
+  url="http://archive.apache.org/dist/jena/binaries/${targz}" ; \
   echo "Downloading ${url}:" >&2 ; \
   curl --location --silent --show-error --output /var/tmp/${targz} --url "${url}" && \
   (mkdir -p /usr/share/java/jena || true) && \
@@ -207,7 +208,12 @@ RUN \
   ln -s /usr/share/java/jena/latest/bin/sparql /usr/local/bin/sparql && \
   ln -s /usr/share/java/jena/latest/bin/turtle /usr/local/bin/turtle && \
   cd ${JENA_VERSION} && \
+  unzip lib-src/jena-arq-${JENA_VERSION}-sources.jar org/apache/jena/riot/RDFFormat.java && \
   rm -rf src-examples lib-src bat && \
+  perl -pi -e 's/(JSONLD\s+=\s+JSONLD)_COMPACT_(PRETTY)/\1_EXPAND_\2/g' org/apache/jena/riot/RDFFormat.java && \
+  javac -cp /usr/share/java/jena/${JENA_VERSION}/lib/jena-arq-${JENA_VERSION}.jar org/apache/jena/riot/RDFFormat.java && \
+  zip -u /usr/share/java/jena/${JENA_VERSION}/lib/jena-arq-${JENA_VERSION}.jar org/apache/jena/riot/RDFFormat.class && \
+  rm -rf org && \
   cd / && \
   version="$(echo $(tdb2.tdbloader --version | grep Jena | grep VERSION | cut -d: -f3))" && \
   echo "installed version="[${version}]"" && \
@@ -266,12 +272,12 @@ RUN \
 #
 # Installing Saxon
 #
-ENV SAXON_VERSION="9-9-0-2J"
+ENV SAXON_VERSION="9-9-1-7J"  
 RUN \
   echo ================================= install saxon ${SAXON_VERSION} >&2 && \
   curl --location --silent --show-error \
     --output /var/tmp/SaxonHE${SAXON_VERSION}.zip \
-    --url "https://sourceforge.net/projects/saxon/files/latest/download" && \
+    --url "https://sourceforge.net/projects/saxon/files/Saxon-HE/9.9/SaxonHE${SAXON_VERSION}.zip/download" && \
   (mkdir -p /usr/share/java/saxon || true) && \
   cd /usr/share/java/saxon && \
   unzip -q /var/tmp/SaxonHE${SAXON_VERSION}.zip && \
