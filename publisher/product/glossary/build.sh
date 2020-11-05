@@ -146,34 +146,33 @@ function publishProductGlossaryContent() {
   #
 # if ((debug == 0)) ; then
     verbose "Get all dev ontologies convert to one Turtle file ($(logFileName ${TMPDIR}/glossary-dev.ttl))"
+
+    echo "tag_root=$tag_root"
+    #riot --output=rdf/xml ${glossary_script_dir}/owlnames.ttl >${ontology_product_tag_root}/owlnames.rdf
+    ${CP} -fa ${glossary_script_dir}/owlnames.rdf ${ontology_product_tag_root}/owlnames.rdf
+    
 #    ${JENA_ARQ} \
-#      $(${FIND} "${ontology_product_tag_root}" -name "*.rdf" | ${SED} "s/^/--data=/") \
-#      --data=${glossary_script_dir}/owlnames.ttl \
-#      --data="${SCRIPT_DIR}/lib/ontologies/omg/CountryRepresentation.rdf" \
-#      --data="${SCRIPT_DIR}/lib/ontologies/omg/LanguageRepresentation.rdf" \
+#      $(${FIND} "${ontology_product_tag_root}" "${SCRIPT_DIR}" -name "*.rdf" | ${SED} "s/^/--data=/") \
+#      --data="${ontology_product_tag_root}"/owlnames.rdf \
+#      --data="${SCRIPT_DIR}"/lib/ontologies/www.omg.org/spec/LCC/Countries/CountryRepresentation.rdf \
+#      --data="${SCRIPT_DIR}"/lib/ontologies/www.omg.org/spec/LCC/Languages/LanguageRepresentation.rdf \
 #      --query="${SCRIPT_DIR}/lib/noimport.sparql" \
 #      --results=Turtle > "${TMPDIR}/glossary-dev.ttl"
-
 
     if [ ! -f ${SCRIPT_DIR}/lib/trigify.py ] ; then
 	error "Could not find ${SCRIPT_DIR}/lib/trigify.py"
 	return 1
     fi
 
-    echo "tag_root=$tag_root"
-    riot --output=rdf/xml ${glossary_script_dir}/owlnames.ttl >${glossary_script_dir}/owlnames.rdf
-    
-    
-    python3 ${SCRIPT_DIR}/lib/trigify.py \
+    ${PYTHON3} ${SCRIPT_DIR}/lib/trigify.py \
 	    --dir=${ontology_product_tag_root} \
-	    --dir="${SCRIPT_DIR}/lib/ontologies/omg" \
-	    --dir="${glossary_script_dir}" \
+	    --dir="${SCRIPT_DIR}/lib/ontologies" \
 	    --output="${TMPDIR}/glossary-dev.ttl" \
 	    --noimports \
-	    --top=http://www.edmcouncil.org/fibo/AboutFIBODev \
-            --top=http://www.omg.org/spec/LCC/Countries/CountryRepresentation/ \
-            --top=http://www.omg.org/spec/LCC/Languages/LanguageRepresentation/ \
-	    --top=http://spec.edmcouncil.org/owlnames \
+	    --top="$(getOntologyIRI < "${ontology_product_tag_root}"/About*Dev.rdf)" \
+            --top="$(getOntologyIRI < "${SCRIPT_DIR}"/lib/ontologies/www.omg.org/spec/LCC/Countries/CountryRepresentation.rdf)" \
+            --top="$(getOntologyIRI < "${SCRIPT_DIR}"/lib/ontologies/www.omg.org/spec/LCC/Languages/LanguageRepresentation.rdf)" \
+	    --top="$(getOntologyIRI < "${ontology_product_tag_root}"/owlnames.rdf)" \
 	    --format=ttl
 
     
@@ -181,6 +180,9 @@ function publishProductGlossaryContent() {
       error "Could not get Dev ontologies"
       return 1
     fi
+
+    rm -f "${ontology_product_tag_root}"/owlnames.rdf
+
     #
     # Fast conversion of the N-Triples file to Turtle
     #
@@ -224,22 +226,22 @@ function publishProductGlossaryContent() {
   # Now that this goes faster, we might not need this. 
   # Just do "Corporations.rdf" for test purposes
   #
-  verbose "Get the Corporations.rdf ontology (for test purposes) and generate ($(logFileName ${TMPDIR}/glossary-test.ttl))"
-  ${JENA_ARQ} \
-    $(${FIND}  "${ontology_product_tag_root}" -name "Corporations.rdf" | ${SED} "s/^/--data=/") \
-    --data=${glossary_script_dir}/owlnames.ttl \
-    --query="${SCRIPT_DIR}/lib/noimport.sparql" \
-    --results=Turtle > "${TMPDIR}/glossary-test.ttl"
-  rc=$?
-
-  if ((rc > 0)) ; then
-    error "Could not get Test ontologies"
-    return 1
-  fi
-  if [ ! -f "${TMPDIR}/glossary-test.ttl" ] ; then
-    error "Did not generate ${TMPDIR}/glossary-test.ttl"
-    return 1
-  fi
+#  verbose "Get the Corporations.rdf ontology (for test purposes) and generate ($(logFileName ${TMPDIR}/glossary-test.ttl))"
+#  ${JENA_ARQ} \
+#    $(${FIND}  "${ontology_product_tag_root}" -name "Corporations.rdf" | ${SED} "s/^/--data=/") \
+#    --data=${glossary_script_dir}/owlnames.ttl \
+#    --query="${SCRIPT_DIR}/lib/noimport.sparql" \
+#    --results=Turtle > "${TMPDIR}/glossary-test.ttl"
+#  rc=$?
+#
+#  if ((rc > 0)) ; then
+#    error "Could not get Test ontologies"
+#    return 1
+#  fi
+#  if [ ! -f "${TMPDIR}/glossary-test.ttl" ] ; then
+#    error "Did not generate ${TMPDIR}/glossary-test.ttl"
+#    return 1
+#  fi
   #
   # Fast conversion of the N-Triples file to Turtle
   #
@@ -250,11 +252,12 @@ function publishProductGlossaryContent() {
 #    "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-test.ttl" "${glossary_product_tag_root}/glossary-test.ttl" || return $?
 #  else
 set -x
-    log "debug=false so now we're generating the full prod and dev versions"
+#    log "debug=false so now we're generating the full prod and dev versions"
 
 #    if ((numberOfProductionLevelOntologyFiles > 0)) ; then
 ##      "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-prod.ttl" "${glossary_product_tag_root}/glossary-prod.ttl" &
 #    fi
+    log "run SPIN commands for ($(logFileName ${TMPDIR}/glossary-dev.ttl))"
     "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-dev.ttl" "${glossary_product_tag_root}/glossary-dev.ttl"
     #    log "and on top of that also the test glossary"
 #    "${SCRIPT_DIR}/utils/spinRunInferences.sh" "${TMPDIR}/glossary-test.ttl" "${glossary_product_tag_root}/glossary-test.ttl" &
@@ -325,7 +328,7 @@ set -x
 #    ${JENA_ARQ} --data="${glossary_product_tag_root}/glossary-test.ttl" --query="${TMPDIR}/nolabel.sq" > "${TMPDIR}/glossary-test-nolabel.ttl"
 #  fi
 
-  log "Using RDF toolkit to convert Turtle to JSON-LD"
+#  log "Using RDF toolkit to convert Turtle to JSON-LD"
 
 #  if ((debug)) ; then
 #    log "Convert glossary-test-nolabel.ttl to glossary-test.jsonld"
@@ -361,21 +364,21 @@ set -x
 #        --use-dtd-subset -ibn \
 #        > "${glossary_product_tag_root}/rdf-toolkit-glossary-prod.log" 2>&1
 #    fi
-    log "Convert $(logFileName "${TMPDIR}/glossary-dev.ttl") to $(logFileName "${glossary_product_tag_root}/glossary-dev.jsonld")"
-    java \
-      --add-opens java.base/java.lang=ALL-UNNAMED \
-      -Xmx4G \
-      -Xms4G \
-      -Dfile.encoding=UTF-8 \
-      -cp "/publisher/lib/javax.xml.bind.jar:${RDFTOOLKIT_JAR}" \
-      org.edmcouncil.rdf_toolkit.SesameRdfFormatter \
-      --source "${TMPDIR}/glossary-dev.ttl" \
-      --source-format turtle \
-      --target "${glossary_product_tag_root}/glossary-dev.jsonld" \
-      --target-format json-ld \
-      --infer-base-iri \
-      --use-dtd-subset -ibn \
-      > "${glossary_product_tag_root}/rdf-toolkit-glossary-dev.log" 2>&1
+#    log "Convert $(logFileName "${TMPDIR}/glossary-dev.ttl") to $(logFileName "${glossary_product_tag_root}/glossary-dev.jsonld")"
+#    java \
+#      --add-opens java.base/java.lang=ALL-UNNAMED \
+#      -Xmx4G \
+#      -Xms4G \
+#      -Dfile.encoding=UTF-8 \
+#      -cp "/publisher/lib/javax.xml.bind.jar:${RDFTOOLKIT_JAR}" \
+#      org.edmcouncil.rdf_toolkit.SesameRdfFormatter \
+#      --source "${TMPDIR}/glossary-dev.ttl" \
+#      --source-format turtle \
+#      --target "${glossary_product_tag_root}/glossary-dev.jsonld" \
+#      --target-format json-ld \
+#      --infer-base-iri \
+#      --use-dtd-subset -ibn \
+#      > "${glossary_product_tag_root}/rdf-toolkit-glossary-dev.log" 2>&1
 #    log "Convert glossary-test-nolabel.ttl to glossary-test.jsonld"
 #    java \
 #      --add-opens java.base/java.lang=ALL-UNNAMED \
@@ -410,22 +413,22 @@ set -x
   #    files with a simplified structure allowing others to include the glossary more
   #    easily into their own apps.
   #
-  (
-    cd "${glossary_product_tag_root}" || return $?
+#  (
+#    cd "${glossary_product_tag_root}" || return $?
 #    if ((debug)) ; then
 #      rm -f glossary-test.json
 #      ln -s "glossary-test.jsonld" "glossary-test.json"
 #    else
-      rm -f glossary-prod.json
-      rm -f glossary-dev.json
-      ln -s "glossary-dev.jsonld" "glossary-dev.json"
-      if ((numberOfProductionLevelOntologyFiles > 0)) ; then
-        ln -s "glossary-prod.jsonld" "glossary-prod.json"
-      fi
-      rm -f glossary-test.json
-      ln -s "glossary-test.jsonld" "glossary-test.json"
+#      rm -f glossary-prod.json
+#      rm -f glossary-dev.json
+#      ln -s "glossary-dev.jsonld" "glossary-dev.json"
+#      if ((numberOfProductionLevelOntologyFiles > 0)) ; then
+#        ln -s "glossary-prod.jsonld" "glossary-prod.json"
+#      fi
+#      rm -f glossary-test.json
+#      ln -s "glossary-test.jsonld" "glossary-test.json"
 #    fi
-  )
+#  )
 
   return 0
 }
