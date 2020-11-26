@@ -1,0 +1,1032 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.omg.org/techprocess/ab/SpecificationMetadata/"
+     xml:base="http://www.omg.org/techprocess/ab/SpecificationMetadata/"
+     xmlns:sm="http://www.omg.org/techprocess/ab/SpecificationMetadata/"
+     xmlns:dct="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#">
+    <owl:Ontology rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/">
+        <owl:versionIRI rdf:resource="http://www.omg.org/techprocess/ab/20140801/SpecificationMetadata/"/>
+        <owl:imports rdf:resource="http://www.w3.org/2004/02/skos/core"/>
+        <dct:license rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/MITLicense"/>
+        <dct:source rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.omg.org/cgi-bin/doc?pp</dct:source>
+        <addressForComments rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.omg.org/issues/</addressForComments>
+        <contentLanguage rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.w3.org/standards/techs/owl#w3c_all</contentLanguage>
+        <copyright rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (c) 2012-2014 Adaptive
+Copyright (c) 2012-2014 Object Management Group, Inc.
+Copyright (c) 2012-2014 Thematix Partners LLC</copyright>
+        <dependsOn rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://purl.org/dc/terms/</dependsOn>
+        <dependsOn rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.w3.org/2004/02/skos/core.rdf</dependsOn>
+        <filename rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SpecificationMetadata.rdf</filename>
+        <isNormative rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</isNormative>
+        <keyword rdf:datatype="http://www.w3.org/2001/XMLSchema#string">specification metadata</keyword>
+        <priorVersion rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.omg.org/techprocess/ab/20130301/SpecificationMetadata.owl</priorVersion>
+        <priorVersion rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.omg.org/techprocess/ab/20130701/SpecificationMetadata/</priorVersion>
+        <publicationDate rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2014-08-18T18:00:00</publicationDate>
+        <relatedSpecification rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.metadata-standards.org/24706/index.html</relatedSpecification>
+        <responsibleTaskForce rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.omg.org/news/about/ab.htm</responsibleTaskForce>
+        <specificationAbbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SM</specificationAbbreviation>
+        <specificationAbstract rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This ontology provides a set of basic metadata annotations for use in describing Object Management Group (OMG) specifications, standards, and documents.  It was recommended for use by the OMG Architecture Board (AB) in OMG standard ontologies, vocabularies and other models at the March 2013 Reston meeting. 
+
+The annotations defined herein extend properties defined in the Dublin Core Metadata Terms Vocabulary and in the W3C Simple Knowledge Organization System (SKOS) Vocabulary, and have been customized to support the OMG specification development process.  Note that any of the original properties provided in Dublin Core and SKOS can be used in addition to the terms provided herein.  However, any Dublin Core terms that are not explicitly defined as OWL annotation properties below must be so declared in the ontologies that use them.</specificationAbstract>
+        <specificationTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specification Metadata (SM) Ontology</specificationTitle>
+        <specificationURL rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.omg.org/techprocess/ab/SpecificationMetadata/</specificationURL>
+        <specificationVersionStatus rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OMG Architecture Board Recommendation</specificationVersionStatus>
+        <specificationVersionURL rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.omg.org/techprocess/ab/20140801/SpecificationMetadata/</specificationVersionURL>
+        <topicArea rdf:datatype="http://www.w3.org/2001/XMLSchema#string">analysis and design</topicArea>
+        <rdfs:label>Specification Metadata (SM) Vocabulary</rdfs:label>
+        <skos:changeNote rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology was revised in August 2014 to:
+(1) clean up the metadata about this ontology to reflect current usage
+(2) add support for OMG issue resolution detail to facilitate change management and automated specification generation
+(3) modify the approach to inclusion of licensing information in model metadata to reference an individual of type dct:LicenseDocument, contained in this metadata ontology, rather than requiring the text to be repeated in any ontology published by the OMG</skos:changeNote>
+        <skos:changeNote rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology was revised in July, 2013, as follows:
+   (1) to use slash style URI/IRIss (also called 303 URIs, vs. hash style) as required to support server side processing and specifically for the Financial Industry Business Ontology (FIBO) and other forthcoming OMG ontology specifications  
+   (2) to introduce the use of version-independent IRIs for all definitions internally as opposed to version-specific IRIs
+   (3) to change the file suffix from .owl to .rdf to increase usability in RDF tools
+   (4) to extend the file-level metadata to allow for cases such as FIBO, where the specification includes family, specification, spcification version, module, and ontology level detail that should be documented via annotations (e.g., family level of FIBO, specification level of Foundations, module level such as Utilities, and ontology level including annotation vocabulary, business types, and relations) 
+   (5) to make other minor corrections in the metadata and definitions for clarification purposes</skos:changeNote>
+        <skos:historyNote rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Revisions are managed per the process outlined in the Policies and Procedures for OMG standards, with the intent to maintain backwards compatibility to the degree possible.
+  
+The RDF/XML serialized OWL corresponding to the ODM/OWL model has been checked for syntactic errors and logical consistency with Protege 4 (http://protege.stanford.edu/), HermiT 1.3.8 (http://www.hermit-reasoner.com/) and Pellet 2.2 (http://clarkparsia.com/pellet/).</skos:historyNote>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.org/dc/terms/abstract -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/abstract"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/contributor -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/contributor"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/creator -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/creator"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/format -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/format"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/hasVersion -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/hasVersion"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/identifier -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/identifier"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/issued -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/issued"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/license -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/license"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/references -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/references"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/rights -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/rights"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/source -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/source"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/subject -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/subject"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/title -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/title"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/type -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/type"/>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/addressForComments -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/addressForComments">
+        <rdfs:label>addressForComments</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a link to a mailing list or web page where questions, discussion, and issues can be raised</skos:definition>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationVersion"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/affectsModelElement -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/affectsModelElement">
+        <rdfs:label>affects model element</rdfs:label>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/IssueResolution"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/author -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/author">
+        <rdfs:label>author</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Author identifies an individual or organization that originated the model or specification (range can be a dct:Agent or string).</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/creator"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/contentLanguage -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/contentLanguage">
+        <rdfs:label>content language</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a link to the core language and/or specification of the model/electronic file, for example, UML, OWL, SysML, BPMN, including linking to the version of the language in question</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/type"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/contentType -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/contentType">
+        <rdfs:label>content type</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">indicates the content type, for example, MOF metamodel, UML profile, UML model, SBVR or RDF vocabulary, OWL or CL ontology</skos:definition>
+        <rdfs:range rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/TypeOfContent"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/contributor -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/contributor">
+        <rdfs:label>contributor</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">an organization or individual that has made a significant contribution to the specification</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/contributor"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/copyright -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/copyright">
+        <rdfs:label>copyright</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">copyright statement for the specification version, content, or model/electronic file</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/rights"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/dependsOn -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/dependsOn">
+        <rdfs:label>depends on</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a bibliographic reference for and/or URL of any electronic files or documents (e.g., document version URL if applicable) on which this specification or model depends; if the model contains multiple modules, then dependencies should reflect those of the model in question</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#seeAlso"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/directSource -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/directSource">
+        <rdfs:label>direct source</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">reference used as a primary, direct source for content in developing this specification or model (range can be a string, URI, or BibliographicCitation)</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/source"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/documentNumber -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/documentNumber">
+        <rdfs:label>document number</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OMG document number (for the document or file this metadata is associated with); note that a single OMG document number may be associated with many files, for example in the case of an archive containing all of the ontologies associated with a given FIBO specification</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/identifier"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/documentURL -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/documentURL">
+        <rdfs:label>URL for the document</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">document URL (for the specific document or model file this metadata is associated with)</skos:definition>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/editor -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/editor">
+        <rdfs:label>editor</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">an editor of the specification, which may include the primary contact organization, or RTF/FTF co-chair (organization), depending on where the specification is in the process</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/contributor"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/familyAbbreviation -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/familyAbbreviation">
+        <rdfs:label>specification family abbreviation or acronym</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">abbreviation or acronym for the specification family</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2004/02/skos/core#altLabel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationFamily"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/familyAbstract -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/familyAbstract">
+        <rdfs:label>family abstract</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a short textual description of the family of specifications</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/abstract"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationFamily"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/familyTitle -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/familyTitle">
+        <rdfs:label>specification family title</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">specification family title (for example, Financial Industry Business Ontology)</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/title"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2004/02/skos/core#prefLabel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationFamily"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/familyURL -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/familyURL">
+        <rdfs:label>specification family URL</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">URL where the specification family is published</skos:definition>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationFamily"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/fileAbbreviation -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/fileAbbreviation">
+        <rdfs:label>file-level abbreviation or acronym</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">abbreviation or acronym for the file, such as a namespace prefix, if distinct from that of the specification</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2004/02/skos/core#altLabel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/fileAbstract -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/fileAbstract">
+        <rdfs:label>file-level abstract</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a short textual description of the model or file</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/abstract"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/fileVersion -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/fileVersion">
+        <rdfs:label>file version</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">file version, if distinct from the specification or module version</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/hasVersion"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/filename -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/filename">
+        <rdfs:label>electronic file name</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">name of the electronic document or file this metadata is associated with</skos:definition>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/formalVersion -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/formalVersion">
+        <rdfs:label>formal version</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a link to the latest published formal specification (document)</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/hasVersion"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/format -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/format">
+        <rdfs:label>format</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">serialization format for the file in terms of its MIME Type, such as xmi, rdf/xml, owl/xml, etc.
+</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/format"/>
+        <rdfs:range rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/MediaType"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/informativeReference -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/informativeReference">
+        <rdfs:label>informative reference</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">informative reference, standard, or document</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/references"/>
+        <rdfs:range rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/isNormative -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/isNormative">
+        <rdfs:label>is normative</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">boolean value indicating whether or not the file is a normative component of a specification</skos:definition>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/keyword -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/keyword">
+        <rdfs:label>keyword</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">keyword relevant to the specification</skos:definition>
+        <skos:editorialNote rdf:datatype="http://www.w3.org/2001/XMLSchema#string">may appear more than once, as appropriate</skos:editorialNote>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/subject"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/moduleAbbreviation -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/moduleAbbreviation">
+        <rdfs:label>module abbreviation or acronym</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">abbreviation or acronym for the module, if distinct from that of the specification</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2004/02/skos/core#altLabel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Module"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/moduleAbstract -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/moduleAbstract">
+        <rdfs:label>module abstract</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a short textual description of the module</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/abstract"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Module"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/moduleName -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/moduleName">
+        <rdfs:label>module name</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">module name, if distinct from the specification title</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/title"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Module"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/moduleShortTitle -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/moduleShortTitle">
+        <rdfs:label>module short title</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a short title for the component or module</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/title"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2004/02/skos/core#prefLabel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Module"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/moduleVersion -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/moduleVersion">
+        <rdfs:label>module version</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">module version, if distinct from the specification version</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/hasVersion"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Module"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/normativeReference -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/normativeReference">
+        <rdfs:label>normative reference</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a normative reference or standard for the specification</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/references"/>
+        <rdfs:range rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/priorSpecificationVersion -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/priorSpecificationVersion">
+        <rdfs:label>prior specification version</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a link to the immediately preceding OMG formal specification version</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/hasVersion"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationVersion"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/priorVersion -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/priorVersion">
+        <rdfs:label>prior version</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a link to the immediately preceding version at the file level</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/hasVersion"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/publicationDate -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/publicationDate">
+        <rdfs:label>publication date</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the date this version of the specification was published</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/issued"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationVersion"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/relatedSpecification -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/relatedSpecification">
+        <rdfs:label>related specification</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">specification or standard (range can be xsd:string, xsd:anyURI, or BibliographicCitation)</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/references"/>
+        <rdfs:range rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/responsibleTaskForce -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/responsibleTaskForce">
+        <rdfs:label>responsible task force</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">task force or working group responsible for the original RFP/RFC and specification adoption</skos:definition>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/revisedBy -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/revisedBy">
+        <rdfs:label>revised by</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">task force or working group responsible for this revision of the specification</skos:definition>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/shortTitle -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/shortTitle">
+        <rdfs:label>short name for the specification or module</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a short, commonly used, or preferred name, for a given specification or module</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/title"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2004/02/skos/core#prefLabel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/specificationAbbreviation -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/specificationAbbreviation">
+        <rdfs:label>specification abbreviation or acronym</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">official abbreviation or acronym for the specification and related electronic files</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2004/02/skos/core#altLabel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/specificationAbstract -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/specificationAbstract">
+        <rdfs:label>specification abstract</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a short textual description for the specification</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/abstract"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/specificationTitle -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/specificationTitle">
+        <rdfs:label>specification name or title</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the full (complete) formal title of the specification, without abbreviations</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/title"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/specificationURL -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/specificationURL">
+        <rdfs:label>specification URL</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">URL for the specification directory on the OMG web site</skos:definition>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/specificationVersionStatus -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/specificationVersionStatus">
+        <rdfs:label>specification version status</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">status of this version of the specification from a process perspective, including whether or not it has been formally adopted or superseded by a newer version</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2004/02/skos/core#note"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationVersion"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/specificationVersionURL -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/specificationVersionURL">
+        <rdfs:label>specification version URL</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">explicit URI where the specification version is published</skos:definition>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationVersion"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/submitter -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/submitter">
+        <rdfs:label>submitter</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a contributor that is an OMG member, identified member of the submission team, and filed the requisite LOI, responsible for the content of the specification or model</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/contributor"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/taskForceReport -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/taskForceReport">
+        <rdfs:label>task force report</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a link to the FTF or RTF report, if applicable</skos:definition>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationVersion"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/technologyArea -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/technologyArea">
+        <rdfs:label>technology area</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">technology area relevant to the specification, for example, analysis and design, business process modeling, information exchange and interoperability, middleware, etc.</skos:definition>
+        <skos:editorialNote rdf:datatype="http://www.w3.org/2001/XMLSchema#string">may appear more than once, as appropriate</skos:editorialNote>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/subject"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/thisVersion -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/thisVersion">
+        <rdfs:label>this version</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the version identifier for this version of the specification</skos:definition>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/hasVersion"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationVersion"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/topicArea -->
+
+    <owl:AnnotationProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/topicArea">
+        <rdfs:label>topic area</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">topic or area of interest that this particular specification relates to, for example, real time, robotics</skos:definition>
+        <skos:editorialNote rdf:datatype="http://www.w3.org/2001/XMLSchema#string">may appear more than once, as appropriate</skos:editorialNote>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/subject"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#altLabel -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#altLabel"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#changeNote -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#changeNote"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#definition -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#definition"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#editorialNote -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#editorialNote"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#example -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#example"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#historyNote -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#historyNote"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#note -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#note"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#prefLabel -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#prefLabel"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#scopeNote -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#scopeNote"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/hasSpecificationVersion -->
+
+    <owl:ObjectProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/hasSpecificationVersion">
+        <owl:inverseOf rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/isVersionOf"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+        <rdfs:range rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationVersion"/>
+        <rdfs:label>has specification version</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">relates a &apos;master&apos; or umbrella specification to specific versions of that specification, created through a finalization or revision process</skos:definition>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/isReflectedIn -->
+
+    <owl:ObjectProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/isReflectedIn">
+        <owl:inverseOf rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/reflects"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/IssueResolution"/>
+        <rdfs:range rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationVersion"/>
+        <rdfs:label>is reflected in</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/isVersionOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/isVersionOf">
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationVersion"/>
+        <rdfs:range rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+        <rdfs:label>is version of</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">relates a given version of a specification to the &apos;master&apos; or original specification that it modifies</skos:definition>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/reflects -->
+
+    <owl:ObjectProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/reflects">
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationVersion"/>
+        <rdfs:range rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/IssueResolution"/>
+        <rdfs:label>reflects</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/hasDescription -->
+
+    <owl:DatatypeProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/hasDescription">
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/IssueResolution"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label>has description</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/hasIssueReference -->
+
+    <owl:DatatypeProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/hasIssueReference">
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/IssueResolution"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <rdfs:label>has issue reference</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/isIdentifiedBy -->
+
+    <owl:DatatypeProperty rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/isIdentifiedBy">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/IssueResolution"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label>is identified by</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.org/dc/terms/LicenseDocument -->
+
+    <owl:Class rdf:about="http://purl.org/dc/terms/LicenseDocument"/>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/BibliographicCitation -->
+
+    <owl:Class rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/BibliographicCitation">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <rdfs:label>bibliographic citation</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a reference to an authoritative source for provenance or substatiation purposes; 
+
+The form of bibliographic citation may be specific to a domain, publication, or community, thus specific properties to define the details are not provided. FRBR, ISO 690, and others provide reasonable approaches if none is explicitly required for a specification.</skos:definition>
+    </owl:Class>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/IssueResolution -->
+
+    <owl:Class rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/IssueResolution">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/hasIssueReference"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/isIdentifiedBy"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label>issue resolution</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An Issue is a report made to OMG of an error in an OMG Specification. An F/RTF Report lists the issues and comments received by the F/RTF against a specification, and the resolution, if any, for each comment (referred to by its Issue Number).  
+
+For resolutions that involve changes to the models (machine readable artifacts) corresponding to the specification, an individual of type IssueResolution should be included in the administrative metadata for the version of the specification to which it applies, for each issue resolved, linking to the appropriate issue page in the OMG JIRA system where further information about the issue and how it was dealt with can be found.
+</skos:definition>
+    </owl:Class>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/MediaType -->
+
+    <owl:Class rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/MediaType">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <rdfs:label>MIME MediaType</rdfs:label>
+        <rdfs:seeAlso rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://www.iana.org/assignments/media-types/media-types.xhtml</rdfs:seeAlso>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MIME media type as defined by the IANA standard</skos:definition>
+    </owl:Class>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/Module -->
+
+    <owl:Class rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/Module">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <rdfs:label>module</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Modularization of any engineering model involves principles of the model driven architecture methodology (MDA), including but not limited to separation of concerns, coherence, and establishing clear logical boundaries in order to increase reusability and maintainability.  
+
+A module should be designed to reflect these principles, including a small number of models that have well-defined relationships with one another, that form a coherent and cohesive whole for some purpose, and that have clear boundaries or interfaces to other external modules.</skos:definition>
+    </owl:Class>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/Organization -->
+
+    <owl:Class rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/Organization">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <dct:source rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://en.wikipedia.org/wiki/Organization</dct:source>
+        <rdfs:label>organization</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">an entity, such as an institution or an association, that has a collective goal and is linked to an external environment</skos:definition>
+    </owl:Class>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification -->
+
+    <owl:Class rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <dct:source rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://en.wikipedia.org/wiki/Specification</dct:source>
+        <rdfs:label>specification</rdfs:label>
+        <skos:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">spec</skos:altLabel>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">an explicit set of requirements to be satisfied by a material, product, or service</skos:definition>
+    </owl:Class>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationFamily -->
+
+    <owl:Class rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationFamily">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <rdfs:label>specification family</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a family of specifications, such as the OMG&apos;s Financial Industry Business Ontology (FIBO) or the Information Exchange Framework (IEF)</skos:definition>
+    </owl:Class>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationVersion -->
+
+    <owl:Class rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/SpecificationVersion">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/isVersionOf"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/Specification"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label>specification version</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">a formal revision of a given specification, produced through the efforts of a finalization or revision task force</skos:definition>
+    </owl:Class>
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/TypeOfContent -->
+
+    <owl:Class rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/TypeOfContent">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+        <rdfs:label>content type</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">the content type for the model or module, for example, MOF metamodel, UML profile, UML model, vocabulary, ontology, ruleset, etc.  
+
+The actual content language for the module (for example, RDF Schema, OWL, or SBVR in the case of a vocabulary) should be specified using the contentLanguage annotation property.  Valid values are specified as individuals.</skos:definition>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.omg.org/techprocess/ab/SpecificationMetadata/MITLicense -->
+
+    <owl:NamedIndividual rdf:about="http://www.omg.org/techprocess/ab/SpecificationMetadata/MITLicense">
+        <rdf:type rdf:resource="http://purl.org/dc/terms/LicenseDocument"/>
+        <dct:rights rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The MIT License:  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &quot;Software&quot;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+AND NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</dct:rights>
+        <dct:rights rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://opensource.org/licenses/mit-license.php</dct:rights>
+        <rdfs:label>The MIT License</rdfs:label>
+        <skos:definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">license document representing the actual text of the MIT License</skos:definition>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.6) https://github.com/owlcs/owlapi -->
+
