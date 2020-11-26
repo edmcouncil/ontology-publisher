@@ -2,9 +2,9 @@
 
 Place all your external ontologies here. 
 
-Dont't forget to add the name of every ontology in this directory to
-Jena's location mapping file. This file `location-mapping.n3` is generated
-by the script [../product/ontology/build-cats.sh]().
+The script [publisher/product/ontology/build-cats.sh](../../../publisher/product/ontology/build-cats.sh)
+will generate the Jena's location mapping file `location-mapping.n3`,
+adding all neccessary external ontologies from this directory and subdirectories.
 
 ## See Also
 

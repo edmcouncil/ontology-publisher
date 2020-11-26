@@ -1,0 +1,1430 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://spinrdf.org/spin#"
+     xml:base="http://spinrdf.org/spin"
+     xmlns:sp="http://spinrdf.org/sp#"
+     xmlns:arg="http://spinrdf.org/arg#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:spl="http://spinrdf.org/spl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:spin="http://spinrdf.org/spin#">
+    <owl:Ontology rdf:about="http://spinrdf.org/spin">
+        <owl:imports rdf:resource="http://spinrdf.org/sp"/>
+        <rdfs:comment>An RDF Schema that can be used to attach constraints and rules to RDFS classes, and to encapsulate reusable SPARQL queries into functions and templates.</rdfs:comment>
+        <rdfs:label>SPIN Modeling Vocabulary</rdfs:label>
+        <owl:versionInfo>1.4</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://spinrdf.org/spin#MagicProperties -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#MagicProperties">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#abstract -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#abstract">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#body -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#body">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#cachable -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#cachable">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#cachableForOntologies -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#cachableForOntologies">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#column -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#column">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#columnIndex -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#columnIndex">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#columnType -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#columnType">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#columnWidth -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#columnWidth">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#constraint -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#constraint">
+        <rdfs:domain rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#fix -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#fix">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#imports -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#imports">
+        <rdfs:comment>Can be used to link an RDF graph (usually the instance of owl:Ontology) with a SPIN library to define constraints. SPIN-aware tools should include the definitions from those libraries for constraint checking. Using such libraries is a simpler alternative than explicitly importing them using owl:imports, because it does not force all the SPIN triples into the RDF model.</rdfs:comment>
+        <rdfs:label>imports</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#inverseBody -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#inverseBody">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#labelTemplate -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#labelTemplate">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#nextRuleProperty -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#nextRuleProperty">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#private -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#private">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#returnType -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#returnType">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#rulePropertyMaxIterationCount -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#rulePropertyMaxIterationCount">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#symbol -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#symbol">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#systemProperty -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#systemProperty">
+        <rdfs:comment>An &quot;abstract&quot; base property that groups together those system properties that the user will hardly ever need to see in property trees. This property may be dropped in future versions of this ontology - right now it&apos;s mainly here for convenience.</rdfs:comment>
+        <rdfs:label>system property</rdfs:label>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#thisUnbound -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#thisUnbound">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#violationDetail -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#violationDetail">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#violationLevel -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#violationLevel">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#violationPath -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#violationPath">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#violationRoot -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#violationRoot">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#violationSource -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#violationSource">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#violationValue -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spin#violationValue">
+        <rdfs:comment>An optional attribute of ConstraintViolations to point at a specific RDF node that caused the violation. Should be accessible from the root via the violationPath.</rdfs:comment>
+        <rdfs:label>violation value</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#systemProperty"/>
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://spinrdf.org/spl#maxCount -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spl#maxCount"/>
+    
+
+
+    <!-- http://spinrdf.org/spl#minCount -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spl#minCount"/>
+    
+
+
+    <!-- http://spinrdf.org/spl#predicate -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spl#predicate"/>
+    
+
+
+    <!-- http://spinrdf.org/spl#valueType -->
+
+    <owl:AnnotationProperty rdf:about="http://spinrdf.org/spl#valueType"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://spinrdf.org/spin#body -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#body">
+        <rdfs:range rdf:resource="http://spinrdf.org/sp#Command"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#column -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#column">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#TableDataProvider"/>
+        <rdfs:range rdf:resource="http://spinrdf.org/spin#Column"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#columnType -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#columnType">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#Column"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#command -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#command">
+        <rdfs:range rdf:resource="http://spinrdf.org/sp#Command"/>
+        <rdfs:comment>Can be used to link a resource with a SPARQL query or update request (sp:Command).</rdfs:comment>
+        <rdfs:label>command</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#constraint -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#constraint">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#query"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#constructor -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#constructor">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#command"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:range rdf:resource="http://spinrdf.org/spin#Rule"/>
+        <rdfs:comment>Can be used to attach a &quot;constructor&quot; to a class. A constructor is a SPARQL CONSTRUCT query or INSERT/DELETE Update operation that can add initial values to the current instance. At execution time, the variable ?this is bound to the current instance. Tools can call constructors of a class and its superclasses when an instance of a class has been created. Constructors will also be used to initialize resources that have received a new rdf:type triple as a result of spin:rules firing.</rdfs:comment>
+        <rdfs:label>constructor</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#fix -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#fix">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+        <rdfs:range rdf:resource="http://spinrdf.org/spin#UpdateTemplate"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#inverseBody -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#inverseBody">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#MagicProperty"/>
+        <rdfs:range rdf:resource="http://spinrdf.org/sp#Select"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#nextRuleProperty -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#nextRuleProperty">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#RuleProperty"/>
+        <rdfs:range rdf:resource="http://spinrdf.org/spin#RuleProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#query -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#query">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#command"/>
+        <rdfs:range rdf:resource="http://spinrdf.org/sp#Query"/>
+        <rdfs:comment>Can be used to point from any resource to a Query.</rdfs:comment>
+        <rdfs:label>query</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#returnType -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#returnType">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#Function"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#rule -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#rule">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#command"/>
+        <rdfs:domain rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:range rdf:resource="http://spinrdf.org/spin#Rule"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#update -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#update">
+        <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/spin#command"/>
+        <rdfs:range rdf:resource="http://spinrdf.org/sp#Update"/>
+        <rdfs:comment>Can be used to point from any resource to an Update.</rdfs:comment>
+        <rdfs:label>update</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#violationDetail -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#violationDetail">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+        <rdfs:range rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#violationLevel -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#violationLevel">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+        <rdfs:range rdf:resource="http://spinrdf.org/spin#ConstraintViolationLevel"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#violationPath -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#violationPath">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#violationRoot -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#violationRoot">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#violationSource -->
+
+    <owl:ObjectProperty rdf:about="http://spinrdf.org/spin#violationSource">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#ConstraintViolation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://spinrdf.org/spin#abstract -->
+
+    <owl:DatatypeProperty rdf:about="http://spinrdf.org/spin#abstract">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#Module"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#cachable -->
+
+    <owl:DatatypeProperty rdf:about="http://spinrdf.org/spin#cachable">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#Function"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#cachableForOntologies -->
+
+    <owl:DatatypeProperty rdf:about="http://spinrdf.org/spin#cachableForOntologies">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#Function"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#columnIndex -->
+
+    <owl:DatatypeProperty rdf:about="http://spinrdf.org/spin#columnIndex">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#Column"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#columnWidth -->
+
+    <owl:DatatypeProperty rdf:about="http://spinrdf.org/spin#columnWidth">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#Column"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#labelTemplate -->
+
+    <owl:DatatypeProperty rdf:about="http://spinrdf.org/spin#labelTemplate">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#Template"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#private -->
+
+    <owl:DatatypeProperty rdf:about="http://spinrdf.org/spin#private">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#Module"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#rulePropertyMaxIterationCount -->
+
+    <owl:DatatypeProperty rdf:about="http://spinrdf.org/spin#rulePropertyMaxIterationCount">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#RuleProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#symbol -->
+
+    <owl:DatatypeProperty rdf:about="http://spinrdf.org/spin#symbol">
+        <rdfs:domain rdf:resource="http://spinrdf.org/spin#Function"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://spinrdf.org/spin#thisUnbound -->
+
+    <owl:DatatypeProperty rdf:about="http://spinrdf.org/spin#thisUnbound">
+        <rdfs:domain rdf:resource="http://spinrdf.org/sp#Construct"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://spinrdf.org/sp#Construct -->
+
+    <rdf:Description rdf:about="http://spinrdf.org/sp#Construct">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Rule"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://spinrdf.org/sp#DeleteWhere -->
+
+    <rdf:Description rdf:about="http://spinrdf.org/sp#DeleteWhere">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Rule"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://spinrdf.org/sp#Modify -->
+
+    <rdf:Description rdf:about="http://spinrdf.org/sp#Modify">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Rule"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://spinrdf.org/spin#AskTemplate -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#AskTemplate">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Template"/>
+        <constraint>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://spinrdf.org/spl#Attribute"/>
+                <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</spl:maxCount>
+                <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</spl:minCount>
+                <spl:predicate rdf:resource="http://spinrdf.org/spin#body"/>
+                <spl:valueType rdf:resource="http://spinrdf.org/sp#Ask"/>
+                <rdfs:comment>The ASK query wrapped by this template.</rdfs:comment>
+            </rdf:Description>
+        </constraint>
+        <rdfs:comment>A SPIN template that wraps an ASK query.</rdfs:comment>
+        <rdfs:label>Ask template</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#AskTemplates -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#AskTemplates">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Templates"/>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#Column -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#Column">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+        <rdfs:comment>Provides metadata about a column in the result set of a (SPARQL) query, for example of the body queries of SPIN templates. Columns can define human-readable labels that serve as column titles, using rdfs:label.</rdfs:comment>
+        <rdfs:label>Column</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#ConstraintViolation -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#ConstraintViolation">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+        <rdfs:comment>An object that can be created by spin:constraints to provide information about a constraint violation.</rdfs:comment>
+        <rdfs:label>Constraint violation</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#ConstraintViolationLevel -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#ConstraintViolationLevel">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+        <rdfs:comment>The type of the supported levels of constraint violations, including spin:Error and spin:Warning.</rdfs:comment>
+        <rdfs:label>Constraint violation level</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#ConstructTemplate -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#ConstructTemplate">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Template"/>
+        <constraint>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://spinrdf.org/spl#Attribute"/>
+                <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</spl:maxCount>
+                <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</spl:minCount>
+                <spl:predicate rdf:resource="http://spinrdf.org/spin#body"/>
+                <spl:valueType rdf:resource="http://spinrdf.org/sp#Construct"/>
+                <rdfs:comment>The CONSTRUCT query wrapped by this template.</rdfs:comment>
+            </rdf:Description>
+        </constraint>
+        <rdfs:label>Construct template</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#ConstructTemplates -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#ConstructTemplates">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Templates"/>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#Function -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#Function">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Module"/>
+        <constraint>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://spinrdf.org/spl#Attribute"/>
+                <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</spl:maxCount>
+                <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</spl:minCount>
+                <spl:predicate rdf:resource="http://spinrdf.org/spin#body"/>
+                <rdfs:comment>the body of the function</rdfs:comment>
+            </rdf:Description>
+        </constraint>
+        <rdfs:comment>Metaclass for functions that can be used in SPARQL expressions (e.g. FILTER or BIND). The function themselves are classes that are instances of this metaclass. Function calls are instances of the function classes, with property values for the arguments.</rdfs:comment>
+        <rdfs:label>Function</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#Functions -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#Functions">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Modules"/>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#LibraryOntology -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#LibraryOntology">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+        <rdfs:comment>A marker class that can be attached to base URIs (ontologies) to instruct SPIN engines that this ontology only contains a library of SPIN declarations. Library Ontologies should be ignored by SPIN inference engines even if they have been imported by a domain model. For example, a SPIN version of OWL RL may contain all the OWL RL axioms, attached to owl:Thing, but nothing else. However, when executed, these axioms should not be executed over themselves, because we don&apos;t want the system to reason about the SPIN triples to speed up things.</rdfs:comment>
+        <rdfs:label>Library ontology</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#MagicProperties -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#MagicProperties">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Functions"/>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#MagicProperty -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#MagicProperty">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Function"/>
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:label>Magic property</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#Module -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#Module">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:comment>An abstract building block of a SPARQL system. A Module can take Arguments as input and applies them on an input RDF Graph. The Arguments should be declared as spin:constraints.</rdfs:comment>
+        <rdfs:label>Module</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#Modules -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#Modules">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#Rule -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#Rule">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/sp#Command"/>
+        <rdfs:comment>Groups together the kinds of SPARQL commands that can appear as SPIN rules and constructors: CONSTRUCT, DELETE WHERE and DELETE/INSERT. This class is never to be instantiated directly.</rdfs:comment>
+        <rdfs:label>Rule</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#RuleProperty -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#RuleProperty">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:comment>The metaclass of spin:rule and its subproperties. spin:RuleProperties can have additional metadata attached to them.</rdfs:comment>
+        <rdfs:label>Rule property</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#SelectTemplate -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#SelectTemplate">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#TableDataProvider"/>
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Template"/>
+        <constraint>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://spinrdf.org/spl#Attribute"/>
+                <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</spl:maxCount>
+                <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</spl:minCount>
+                <spl:predicate rdf:resource="http://spinrdf.org/spin#body"/>
+                <spl:valueType rdf:resource="http://spinrdf.org/sp#Select"/>
+                <rdfs:comment>The SELECT query wrapped by this template.</rdfs:comment>
+            </rdf:Description>
+        </constraint>
+        <rdfs:comment>A SPIN template that wraps a SELECT query.</rdfs:comment>
+        <rdfs:label>Select template</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#SelectTemplates -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#SelectTemplates">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Templates"/>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#TableDataProvider -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#TableDataProvider">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:comment>An abstraction of objects that can produce tabular data. This serves as a base class of spin:SelectTemplate, because SELECT queries can produce tables with columns for each result variable. However, other types of TableDataProviders are conceivable by other frameworks, and this class may prove as a useful shared foundation.
+
+TableDataProviders can link to definitions of columns via spin:column, and these definitions can inform rendering engines.</rdfs:comment>
+        <rdfs:label>Table data provider</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#Template -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#Template">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Module"/>
+        <constraint>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://spinrdf.org/spl#Attribute"/>
+                <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</spl:maxCount>
+                <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</spl:minCount>
+                <spl:predicate rdf:resource="http://spinrdf.org/spin#body"/>
+                <rdfs:comment>the body of the Template</rdfs:comment>
+            </rdf:Description>
+        </constraint>
+        <rdfs:comment>The metaclass of SPIN templates. Templates are classes that are instances of this class. A template represents a reusable SPARQL query or update request that can be parameterized with arguments. Templates can be instantiated in places where normally a SPARQL query or update request is used, in particular as spin:rules and spin:constraints.</rdfs:comment>
+        <rdfs:label>Template</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#Templates -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#Templates">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Modules"/>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#UpdateTemplate -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#UpdateTemplate">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Template"/>
+        <constraint>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://spinrdf.org/spl#Attribute"/>
+                <spl:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</spl:maxCount>
+                <spl:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</spl:minCount>
+                <spl:predicate rdf:resource="http://spinrdf.org/spin#body"/>
+                <spl:valueType rdf:resource="http://spinrdf.org/sp#Update"/>
+                <rdfs:comment>The UPDATE command wrapped by this template.</rdfs:comment>
+            </rdf:Description>
+        </constraint>
+        <rdfs:comment>A SPIN template that has an UPDATE command as its body.</rdfs:comment>
+        <rdfs:label>Update template</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#UpdateTemplates -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#UpdateTemplates">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Templates"/>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#ask -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#ask">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Functions"/>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#construct -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#construct">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#MagicProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#constructViolations -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#constructViolations">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#MagicProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#eval -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#eval">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Functions"/>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#evalInGraph -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#evalInGraph">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Functions"/>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#select -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#select">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#MagicProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spin#violatesConstraints -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spin#violatesConstraints">
+        <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#Functions"/>
+    </owl:Class>
+    
+
+
+    <!-- http://spinrdf.org/spl#Argument -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spl#Argument"/>
+    
+
+
+    <!-- http://spinrdf.org/spl#Attribute -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spl#Attribute"/>
+    
+
+
+    <!-- http://spinrdf.org/spl#ConstructDefaultValues -->
+
+    <owl:Class rdf:about="http://spinrdf.org/spl#ConstructDefaultValues"/>
+    
+
+
+    <!-- http://www.w3.org/1999/02/22-rdf-syntax-ns#Property -->
+
+    <owl:Class rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#Class -->
+
+    <owl:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Ontology -->
+
+    <owl:Class rdf:about="http://www.w3.org/2002/07/owl#Ontology"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://spinrdf.org/spin#AskTemplates -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#AskTemplates">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#AskTemplate"/>
+        <abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</abstract>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#ConstructTemplates -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#ConstructTemplates">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#ConstructTemplate"/>
+        <abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</abstract>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#Error -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#Error">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#ConstraintViolationLevel"/>
+        <rdfs:comment>Indicates that the associated constraint violation is an error that should be fixed.</rdfs:comment>
+        <rdfs:label>Error</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#Fatal -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#Fatal">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#ConstraintViolationLevel"/>
+        <rdfs:comment>Indicates that the associated constraint violation is a severe error that must be fixed. Constraint checking engines may decide to stop further evaluation once a fatal error has been detected.</rdfs:comment>
+        <rdfs:label>Fatal</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#Functions -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#Functions">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#Function"/>
+        <abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</abstract>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#Info -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#Info">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#ConstraintViolationLevel"/>
+        <rdfs:comment>Indicates that the associated constraint violation is a not a problem. This level can be used for diagnostic and debugging purposes.</rdfs:comment>
+        <rdfs:label>Info</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#MagicProperties -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#MagicProperties">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#MagicProperty"/>
+        <abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</abstract>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#Modules -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#Modules">
+        <constructor>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://spinrdf.org/spl#ConstructDefaultValues"/>
+            </rdf:Description>
+        </constructor>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#SelectTemplates -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#SelectTemplates">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#SelectTemplate"/>
+        <abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</abstract>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#Templates -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#Templates">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#Template"/>
+        <abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</abstract>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#UpdateTemplates -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#UpdateTemplates">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#UpdateTemplate"/>
+        <abstract rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</abstract>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#Warning -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#Warning">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#ConstraintViolationLevel"/>
+        <rdfs:comment>Indicates that the associated constraint violation is a problem that may not have to be fixed but may lead to issues in the future.</rdfs:comment>
+        <rdfs:label>Warning</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#_arg1 -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#_arg1">
+        <rdf:type rdf:resource="http://spinrdf.org/sp#Variable"/>
+        <sp:varName>arg1</sp:varName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#_arg2 -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#_arg2">
+        <rdf:type rdf:resource="http://spinrdf.org/sp#Variable"/>
+        <sp:varName>arg2</sp:varName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#_arg3 -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#_arg3">
+        <rdf:type rdf:resource="http://spinrdf.org/sp#Variable"/>
+        <sp:varName>arg3</sp:varName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#_arg4 -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#_arg4">
+        <rdf:type rdf:resource="http://spinrdf.org/sp#Variable"/>
+        <sp:varName>arg4</sp:varName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#_arg5 -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#_arg5">
+        <rdf:type rdf:resource="http://spinrdf.org/sp#Variable"/>
+        <sp:varName>arg5</sp:varName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#_this -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#_this">
+        <rdf:type rdf:resource="http://spinrdf.org/sp#Variable"/>
+        <sp:varName>this</sp:varName>
+        <rdfs:comment>A system variable representing the current context instance in a rule or constraint.</rdfs:comment>
+        <rdfs:label>_this</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#ask -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#ask">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#Function"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#construct -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#construct">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#MagicProperty"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#constructViolations -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#constructViolations">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#MagicProperty"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#eval -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#eval">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#Function"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#evalInGraph -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#evalInGraph">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#Function"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#rule -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#rule">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#RuleProperty"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#select -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#select">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#MagicProperty"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://spinrdf.org/spin#violatesConstraints -->
+
+    <owl:NamedIndividual rdf:about="http://spinrdf.org/spin#violatesConstraints">
+        <rdf:type rdf:resource="http://spinrdf.org/spin#Function"/>
+        <returnType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#boolean -->
+
+    <owl:NamedIndividual rdf:about="http://www.w3.org/2001/XMLSchema#boolean"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotations
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description rdf:about="http://spinrdf.org/spin#AskTemplates">
+        <rdfs:comment>Suggested abstract base class for all AskTemplates.</rdfs:comment>
+        <rdfs:label>Ask templates</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#ConstructTemplates">
+        <rdfs:label>Construct templates</rdfs:label>
+        <rdfs:comment>Suggested abstract base class for all ConstructTemplates.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#Functions">
+        <rdfs:label>Functions</rdfs:label>
+        <rdfs:comment>An abstract base class for all defined functions. This class mainly serves as a shared root so that the various instances of the Function metaclass are grouped together.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#MagicProperties">
+        <rdfs:comment>An abstract superclass that can be used to group all spin:MagicProperty instances under a single parent class.</rdfs:comment>
+        <rdfs:label>Magic properties</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#Modules">
+        <rdfs:comment>An &quot;artificial&quot; parent class for all Functions and Templates.</rdfs:comment>
+        <rdfs:label>Modules</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#SelectTemplates">
+        <rdfs:comment>Suggested abstract base class for all SelectTemplates.</rdfs:comment>
+        <rdfs:label>Select templates</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#Templates">
+        <rdfs:label>Templates</rdfs:label>
+        <rdfs:comment>Suggested abstract base class for all Templates.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#UpdateTemplates">
+        <rdfs:label>Update templates</rdfs:label>
+        <rdfs:comment>Suggested abstract base class for all UpdateTemplates.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#abstract">
+        <rdfs:comment>Can be set to true to indicate that this module shall not be instantiated. Abstract modules are only there to organize other modules into hierarchies.</rdfs:comment>
+        <rdfs:label>abstract</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#ask">
+        <rdfs:label>ask</rdfs:label>
+        <rdfs:comment>Executes a given ASK query and returns its boolean result. The first argument must point to an sp:Ask or a SPIN template call that has an ASK query as its body. All subsequent argument can come in pairs, with the first one being a variable name and the second its binding.
+
+Example:
+
+    BIND (spin:ask(?query, &quot;this&quot;, owl:Thing) AS ?result) .
+
+will execute the sp:Ask behind ?query with the variable ?this pre-bound to owl:Thing.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#body">
+        <rdfs:label>body</rdfs:label>
+        <rdfs:comment>The body of a Function or Template. This points to a Query instance. For Functions, this is limited to either ASK or SELECT type queries. If the body is the ASK function then the return value is xsd:boolean. Otherwise, the SELECT query must have a single return variable. The first binding of this SELECT query will be returned as result of the function call.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#cachable">
+        <rdfs:comment>Can be set to true to instruct the SPIN engine that it may cache the results of all calls to the associated function. Functions should only be marked as cachable if the same combination of input arguments always returns the same result. Functions that query a graph or other background data that may change over time should not be cached. Caching can significantly improve performance of frequently needed functions.</rdfs:comment>
+        <rdfs:label>cachable</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#cachableForOntologies">
+        <rdfs:comment>Can be set to true to instruct the SPIN engine that the outcome of the function does not depend on any instances/indivuduals in the current query graph, but only on the definitions of classes, properties and shapes. Engines may cache the results of all calls to the associated function. Functions should only be marked as cachable if the same combination of input arguments always returns the same result.</rdfs:comment>
+        <rdfs:label>cachable for ontologies</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#column">
+        <rdfs:label>column</rdfs:label>
+        <rdfs:comment>Can link a TableDataProvider (esp. SelectTemplate) with one or more columns that provide metadata for rendering purposes. Columns can be sorted by their spin:columnIndex (which must align with the ordering of variables in the SELECT query starting with 0). Not all result variables of the underlying query need to have a matching spin:Column.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#columnIndex">
+        <rdfs:label>column index</rdfs:label>
+        <rdfs:comment>The index of a column (from left to right) starting at 0.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#columnType">
+        <rdfs:label>column type</rdfs:label>
+        <rdfs:comment>The datatype or resource type of a spin:Column. For example this is useful as metadata to inform a rendering engine that numeric columns (e.g. xsd:float) need to be right-aligned.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#columnWidth">
+        <rdfs:label>column width</rdfs:label>
+        <rdfs:comment>The preferred width of the associated Column, for display purposes. Values in pixels (rendering engines may multiply the values depending on resolution).</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#constraint">
+        <rdfs:label>constraint</rdfs:label>
+        <rdfs:comment>Links a class with constraints on its instances. The values of this property are &quot;axioms&quot; expressed as CONSTRUCT or ASK queries where the variable ?this refers to the instances of the surrounding class. ASK queries must evaluate to false for each member of this class - returning true means that the instance ?this violates the constraint. CONSTRUCT queries must create instances of spin:ConstraintViolation to provide details on the reason for the violation.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#construct">
+        <rdfs:label>construct</rdfs:label>
+        <rdfs:comment>Evaluates a given sp:Construct or SPIN template call (first argument on the left hand side) and binds the resulting triples to the variables on the right hand side.
+
+Example:
+
+    (?query &quot;this&quot; owl:Thing) spin:construct (?s ?p ?o)
+
+will execute the sp:Construct ?query using the binding of owl:Thing to ?this. The resulting triples will be bound to ?s, ?p and ?o. If any of ?s ?p ?o are bound, it will only return the matching triples.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#constructViolations">
+        <rdfs:label>construct violations</rdfs:label>
+        <rdfs:comment>Takes an instance (?arg1) and a class definition (?arg2) and returns all constraint violations for that instance as triples. This magic property basically runs its own constraint checker for defining meta-constraints, and can also be used to classify instances.
+
+Example:
+
+    CONSTRUCT {
+        ?s ?p ?o .
+    }
+    WHERE {
+        (my:Person my:OldPerson) spin:constructViolations (?s ?p ?o) .
+    }</rdfs:comment>
+        <constraint>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://spinrdf.org/spl#Argument"/>
+                <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+                <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+                <rdfs:comment>The instance to check.</rdfs:comment>
+            </rdf:Description>
+        </constraint>
+        <constraint>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://spinrdf.org/spl#Argument"/>
+                <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+                <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+                <rdfs:comment>The class that this type is validated against.</rdfs:comment>
+            </rdf:Description>
+        </constraint>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#eval">
+        <rdfs:label>eval</rdfs:label>
+        <rdfs:comment>Evaluates a given SPIN expression or SELECT or ASK query, and returns its result. The first argument must be the expression in SPIN RDF syntax. All other arguments must come in pairs: first a property name, and then a value. These name/value pairs will be pre-bound variables for the execution of the expression.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#evalInGraph">
+        <rdfs:label>eval in graph</rdfs:label>
+        <rdfs:comment>Evaluates a given SPIN expression or SELECT or ASK query, and returns its result. The first argument must be the expression in SPIN RDF syntax. This RDF representation of this expression is expected to be in the currently active query graph. The second argument is the URI of a graph that the actual query shall be evaluated against. All other arguments must come in pairs: first a property name, and then a value. These name/value pairs will be pre-bound variables for the execution of the expression.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#fix">
+        <rdfs:comment>Can be used to link a ConstraintViolation with one or more UPDATE Templates that would help fix the violation.</rdfs:comment>
+        <rdfs:label>fix</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#inverseBody">
+        <rdfs:label>inverse body</rdfs:label>
+        <rdfs:comment>The inverse body of a magic property - used to provide a more optimized query if there is one result variable (on the right). The values must be instances of Select and must return SELECT ?arg1 etc. The WHERE clause can access the variable ?object to refer to the provided value on the right hand side of the magic property.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#labelTemplate">
+        <rdfs:comment>A template string for displaying instantiations of a module in human-readable form. The template may contain the argument variable names in curly braces to support substitution. For example, &quot;The number of values of the {?arg1} property.&quot;</rdfs:comment>
+        <rdfs:label>label template</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#nextRuleProperty">
+        <rdfs:label>next rule property</rdfs:label>
+        <rdfs:comment>Can be used to link two sub-properties of spin:rule (or spin:rule itself) to instruct the SPIN engine to execute one set of rules before another one. The values of the subject property will be executed before those of the object property.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#private">
+        <rdfs:comment>Can be set to true to indicate that a SPIN function or template is only meant to be used as a helper of other modules, but not directly. Among others, this allows user interfaces to filter out private modules. Furthermore, it tells potential users of this module that they should avoid using this module, as it may not be stable.</rdfs:comment>
+        <rdfs:label>private</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#returnType">
+        <rdfs:comment>The return type of a Function, e.g. xsd:string.</rdfs:comment>
+        <rdfs:label>return type</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#rule">
+        <rdfs:comment>An inferencing rule attached to a class. Rules are expressed as CONSTRUCT queries or INSERT/DELETE operations where the variable ?this will be bound to the current instance of the class. These inferences can be used to derive new values from existing values at the instance.</rdfs:comment>
+        <rdfs:label>rule</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#rulePropertyMaxIterationCount">
+        <rdfs:comment>Can be attached to spin:rule (or subclasses thereof) to instruct a SPIN rules engine that it shall only execute the rules max times. If no value is specified, then the rules will be executed with no specific limit.</rdfs:comment>
+        <rdfs:label>rule property max iteration count</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#select">
+        <rdfs:label>select</rdfs:label>
+        <rdfs:comment>Executes a given SELECT or ASK query (or a corresponding SPIN template call) and binds its result rows to the variables specified on the right hand side. May also pre-bind variables for the query execution, using name-value pairs on the left hand side.
+
+Example:
+
+    (?query &quot;this&quot; owl:Thing) spin:select (?a ?b)
+
+will execute the sp:Select or sp:Ask that ?query points to and pre-bind ?this with the value of owl:Thing for the execution of the query. The first result variable of the query&apos;s result set will be bound to ?a, the second to ?b etc. If the nodes on the right are bound (or constants) then it will match with the values from the result set.
+
+Note that the first argument on the left hand side can be an instance of a SPIN template (but not the template itself). If you need to execute a template, retrieve its spin:body first.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#symbol">
+        <rdfs:comment>The symbol of a function, e.g. &quot;=&quot; for the eq function.</rdfs:comment>
+        <rdfs:label>symbol</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#thisUnbound">
+        <rdfs:label>this unbound</rdfs:label>
+        <rdfs:comment>Can be set to true for SPIN rules and constraints that do not require pre-binding the variable ?this with all members of the associated class. This flag should only be set to true if the WHERE clause is sufficiently strong to only bind instances of the associated class, or its subclasses. In those cases, the engine can greatly improve performance of query execution, because it does not need to add clauses to narrow down the WHERE clause.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#violatesConstraints">
+        <rdfs:comment>Checks whether a given instance (?arg1) violates any of the constraints defined for a given class (?arg2).</rdfs:comment>
+        <rdfs:label>violates constraints</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#violationDetail">
+        <rdfs:label>violation detail</rdfs:label>
+        <rdfs:comment>Links a (parent) spin:ConstraintViolation with one or more (child) spin:ConstraintViolations that provide details on the parent violation. This is commonly used in conjunction with spin:constructViolations to indicate that certain violations have triggered the parent violation.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#violationLevel">
+        <rdfs:comment>An optional attribute of ConstraintViolations to point at a violation level (such as Error and Warning). Defaults to spin:Error.</rdfs:comment>
+        <rdfs:label>violation level</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#violationPath">
+        <rdfs:comment>An optional attribute of ConstraintViolations to provide a path expression from the root resource to the value that is invalid. If this is a URI then the path represents the predicate of a subject/predicate combination. Otherwise it should be a blank node of type sp:Path.</rdfs:comment>
+        <rdfs:label>violation path</rdfs:label>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#violationRoot">
+        <rdfs:label>violation root</rdfs:label>
+        <rdfs:comment>The root resource of the violation (often ?this in the constraint body).</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://spinrdf.org/spin#violationSource">
+        <rdfs:comment>Can be used to link a spin:ConstraintViolation with the query or template call that caused it. This property is typically filled in automatically by the constraint checking engine and does not need to be set manually. However, it can be useful to learn more about the origin of a violation.</rdfs:comment>
+        <rdfs:label>violation source</rdfs:label>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.6) https://github.com/owlcs/owlapi -->
+

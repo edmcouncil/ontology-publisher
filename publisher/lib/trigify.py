@@ -66,7 +66,7 @@ class Trigger():
 					for root, dirs, files in walk(directory)
 						for name in files
 							if name.endswith(".rdf") and
-								"etc" not in root and
+								("etc" not in root or ("etc" in root and "imports" in root)) and
 								"git" not in root and
 								# "AboutFIBO" not in name and
 								"All" not in name and

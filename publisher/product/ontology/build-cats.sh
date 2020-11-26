@@ -11,7 +11,7 @@ false && source ../../lib/_functions.sh
 function ontologyBuildProtegeCatalog () {
 
   local -r directory="$1"
-  local -r fibo_rel="$2"
+  local -r rel_path="$2"
 
   (
     cd "${directory}" || return $?    # Build the catalog in this directory
@@ -21,20 +21,32 @@ function ontologyBuildProtegeCatalog () {
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Automatically built by the EDMC infrastructure -->
 <catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+</catalog>
 __HERE__
 
     #
-    # Find all the rdf files in fibo, and create catalog lines for them based on their location.
+    # Find all the rdf files and create catalog lines for them based on their location.
     #
-    # TODO: Remove hardwired references to fibo and edmcouncil
-    #
-    find ${fibo_rel} -name '*.rdf' | \
-      ${GREP} -v etc | \
-      ${SED} 's@^.*$@  <uri id="User Entered Import Resolution" uri="&" name="https://spec.edmcouncil.org/fibo/&"/>@;s@.rdf"/>@/"/>@' | \
-      ${SED} "s@fibo/${fibo_rel}/\([a-zA-Z]*/\)@fibo/${product}/${branch_tag}/\U\1\E@" | \
-      ${SED} "s@fibo//*@fibo/@g" >> catalog-v001.xml
-
-    cat >> catalog-v001.xml <<< '</catalog>'
+    cat	<(find "${rel_path}" -type f -name \*\.rdf -print | sort) | while read ontologyRdfFile ; do
+     #  is owl:Ontology?
+     if isOntology < "${ontologyRdfFile}" ; then
+      #
+      # get ontology IRI and version IRI
+      #
+      cat <(getOntologyIRI < "${ontologyRdfFile}") <(getOntologyVersionIRI < "${ontologyRdfFile}") | while read ontologyIRI ; do
+       #
+       # is ontologyIRI already in "catalog-v001.xml"?
+       #
+       if ! xml sel -t -c "/_:catalog/_:uri[@name='${ontologyIRI}']" catalog-v001.xml &>/dev/null ; then
+        echo -en "."
+        xml -q ed -P -L -s '/_:catalog' --type elem -n 'uri' -v "" -a '$prev' --type attr -n 'name' -v "${ontologyIRI}" -a '$prev/..' --type attr -n 'uri' -v "${ontologyRdfFile}" catalog-v001.xml
+       else
+        echo -en ":"
+       fi
+      done
+     fi
+    done
+    cat "catalog-v001.xml" | xml fo -s 4 -N > "catalog-v001.xml.tmp" 2>/dev/null && mv -f "catalog-v001.xml.tmp" "catalog-v001.xml"
   )
 }
 
@@ -66,6 +78,8 @@ function ontologyBuildProtegeCatalogs () {
 
   wait
 
+  echo -e '|'
+
   return $?
 }
 
@@ -74,18 +88,6 @@ function makeFileUrl() {
   local -r absolutePath="$1"
 
   echo -n "file://${absolutePath}"
-}
-
-function getOntologyIRIsFromDirectoryOfRDFXMLFiles() {
-
-  local -r rootDirectoryWithRDFXMLFiles="$1"
-
-  while read -r ontologyRdfFile ; do
-    echo -n "${ontologyRdfFile} "
-    xml c14n ${ontologyRdfFile} | xml sel -t -v '/rdf:RDF/owl:Ontology/@rdf:about' -nl
-  done < <(
-    grep -R --include="*.rdf" -l "owl:Ontology rdf:about" "${rootDirectoryWithRDFXMLFiles}"
-  )
 }
 
 #
@@ -107,130 +109,7 @@ function ontologyBuildJenaCatalogs() {
   #  lm:prefix "${tag_root_url}" ;
   #  lm:altPrefix "file://${tag_root}"
   #],
-  [
-    lm:name "http://www.w3.org/2002/07/owl" ;
-    lm:altName "file:///publisher/lib/ontologies/w3c/owl.rdf"
-  ],
-  [
-    lm:name "http://www.w3.org/2000/01/rdf-schema" ;
-    lm:altName "file:///publisher/lib/ontologies/w3c/rdf-schema.rdf"
-  ],
-  [
-    lm:name "http://www.w3.org/2004/02/skos/core" ;
-    lm:altName "file:///publisher/lib/ontologies/w3c/skos.rdf"
-  ],
-  [
-    lm:name "http://spinrdf.org/spin" ;
-    lm:altName "file:///publisher/lib/ontologies/topbraid/spin.rdf"
-  ],
-  [
-    lm:name "http://spinrdf.org/sp" ;
-    lm:altName "file:///publisher/lib/ontologies/topbraid/sp.rdf"
-  ],
-  [
-    lm:name "http://spinrdf.org/spl" ;
-    lm:altName "file:///publisher/lib/ontologies/topbraid/spl.rdf"
-  ],
-  [
-    lm:name "http://spinrdf.org/spr" ;
-    lm:altName "file:///publisher/lib/ontologies/topbraid/spr.rdf"
-  ],
-  [
-    lm:name "http://spinrdf.org/spra" ;
-    lm:altName "file:///publisher/lib/ontologies/topbraid/spra.rdf"
-  ],
-  [
-    lm:name "http://uispin.org/ui" ;
-    lm:altName "file:///publisher/lib/ontologies/topbraid/uispin.rdf"
-  ],
-  [
-    lm:name "http://www.topbraid.org/2007/05/composite.owl" ;
-    lm:altName "file:///publisher/lib/ontologies/topbraid/composite.rdf"
-  ],
-  [
-    lm:name "http://topbraid.org/sparqlmotion" ;
-    lm:altName "file:///publisher/lib/ontologies/topbraid/sparqlmotion.rdf"
-  ],
-  [
-    lm:name "http://topbraid.org/sparqlmotionlib" ;
-    lm:altName "file:///publisher/lib/ontologies/topbraid/sparqlmotionlib.rdf"
-  ],
-  [
-    lm:name "http://topbraid.org/email" ;
-    lm:altName "file:///publisher/lib/ontologies/topbraid/email.rdf"
-  ],
-  [
-    lm:name "http://www.omg.org/techprocess/ab/SpecificationMetadata/" ;
-    lm:altName "file:///publisher/lib/ontologies/omg/SpecificationMetadata.rdf"
-  ],
-  [
-    lm:name "https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/" ;
-    lm:altName "file:///publisher/lib/ontologies/edmcouncil/AnnotationVocabulary.rdf"
-  ],
 __HERE__
-
-  (
-    cd / || return $?
-    #
-    # Now read all our own ontologies
-    #
-    while read ontologyRdfFile ; do
-
-      ontologyVersionIRI="https://${ONTPUB_SPEC_HOST}/${ontologyRdfFile/.rdf//}"
-      ontologyVersionIRI="${ontologyVersionIRI/${ONTPUB_SPEC_HOST}?*output/${ONTPUB_SPEC_HOST}}"
-
-      ontologyIRI="${ontologyVersionIRI/\/${branch_tag}}"
-      ontologyIRI="${ontologyIRI/\/\//\/}"
-      ontologyIRI="${ontologyIRI/https:\//https:\/\/}"
-      ontologyIRI="${ontologyIRI/http:\//http:\/\/}"
-
-      cat >> "${tag_root}/location-mapping.n3" << __HERE__
-  [
-    lm:name "${ontologyIRI}/" ;
-    lm:altName "$(makeFileUrl ${ontologyRdfFile})"
-  ],
-  [
-    lm:name "${ontologyVersionIRI}/" ;
-    lm:altName "$(makeFileUrl ${ontologyRdfFile})"
-  ],
-__HERE__
-    done < <(getDevOntologies)
-  )
-  #
-  # Now get all the ontology IRIs from the .rdf files in the /input/LCC directory if it exists.
-  # It uses the xml utility (which is XMLStarlet) to first canonicalize the RDF and then it uses an XPATH
-  # expression to find the rdf:about IIR of the owl:Ontology node.
-  #
-  # TODO: make this generic using the ONTPUB_INPUT_REPOS environment variable
-  #
-  while read ontologyRdfFile ontologyIRI ; do
-    # logVar ontologyRdfFile
-    # logVar ontologyIRI
-    cat >> "${tag_root}/location-mapping.n3" << __HERE__
-  [
-    lm:name "${ontologyIRI}/" ;
-    lm:altName "$(makeFileUrl ${ontologyRdfFile})"
-  ],
-  [
-    lm:name "${ontologyVersionIRI}/" ;
-    lm:altName "$(makeFileUrl ${ontologyRdfFile})"
-  ],
-__HERE__
-  done < <(
-    getOntologyIRIsFromDirectoryOfRDFXMLFiles ${INPUT}/LCC
-  )
-
-  #
-  # Remove the last comma
-  #
-  truncate -s-2 "${tag_root}/location-mapping.n3"
-
-  cat >> "${tag_root}/location-mapping.n3" <<< "."
-
-  log "Generated Jena Location Mapping file"
-#  if ((verbose)) ; then
-#    cat "${tag_root}/location-mapping.n3" | pipelog
-#  fi
 
   cat > "${tag_root}/ont-policy.rdf" << __HERE__
 <?xml version='1.0'?>
@@ -271,166 +150,71 @@ __HERE__
     <processImports rdf:datatype="&xsd;boolean">false</processImports>
     <cacheModels rdf:datatype="&xsd;boolean">true</cacheModels>
   </DocumentManagerPolicy>
-
-  <OntologySpec>
-      <!-- local version of the OWL language ontology (in OWL) -->
-      <publicURI rdf:resource="http://www.w3.org/2002/07/owl" />
-      <altURL    rdf:resource="file:///publisher/lib/ontologies/w3c/owl.owl" />
-      <language  rdf:resource="http://www.w3.org/2002/07/owl" />
-      <prefix    rdf:datatype="&xsd;string">owl</prefix>
-  </OntologySpec>
-
-  <OntologySpec>
-      <!-- local version of the RDFS vocabulary -->
-      <publicURI rdf:resource="http://www.w3.org/2000/01/rdf-schema" />
-      <altURL    rdf:resource="file:///publisher/lib/ontologies/w3c/rdf-schema.rdf" />
-      <language  rdf:resource="http://www.w3.org/2000/01/rdf-schema" />
-      <prefix    rdf:datatype="&xsd;string">rdfs</prefix>
-  </OntologySpec>
-
-  <OntologySpec>
-      <!-- local version of the spin vocabulary -->
-      <publicURI rdf:resource="http://spinrdf.org/spin" />
-      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/spin.rdf" />
-  </OntologySpec>
-
-  <OntologySpec>
-      <!-- local version of the spin vocabulary -->
-      <publicURI rdf:resource="http://www.topbraid.org/2007/05/composite.owl" />
-      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/composite.rdf" />
-  </OntologySpec>
-
-  <OntologySpec>
-      <publicURI rdf:resource="http://www.w3.org/2004/02/skos/core" />
-      <altURL    rdf:resource="file:///publisher/lib/ontologies/w3c/skos.rdf" />
-  </OntologySpec>
-
-  <OntologySpec>
-      <publicURI rdf:resource="http://spinrdf.org/sp" />
-      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/sp.rdf" />
-  </OntologySpec>
-
-  <OntologySpec>
-      <publicURI rdf:resource="http://spinrdf.org/spl" />
-      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/spl.rdf" />
-  </OntologySpec>
-
-  <OntologySpec>
-      <publicURI rdf:resource="http://spinrdf.org/spr" />
-      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/spr.rdf" />
-  </OntologySpec>
-
-  <OntologySpec>
-      <publicURI rdf:resource="http://spinrdf.org/spra" />
-      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/spra.rdf" />
-  </OntologySpec>
-
-  <OntologySpec>
-      <publicURI rdf:resource="http://uispin.org/ui" />
-      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/uispin.rdf" />
-  </OntologySpec>
-
-  <OntologySpec>
-      <publicURI rdf:resource="http://uispin.org/ui" />
-      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/uispin.rdf" />
-  </OntologySpec>
-
-  <OntologySpec>
-      <publicURI rdf:resource="http://topbraid.org/sparqlmotion" />
-      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/sparqlmotion.rdf" />
-  </OntologySpec>
-
-  <OntologySpec>
-      <publicURI rdf:resource="http://topbraid.org/sparqlmotion" />
-      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/sparqlmotion.rdf" />
-  </OntologySpec>
-
-  <OntologySpec>
-      <publicURI rdf:resource="http://topbraid.org/sparqlmotionlib" />
-      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/sparqlmotionlib.rdf" />
-  </OntologySpec>
-
-  <OntologySpec>
-      <publicURI rdf:resource="http://topbraid.org/email" />
-      <altURL    rdf:resource="file:///publisher/lib/ontologies/topbraid/email.rdf" />
-  </OntologySpec>
-
-  <OntologySpec>
-      <publicURI rdf:resource="http://www.omg.org/techprocess/ab/SpecificationMetadata/" />
-      <altURL    rdf:resource="file:///publisher/lib/ontologies/omg/SpecificationMetadata.rdf" />
-  </OntologySpec>
-
-  <OntologySpec>
-      <publicURI rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/" />
-      <altURL    rdf:resource="file:///publisher/lib/ontologies/edmcouncil/AnnotationVocabulary.rdf" />
-  </OntologySpec>
+</rdf:RDF>
 __HERE__
 
   (
     cd / || return $?
-    while read ontologyRdfFile ; do
-
-#    logRule "${ontologyRdfFile}"
-
-#     logVar ONTPUB_SPEC_HOST
-#     logVar ontologyRdfFile
-      ontologyVersionIRI="https://${ONTPUB_SPEC_HOST}/${ontologyRdfFile/.rdf//}"
-#     logVar ontologyVersionIRI
-      ontologyVersionIRI="${ontologyVersionIRI/${ONTPUB_SPEC_HOST}?*output/${ONTPUB_SPEC_HOST}}"
-#     logVar ontologyVersionIRI
-
-      ontologyIRI="${ontologyVersionIRI/\/${branch_tag}}"
-      ontologyIRI="${ontologyIRI/\/\//\/}"
-      ontologyIRI="${ontologyIRI/https:\//https:\/\/}"
-      ontologyIRI="${ontologyIRI/http:\//http:\/\/}"
-#     logVar ontologyIRI
-
-      cat >> "${tag_root}/ont-policy.rdf" << __HERE__
-
-  <OntologySpec>
-      <publicURI rdf:resource="${ontologyIRI}" />
-      <altURL    rdf:resource="$(makeFileUrl ${ontologyRdfFile})" />
-      <language  rdf:resource="http://www.w3.org/2000/01/rdf-schema" />
-  </OntologySpec>
-
-  <OntologySpec>
-      <publicURI rdf:resource="${ontologyVersionIRI}" />
-      <altURL    rdf:resource="$(makeFileUrl ${ontologyRdfFile})" />
-      <language  rdf:resource="http://www.w3.org/2000/01/rdf-schema" />
-  </OntologySpec>
+    echo -en "\t"
+    #
+    # Now read: all our own and LCC ontologies + additional from "/publisher/lib/ontologies/**.rdf"
+    #
+    cat	<(find "${tag_root}"  -name \*\.rdf -print | sort) \
+	<(find "${INPUT}/LCC" -name \*\.rdf -print | sort) \
+	<(find "/publisher/lib/ontologies" -name \*\.rdf -print | sort) | while read ontologyRdfFile ; do
+     #  is owl:Ontology?
+     if isOntology < "${ontologyRdfFile}" ; then
+      #
+      # get ontology IRI and version IRI
+      #
+      cat <(getOntologyIRI < "${ontologyRdfFile}") <(getOntologyVersionIRI < "${ontologyRdfFile}") | while read ontologyIRI ; do
+       #
+       # is ontologyIRI already mapped in "${tag_root}/ont-policy.rdf"?
+       #
+       if ! xml c14n "${tag_root}/ont-policy.rdf" 2>/dev/null | xml sel -t -c "/rdf:RDF/_:OntologySpec/_:publicURI[@rdf:resource='${ontologyIRI}']" &>/dev/null ; then
+        echo -en "."
+        cat >> "${tag_root}/location-mapping.n3" << __HERE__
+  [
+    lm:name "${ontologyIRI}" ;
+    lm:altName "$(makeFileUrl ${ontologyRdfFile})"
+  ],
 __HERE__
-    done < <(getDevOntologies)
+        xml -q ed -P -L -s '/rdf:RDF' --type elem -n 'OntologySpec' -v "" \
+		-s '$prev'       --type elem -n 'publicURI' -a '$prev' --type attr -n 'rdf:resource' -v "${ontologyIRI}" \
+		-s '$prev/../..' --type elem -n 'altURL'    -a '$prev' --type attr -n 'rdf:resource' -v "$(makeFileUrl ${ontologyRdfFile})" \
+		-s '$prev/../..' --type elem -n 'language'  -a '$prev' --type attr -n 'rdf:resource' -v "http://www.w3.org/2000/01/rdf-schema" \
+		"${tag_root}/ont-policy.rdf" 2>/dev/null
+       else
+        echo -en ":"
+       fi
+      done
+     fi
+    done
+    echo -e '|'
   )
 
   #
-  # Now get all the ontology IRIs from the .rdf files in the /input/LCC directory if it exists.
-  # It uses the xml utility (which is XMLStarlet) to first canonicalize the RDF and then it uses an XPATH
-  # expression to find the rdf:about IIR of the owl:Ontology node.
+  # Remove the last comma
   #
-  # TODO: make this generic using the ONTPUB_INPUT_REPOS environment variable
-  #
-  while read ontologyRdfFile ontologyIRI ; do
-    # logVar ontologyRdfFile
-    # logVar ontologyIRI
-    cat >> "${tag_root}/ont-policy.rdf" << __HERE__
+  truncate -s-2 "${tag_root}/location-mapping.n3"
 
-  <OntologySpec>
-      <publicURI rdf:resource="${ontologyIRI}" />
-      <altURL    rdf:resource="$(makeFileUrl ${ontologyRdfFile})" />
-      <language  rdf:resource="http://www.w3.org/2000/01/rdf-schema" />
-  </OntologySpec>
-__HERE__
-  done < <(
-    getOntologyIRIsFromDirectoryOfRDFXMLFiles ${INPUT}/LCC
-  )
+  cat >> "${tag_root}/location-mapping.n3" <<< "."
 
+  # for "http://www.w3.org/2002/07/owl" set language "http://www.w3.org/2002/07/owl" and add prefix "owl"
+  # for "http://www.w3.org/2002/07/owl" add prefix "owl"
+  # for "http://www.w3.org/2000/01/rdf-schema#" add prefix "rdfs"
+  # workaround for '&' + format
+  cat "${tag_root}/ont-policy.rdf" | \
+    xml -q ed -P -u '/rdf:RDF/_:OntologySpec/_:publicURI[@rdf:resource="http://www.w3.org/2002/07/owl"]/../_:language/@rdf:resource' \
+	-v 'http://www.w3.org/2002/07/owl' 2>/dev/null | \
+    xml -q ed -P -a '/rdf:RDF/_:OntologySpec/_:publicURI[@rdf:resource="http://www.w3.org/2002/07/owl"]' \
+	-t elem -n 'prefix' -v 'owl' -a '$prev' -t attr -n 'rdf:datatype' -v 'xsd:string' 2>/dev/null | \
+    xml -q ed -P -a '/rdf:RDF/_:OntologySpec/_:publicURI[@rdf:resource="http://www.w3.org/2000/01/rdf-schema#"]' \
+	-t elem -n 'prefix' -v 'rdfs' -a '$prev' -t attr -n 'rdf:datatype' -v 'xsd:string' 2>/dev/null | \
+    sed 's#"xsd:#"\&xsd;#g' | xml fo -s 4 -N > "${tag_root}/ont-policy.rdf.tmp" 2>/dev/null && \
+    mv -f "${tag_root}/ont-policy.rdf.tmp" "${tag_root}/ont-policy.rdf"
 
-  cat >> "${tag_root}/ont-policy.rdf" << __HERE__
-</rdf:RDF>
-
-__HERE__
-
-  log "Generated Jena Ontology Policy file"
+  log "Generated Jena Location Mapping and Jena Ontology Policy files"
 #  if ((verbose)) ; then
 #    cat "${tag_root}/ont-policy.rdf" | pipelog
 #  fi

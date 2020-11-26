@@ -1,0 +1,411 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://topbraid.org/email#"
+     xml:base="http://topbraid.org/email"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:email="http://topbraid.org/email#">
+    <owl:Ontology rdf:about="http://topbraid.org/email">
+        <owl:imports rdf:resource="http://www.topbraid.org/2007/05/composite.owl"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1.0</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://topbraid.org/email#attachment -->
+
+    <owl:ObjectProperty rdf:about="http://topbraid.org/email#attachment">
+        <rdfs:subPropertyOf rdf:resource="http://www.topbraid.org/2007/05/composite.owl#child"/>
+        <rdfs:range rdf:resource="http://topbraid.org/email#Attachment"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">attachment</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://topbraid.org/email#bcc -->
+
+    <owl:ObjectProperty rdf:about="http://topbraid.org/email#bcc">
+        <rdfs:range rdf:resource="http://topbraid.org/email#Address"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bcc</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://topbraid.org/email#cc -->
+
+    <owl:ObjectProperty rdf:about="http://topbraid.org/email#cc">
+        <rdfs:range rdf:resource="http://topbraid.org/email#Address"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cc</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://topbraid.org/email#from -->
+
+    <owl:ObjectProperty rdf:about="http://topbraid.org/email#from">
+        <rdfs:range rdf:resource="http://topbraid.org/email#Address"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">from</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://topbraid.org/email#to -->
+
+    <owl:ObjectProperty rdf:about="http://topbraid.org/email#to">
+        <rdfs:range rdf:resource="http://topbraid.org/email#Address"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">to</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://topbraid.org/email#address -->
+
+    <owl:DatatypeProperty rdf:about="http://topbraid.org/email#address">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">address</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://topbraid.org/email#body -->
+
+    <owl:DatatypeProperty rdf:about="http://topbraid.org/email#body">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">body</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://topbraid.org/email#date -->
+
+    <owl:DatatypeProperty rdf:about="http://topbraid.org/email#date">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">date</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://topbraid.org/email#fileName -->
+
+    <owl:DatatypeProperty rdf:about="http://topbraid.org/email#fileName">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">file name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://topbraid.org/email#mimeType -->
+
+    <owl:DatatypeProperty rdf:about="http://topbraid.org/email#mimeType">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">mime type</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://topbraid.org/email#name -->
+
+    <owl:DatatypeProperty rdf:about="http://topbraid.org/email#name">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://topbraid.org/email#number -->
+
+    <owl:DatatypeProperty rdf:about="http://topbraid.org/email#number">
+        <rdfs:subPropertyOf rdf:resource="http://www.topbraid.org/2007/05/composite.owl#index"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">number</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://topbraid.org/email#password -->
+
+    <owl:DatatypeProperty rdf:about="http://topbraid.org/email#password">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">password</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://topbraid.org/email#port -->
+
+    <owl:DatatypeProperty rdf:about="http://topbraid.org/email#port">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">port</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://topbraid.org/email#protocol -->
+
+    <owl:DatatypeProperty rdf:about="http://topbraid.org/email#protocol">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">protocol</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://topbraid.org/email#server -->
+
+    <owl:DatatypeProperty rdf:about="http://topbraid.org/email#server">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">server</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://topbraid.org/email#size -->
+
+    <owl:DatatypeProperty rdf:about="http://topbraid.org/email#size">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">size</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://topbraid.org/email#ssl -->
+
+    <owl:DatatypeProperty rdf:about="http://topbraid.org/email#ssl">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indicates whether the SSL protocol shall be used to connect to a server.</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ssl</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://topbraid.org/email#subject -->
+
+    <owl:DatatypeProperty rdf:about="http://topbraid.org/email#subject">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>The subject of an email message</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">subject</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://topbraid.org/email#userName -->
+
+    <owl:DatatypeProperty rdf:about="http://topbraid.org/email#userName">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">user name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://topbraid.org/email#Address -->
+
+    <owl:Class rdf:about="http://topbraid.org/email#Address">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#server"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#address"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#name"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#password"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#protocol"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#userName"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Address</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://topbraid.org/email#Attachment -->
+
+    <owl:Class rdf:about="http://topbraid.org/email#Attachment">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#fileName"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#mimeType"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#size"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Attachment</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://topbraid.org/email#Message -->
+
+    <owl:Class rdf:about="http://topbraid.org/email#Message">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#attachment"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#bcc"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#cc"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#to"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#from"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#body"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#date"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#number"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#subject"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Message</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://topbraid.org/email#Server -->
+
+    <owl:Class rdf:about="http://topbraid.org/email#Server">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#server"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#password"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#port"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#ssl"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://topbraid.org/email#userName"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>Connection metadata for an SMTP (outgoing) email server.</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Server</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.6) https://github.com/owlcs/owlapi -->
+
