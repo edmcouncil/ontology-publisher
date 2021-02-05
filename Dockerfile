@@ -61,7 +61,7 @@ RUN \
     curl wget \
     bash git grep sed findutils coreutils tree jq bc xmlstarlet \
     zip tar xz \
-    python python3 python3-dev py3-setuptools libxml2-dev libxslt-dev py3-pip \
+    python python3 python3-dev py3-setuptools libxml2-dev libxslt-dev \
     perl perl-utils \
     perl-log-log4perl perl-class-accessor perl-datetime perl-datetime-format-builder \
     perl-datetime-calendar-julian perl-text-csv perl-data-compare perl-data-dump perl-file-slurper \
@@ -262,12 +262,11 @@ RUN \
   cd /
 
 #
-# Installing XlsxWriter, rdflib, PyLD, numpy, pandas
+# Installing XlsxWriter, rdflib, PyLD
 #
-
 RUN \
   echo ================================= install XlsxWriter, rdflib, PyLD >&2 && \
-  pip3 install XlsxWriter rdflib PyLD cython numpy pandas --no-binary :all:
+  python3 -m  easy_install XlsxWriter rdflib PyLD
 
 #
 # Installing Saxon
