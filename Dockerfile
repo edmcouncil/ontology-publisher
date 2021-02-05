@@ -264,6 +264,9 @@ RUN \
 #
 # Installing XlsxWriter, rdflib, PyLD, numpy, pandas
 #
+RUN apt-get -y install libc-dev
+RUN apt-get -y install build-essential
+
 RUN \
   echo ================================= install XlsxWriter, rdflib, PyLD >&2 && \
   python3 -m  easy_install XlsxWriter rdflib PyLD numpy pandas
