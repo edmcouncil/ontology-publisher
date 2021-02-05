@@ -269,7 +269,7 @@ RUN apt-get -y install build-essential
 
 RUN \
   echo ================================= install XlsxWriter, rdflib, PyLD >&2 && \
-  python3 -m  easy_install XlsxWriter rdflib PyLD numpy pandas
+  python3 -m  easy_install XlsxWriter rdflib PyLD cython numpy pandas
 
 #
 # Installing Saxon
