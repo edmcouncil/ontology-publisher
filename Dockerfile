@@ -61,7 +61,7 @@ RUN \
     curl wget \
     bash git grep sed findutils coreutils tree jq bc xmlstarlet \
     zip tar xz \
-    python python3 python3-dev py3-setuptools libxml2-dev libxslt-dev python-pip python3-pip \
+    python python3 python3-dev py3-setuptools libxml2-dev libxslt-dev py3-pip \
     perl perl-utils \
     perl-log-log4perl perl-class-accessor perl-datetime perl-datetime-format-builder \
     perl-datetime-calendar-julian perl-text-csv perl-data-compare perl-data-dump perl-file-slurper \
@@ -264,12 +264,10 @@ RUN \
 #
 # Installing XlsxWriter, rdflib, PyLD, numpy, pandas
 #
-# RUN apt-get -y install libc-dev
-# RUN apt-get -y install build-essential
 
 RUN \
   echo ================================= install XlsxWriter, rdflib, PyLD >&2 && \
-  pip install XlsxWriter rdflib PyLD cython numpy pandas
+  pip3 install XlsxWriter rdflib PyLD cython numpy pandas --no-binary :all:
 
 #
 # Installing Saxon
