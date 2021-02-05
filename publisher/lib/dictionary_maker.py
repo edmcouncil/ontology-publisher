@@ -1,3 +1,5 @@
+import argparse
+
 import pandas
 from rdflib import Graph
 from rdflib.namespace import OWL
