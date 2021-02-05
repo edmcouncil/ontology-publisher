@@ -266,7 +266,7 @@ RUN \
 #
 RUN \
   echo ================================= install XlsxWriter, rdflib, PyLD >&2 && \
-  python3 -m  easy_install XlsxWriter rdflib PyLD pandas
+  python3 -m  easy_install XlsxWriter rdflib PyLD numpy pandas
 
 #
 # Installing Saxon
