@@ -262,7 +262,7 @@ RUN \
   cd /
 
 #
-# Installing XlsxWriter, rdflib, PyLD, pandas
+# Installing XlsxWriter, rdflib, PyLD, numpy, pandas
 #
 RUN \
   echo ================================= install XlsxWriter, rdflib, PyLD >&2 && \
