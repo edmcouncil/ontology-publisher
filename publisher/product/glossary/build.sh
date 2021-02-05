@@ -32,24 +32,23 @@ function publishProductGlossary() {
 #
 function publishProductGlossaryContent() {
 
-  logRule "Publishing the content files of the glossary product"
+	logRule "Publishing the content files of the glossary product"
 
-  require ontology_product_tag_root || return $?
-  require glossary_product_tag_root || return $?
+	require ontology_product_tag_root || return $?
+	require glossary_product_tag_root || return $?
 
-  local numberOfProductionLevelOntologyFiles=0
+	local numberOfProductionLevelOntologyFiles=0
 
-  export glossary_script_dir="${SCRIPT_DIR:?}/product/glossary"
+	export glossary_script_dir="${SCRIPT_DIR:?}/product/glossary"
 
-  if [ ! -d "${glossary_script_dir}" ] ; then
-    error "Could not find ${glossary_script_dir}"
-    return 1
-  fi
+	if [ ! -d "${glossary_script_dir}" ] ; then
+		error "Could not find ${glossary_script_dir}"
+		return 1
+	fi
   
-
-    ${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker.py \
+	${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker.py \
 	    --output="${TMPDIR}/glossary-dev.ttl" \
-	    --ontology_file_path="$(getOntologyIRI < "${ontology_product_tag_root}"/About*Dev.rdf)" \
+	    --ontology_file_path="${ontology_product_tag_root}"/About*Dev.rdf" 
         
     
     if [ ${PIPESTATUS[0]} -ne 0 ] ; then
