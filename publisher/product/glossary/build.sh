@@ -46,9 +46,7 @@ function publishProductGlossaryContent() {
 		return 1
 	fi
   
-	${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker.py \
-	    --output="${TMPDIR}/glossary-dev.ttl" \
-	    --ontology_file_path="${ontology_product_tag_root}"/About*Dev.rdf" 
+	${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker.py --output="${TMPDIR}/glossary-dev.ttl" --ontology="${ontology_product_tag_root}/AboutFIBODev.rdf" 
         
     
     if [ ${PIPESTATUS[0]} -ne 0 ] ; then
