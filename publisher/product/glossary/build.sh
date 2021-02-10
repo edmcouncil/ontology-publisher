@@ -37,24 +37,38 @@ function publishProductGlossaryContent() {
 	require ontology_product_tag_root || return $?
 	require glossary_product_tag_root || return $?
 
-	local numberOfProductionLevelOntologyFiles=0
-
 	export glossary_script_dir="${SCRIPT_DIR:?}/product/glossary"
 
 	if [ ! -d "${glossary_script_dir}" ] ; then
 		error "Could not find ${glossary_script_dir}"
 		return 1
 	fi
+
+	logRule "Processing DEV"
   
-	${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker.py \
-	    --output="${TMPDIR}/glossary-dev.ttl" \
-	    --ontology_file_path="${ontology_product_tag_root}"/About*Dev.rdf" 
+	${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker.py --output="${glossary_product_tag_root}/glossary-dev.csv" --ontology="${ontology_product_tag_root}/AboutFIBODev.rdf" 
         
     
-    if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-      error "Could not get Dev ontologies"
-      return 1
-    fi
+	if [ ${PIPESTATUS[0]} -ne 0 ] ; then
+	error "Could not get Dev ontologies"
+	return 1
+	fi
+
+	logRule "Processing PROD"
+
+
+	${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker.py --output="${glossary_product_tag_root}/glossary-prod.csv" --ontology="${ontology_product_tag_root}/AboutFIBOProd.rdf" 
+        
+    
+	if [ ${PIPESTATUS[0]} -ne 0 ] ; then
+	error "Could not get Dev ontologies"
+	return 1
+	fi
+
+	${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py "${glossary_product_tag_root}/glossary-prod.csv" "${glossary_product_tag_root}/glossary-prod.xlsx" "${glossary_script_dir}/csvconfig"
+
+	${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py "${glossary_product_tag_root}/glossary-dev.csv" "${glossary_product_tag_root}/glossary-dev.xlsx" "${glossary_script_dir}/csvconfig"
+
 
   return 0
 }

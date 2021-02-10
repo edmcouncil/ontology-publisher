@@ -1,5 +1,6 @@
 import argparse
-import xlsxwriter
+
+import pandas
 from rdflib import Graph
 from rdflib.namespace import OWL
 
@@ -17,6 +18,7 @@ def create_dictionary(ontology_file_path: str, dictionary_file_path: str):
 
 
     print('Creating dictionary from ontologies')
+    dictionary_map = dict()
     results = ontology.query(
         """
         prefix owl: <http://www.w3.org/2002/07/owl#>
@@ -47,29 +49,26 @@ def create_dictionary(ontology_file_path: str, dictionary_file_path: str):
         ORDER BY ?Term
         """)
 
-    workbook = xlsxwriter.Workbook(dictionary_file_path)
-    worksheet = workbook.add_worksheet('Data Dictionary')
-    worksheet.write_row(row=0,col=0, data=['Term', 'Type', 'Synonyms', 'Definition', 'GeneratedDefinition', 'Example', 'Explanation', 'Ontology', 'Maturity'])
-
-    row=1
+    count=0
     for result in results:
         dictionary_row = \
-            [
-                result['Term'],
-                result['Type'],
-                result['Synonyms'],
-                result['Definition'],
-                result['GeneratedDefinition'],
-                result['Example'],
-                result['Explanation'],
-                result['Ontology'],
-                result['Maturity']
-            ]
-        worksheet.write_row(row,col=0,data=dictionary_row)
-        row += 1
-    workbook.close()
+            {
+                'Term': result['Term'],
+                'Type': result['Type'],
+                'Synonyms': result['Synonyms'],
+                'Definition': result['Definition'],
+                'GeneratedDefinition': result['GeneratedDefinition'],
+                'Example': result['Example'],
+                'Explanation': result['Explanation'],
+                'Ontology': result['Ontology'],
+                'Maturity': result['Maturity']
+            }
+        dictionary_map.update({count: dictionary_row})
+        count += 1
 
-# create_dictionary('AboutFIBODev.rdf','')
+    dictionary = pandas.DataFrame.from_dict(data=dictionary_map,orient='index')
+    dictionary.to_csv(dictionary_file_path,index=False)
+    # dictionary.to_excel(dictionary_file_path,index=False)
 
 if __name__ == "__main__":
 
