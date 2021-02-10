@@ -23,7 +23,7 @@
 # - alpine is the name of the Linux brand we're using, which is the smallest linux keeping the image as small
 #   as possible.
 #
-FROM openjdk:13-jdk-alpine
+FROM alpine:3.13
 
 #
 # Some meta data, can only have one maintainer unfortunately
@@ -61,7 +61,9 @@ RUN \
     curl wget \
     bash git grep sed findutils coreutils tree jq bc xmlstarlet \
     zip tar xz \
-    python python3 python3-dev py3-setuptools libxml2-dev libxslt-dev \
+    openjdk11 \
+    python3-dev py3-pip py3-wheel py3-cachetools py3-frozendict py3-isodate py3-lxml cython py3-pandas \
+    libxml2-dev libxslt-dev \
     perl perl-utils \
     perl-log-log4perl perl-class-accessor perl-datetime perl-datetime-format-builder \
     perl-datetime-calendar-julian perl-text-csv perl-data-compare perl-data-dump perl-file-slurper \
@@ -73,7 +75,8 @@ RUN \
     perl-unicode-collate perl-unicode-linebreak perl-unicode-normalize perl-config-autoconf \
     perl-extutils-libbuilder perl-file-which perl-test-differences \
     fontconfig make npm \
-    gcc linux-headers libc-dev && \
+    gcc g++ linux-headers libc-dev && \
+    ln -sf python3 /usr/bin/python && \
   #
   # Clean up
   #
@@ -107,10 +110,10 @@ RUN \
 #RUN \
 #  echo ================================= install LaTex >&2 && \
 #  /usr/share/scripts/install-texlive.sh
-ENV \
-  MANPATH=/usr/local/texlive/2018/texmf-dist/doc/man:${MANPATH} \
-  INFOPATH=/usr/local/texlive/2018/texmf-dist/doc/info:${INFOPATH} \
-  PATH=${PATH}:/usr/local/texlive/2018/bin/x86_64-linuxmusl:/usr/local/texlive/2018/bin/x86_64-linux
+#ENV \
+#  MANPATH=/usr/local/texlive/2018/texmf-dist/doc/man:${MANPATH} \
+#  INFOPATH=/usr/local/texlive/2018/texmf-dist/doc/info:${INFOPATH} \
+#  PATH=${PATH}:/usr/local/texlive/2018/bin/x86_64-linuxmusl:/usr/local/texlive/2018/bin/x86_64-linux
 
 #
 # Installing biblatex manually
@@ -127,7 +130,7 @@ ENV \
   pandoc_available=1 \
   pandoc_bin=/usr/local/bin/pandoc
 RUN \
-  pandoc_version="2.10.1" ; \
+  pandoc_version="2.11.4" ; \
   echo ================================= install pandoc ${pandoc_version} >&2 && \
   targz="pandoc-${pandoc_version}-linux-amd64.tar.gz" ; \
   url="https://github.com/jgm/pandoc/releases/download/${pandoc_version}/${targz}" ; \
@@ -150,7 +153,7 @@ ENV \
   SERD=/usr/local/bin/serdi \
   SERDI=/usr/local/bin/serdi
 RUN \
-  serd_version="0.28.0" ; \
+  serd_version="0.30.10" ; \
   echo ================================= install serd ${serd_version} >&2 && \
   name="serd-${serd_version}" ; \
   tarbz2="${name}.tar.bz2" ; \
@@ -187,9 +190,9 @@ ENV RDFTOOLKIT_JAR=/publisher/lib/rdf-toolkit.jar
 # INFRA-496 jena-arq-${JENA_VERSION}.jar: workaround to change default JSON-LD output: JSONLD = JSONLD_EXPAND_PRETTY instead of JSONLD_COMPACT_PRETTY
 #
 ENV \
-  JENA_VERSION="3.16.0" \
+  JENA_VERSION="3.17.0" \
   JENA_HOME=/usr/share/java/jena/latest \
-  PATH=${PATH}:/usr/share/java/jena/latest/bin
+  PATH=${PATH}:/usr/lib/jvm/java-11-openjdk/bin:/usr/share/java/jena/latest/bin
 RUN \
   echo ================================= install jena ${JENA_VERSION} >&2 && \
   name="apache-jena-${JENA_VERSION}" ; \
@@ -266,12 +269,12 @@ RUN \
 #
 RUN \
   echo ================================= install XlsxWriter, rdflib, PyLD >&2 && \
-  python3 -m  easy_install XlsxWriter rdflib PyLD
+  pip3 install XlsxWriter rdflib PyLD
 
 #
 # Installing Saxon
 #
-ENV SAXON_VERSION="9-9-1-7J"  
+ENV SAXON_VERSION="9-9-1-8J"
 RUN \
   echo ================================= install saxon ${SAXON_VERSION} >&2 && \
   curl --location --silent --show-error \
