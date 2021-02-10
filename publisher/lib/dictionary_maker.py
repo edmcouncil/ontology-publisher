@@ -47,7 +47,7 @@ def create_dictionary(ontology_file_path: str, dictionary_file_path: str):
         ORDER BY ?Term
         """)
 
-    workbook = xlsxwriter.Workbook('glossary_dev.xlsx')
+    workbook = xlsxwriter.Workbook(dictionary_file_path)
     worksheet = workbook.add_worksheet('Data Dictionary')
     worksheet.write_row(row=0,col=0, data=['Term', 'Type', 'Synonyms', 'Definition', 'GeneratedDefinition', 'Example', 'Explanation', 'Ontology', 'Maturity'])
 
