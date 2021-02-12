@@ -21,6 +21,9 @@ def extend_data_dictionary(data_dictionary_file_path: str, extended_data_diction
         by='Term').superClassLabel.transform(lambda x: ', '.join(filter(None, x)))
     extended_dictionary['restriction_definition'] = extended_dictionary.groupby(by='Term').restriction.transform(
         lambda x: ', '.join(filter(None, x)))
+    extended_dictionary['non_restriction_definition'] = extended_dictionary['non_restriction_definition'].astype(str)
+    extended_dictionary['restriction_definition'] = extended_dictionary['restriction_definition'].astype(str)
+    
     extended_dictionary['GeneratedDefinition'] = \
         numpy.where(
             extended_dictionary['non_restriction_definition'].str.len() > 0,
@@ -43,13 +46,14 @@ def extend_data_dictionary(data_dictionary_file_path: str, extended_data_diction
         extended_dictionary[
             ['Term', 'Type', 'Synonym', 'Definition', 'GeneratedDefinition', 'Example', 'Explanation', 'Ontology',
              'Maturity']]
+    
     extended_dictionary.to_csv(extended_data_dictionary, index=False)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Generates textual definitions from logical constraints')
     parser.add_argument('--input', help='Path to input csv file', metavar='IN')
-    parser.add_argument('--output', help='Path to output csv file', metavar='OUO')
+    parser.add_argument('--output', help='Path to output csv file', metavar='OUT')
     args = parser.parse_args()
 
     extend_data_dictionary(data_dictionary_file_path=args.input, extended_data_dictionary=args.output)

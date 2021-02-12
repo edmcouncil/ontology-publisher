@@ -20,7 +20,6 @@ function publishProductGlossary() {
   export glossary_product_tag_root="${tag_root:?}"
   export glossary_product_tag_root_url="${tag_root_url:?}"
 
-  echo "glossary_product_tag_root_url=${glossary_product_tag_root_url}"
   
   publishProductGlossaryContent || return $?
 
@@ -46,7 +45,7 @@ function publishProductGlossaryContent() {
 
 	logRule "Collecting DEV and PROD ontologies"
 	
-	${PYTHON3} ${SCRIPT_DIR}/lib/fibos_collector.py --input_folder ${ontology_product_tag_root} --output_dev ${TMPDIR}\dev.rdf --output_prod ${TMPDIR}\prod.rdf 
+	${PYTHON3} ${SCRIPT_DIR}/lib/fibos_collector.py --input_folder ${ontology_product_tag_root} --output_dev ${TMPDIR}/dev.rdf --output_prod ${TMPDIR}/prod.rdf 
   
 	if [ ${PIPESTATUS[0]} -ne 0 ] ; then
 	error "Could not collect FIBO ontologies"
@@ -67,13 +66,13 @@ function publishProductGlossaryContent() {
 	export JVM_ARGS
 	logVar JVM_ARGS
 	
-	${JENA_ARQ} --data ${TMPDIR}\dev.rdf --query data_dictionary.sparql --results=CSV > ${TMPDIR}\dev_proto_data_dictionary.csv
-	${JENA_ARQ} --data ${TMPDIR}\prod.rdf --query data_dictionary.sparql --results=CSV > ${TMPDIR}\prod_proto_data_dictionary.csv
+	${JENA_ARQ} --data ${TMPDIR}/dev.rdf --query ${SCRIPT_DIR}/product/glossary/data_dictionary.sparql --results=CSV > ${TMPDIR}/dev_proto_data_dictionary.csv
+	${JENA_ARQ} --data ${TMPDIR}/prod.rdf --query ${SCRIPT_DIR}/product/glossary/data_dictionary.sparql --results=CSV > ${TMPDIR}/prod_proto_data_dictionary.csv
         
 	logRule "Extending data dictionaries with generated definitions"
 		
-	${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker_no_sparql.py --input ${TMPDIR}\dev_proto_data_dictionary.csv --output ${glossary_product_tag_root}/glossary-dev.csv
-  	${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker_no_sparql.py --input ${TMPDIR}\prod_proto_data_dictionary.csv --output ${glossary_product_tag_root}/glossary-prod.csv
+	${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker_no_sparql.py --input ${TMPDIR}/dev_proto_data_dictionary.csv --output ${glossary_product_tag_root}/glossary-dev.csv
+  	${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker_no_sparql.py --input ${TMPDIR}/prod_proto_data_dictionary.csv --output ${glossary_product_tag_root}/glossary-prod.csv
   
 	logRule "Writing from csv files to xlsx files"
 
