@@ -37,22 +37,49 @@ function publishProductGlossaryContent() {
 	require ontology_product_tag_root || return $?
 	require glossary_product_tag_root || return $?
 
-	local numberOfProductionLevelOntologyFiles=0
-
 	export glossary_script_dir="${SCRIPT_DIR:?}/product/glossary"
 
 	if [ ! -d "${glossary_script_dir}" ] ; then
 		error "Could not find ${glossary_script_dir}"
 		return 1
 	fi
+
+	logRule "Collecting DEV and PROD ontologies"
+	
+	${PYTHON3} ${SCRIPT_DIR}/lib/fibos_collector.py --input_folder ${ontology_product_tag_root} --output_dev ${TMPDIR}\dev.rdf --output_prod ${TMPDIR}\prod.rdf 
   
-	${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker.py --output="${TMPDIR}/glossary-dev.ttl" --ontology="${ontology_product_tag_root}/AboutFIBODev.rdf" 
+	if [ ${PIPESTATUS[0]} -ne 0 ] ; then
+	error "Could not collect FIBO ontologies"
+	return 1
+	fi
+  
+	logRule "Creating data dictionaries for DEV and PROD"
+  
+	#
+	# Set the memory for ARQ
+	#
+	JVM_ARGS="--add-opens java.base/java.lang=ALL-UNNAMED"
+	JVM_ARGS="${JVM_ARGS} -Dxxx=arq"
+	JVM_ARGS="${JVM_ARGS} -Xms2g"
+	JVM_ARGS="${JVM_ARGS} -Xmx4g"
+	JVM_ARGS="${JVM_ARGS} -Dfile.encoding=UTF-8"
+	JVM_ARGS="${JVM_ARGS} -Djava.io.tmpdir=\"${TMPDIR}\""
+	export JVM_ARGS
+	logVar JVM_ARGS
+	
+	${JENA_ARQ} --data ${TMPDIR}\dev.rdf --query data_dictionary.sparql --results=CSV > ${TMPDIR}\dev_proto_data_dictionary.csv
+	${JENA_ARQ} --data ${TMPDIR}\prod.rdf --query data_dictionary.sparql --results=CSV > ${TMPDIR}\prod_proto_data_dictionary.csv
         
-    
-    if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-      error "Could not get Dev ontologies"
-      return 1
-    fi
+	logRule "Extending data dictionaries with generated definitions"
+		
+	${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker_no_sparql.py --input ${TMPDIR}\dev_proto_data_dictionary.csv --output ${glossary_product_tag_root}/glossary-dev.csv
+  	${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker_no_sparql.py --input ${TMPDIR}\prod_proto_data_dictionary.csv --output ${glossary_product_tag_root}/glossary-prod.csv
+  
+	logRule "Writing from csv files to xlsx files"
+
+	${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py "${glossary_product_tag_root}/glossary-prod.csv" "${glossary_product_tag_root}/glossary-prod.xlsx" "${glossary_script_dir}/csvconfig"
+	${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py "${glossary_product_tag_root}/glossary-dev.csv" "${glossary_product_tag_root}/glossary-dev.xlsx" "${glossary_script_dir}/csvconfig"
+
 
   return 0
 }

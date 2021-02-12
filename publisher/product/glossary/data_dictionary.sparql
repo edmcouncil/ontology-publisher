@@ -1,0 +1,66 @@
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?Term ?Type ?synonym ?Definition ?superClassLabel ?restrictingPropertyLabel ?restrictingClassLabel ?cardinality ?Example ?Explanation ?Ontology ?Maturity
+WHERE
+{
+	?resource rdf:type/rdfs:subClassOf* ?typeIRI .
+	FILTER (CONTAINS(str(?resource), "edmcouncil"))
+	FILTER (?typeIRI IN (owl:Class, rdf:Property, owl:NamedIndividual, rdf:Datatype))
+	?resource rdfs:label ?Term .
+	FILTER (CONTAINS(LANG(?Term), "en") || LANG(?Term) = "")
+	?typeIRI rdfs:label ?Type .
+	
+	BIND (IRI(REPLACE(str(?resource), '/[^/]+$', '/')) As ?ontologyIRI).
+	?ontologyIRI rdfs:label ?Ontology .
+	?ontologyIRI <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/hasMaturityLevel> ?maturityIRI .
+	?maturityIRI rdfs:label ?Maturity .
+	
+	OPTIONAL {?resource <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/synonym> ?synonym}
+	OPTIONAL {?resource <http://www.w3.org/2004/02/skos/core#definition> ?Definition}
+	OPTIONAL {?resource <http://www.w3.org/2004/02/skos/core#example> ?Example}
+	OPTIONAL {?resource <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/explanatoryNote> ?Explanation}
+	OPTIONAL 
+	{
+		?resource rdfs:subClassOf ?superClassIRI .
+		{?superClassIRI rdfs:label ?superClassLabel FILTER ISIRI(?superClassIRI)}
+		UNION
+		{
+			?superClassIRI rdf:type owl:Restriction .
+			?superClassIRI owl:onProperty ?restrictingProperty .
+			?restrictingProperty rdfs:label ?restrictingPropertyLabel .
+			
+			{
+				?superClassIRI owl:onClass ?restrictingClass . 
+				?restrictingClass rdfs:label ?restrictingClassLabel
+				{
+					?superClassIRI owl:minQualifiedCardinality ?cardinalityValue .
+					BIND (CONCAT('at least ', str(?cardinalityValue)) as ?cardinality)
+				} 
+				UNION 
+				{
+					?superClassIRI owl:maxQualifiedCardinality ?cardinalityValue .
+					BIND (CONCAT('at most ', str(?cardinalityValue)) as ?cardinality)
+				}
+				UNION 
+				{
+					?superClassIRI owl:qualifiedCardinality ?cardinalityValue .
+					BIND (CONCAT('exactly ', str(?cardinalityValue)) as ?cardinality)
+				}
+			} 
+			UNION  
+			{
+				?superClassIRI owl:someValuesFrom ?restrictingClass.
+				?restrictingClass rdfs:label ?restrictingClassLabel
+				BIND ('some' as ?cardinality)
+			}
+			UNION  
+			{
+				?superClassIRI owl:allValuesFrom ?restrictingClass.
+				?restrictingClass rdfs:label ?restrictingClassLabel
+				BIND ('only' as ?cardinality)
+			} .
+		}
+	}
+}
