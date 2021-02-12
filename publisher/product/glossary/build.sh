@@ -45,7 +45,7 @@ function publishProductGlossaryContent() {
 
 	logRule "Collecting DEV and PROD ontologies"
 	
-	${PYTHON3} ${SCRIPT_DIR}/lib/fibos_collector.py --input_folder ${ontology_product_tag_root} --output_dev ${TMPDIR}/dev.rdf --output_prod ${TMPDIR}/prod.rdf 
+	${PYTHON3} ${SCRIPT_DIR}/lib/fibos_collector.py --input_folder /input/fibo --output_dev ${TMPDIR}/dev.rdf --output_prod ${TMPDIR}/prod.rdf 
   
 	if [ ${PIPESTATUS[0]} -ne 0 ] ; then
 	error "Could not collect FIBO ontologies"

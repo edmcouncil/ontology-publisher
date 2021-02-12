@@ -26,7 +26,7 @@ def collect_fibos(fibo_folder_path: str, fibo_dev_file_path: str, fibo_prod_file
 
     print('Importing FIBO ontologies')
 
-    fibo_prod_ontolog_iris = __get_fibo_prod_ontolog_iris(fibo_folder_path=fibo_folder_path)
+    fibo_prod_ontolog_iri_local_parts = __get_fibo_prod_ontology_iri_local_parts(fibo_folder_path=fibo_folder_path)
     for root, dirs, files in os.walk(fibo_folder_path):
         for file in files:
             with open(os.path.join(root, file), "r") as fibo_file:
@@ -40,7 +40,11 @@ def collect_fibos(fibo_folder_path: str, fibo_dev_file_path: str, fibo_prod_file
                             fibo_dev += ontology
                             ontology_IRIs = ontology.subjects(predicate=RDF.type, object=OWL.Ontology)
                             for ontology_IRI in ontology_IRIs:
-                                if ontology_IRI in fibo_prod_ontolog_iris:
+                                iri_parts = str(ontology_IRI).split(sep='/')
+                                if len(iri_parts) < 2:
+                                    continue
+                                ontology_IRI_local_part = iri_parts[-2]
+                                if ontology_IRI_local_part in fibo_prod_ontolog_iri_local_parts:
                                     fibo_prod += ontology
                                     continue
                         except Exception as exception:
@@ -51,17 +55,18 @@ def collect_fibos(fibo_folder_path: str, fibo_dev_file_path: str, fibo_prod_file
     fibo_prod.serialize(destination=fibo_prod_file_path)
 
 
-def __get_fibo_prod_ontolog_iris(fibo_folder_path: str) -> list:
-    fibo_prod_ontolog_iris = []
+def __get_fibo_prod_ontology_iri_local_parts(fibo_folder_path: str) -> list:
+    fibo_prod_ontolog_iri_local_parts = []
     prod_fibo_file = open(os.path.join(fibo_folder_path, 'AboutFIBOProd.rdf'))
     prod_fibo = Graph()
     prod_fibo.parse(prod_fibo_file)
 
     for subject, predicate, object in prod_fibo:
         if predicate == OWL.imports:
-            fibo_prod_ontolog_iris.append(object)
-
-    return fibo_prod_ontolog_iris
+            iri_string = str(object)
+            iri_parts = iri_string.split(sep='/')
+            fibo_prod_ontolog_iri_local_parts.append(iri_parts[-2])
+    return fibo_prod_ontolog_iri_local_parts
 
 
 if __name__ == "__main__":
@@ -71,5 +76,6 @@ if __name__ == "__main__":
     parser.add_argument('--output_prod', help='Path to output prod file', metavar='OUT_PROC')
     args = parser.parse_args()
 
-    collect_fibos(fibo_folder_path=args.input_folder, fibo_dev_file_path=args.output_dev,
-                  fibo_prod_file_path=args.output_prod)
+    collect_fibos(fibo_folder_path=args.input_folder, fibo_dev_file_path=args.output_dev,fibo_prod_file_path=args.output_prod)
+
+# collect_fibos(r'D:\projects\fibo\git\edmc\fibo', '','')
