@@ -2,7 +2,7 @@ prefix owl: <http://www.w3.org/2002/07/owl#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?Term ?Type ?synonym ?Definition ?superClassLabel ?restrictingPropertyLabel ?restrictingClassLabel ?cardinality ?Example ?Explanation ?Ontology ?Maturity
+SELECT DISTINCT ?Term ?Type ?Synonym ?Definition ?superClassLabel ?restrictingPropertyLabel ?restrictingClassLabel ?cardinality ?union ?intersection ?Example ?Explanation ?Ontology ?Maturity
 WHERE
 {
 	?resource rdf:type/rdfs:subClassOf* ?typeIRI .
@@ -17,14 +17,16 @@ WHERE
 	?ontologyIRI <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/hasMaturityLevel> ?maturityIRI .
 	?maturityIRI rdfs:label ?Maturity .
 	
-	OPTIONAL {?resource <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/synonym> ?synonym}
+	OPTIONAL {?resource <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/synonym> ?Synonym}
 	OPTIONAL {?resource <http://www.w3.org/2004/02/skos/core#definition> ?Definition}
 	OPTIONAL {?resource <http://www.w3.org/2004/02/skos/core#example> ?Example}
 	OPTIONAL {?resource <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/explanatoryNote> ?Explanation}
 	OPTIONAL 
 	{
 		?resource rdfs:subClassOf ?superClassIRI .
-		{?superClassIRI rdfs:label ?superClassLabel FILTER ISIRI(?superClassIRI)}
+		{
+			?superClassIRI rdfs:label ?superClassLabel 
+			FILTER ISIRI(?superClassIRI)}
 		UNION
 		{
 			?superClassIRI rdf:type owl:Restriction .
@@ -33,7 +35,20 @@ WHERE
 			
 			{
 				?superClassIRI owl:onClass ?restrictingClass . 
-				?restrictingClass rdfs:label ?restrictingClassLabel
+				OPTIONAL {?restrictingClass rdfs:label ?restrictingClassLabel}
+				OPTIONAL 
+				{
+					?restrictingClass owl:unionOf ?list.
+    				?list rdf:rest*/rdf:first ?unionIRI .
+					?unionIRI rdfs:label ?union
+				}
+				OPTIONAL
+				{
+					?restrictingClass owl:intersectionOf ?list.
+    				?list rdf:rest*/rdf:first ?intersectionIRI .
+					?intersectionIRI rdfs:label ?intersection
+				}
+
 				{
 					?superClassIRI owl:minQualifiedCardinality ?cardinalityValue .
 					BIND (CONCAT('at least ', str(?cardinalityValue)) as ?cardinality)
@@ -60,6 +75,12 @@ WHERE
 				?superClassIRI owl:allValuesFrom ?restrictingClass.
 				?restrictingClass rdfs:label ?restrictingClassLabel
 				BIND ('only' as ?cardinality)
+			} 
+			UNION  
+			{
+				?superClassIRI owl:hasValue ?restrictingClass.
+				?restrictingClass rdfs:label ?restrictingClassLabel
+				BIND ('that is' as ?cardinality)
 			} .
 		}
 	}
