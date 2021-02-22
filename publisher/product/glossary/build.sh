@@ -35,6 +35,8 @@ function publishProductGlossaryContent() {
 
 	require ontology_product_tag_root || return $?
 	require glossary_product_tag_root || return $?
+	
+	echo "glossary_product_tag_root_url=${glossary_product_tag_root_url}"
 
 	export glossary_script_dir="${SCRIPT_DIR:?}/product/glossary"
 
@@ -48,8 +50,8 @@ function publishProductGlossaryContent() {
 	${PYTHON3} ${SCRIPT_DIR}/lib/fibos_collector.py --input_folder /input/fibo --output_dev ${TMPDIR}/dev.rdf --output_prod ${TMPDIR}/prod.rdf 
   
 	if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-	error "Could not collect FIBO ontologies"
-	return 1
+		error "Could not collect FIBO ontologies"
+		return 1
 	fi
   
 	logRule "Creating data dictionaries for DEV and PROD"
@@ -76,9 +78,18 @@ function publishProductGlossaryContent() {
   
 	logRule "Writing from csv files to xlsx files"
 
-	${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py "${glossary_product_tag_root}/glossary-prod.csv" "${glossary_product_tag_root}/glossary-prod.xlsx" "${glossary_script_dir}/csvconfig"
-	${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py "${glossary_product_tag_root}/glossary-dev.csv" "${glossary_product_tag_root}/glossary-dev.xlsx" "${glossary_script_dir}/csvconfig"
+	touch "${glossary_product_tag_root}/glossary.log"	
 
+	${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py \	
+		"${glossaryBaseName}-prod.csv" \	
+		"${glossaryBaseName}-prod.xlsx" \	
+		"${glossary_script_dir}/csvconfig"	
+
+
+	${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py \	
+		"${glossaryBaseName}-dev.csv" \	
+		"${glossaryBaseName}-dev.xlsx" \	
+		"${glossary_script_dir}/csvconfig"
 
   return 0
 }
