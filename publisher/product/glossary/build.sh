@@ -81,15 +81,15 @@ function publishProductGlossaryContent() {
 	touch "${glossary_product_tag_root}/glossary.log"	
 
 	${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py \	
-		"${glossaryBaseName}-prod.csv" \	
-		"${glossaryBaseName}-prod.xlsx" \	
-		"${glossary_script_dir}/csvconfig"	
+	   "${glossary_product_tag_root}/glossary-prod.csv" \	
+	   "${glossary_product_tag_root}/glossary-prod.xlsx" \	
+	   "${glossary_script_dir}/csvconfig"	
 
 
 	${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py \	
-		"${glossaryBaseName}-dev.csv" \	
-		"${glossaryBaseName}-dev.xlsx" \	
-		"${glossary_script_dir}/csvconfig"
+	   "${glossary_product_tag_root}/glossary-dev.csv" \	
+	   "${glossary_product_tag_root}/glossary-dev.xlsx" \	
+	   "${glossary_script_dir}/csvconfig"
 
   return 0
 }
