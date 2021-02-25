@@ -51,11 +51,11 @@ function publishProductGlossaryContent() {
   ${PYTHON3} ${SCRIPT_DIR}/lib/fibos_collector.py --input_folder "${ontology_product_tag_root}" --output_dev ${TMPDIR}/dev.rdf --output_prod ${TMPDIR}/prod.rdf
 
   if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-    error "Could not collect FIBO ontologies"
+    error "Could not collect ontologies"
     return 1
   fi
   
-  logRule "Creating data dictionaries for DEV and PROD"
+  logRule "Creating data dictionaries"
   
   #
   # Set the memory for ARQ
