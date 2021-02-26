@@ -48,7 +48,8 @@ ENV \
   ONTPUB_IS_DARK_MODE=${ONTPUB_IS_DARK_MODE:-1} \
   INPUT=/input \
   OUTPUT=/output \
-  TMPDIR=/var/tmp
+  TMPDIR=/var/tmp \
+  PROD_SPEC=AboutFIBOProd.rdf
 
 RUN mkdir -p /publisher ${TMPDIR} || true
 
