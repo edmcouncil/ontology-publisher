@@ -26,27 +26,33 @@ WHERE
 		?resource rdfs:subClassOf ?superClassIRI .
 		{
 			?superClassIRI rdfs:label ?superClassLabel 
-			FILTER ISIRI(?superClassIRI)}
+			FILTER ISIRI(?superClassIRI)
+			FILTER (CONTAINS(LANG(?superClassLabel), "en") || LANG(?superClassLabel) = "")
+		}
 		UNION
 		{
 			?superClassIRI rdf:type owl:Restriction .
 			?superClassIRI owl:onProperty ?restrictingProperty .
 			?restrictingProperty rdfs:label ?restrictingPropertyLabel .
+			FILTER (CONTAINS(LANG(?restrictingPropertyLabel), "en") || LANG(?restrictingPropertyLabel) = "")
 			
 			{
 				?superClassIRI owl:onClass ?restrictingClass . 
 				OPTIONAL {?restrictingClass rdfs:label ?restrictingClassLabel}
+				FILTER (CONTAINS(LANG(?restrictingClassLabel), "en") || LANG(?restrictingClassLabel) = "")
 				OPTIONAL 
 				{
 					?restrictingClass owl:unionOf ?list.
     				?list rdf:rest*/rdf:first ?unionIRI .
 					?unionIRI rdfs:label ?union
+					FILTER (CONTAINS(LANG(?union), "en") || LANG(?union) = "")
 				}
 				OPTIONAL
 				{
 					?restrictingClass owl:intersectionOf ?list.
     				?list rdf:rest*/rdf:first ?intersectionIRI .
 					?intersectionIRI rdfs:label ?intersection
+					FILTER (CONTAINS(LANG(?intersection), "en") || LANG(?intersection) = "")
 				}
 
 				{
@@ -68,19 +74,22 @@ WHERE
 			{
 				?superClassIRI owl:someValuesFrom ?restrictingClass.
 				?restrictingClass rdfs:label ?restrictingClassLabel
+				FILTER (CONTAINS(LANG(?restrictingClassLabel), "en") || LANG(?restrictingClassLabel) = "")
 				BIND ('some' as ?cardinality)
 			}
 			UNION  
 			{
 				?superClassIRI owl:allValuesFrom ?restrictingClass.
 				?restrictingClass rdfs:label ?restrictingClassLabel
+				FILTER (CONTAINS(LANG(?restrictingClassLabel), "en") || LANG(?restrictingClassLabel) = "")
 				BIND ('only' as ?cardinality)
 			} 
 			UNION  
 			{
 				?superClassIRI owl:hasValue ?restrictingClass.
 				?restrictingClass rdfs:label ?restrictingClassLabel
-				BIND ('that is' as ?cardinality)
+				FILTER (CONTAINS(LANG(?restrictingClassLabel), "en") || LANG(?restrictingClassLabel) = "")
+				BIND ('resource that is' as ?cardinality)
 			} .
 		}
 	}
