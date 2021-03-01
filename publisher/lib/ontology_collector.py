@@ -36,7 +36,7 @@ def collect_ontologies_in_dev_and_prod(
 
     for root, dirs, files in os.walk(ontology_folder_path):
         for file in files:
-            with open(os.path.join(root, file), "r") as fibo_file:
+            with open(os.path.join(root, file), "r", encoding='utf8') as fibo_file:
                 filename, file_extension = os.path.splitext(file)
                 if 'rdf' in file_extension:
                     if not ignored_folder in root:
