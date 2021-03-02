@@ -41,6 +41,7 @@ ARG ONTPUB_FAMILY
 ARG ONTPUB_SPEC_HOST
 ARG ONTPUB_IS_DARK_MODE
 ARG ONTPUB_VERSION
+ARG PROD_SPEC
 
 ENV \
   ONTPUB_FAMILY=${ONTPUB_FAMILY:-fibo} \
@@ -48,8 +49,7 @@ ENV \
   ONTPUB_IS_DARK_MODE=${ONTPUB_IS_DARK_MODE:-1} \
   INPUT=/input \
   OUTPUT=/output \
-  TMPDIR=/var/tmp \
-  PROD_SPEC=AboutFIBOProd.rdf
+  TMPDIR=/var/tmp
 
 RUN mkdir -p /publisher ${TMPDIR} || true
 
@@ -387,7 +387,9 @@ ENV \
 RUN \
   echo PATH=${PATH} && \
   sed -i -e 's/export PATH=\(.*\)/export PATH=${PATH}/g' /etc/profile && \
-  echo "export PATH=${PATH}" >> /etc/bashrc
+  echo "export PATH=${PATH}" >> /etc/bashrc && \
+  echo 'export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"' >> /etc/bashrc && \
+  echo 'export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"' > /etc/profile.d/prod_spec.sh
 
 CMD ["./publish.sh"]
 

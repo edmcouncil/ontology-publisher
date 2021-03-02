@@ -342,6 +342,10 @@ function buildImage() {
   opts+=("ONTPUB_IS_DARK_MODE=${cli_option_dark}")
   opts+=('--build-arg')
   opts+=("ONTPUB_VERSION=${ONTPUB_VERSION}")
+  if [ -n "${PROD_SPEC}" ] ; then
+    opts+=('--build-arg')
+    opts+=("PROD_SPEC=${PROD_SPEC}")
+  fi
   opts+=('--label')
   opts+=('${ONTPUB_ORG_TLD}.${ONTPUB_ORG}.ontology-publisher.version="${ONTPUB_VERSION/v/}"')
   opts+=('--label')
@@ -430,6 +434,10 @@ function run() {
   opts+=("ONTPUB_FAMILY=${ONTPUB_FAMILY}")
   opts+=('--env')
   opts+=("ONTPUB_SPEC_HOST=${ONTPUB_SPEC_HOST}")
+  if [ -n "${PROD_SPEC}" ] ; then
+    opts+=('--env')
+    opts+=("PROD_SPEC=${PROD_SPEC}")
+  fi
 
   logVar ONTPUB_FAMILY
 
