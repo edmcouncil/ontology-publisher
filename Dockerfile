@@ -77,6 +77,8 @@ RUN \
     perl-extutils-libbuilder perl-file-which perl-test-differences \
     fontconfig make npm \
     gcc g++ linux-headers libc-dev && \
+    # "bash" preferable to "busybox"
+    ln -sf bash /bin/sh && \
     ln -sf python3 /usr/bin/python && \
   #
   # Clean up
