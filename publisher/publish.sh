@@ -288,8 +288,9 @@ function vocabularyGetModules() {
 # Stuff for building nquads files
 #
 function quadify () {
-
-    sed 's/^<.*$/& { &/;$a}' "$1" | serdi -p $(cat /proc/sys/kernel/random/uuid) -o nquads - 
+    # extract owl:Ontology
+    export O="$(serdi -o nquads "${1}" 2>/dev/null | grep -P '^\s*(\<[^\>]*\>)\s+<http\:\/\/www.w3.org\/1999\/02\/22-rdf-syntax-ns\#type>\s+<http:\/\/www.w3.org\/2002\/07\/owl#Ontology>\s+\.\s*$' | perl -p -e 's/^\s*\<([^\>]*)\>\s+.*$/\1/g')"
+    test -n "${O}" && serdi -p "$(cat /proc/sys/kernel/random/uuid)" -o nquads "${1}" 2>"${1}.err" | sed "s<\.\s*$<\<${O}\> .<g" && rm -f "${1}.err"
   }
   
 
