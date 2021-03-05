@@ -11,7 +11,6 @@
 @prefix fibo-v-be:  <https://spec.edmcouncil.org/fibo/BE/vocabulary#> .
 @prefix fibo-v-bp:  <https://spec.edmcouncil.org/fibo/BP/vocabulary#> .
 @prefix fibo-v-cae:  <https://spec.edmcouncil.org/fibo/CAE/vocabulary#> .
-@prefix fibo-v-civ:  <https://spec.edmcouncil.org/fibo/CIV/vocabulary#> .
 @prefix fibo-v-der:  <https://spec.edmcouncil.org/fibo/DER/vocabulary#> .
 @prefix fibo-v-fbc:  <https://spec.edmcouncil.org/fibo/FBC/vocabulary#> .
 @prefix fibo-v-fnd:  <https://spec.edmcouncil.org/fibo/FND/vocabulary#> .
