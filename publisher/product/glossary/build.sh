@@ -32,6 +32,7 @@ function publishProductGlossaryContent() {
 
   logRule "Publishing the content files of the glossary product"
 
+  require source_family_root || return $?
   require ontology_product_tag_root || return $?
   require glossary_product_tag_root || return $?
 
@@ -48,12 +49,13 @@ function publishProductGlossaryContent() {
 
   logRule "Collecting DEV and PROD ontologies"
 
-  ${PYTHON3} ${SCRIPT_DIR}/lib/ontology_collector.py --input_folder "${ontology_product_tag_root}" --output_dev ${TMPDIR}/dev.rdf --output_prod ${TMPDIR}/prod.rdf --prod_spec ${PROD_SPEC} --ignored "etc"
-
-  if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-    error "Could not collect ontologies"
-    return 1
-  fi
+  pushd "${ontology_product_tag_root}" &>/dev/null
+    ${PYTHON3} ${SCRIPT_DIR}/lib/ontology_collector.py --input_folder "." --output_dev ${TMPDIR}/dev.rdf --output_prod ${TMPDIR}/prod.rdf --prod_spec ${PROD_SPEC} --external_folders "${source_family_root}/etc/imports:/publisher/lib/ontologies"
+    if [ ${PIPESTATUS[0]} -ne 0 ] ; then
+      error "Could not collect ontologies"
+      return 1
+    fi
+  popd &>/dev/null
   
   logRule "Creating data dictionaries"
   
