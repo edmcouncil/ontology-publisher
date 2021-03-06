@@ -50,7 +50,7 @@ function publishProductGlossaryContent() {
   logRule "Collecting DEV and PROD ontologies"
 
   pushd "${ontology_product_tag_root}" &>/dev/null
-    ${PYTHON3} ${SCRIPT_DIR}/lib/ontology_collector.py --input_folder "." --output_dev ${TMPDIR}/dev.rdf --output_prod ${TMPDIR}/prod.rdf --prod_spec ${PROD_SPEC} --external_folders "${source_family_root}/etc/imports:/publisher/lib/ontologies"
+    ${PYTHON3} ${SCRIPT_DIR}/lib/ontology_collector.py --input_folder "." --output_dev ${TMPDIR}/dev.rdf --output_prod ${TMPDIR}/prod.rdf --prod_spec ${PROD_SPEC} --external_folders "${source_family_root}/etc/imports:/publisher/lib/imports"
     if [ ${PIPESTATUS[0]} -ne 0 ] ; then
       error "Could not collect ontologies"
       return 1
