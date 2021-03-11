@@ -9,71 +9,84 @@ def collect_ontologies_in_dev_and_prod(
         dev_file_path: str,
         prod_file_path: str,
         prod_spec_file_name: str,
-        ignored_folder: str):
+        external_folders_paths: str):
     print('Collecting Dev and Prod ontologies')
 
     dev_ontology = Graph()
     prod_ontology = Graph()
 
-    print('Getting external ontologies')
+    external_iris = []
+    for external_folder_path in external_folders_paths.split(":"):
+        if ( len(external_folder_path) > 0 ) and os.path.isdir(external_folder_path):
+            print('Getting external ontologies from [',external_folder_path,'] directory',sep='')
 
-    dev_ontology.parse('http://www.w3.org/2002/07/owl')
-    dev_ontology.parse('http://www.w3.org/2000/01/rdf-schema')
-    dev_ontology.parse('http://www.w3.org/1999/02/22-rdf-syntax-ns')
-    dev_ontology.parse('https://www.omg.org/spec/LCC/Countries/CountryRepresentation/')
-    dev_ontology.parse('https://www.omg.org/spec/LCC/Languages/LanguageRepresentation/')
+            for root, dirs, files in os.walk(external_folder_path):
+                for file in files:
+                    filename, file_extension = os.path.splitext(file)
+                    if 'rdf' in file_extension:
+                        with open(os.path.join(root, file), "r", encoding='utf8') as external_file:
+                            ontology = Graph()
+                            try:
+                                ontology.parse(external_file)
+                                ontology_IRIs = ontology.subjects(predicate=RDF.type, object=OWL.Ontology)
+                                for ontology_IRI in ontology_IRIs:
+                                    if str(ontology_IRI) not in external_iris:
+                                        print(' - importing*:\t IRI=<', ontology_IRI, '>\n\t\tfile=', root, '/', file, sep='')
+                                        dev_ontology += ontology
+                                        prod_ontology += ontology
+                                        external_iris.append(str(ontology_IRI))
+                                    else:
+                                        print(' -  skipping:\t IRI=<', ontology_IRI, '>\n\t\tfile=', root, '/', file, sep='')
+                            except Exception as exception:
+                                print('Cannot parse [', root, '/', file, ']: ', str(exception.args), sep='')
+                        external_file.close()
 
-    prod_ontology.parse('http://www.w3.org/2002/07/owl')
-    prod_ontology.parse('http://www.w3.org/2000/01/rdf-schema')
-    prod_ontology.parse('http://www.w3.org/1999/02/22-rdf-syntax-ns')
-    prod_ontology.parse('https://www.omg.org/spec/LCC/Countries/CountryRepresentation/')
-    prod_ontology.parse('https://www.omg.org/spec/LCC/Languages/LanguageRepresentation/')
+    print('Importing ontologies from [',ontology_folder_path,'] directory; Prod ontologies marked as \"importing*\"', sep='')
 
-    print('Importing ontologies')
-
-    prod_ontolog_iri_local_parts = \
-        __get_prod_ontology_iri_local_parts(prod_spec_folder_path=ontology_folder_path, prod_spec_file_name=prod_spec_file_name)
+    prod_ontology_iris = \
+        __get_prod_ontology_iris(prod_spec_folder_path=ontology_folder_path, prod_spec_file_name=prod_spec_file_name)
 
     for root, dirs, files in os.walk(ontology_folder_path):
         for file in files:
-            with open(os.path.join(root, file), "r", encoding='utf8') as fibo_file:
-                filename, file_extension = os.path.splitext(file)
-                if 'rdf' in file_extension:
-                    if not ignored_folder in root:
-                        ontology = Graph()
-                        print('Importing', file)
-                        try:
-                            ontology.parse(fibo_file)
+            filename, file_extension = os.path.splitext(file)
+            if 'rdf' in file_extension:
+                with open(os.path.join(root, file), "r", encoding='utf8') as fibo_file:
+                    ontology = Graph()
+                    try:
+                        ontology.parse(fibo_file)
+                        ontology_IRIs = ontology.subjects(predicate=RDF.type, object=OWL.Ontology)
+                        for ontology_IRI in ontology_IRIs:
+                            prod = ''
+                            if str(ontology_IRI) in prod_ontology_iris:
+                                prod = '*'
+                            else:
+                                ontology_versionIRIs = ontology.objects(predicate=OWL.versionIRI)
+                                for ontology_versionIRI in ontology_versionIRIs:
+                                    if str(ontology_versionIRI) in prod_ontology_iris:
+                                        prod = '*'
+                                        break
+                            print(' - importing',prod,':\t IRI=<', ontology_IRI, '>\n\t\tfile=', root, '/', file, sep='')
                             dev_ontology += ontology
-                            ontology_IRIs = ontology.subjects(predicate=RDF.type, object=OWL.Ontology)
-                            for ontology_IRI in ontology_IRIs:
-                                iri_parts = str(ontology_IRI).split(sep='/')
-                                if len(iri_parts) < 2:
-                                    continue
-                                ontology_IRI_local_part = iri_parts[-2]
-                                if ontology_IRI_local_part in prod_ontolog_iri_local_parts:
-                                    prod_ontology += ontology
-                                    continue
-                        except Exception as exception:
-                            print('Cannot parse', file, 'because', str(exception.args))
+                            if prod == '*':
+                                prod_ontology += ontology
+                    except Exception as exception:
+                        print('Cannot parse [', root, '/', file, ']: ', str(exception.args), sep='')
                 fibo_file.close()
 
     dev_ontology.serialize(destination=dev_file_path)
     prod_ontology.serialize(destination=prod_file_path)
 
 
-def __get_prod_ontology_iri_local_parts(prod_spec_folder_path: str, prod_spec_file_name: str) -> list:
-    prod_ontology_iri_local_parts = []
+def __get_prod_ontology_iris(prod_spec_folder_path: str, prod_spec_file_name: str) -> list:
+    prod_ontology_iris = []
     prod_file = open(os.path.join(prod_spec_folder_path, prod_spec_file_name))
     prod_ontology = Graph()
     prod_ontology.parse(prod_file)
 
     for subject, predicate, object in prod_ontology:
         if predicate == OWL.imports:
-            iri_string = str(object)
-            iri_parts = iri_string.split(sep='/')
-            prod_ontology_iri_local_parts.append(iri_parts[-2])
-    return prod_ontology_iri_local_parts
+            prod_ontology_iris.append(str(object))
+    return prod_ontology_iris
 
 
 if __name__ == "__main__":
@@ -82,7 +95,7 @@ if __name__ == "__main__":
     parser.add_argument('--output_dev', help='Path to output dev file', metavar='OUT_DEV')
     parser.add_argument('--output_prod', help='Path to output prod file', metavar='OUT_PROD')
     parser.add_argument('--prod_spec', help='File with PROD spec', metavar='PROD_SPEC')
-    parser.add_argument('--ignored', help='Ignored folder', metavar='IGNORED')
+    parser.add_argument('--external_folders', help='Paths separated by ":" to folders with external ontologies', metavar='FOLDER[:FOLDER...]')
     args = parser.parse_args()
 
     collect_ontologies_in_dev_and_prod(
@@ -90,4 +103,4 @@ if __name__ == "__main__":
         dev_file_path=args.output_dev,
         prod_file_path=args.output_prod,
         prod_spec_file_name=args.prod_spec,
-        ignored_folder=args.ignored)
+        external_folders_paths=args.external_folders)
