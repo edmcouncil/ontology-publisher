@@ -33,10 +33,13 @@ WHERE
             FILTER (isIRI(?domainIRI)) .
             BIND (IRI(REPLACE(str(?domainIRI), "/ontology/", "/vocabulary/")) as ?vocDomainIRI)
         }
-        
-        OPTIONAL { ?propertyIRI skos:definition ?defProperty }
-        
+                
         OPTIONAL { ?propertyIRI ?annotationPropertyForProperty ?annotation . ?annotationPropertyForProperty rdf:type owl:AnnotationProperty }
+
+        OPTIONAL 
+        {
+            ?propertyIRI ?annotationPropertyForClass ?annotation . FILTER (str(?annotationPropertyForClass)='http://www.w3.org/2000/01/rdf-schema#label')
+        }
     }
 }
 

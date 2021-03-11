@@ -93,39 +93,37 @@ function vocabularyCreateFromOntologies() {
   logStep "vocabularyCreateFromOntologies"
   log "Creating vocabularies form ontologies"
   
+
   log "Creating Dev vocabulary"
-  
-  ${JENA_ARQ} --data ${TMPDIR}/dev.ttl --query ${SCRIPT_DIR}/product/vocabulary/scaffolding.sparql --results=TTL > ${TMPDIR}/scaffolding.ttl
   ${JENA_ARQ} --data ${TMPDIR}/dev.ttl --query ${SCRIPT_DIR}/product/vocabulary/classes.sparql --results=TTL > ${TMPDIR}/classes.ttl
   ${JENA_ARQ} --data ${TMPDIR}/dev.ttl --query ${SCRIPT_DIR}/product/vocabulary/subclasses.sparql --results=TTL > ${TMPDIR}/subclasses.ttl
   ${JENA_ARQ} --data ${TMPDIR}/dev.ttl --query ${SCRIPT_DIR}/product/vocabulary/properties.sparql --results=TTL > ${TMPDIR}/properties.ttl
   ${JENA_ARQ} --data ${TMPDIR}/dev.ttl --query ${SCRIPT_DIR}/product/vocabulary/subproperties.sparql --results=TTL > ${TMPDIR}/subproperties.ttl
   
+
   ${JENA_ARQ} \
-    --data ${TMPDIR}/scaffolding.ttl \
-	--data ${TMPDIR}/classes.ttl \
-	--data ${TMPDIR}/subclasses.ttl \
-	--data ${TMPDIR}/properties.ttl \
-	--data ${TMPDIR}/subproperties.ttl \
-	--query=/publisher/lib/echo.sparql \
-	--results=TTL > ${vocabulary_product_tag_root}/fibo-vD.ttl
+    --data ${SCRIPT_DIR}/product/vocabulary/scaffolding.ttl \
+    --data ${TMPDIR}/classes.ttl \
+    --data ${TMPDIR}/subclasses.ttl \
+    --data ${TMPDIR}/properties.ttl \
+    --data ${TMPDIR}/subproperties.ttl \
+    --query=/publisher/lib/echo.sparql \
+    --results=TTL > ${vocabulary_product_tag_root}/fibo-vD.ttl
 	
   log "Creating Prod vocabulary"
-
-  ${JENA_ARQ} --data ${TMPDIR}/prod.ttl --query ${SCRIPT_DIR}/product/vocabulary/scaffolding.sparql --results=TTL > ${TMPDIR}/scaffolding.ttl
   ${JENA_ARQ} --data ${TMPDIR}/prod.ttl --query ${SCRIPT_DIR}/product/vocabulary/classes.sparql --results=TTL > ${TMPDIR}/classes.ttl
   ${JENA_ARQ} --data ${TMPDIR}/prod.ttl --query ${SCRIPT_DIR}/product/vocabulary/subclasses.sparql --results=TTL > ${TMPDIR}/subclasses.ttl
   ${JENA_ARQ} --data ${TMPDIR}/prod.ttl --query ${SCRIPT_DIR}/product/vocabulary/properties.sparql --results=TTL > ${TMPDIR}/properties.ttl
   ${JENA_ARQ} --data ${TMPDIR}/prod.ttl --query ${SCRIPT_DIR}/product/vocabulary/subproperties.sparql --results=TTL > ${TMPDIR}/subproperties.ttl
   
   ${JENA_ARQ} \
-    --data ${TMPDIR}/scaffolding.ttl \
-	--data ${TMPDIR}/classes.ttl \
-	--data ${TMPDIR}/subclasses.ttl \
-	--data ${TMPDIR}/properties.ttl \
-	--data ${TMPDIR}/subproperties.ttl \
-	--query=/publisher/lib/echo.sparql \
-	--results=TTL > ${vocabulary_product_tag_root}/fibo-vP.ttl  
+    --data ${SCRIPT_DIR}/product/vocabulary/scaffolding.ttl \
+    --data ${TMPDIR}/classes.ttl \
+    --data ${TMPDIR}/subclasses.ttl \
+    --data ${TMPDIR}/properties.ttl \
+    --data ${TMPDIR}/subproperties.ttl \
+    --query=/publisher/lib/echo.sparql \
+    --results=TTL > ${vocabulary_product_tag_root}/fibo-vP.ttl  
 	
   return 0
 }
