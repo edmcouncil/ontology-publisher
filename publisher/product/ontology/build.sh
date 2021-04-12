@@ -736,6 +736,7 @@ EOF
   log "finished buildquads"
 
   return 0
+  }
   
   function createQuickVersions() {
 
@@ -746,7 +747,7 @@ EOF
   #
   # Get ontologies for Dev
   #
-  log "Merging all dev ontologies into one RDF file: $(logFileName ${tag_root}/DEV.ttl)"
+  log "Merging all dev ontologies into one RDF file: $(logFileName ${tag_root}/dev.fibo-quickstart.ttl)"
   "${JENA_ARQ}" $(find "${source_family_root}" -name "*.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
     --query=/publisher/lib/echo.sparql \
     --results=TTL > ${tag_root}/dev.fibo-quickstart.ttl
@@ -754,11 +755,11 @@ EOF
   #
   # Get ontologies for Prod
   #
-  log "Merging all prod ontologies into one RDF file: : $(logFileName ${tag_root}/PROD.ttl)"
+  log "Merging all prod ontologies into one RDF file: : $(logFileName ${tag_root}/prod.fibo-quickstart.ttl)"
   "${JENA_ARQ}" \
     $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
     --query=/publisher/lib/echo.sparql \
     --results=TTL > ${tag_root}/prod.fibo-quickstart.ttl
+	}
 
-  logRule "Will run the following tests:"
 }
