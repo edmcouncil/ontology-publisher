@@ -48,19 +48,10 @@ function publishProductOntology() {
   ontologyConvertMarkdownToHtml || return $?
   ontologyBuildIndex  || return $?
   ontologyCreateAboutFiles || return $?
-#  if ((speedy)) ; then
-#    log "speedy=true -> Not doing some conversions because they are slow"
-#  else
-    ontologyConvertRdfToAllFormats || return $?
-#  fi
+  ontologyConvertRdfToAllFormats || return $?
   ontologyCreateTheAllTtlFile || return $?
-  #
-  # JG>Who's using "ontology-zips.log"?
-  #
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
-
-
-
+  createQuickVersions || return $?
 
   if ((speedy)) ; then
     log "speedy=true -> Not doing quads because they are slow"
