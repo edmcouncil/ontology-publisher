@@ -42,15 +42,15 @@ function publishProductOntology() {
 
   ontology_product_tag_root="${tag_root:?}"
 
-  ontologyCopyRdfToTarget || return $?
-  ontologySearchAndReplaceStuff || return $?
-  ontologyBuildCatalogs  || return $?
-  ontologyConvertMarkdownToHtml || return $?
-  ontologyBuildIndex  || return $?
-  ontologyCreateAboutFiles || return $?
-  ontologyConvertRdfToAllFormats || return $?
-  ontologyCreateTheAllTtlFile || return $?
-  ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
+  # ontologyCopyRdfToTarget || return $?
+  # ontologySearchAndReplaceStuff || return $?
+  # ontologyBuildCatalogs  || return $?
+  # ontologyConvertMarkdownToHtml || return $?
+  # ontologyBuildIndex  || return $?
+  # ontologyCreateAboutFiles || return $?
+  # ontologyConvertRdfToAllFormats || return $?
+  # ontologyCreateTheAllTtlFile || return $?
+  # ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
   createQuickVersions || return $?
 
   if ((speedy)) ; then
@@ -740,17 +740,28 @@ EOF
   
   function createQuickVersions() {
 
-  local banner
-
   setProduct ontology || return $?
+
+  log "Merging all external ontologies into one RDF file: $(logFileName ${TMPDIR}/external.ttl)"
+  "${JENA_ARQ}" $(find "${SCRIPT_DIR}/lib/ontologies/www.omg.org/spec/" -name "*.rdf" | sed "s/^/--data=/") \
+    --query=/publisher/lib/noimport_noontology.sparql \
+    --results=TTL > "${TMPDIR}/external.ttl"
+
 
   #
   # Get ontologies for Dev
   #
   log "Merging all dev ontologies into one RDF file: $(logFileName ${tag_root}/dev.fibo-quickstart.ttl)"
   "${JENA_ARQ}" $(find "${source_family_root}" -name "*.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
+    --query=/publisher/lib/noimport_noontology.sparql \
+    --results=TTL > ${TMPDIR}/pre_dev.fibo-quickstart.ttl
+
+  ${JENA_ARQ} \
+    --data ${TMPDIR}/external.ttl \
+    --data ${TMPDIR}/pre_dev.fibo-quickstart.ttl \
     --query=/publisher/lib/echo.sparql \
     --results=TTL > ${tag_root}/dev.fibo-quickstart.ttl
+
 
   #
   # Get ontologies for Prod
@@ -758,8 +769,15 @@ EOF
   log "Merging all prod ontologies into one RDF file: : $(logFileName ${tag_root}/prod.fibo-quickstart.ttl)"
   "${JENA_ARQ}" \
     $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
+    --query=/publisher/lib/noimport_noontology.sparql \
+    --results=TTL > ${TMPDIR}/pre_prod.fibo-quickstart.ttl
+	}
+
+  ${JENA_ARQ} \
+    --data ${TMPDIR}/external.ttl \
+    --data ${TMPDIR}/pre_prod.fibo-quickstart.ttl \
     --query=/publisher/lib/echo.sparql \
     --results=TTL > ${tag_root}/prod.fibo-quickstart.ttl
-	}
+
 
 }
