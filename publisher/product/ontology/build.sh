@@ -572,11 +572,11 @@ function buildquads () {
   local ProdQuadsFile="${tag_root}/prod.fibo.nq"
   local DevQuadsFile="${tag_root}/dev.fibo.nq"
 
-  local ProdFlatNT="${tag_root}/prod.fibo-quickstart.nt"
-  local DevFlatNT="${tag_root}/dev.fibo-quickstart.nt"
+  local ProdFlatNT="${tag_root}/old_prod.fibo-quickstart.nt"
+  local DevFlatNT="${tag_root}/old_dev.fibo-quickstart.nt"
 
-  local ProdFlatTTL="${tag_root}/prod.fibo-quickstart.ttl"
-  local DevFlatTTL="${tag_root}/dev.fibo-quickstart.ttl"
+  local ProdFlatTTL="${tag_root}/old_prod.fibo-quickstart.ttl"
+  local DevFlatTTL="${tag_root}/old_dev.fibo-quickstart.ttl"
 
   local ProdTMPTTL="$(mktemp ${TMPDIR}/prod.temp.XXXXXX.ttl)"
   local DevTMPTTL="$(mktemp ${TMPDIR}/dev.temp.XXXXXX.ttl)"
