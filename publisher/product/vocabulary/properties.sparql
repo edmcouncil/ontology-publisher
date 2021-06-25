@@ -7,11 +7,12 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 CONSTRUCT 
 {
     ?vocPropertyIRI a skos:Concept ; 
-        ?annotationPropertyForClass ?annotation ;
-        fibo-skos:rangeRelated ?vocDomainIRI ;
-        fibo-skos:domainRelated ?vocRangeIRI ;
+        ?annotationPropertyForProperty ?annotation ;
+        fibo-skos:rangeRelated ?vocRangeIRI ;
+        fibo-skos:domainRelated ?vocDomainIRI ;
         rdfs:isDefinedBy ?propertyIRI ;
-        skos:inScheme fibo-skos:PropertyConcepts .
+        skos:inScheme fibo-skos:PropertyConcepts ;
+        skos:prefLabel ?label .
 }
 WHERE
 {
@@ -21,6 +22,9 @@ WHERE
         FILTER (isIRI(?propertyIRI))
         FILTER (CONTAINS(str(?propertyIRI), 'edmcouncil')).
         BIND (IRI(REPLACE(str(?propertyIRI), "/ontology/", "/vocabulary/")) as ?vocPropertyIRI)
+
+        ?propertyIRI rdfs:label ?label .
+
         OPTIONAL 
         {
             ?propertyIRI rdfs:range ?rangeIRI
@@ -34,12 +38,12 @@ WHERE
             BIND (IRI(REPLACE(str(?domainIRI), "/ontology/", "/vocabulary/")) as ?vocDomainIRI)
         }
                 
-        OPTIONAL { ?propertyIRI ?annotationPropertyForProperty ?annotation . ?annotationPropertyForProperty rdf:type owl:AnnotationProperty }
-
         OPTIONAL 
-        {
-            ?propertyIRI ?annotationPropertyForClass ?annotation . FILTER (str(?annotationPropertyForClass)='http://www.w3.org/2000/01/rdf-schema#label')
-        }
+	{ 
+	    ?propertyIRI ?annotationPropertyForProperty ?annotation . 
+	    ?annotationPropertyForProperty rdf:type owl:AnnotationProperty .
+	    FILTER (str(?annotationPropertyForProperty) != 'http://www.w3.org/2000/01/rdf-schema#label')
+	}
     }
 }
 
