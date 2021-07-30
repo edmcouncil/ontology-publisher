@@ -50,11 +50,48 @@ function publishProductGlossaryContent() {
   logRule "Collecting DEV and PROD ontologies"
 
   pushd "${ontology_product_tag_root}" &>/dev/null
-    ${PYTHON3} ${SCRIPT_DIR}/lib/ontology_collector.py --input_folder "." --output_dev ${TMPDIR}/dev.rdf --output_prod ${TMPDIR}/prod.rdf --prod_spec ${PROD_SPEC} --external_folders "${source_family_root}/etc/imports:/publisher/lib/imports"
-    if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-      error "Could not collect ontologies"
-      return 1
-    fi
+  
+  # Get external ontologies
+  #
+  log "Merging all external ontologies into one RDF file: $(logFileName ${TMPDIR}/external.rdf)"
+  "${JENA_ARQ}" $(find "${SCRIPT_DIR}/lib/imports/" -name "*.rdf" | sed "s/^/--data=/") \
+    --query=/publisher/lib/echo.sparql  \
+    --results=RDF > "${TMPDIR}/external.rdf"
+    
+  #
+  # Get ontologies for Dev
+  #
+  log "Merging all dev ontologies into one RDF file: $(logFileName ${TMPDIR}/dev.rdf)"
+  "${JENA_ARQ}" $(find "${source_family_root}" -name "*.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
+    --query=/publisher/lib/echo.sparql \
+    --results=RDF > "${TMPDIR}/pre_dev.rdf"
+  
+  ${JENA_ARQ} \
+    --data ${TMPDIR}/external.rdf \
+    --data ${TMPDIR}/pre_dev.rdf \
+    --query=/publisher/lib/echo.sparql \
+    --results=RDF > ${TMPDIR}/dev.rdf
+
+  #
+  # Get ontologies for Prod
+  #
+  log "Merging all prod ontologies into one RDF file: : $(logFileName ${TMPDIR}/prod.rdf)"
+  "${JENA_ARQ}" \
+    $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
+    --query=/publisher/lib/echo.sparql \
+    --results=RDF > "${TMPDIR}/pre_prod.rdf"
+  
+  ${JENA_ARQ} \
+    --data ${TMPDIR}/external.rdf \
+    --data ${TMPDIR}/pre_prod.rdf \
+    --query=/publisher/lib/echo.sparql \
+    --results=RDF > ${TMPDIR}/prod.rdf
+  
+  if [ ${PIPESTATUS[0]} -ne 0 ] ; then
+    error "Could not collect ontologies"
+    return 1
+  fi
+  
   popd &>/dev/null
   
   logRule "Creating data dictionaries"
