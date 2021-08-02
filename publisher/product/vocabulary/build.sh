@@ -124,7 +124,9 @@ function vocabularyCreateFromOntologies() {
     --data ${TMPDIR}/subproperties.ttl \
     --query=/publisher/lib/echo.sparql \
     --results=TTL > ${vocabulary_product_tag_root}/fibo-vP.ttl  
-	
+
+  touch ${vocabulary_product_tag_root}/vocabulary.log
+
   return 0
 }
 

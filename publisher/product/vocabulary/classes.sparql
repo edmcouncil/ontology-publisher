@@ -10,7 +10,7 @@ CONSTRUCT
     ?vocClassIRI a skos:Concept ; 
         ?annotationPropertyForClass ?annotation ;
         rdfs:isDefinedBy ?classIRI ;
-        rdfs:label ?label ;
+        skos:prefLabel ?label ;
         skos:inScheme fibo-skos:ClassConcepts .
 }
 WHERE
@@ -29,6 +29,7 @@ WHERE
         {
             ?classIRI ?annotationPropertyForClass ?annotation . 
             ?annotationPropertyForClass rdf:type owl:AnnotationProperty .
+	    ?propertyIRI ?annotationPropertyForClass ?annotation . FILTER (str(?annotationPropertyForClass) != 'http://www.w3.org/2000/01/rdf-schema#label')
         }
     }
 }
