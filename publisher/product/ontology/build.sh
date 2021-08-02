@@ -771,7 +771,7 @@ EOF
     $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
     --query=/publisher/lib/noimport_noontology.sparql \
     --results=TTL > ${TMPDIR}/pre_prod.fibo-quickstart.ttl
-	}
+	
 
   ${JENA_ARQ} \
     --data ${TMPDIR}/external.ttl \
@@ -779,5 +779,14 @@ EOF
     --query=/publisher/lib/echo.sparql \
     --results=TTL > ${tag_root}/prod.fibo-quickstart.ttl
 
+  ${JENA_ARQ} --data=${tag_root}/dev.fibo-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/dev.fibo-quickstart.nt  
+  ${JENA_ARQ} --data=${tag_root}/prod.fibo-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/prod.fibo-quickstart.nt
+  
+  zip ${tag_root}/dev.fibo-quickstart.ttl.zip ${tag_root}/dev.fibo-quickstart.ttl
+  zip ${tag_root}/prod.fibo-quickstart.ttl.zip ${tag_root}/prod.fibo-quickstart.ttl
+  zip ${tag_root}/dev.fibo-quickstart.nt.zip ${tag_root}/dev.fibo-quickstart.nt
+  zip ${tag_root}/prod.fibo-quickstart.nt.zip ${tag_root}/prod.fibo-quickstart.nt
+
+}
 
 }
