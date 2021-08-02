@@ -42,16 +42,18 @@ function publishProductOntology() {
 
   ontology_product_tag_root="${tag_root:?}"
 
-  ontologyCopyRdfToTarget || return $?
-  ontologySearchAndReplaceStuff || return $?
-  ontologyBuildCatalogs  || return $?
-  ontologyConvertMarkdownToHtml || return $?
-  ontologyBuildIndex  || return $?
-  ontologyCreateAboutFiles || return $?
-  ontologyConvertRdfToAllFormats || return $?
-  ontologyCreateTheAllTtlFile || return $?
-  ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
+  
+  # ontologyCopyRdfToTarget || return $?
+  # ontologySearchAndReplaceStuff || return $?
+  # ontologyBuildCatalogs  || return $?
+  # ontologyConvertMarkdownToHtml || return $?
+  # ontologyBuildIndex  || return $?
+  # ontologyCreateAboutFiles || return $?
+  # ontologyConvertRdfToAllFormats || return $?
+  # ontologyCreateTheAllTtlFile || return $?
+
   createQuickVersions || return $?
+  ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
 
   if ((speedy)) ; then
     log "speedy=true -> Not doing quads because they are slow"
@@ -664,73 +666,12 @@ __HERE__
 	  echo "starting prod"
 	  ${GREP} -rl 'fibo-fnd-utl-av:hasMaturityLevel fibo-fnd-utl-av:Release' | \
 	      while read file ; do quadify $file ; done > ${ProdQuadsFile}
-set -x
+     set -x
 	  ${FIND} ${INPUT} -name "Metadata*.rdf" -exec \
                ${JENA_RIOT} \
                  --syntax=RDF/XML {} \; \
 		 > ${tmpmodule}
 
-	  cat $lcccr > ${ProdFlatNT}
-	  cat $lcccc >> ${ProdFlatNT}
-
-
-	  cat $lcccr > ${DevFlatNT}
-	  cat $lcccc >> ${DevFlatNT}
-
-
-	  
-	  ${JENA_ARQ} \
-               --query="${tmpflat}" \
-               --data=${ProdQuadsFile} \
-	       --data=${tmpmodule}  \
-               --results=NT                >> ${ProdFlatNT}
-	  ${JENA_ARQ} \
-               --query="${tmpflat}" \
-               --data=${DevQuadsFile}  \
-	       --data=${tmpmodule}  \
-               --results=NT 		   >> ${DevFlatNT}
-
-	  ${JENA_ARQ} \
-               --query="${tmppx}" \
-	       --data=${DevQuadsFile} \
-	       --results=CSV |\
-                   tail +2 |\
-                   tr --delete "\015"     > ${prefixes}
-
-	  cat ${prefixes} > "${CSVPrefixes}"
-	  cat ${prefixes} > "${SPARQLPrefixes}"
-	  cat ${tmpbasic} > ${TTLPrefixes} 
-	  sed 's/^/@/;s/$/ ./' ${prefixes} >> ${TTLPrefixes}
-	  
-
-	  cat > "${ProdTMPTTL}" <<EOF
-<${tag_root_url}/Prod.fibo-quickstart> a owl:Ontology .
-EOF
-
-	  cat > "${DevTMPTTL}" <<EOF
-<${tag_root_url}/Dev.fibo-quickstart> a owl:Ontology .
-EOF
-
-	  
-	  cat ${TTLPrefixes} ${ProdFlatNT} > "${ProdTMPTTL}"
-
-	  cat ${TTLPrefixes} ${DevFlatNT} > "${DevTMPTTL}"
-
-          
-
-	  
-	  ${JENA_ARQ} --data="${ProdTMPTTL}" --query="${tmpecho}" --results=TTL > "${ProdFlatTTL}"
-	  ${JENA_ARQ} --data="${DevTMPTTL}" --query="${tmpecho}" --results=TTL > "${DevFlatTTL}"
-	  
-
-	  zip ${ProdQuadsFile}.zip ${ProdQuadsFile}
-	  zip ${DevQuadsFile}.zip ${DevQuadsFile}
-
-	  zip ${ProdFlatNT}.zip ${ProdFlatNT}
-	  zip ${DevFlatNT}.zip ${DevFlatNT}
-
-
-	  
   )
 
   log "finished buildquads"
