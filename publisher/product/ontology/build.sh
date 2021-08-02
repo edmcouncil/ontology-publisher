@@ -43,14 +43,14 @@ function publishProductOntology() {
   ontology_product_tag_root="${tag_root:?}"
 
   
-  # ontologyCopyRdfToTarget || return $?
-  # ontologySearchAndReplaceStuff || return $?
-  # ontologyBuildCatalogs  || return $?
-  # ontologyConvertMarkdownToHtml || return $?
-  # ontologyBuildIndex  || return $?
-  # ontologyCreateAboutFiles || return $?
-  # ontologyConvertRdfToAllFormats || return $?
-  # ontologyCreateTheAllTtlFile || return $?
+  ontologyCopyRdfToTarget || return $?
+  ontologySearchAndReplaceStuff || return $?
+  ontologyBuildCatalogs  || return $?
+  ontologyConvertMarkdownToHtml || return $?
+  ontologyBuildIndex  || return $?
+  ontologyCreateAboutFiles || return $?
+  ontologyConvertRdfToAllFormats || return $?
+  ontologyCreateTheAllTtlFile || return $?
 
   createQuickVersions || return $?
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
