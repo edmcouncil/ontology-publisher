@@ -42,25 +42,18 @@ function publishProductOntology() {
 
   ontology_product_tag_root="${tag_root:?}"
 
+  
   ontologyCopyRdfToTarget || return $?
   ontologySearchAndReplaceStuff || return $?
   ontologyBuildCatalogs  || return $?
   ontologyConvertMarkdownToHtml || return $?
   ontologyBuildIndex  || return $?
   ontologyCreateAboutFiles || return $?
-#  if ((speedy)) ; then
-#    log "speedy=true -> Not doing some conversions because they are slow"
-#  else
-    ontologyConvertRdfToAllFormats || return $?
-#  fi
+  ontologyConvertRdfToAllFormats || return $?
   ontologyCreateTheAllTtlFile || return $?
-  #
-  # JG>Who's using "ontology-zips.log"?
-  #
+
+  createQuickVersions || return $?
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
-
-
-
 
   if ((speedy)) ; then
     log "speedy=true -> Not doing quads because they are slow"
@@ -86,9 +79,7 @@ function getHygieneTestFiles() {
   find "${source_family_root}/etc" -name 'testHygiene*.sparql'
 }
 
-#
-# JG>Dean, I just copied the code from the old hygiene test into this function...
-#
+
 function runHygieneTests() {
 
   local banner
@@ -172,7 +163,6 @@ function ontologyCopyRdfToTarget() {
   require tag_root || return $?
 
   local module
-#  local upperModule
 
   logStep "ontologyCopyRdfToTarget"
 
@@ -201,53 +191,14 @@ function ontologyCopyRdfToTarget() {
     )
   )
 
-  #
-  # Rename the lower case module directories as we have them in the fibo git repo to
-  # upper case directory names as we serve them on spec.edmcouncil.org
-  #
-#  log "Rename all lower case module directories to upper case and remove unpublished directories:"
-#  (
-#    cd "${tag_root}" || return $?
-#    while read -r module ; do
-#      [ "${module}" == "./etc" ] && continue
-##     [ "${module}" == "./ext" ] && continue
-#      upperModule="${module^^}"
-#      [ "${module}" == "${upperModule}" ] && continue
-#      #
-#      # Mv in two steps to avoid the error
-#      # "cannot move X to a subdirectory of itself"
-#      #
-#      if ! mv -f "${module}" "${module}_upper" ; then
-#        error "Cannot rename ${module} to ${module}_upper"
-#        return 1
-#      fi
-#      if ! mv -f "${module}_upper" "${upperModule}" ; then
-#        error "Cannot rename ${module}_upper to ${upperModule}"
-#        return 1
-#      fi
-#    done < <(find . -maxdepth 1 -mindepth 1 -type d)
-#    export modules=""
-#    export module_directories=""
-#    while read -r module ; do
-#      [ "${module}" == "./etc" ] && continue
-##     [ "${module}" == "./ext" ] && continue
-#      export modules="${modules} ${module/.\//}"
-#      export module_directories="${module_directories} $(readlink -f "${module}")"
-#    done < <(find . -maxdepth 1 -mindepth 1 -type d)
-#    logVar modules
-#  )
-  #
   # Clean up a few things that are too embarrassing to publish
   #
-  #rm -vrf ${tag_root}/etc >/dev/null 2>&1
   rm -vrf ${tag_root}/etc/cm >/dev/null 2>&1
   rm -vrf ${tag_root}/etc/data >/dev/null 2>&1
   rm -vrf ${tag_root}/etc/image >/dev/null 2>&1
-#  rm -vrf ${tag_root}/etc/imports >/dev/null 2>&1
   rm -vrf ${tag_root}/etc/infra >/dev/null 2>&1
   rm -vrf ${tag_root}/etc/odm >/dev/null 2>&1
   rm -vrf ${tag_root}/etc/operational >/dev/null 2>&1
-#  rm -vrf ${tag_root}/etc/process >/dev/null 2>&1
   rm -vrf ${tag_root}/etc/source >/dev/null 2>&1
   rm -vrf ${tag_root}/etc/spec >/dev/null 2>&1
   rm -vrf ${tag_root}/etc/testing >/dev/null 2>&1
@@ -255,7 +206,6 @@ function ontologyCopyRdfToTarget() {
   rm -vrf ${tag_root}/**/archive >/dev/null 2>&1
   rm -vrf ${tag_root}/**/Bak >/dev/null 2>&1
 
-  #${FIND} ${tag_root}
 
   return 0
 }
@@ -461,13 +411,6 @@ function ontologyBuildIndex () {
 	return $?
 }
 
-#
-# Now use the rdf-toolkit serializer to create copies of all .rdf files in all the supported RDF formats
-#
-# Using the Sesame serializer, here's the documentation:
-#
-# https://github.com/edmcouncil/rdf-toolkit/blob/master/docs/SesameRdfFormatter.md
-#
 function ontologyConvertRdfToAllFormats() {
 
   require tag_root || return $?
@@ -534,9 +477,7 @@ function ontologyZipFiles () {
     # Make sure that everything is world readable before we zip it
     #
     chmod -R g+r,o+r .
-#    zip -r ${zipttlDevFile} "${family_product_branch_tag}" -x \*.rdf \*.zip  \*.jsonld \*AboutFIBOProd.ttl etc
-#    zip -r ${ziprdfDevFile} "${family_product_branch_tag}" -x \*.ttl \*.zip \*.jsonld \*AboutFIBOProd.rdf etc
-#    zip -r ${zipjsonldDevFile} "${family_product_branch_tag}" -x \*.ttl \*.zip \*.rdf \*AboutFIBOProd.jsonld etc
+
 
     ${FIND}  "${family_product_branch_tag}" -name '*.ttl' -print | ${GREP} -v etc |  ${GREP} -v "LoadFIBOProd.ttl" | grep -v About |  xargs zip ${zipttlDevFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipttlDevFile}
@@ -572,11 +513,11 @@ function buildquads () {
   local ProdQuadsFile="${tag_root}/prod.fibo.nq"
   local DevQuadsFile="${tag_root}/dev.fibo.nq"
 
-  local ProdFlatNT="${tag_root}/prod.fibo-quickstart.nt"
-  local DevFlatNT="${tag_root}/dev.fibo-quickstart.nt"
+  local ProdFlatNT="${tag_root}/old_prod.fibo-quickstart.nt"
+  local DevFlatNT="${tag_root}/old_dev.fibo-quickstart.nt"
 
-  local ProdFlatTTL="${tag_root}/prod.fibo-quickstart.ttl"
-  local DevFlatTTL="${tag_root}/dev.fibo-quickstart.ttl"
+  local ProdFlatTTL="${tag_root}/old_prod.fibo-quickstart.ttl"
+  local DevFlatTTL="${tag_root}/old_dev.fibo-quickstart.ttl"
 
   local ProdTMPTTL="$(mktemp ${TMPDIR}/prod.temp.XXXXXX.ttl)"
   local DevTMPTTL="$(mktemp ${TMPDIR}/dev.temp.XXXXXX.ttl)"
@@ -673,76 +614,59 @@ __HERE__
 	  echo "starting prod"
 	  ${GREP} -rl 'fibo-fnd-utl-av:hasMaturityLevel fibo-fnd-utl-av:Release' | \
 	      while read file ; do quadify $file ; done > ${ProdQuadsFile}
-set -x
+     set -x
 	  ${FIND} ${INPUT} -name "Metadata*.rdf" -exec \
                ${JENA_RIOT} \
                  --syntax=RDF/XML {} \; \
 		 > ${tmpmodule}
 
-	  cat $lcccr > ${ProdFlatNT}
-	  cat $lcccc >> ${ProdFlatNT}
-
-
-	  cat $lcccr > ${DevFlatNT}
-	  cat $lcccc >> ${DevFlatNT}
-
-
-	  
-	  ${JENA_ARQ} \
-               --query="${tmpflat}" \
-               --data=${ProdQuadsFile} \
-	       --data=${tmpmodule}  \
-               --results=NT                >> ${ProdFlatNT}
-	  ${JENA_ARQ} \
-               --query="${tmpflat}" \
-               --data=${DevQuadsFile}  \
-	       --data=${tmpmodule}  \
-               --results=NT 		   >> ${DevFlatNT}
-
-	  ${JENA_ARQ} \
-               --query="${tmppx}" \
-	       --data=${DevQuadsFile} \
-	       --results=CSV |\
-                   tail +2 |\
-                   tr --delete "\015"     > ${prefixes}
-
-	  cat ${prefixes} > "${CSVPrefixes}"
-	  cat ${prefixes} > "${SPARQLPrefixes}"
-	  cat ${tmpbasic} > ${TTLPrefixes} 
-	  sed 's/^/@/;s/$/ ./' ${prefixes} >> ${TTLPrefixes}
-	  
-
-	  cat > "${ProdTMPTTL}" <<EOF
-<${tag_root_url}/Prod.fibo-quickstart> a owl:Ontology .
-EOF
-
-	  cat > "${DevTMPTTL}" <<EOF
-<${tag_root_url}/Dev.fibo-quickstart> a owl:Ontology .
-EOF
-
-	  
-	  cat ${TTLPrefixes} ${ProdFlatNT} > "${ProdTMPTTL}"
-
-	  cat ${TTLPrefixes} ${DevFlatNT} > "${DevTMPTTL}"
-
-          
-
-	  
-	  ${JENA_ARQ} --data="${ProdTMPTTL}" --query="${tmpecho}" --results=TTL > "${ProdFlatTTL}"
-	  ${JENA_ARQ} --data="${DevTMPTTL}" --query="${tmpecho}" --results=TTL > "${DevFlatTTL}"
-	  
-
-	  zip ${ProdQuadsFile}.zip ${ProdQuadsFile}
-	  zip ${DevQuadsFile}.zip ${DevQuadsFile}
-
-	  zip ${ProdFlatNT}.zip ${ProdFlatNT}
-	  zip ${DevFlatNT}.zip ${DevFlatNT}
-
-
-	  
   )
 
   log "finished buildquads"
 
   return 0
+  }
+  
+  function createQuickVersions() {
+
+  setProduct ontology || return $?
+
+  log "Merging all external ontologies into one RDF file: $(logFileName ${TMPDIR}/external.ttl)"
+  "${JENA_ARQ}" $(find "${SCRIPT_DIR}/lib/ontologies/www.omg.org/spec/" -name "*.rdf" | sed "s/^/--data=/") \
+    --query=/publisher/lib/noimport_noontology.sparql \
+    --results=TTL > "${TMPDIR}/external.ttl"
+
+
+  #
+  # Get ontologies for Dev
+  #
+  log "Merging all dev ontologies into one RDF file: $(logFileName ${tag_root}/dev.fibo-quickstart.ttl)"
+  "${JENA_ARQ}" $(find "${source_family_root}" -name "*.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
+    --query=/publisher/lib/noimport_noontology.sparql \
+    --results=TTL > ${TMPDIR}/pre_dev.fibo-quickstart.ttl
+
+  ${JENA_ARQ} \
+    --data ${TMPDIR}/external.ttl \
+    --data ${TMPDIR}/pre_dev.fibo-quickstart.ttl \
+    --query=/publisher/lib/echo.sparql \
+    --results=TTL > ${tag_root}/dev.fibo-quickstart.ttl
+
+
+  #
+  # Get ontologies for Prod
+  #
+  log "Merging all prod ontologies into one RDF file: : $(logFileName ${tag_root}/prod.fibo-quickstart.ttl)"
+  "${JENA_ARQ}" \
+    $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
+    --query=/publisher/lib/noimport_noontology.sparql \
+    --results=TTL > ${tag_root}/prod.fibo-quickstart.ttl
+	
+  ${JENA_ARQ} --data=${tag_root}/dev.fibo-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/dev.fibo-quickstart.nt  
+  ${JENA_ARQ} --data=${tag_root}/prod.fibo-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/prod.fibo-quickstart.nt
+  
+  zip ${tag_root}/dev.fibo-quickstart.ttl.zip ${tag_root}/dev.fibo-quickstart.ttl
+  zip ${tag_root}/prod.fibo-quickstart.ttl.zip ${tag_root}/prod.fibo-quickstart.ttl
+  zip ${tag_root}/dev.fibo-quickstart.nt.zip ${tag_root}/dev.fibo-quickstart.nt
+  zip ${tag_root}/prod.fibo-quickstart.nt.zip ${tag_root}/prod.fibo-quickstart.nt
+
 }
