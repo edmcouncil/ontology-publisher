@@ -497,7 +497,7 @@ function ontologyZipFiles () {
     ${GREP} -r 'utl-av[:;.]Release' "${family_product_branch_tag}" | ${GREP} -F ".rdf" |   ${SED} 's/:.*$//' | xargs zip -r ${ziprdfProdFile}
     ${FIND}  "${family_product_branch_tag}" -name '*Load*.rdf' -print | ${GREP} -v "LoadFIBODev.rdf" | xargs zip ${ziprdfProdFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${ziprdfProdFile}
-    ${GREP} -r 'utl-av[:;.]Release' "${family_product_branch_tag}" | ${GREP} -F ".jsonld" |   ${SED} 's/:.*$//' | xargs zip -r ${zipjsonldProdFile}
+    ${GREP} -r 'https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/Release' "${family_product_branch_tag}" | ${GREP} -F ".jsonld" |   ${SED} 's/:.*$//' | xargs zip -r ${zipjsonldProdFile}
     ${FIND}  "${family_product_branch_tag}" -name '*Load*.jsonld' -print | ${GREP} -v "LoadFIBODev.jsonld" | xargs zip ${zipjsonldProdFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipjsonldProdFile}
 
