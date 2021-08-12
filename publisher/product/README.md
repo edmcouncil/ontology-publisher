@@ -12,4 +12,3 @@ The `build.sh` script is called by the `../publish.sh` script.
 - [index](./index/README.md)
 - [ontology](./ontology/README.md)
 - [vocabulary](./vocabulary/README.md)
-- [widoco](./widoco/README.md)
