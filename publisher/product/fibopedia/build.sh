@@ -44,16 +44,6 @@ function publishProductFIBOpedia () {
   java \
     -cp /usr/share/java/saxon/saxon9he.jar \
     net.sf.saxon.Transform \
-      -o:${fibopedia_product_tag_root}/FIBOpedia.html \
-      -xsl:${fibopedia_script_dir}/format-modules.xsl \
-      ${fibopedia_product_tag_root}/modules-clean.rdf \
-      GIT_BRANCH=${GIT_BRANCH} GIT_TAG_NAME=${GIT_TAG_NAME}
-
-  logItem "Generating" "$(logFileName "${fibopedia_product_tag_root}/FIBOpedia.csv")"
-
-  java \
-    -cp /usr/share/java/saxon/saxon9he.jar \
-    net.sf.saxon.Transform \
       -o:${fibopedia_product_tag_root}/FIBOpedia.csv \
       -xsl:${fibopedia_script_dir}/csv-modules.xsl \
       ${fibopedia_product_tag_root}/modules-clean.rdf

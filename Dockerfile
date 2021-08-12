@@ -289,67 +289,6 @@ RUN \
   rm /var/tmp/SaxonHE${SAXON_VERSION}.zip
     
 
-##
-## Installing Widoco
-##
-#RUN \
-#  widoco_version="1.4.9" ; \
-#  edmc_widoco_build_number="22" ; \
-#  widoco_root_url="https://jenkins.edmcouncil.org/view/widoco/job/widoco-build" ; \
-#  echo ================================= install widoco ${widoco_version} build ${edmc_widoco_build_number} >&2 && \
-#  #
-#  # Creating widoco and its config directory and storing an empty config file in there which suppresses
-#  # an annoying log message at each invocation of widoco
-#  #
-#  mkdir -p /usr/share/java/widoco/config || true && \
-#  touch /usr/share/java/widoco/config/config.properties && \
-#  curl \
-#    --fail \
-#    --insecure \
-#    --location \
-#    --silent \
-#    --show-error \
-#    --output /usr/share/java/widoco/widoco-launcher.jar \
-#    --url "${widoco_root_url}/${edmc_widoco_build_number}/es.oeg\$widoco/artifact/es.oeg/widoco/${widoco_version}/widoco-${widoco_version}-launcher.jar" && \
-#  test -f /usr/share/java/widoco/widoco-launcher.jar
-
-#
-# Installing log4j (needed by widoco)
-#
-#RUN \
-#  log4j_version="2.12.1" ; \
-#  log4j_mirror="http://apache.javapipe.com/logging/log4j" ; \
-#  log4j_targz_url="${log4j_mirror}/${log4j_version}/apache-log4j-${log4j_version}-bin.tar.gz" ; \
-#  echo ================================= install log4j ${log4j_version} >&2 && \
-#  mkdir -p /usr/share/java/log4j || true && \
-#  curl \
-#    --fail \
-#    --location \
-#    --silent \
-#    --show-error \
-#    --output /usr/share/java/log4j/apache-log4j-bin.tar.gz \
-#    --url "${log4j_targz_url}" && \
-#  test -f /usr/share/java/log4j/apache-log4j-bin.tar.gz && \
-#  ( \
-#    cd /usr/share/java/log4j && \
-#    ls -1 && \
-#    tar \
-#      --strip-components=1 \
-#      --wildcards \
-#      --exclude='*-javadoc.jar' \
-#      --exclude='*-tests.jar' \
-#      --exclude='*-sources.jar' \
-#      -xvzf \
-#      apache-log4j-bin.tar.gz \
-#      '*/log4j-api*.jar' \
-#      '*/log4j-1.2-api*.jar' \
-#      '*/log4j-core-*.jar' && \
-#    rm apache-log4j-bin.tar.gz && \
-#    mv -v log4j-api-*.jar log4j-api.jar && \
-#    mv -v log4j-core-*.jar log4j-core.jar && \
-#    mv -v log4j-1.2-api-*.jar log4j-1.2-api.jar \
-#  )
-
 COPY etc /etc
 COPY root /root
 COPY usr /usr

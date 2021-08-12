@@ -739,7 +739,7 @@ function initWorkspaceVars() {
   export tag_root=""
   export product_branch_tag=""
   #
-  # Ontology root is required for other products like widoco
+  # Ontology root is required for other products
   #
   export ontology_product_tag_root=""
   #
