@@ -1,6 +1,6 @@
-# The "datadictionary" product
+# The "glossary" product
 
-TODO: technical documentation of the datadictionary product
+TODO: technical documentation of the glossary product
 
 ## See Also
 

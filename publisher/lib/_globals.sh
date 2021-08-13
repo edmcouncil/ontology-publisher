@@ -11,7 +11,7 @@ false && source _functions.sh
 #
 # ontology has to come before vocabulary because vocabulary depends on it.
 #
-products="ontology glossary fibopedia reference"
+products="ontology datadictionary vocabulary"
 
 modules=""
 module_directories=""
