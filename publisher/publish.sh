@@ -304,7 +304,7 @@ function main() {
         product="vocabulary"
         publishProductVocabulary || return $?
         ;;
-      glos*)
+      datadict*)
         product="datadictionary"
         publishProductDataDictionary || return $?
         ;;
