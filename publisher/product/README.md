@@ -7,7 +7,6 @@ The `build.sh` script is called by the `../publish.sh` script.
 
 - [reference](./reference/README.md)
 - [fibopedia](./fibopedia/README.md)
-- [glossary](./glossary/README.md)
 - [index](./index/README.md)
 - [ontology](./ontology/README.md)
 - [vocabulary](./vocabulary/README.md)
