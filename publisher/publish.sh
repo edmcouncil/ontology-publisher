@@ -132,31 +132,6 @@ function zipWholeTagDir() {
   return 0
 }
 
-#
-# Copy the static files of the site
-#
-function copySiteFiles() {
-
-  require spec_root || return $?
-
-  (
-      #    cd "/publisher/static-site" || return $?
-      cd "/input/${ONTPUB_FAMILY}/etc/site" || return $?
-
-  )
-
-  if [[ -f ${INPUT}/${ONTPUB_FAMILY}/LICENSE ]] ; then
-    ${CP} ${INPUT}/${ONTPUB_FAMILY}/LICENSE "${spec_root}"
-  else
-    warning "Could not find license: $(logFileName "${INPUT}/${ONTPUB_FAMILY}/LICENSE")"
-  fi
-
-  (
-    cd "${spec_root}" && chmod -R g+r,o+r .
-  )
-
-  return 0
-}
 
 function zipOntologyFiles () {
 
@@ -325,7 +300,6 @@ function main() {
         logRule "Final publish stage"
         cleanupBeforePublishing || return $?
         zipWholeTagDir || return $?
-        copySiteFiles || return $?
         ;;
       --*)
         continue

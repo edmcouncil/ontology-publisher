@@ -1,6 +1,6 @@
-# The "glossary" product
+# The "data dictionary" product
 
-TODO: technical documentation of the glossary product
+TODO: technical documentation of the data dictionary product
 
 ## See Also
 
