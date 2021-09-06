@@ -3,7 +3,7 @@
 # Build, Test and Publish all products of the FIBO ontology family.
 #
 # This script needs to be run inside the Docker container that is based on the ontology-publisher image.
-#
+#datadictionary
 # TODO: Make this script fibo independent, should support any "ontology family"
 #
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)" || exit 1
@@ -32,23 +32,17 @@ if [ -f ${SCRIPT_DIR}/product/index/build.sh ] ; then
 else
   source product/index/build.sh # This line is only there to make the IntelliJ Bash plugin see product/index/build.sh
 fi
-if [ -f ${SCRIPT_DIR}/product/glossary/build.sh ] ; then
-  # shellcheck source=product/glossary/build.sh
-  source ${SCRIPT_DIR}/product/glossary/build.sh
+if [ -f ${SCRIPT_DIR}/product/datadictionary/build.sh ] ; then
+  # shellcheck source=product/datadictionary/build.sh
+  source ${SCRIPT_DIR}/product/datadictionary/build.sh
 else
-  source product/glossary/build.sh # This line is only there to make the IntelliJ Bash plugin see product/glossary/build.sh
+  source product/datadictionary/build.sh # This line is only there to make the IntelliJ Bash plugin see product/datadictionary/build.sh
 fi
 if [ -f ${SCRIPT_DIR}/product/vocabulary/build.sh ] ; then
   # shellcheck source=product/vocabulary/build.sh
   source ${SCRIPT_DIR}/product/vocabulary/build.sh
 else
   source product/vocabulary/build.sh # This line is only there to make the IntelliJ Bash plugin see product/vocabulary/build.sh
-fi
-if [ -f ${SCRIPT_DIR}/product/datadictionary/build.sh ] ; then
-  # shellcheck source=product/datadictionary/build.sh
-  source ${SCRIPT_DIR}/product/datadictionary/build.sh
-else
-  source product/datadictionary/build.sh # This line is only there to make the IntelliJ Bash plugin see product/datadictionary/build.sh
 fi
 if [ -f ${SCRIPT_DIR}/product/reference/build.sh ] ; then
   # shellcheck source=product/reference/build.sh
@@ -138,54 +132,6 @@ function zipWholeTagDir() {
   return 0
 }
 
-#
-# Copy the static files of the site
-#
-function copySiteFiles() {
-
-  require spec_root || return $?
-
-  (
-      #    cd "/publisher/static-site" || return $?
-      cd "/input/${ONTPUB_FAMILY}/etc/site" || return $?
-
-    #Replace GIT BRANCH and TAG in the glossary index html
-    #
-    # DA>JG, I commented this out since this doesn't make sense it seems.
-    #    There is no string "GIT_BRANCH" in index.html and even if there
-    #    were I think it should always point to master/latest anyway (which it
-    #    already does)
-    #
-    # JG>DA yes I understand but we better rethink this whole model, most files
-    #    should reside in one of the versioned product directories, not in any
-    #    of the /static directories. For the overall site pages, that span all
-    #    versions we should have a special environment variable in the main
-    #    Jenkinsfile (in the fibo repo) that holds the BRANCH/TAG value of the
-    #    version of fibo-infra that should be used as the source of those
-    #    files.
-    #
-    #log "Replacing GIT_BRANCH  $GIT_BRANCH"
-    #${SED} -i "s/GIT_BRANCH/$GIT_BRANCH/g" "static/glossary/index.html"
-    #
-    #log "Replacing GIT_TAG_NAME  $GIT_TAG_NAME"
-    #${SED} -i "s/GIT_TAG_NAME/$GIT_TAG_NAME/g" "static/glossary/index.html"
-
-    # PG, do not override "${spec_root}/"
-    #${CP} -r * "${spec_root}/"
-  )
-
-  if [[ -f ${INPUT}/${ONTPUB_FAMILY}/LICENSE ]] ; then
-    ${CP} ${INPUT}/${ONTPUB_FAMILY}/LICENSE "${spec_root}"
-  else
-    warning "Could not find license: $(logFileName "${INPUT}/${ONTPUB_FAMILY}/LICENSE")"
-  fi
-
-  (
-    cd "${spec_root}" && chmod -R g+r,o+r .
-  )
-
-  return 0
-}
 
 function zipOntologyFiles () {
 
@@ -333,11 +279,7 @@ function main() {
         product="vocabulary"
         publishProductVocabulary || return $?
         ;;
-      glos*)
-        product="glossary"
-        publishProductGlossary || return $?
-        ;;
-      data*)
+      datadict*)
         product="datadictionary"
         publishProductDataDictionary || return $?
         ;;
@@ -358,7 +300,6 @@ function main() {
         logRule "Final publish stage"
         cleanupBeforePublishing || return $?
         zipWholeTagDir || return $?
-        copySiteFiles || return $?
         ;;
       --*)
         continue

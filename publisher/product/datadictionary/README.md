@@ -1,6 +1,6 @@
-# The "datadictionary" product
+# The "data dictionary" product
 
-TODO: technical documentation of the datadictionary product
+TODO: technical documentation of the data dictionary product
 
 ## See Also
 
