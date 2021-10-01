@@ -184,14 +184,14 @@ function zipThemAll () {
   #
   # gzip --best --stdout "${tag_root}/fibo-vP.ttl" > "${tag_root}/fibo-vP.ttl.gz"
   #
-  #(cd "${tag_root}" ; zip  fibo-vP.ttl.zip fibo-vP.ttl)
+  (cd "${tag_root}" ; zip  fibo-vP.ttl.zip fibo-vP.ttl)
   #
   # gzip --best --stdout "${tag_root}/fibo-vP.rdf" > "${tag_root}/fibo-vP.rdf.gz"
   #
-  #(cd "${tag_root}" ; zip  fibo-vP.rdf.zip fibo-vP.rdf)
+  (cd "${tag_root}" ; zip  fibo-vP.rdf.zip fibo-vP.rdf)
   #
   # gzip --best --stdout "${tag_root}/fibo-vP.jsonld" > "${tag_root}/fibo-vP.jsonld.gz"
   #
-  #(cd "${tag_root}" ; zip  fibo-vP.jsonld.zip fibo-vP.jsonld)
+  (cd "${tag_root}" ; zip  fibo-vP.jsonld.zip fibo-vP.jsonld)
 }
 
