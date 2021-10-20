@@ -665,7 +665,7 @@ __HERE__
     --data ${TMPDIR}/external.ttl \
     --data ${TMPDIR}/pre_prod.fibo-quickstart.ttl \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${tag_root}/dev.fibo-quickstart.ttl
+    --results=TTL > ${tag_root}/prod.fibo-quickstart.ttl
 	
   ${JENA_ARQ} --data=${tag_root}/dev.fibo-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/dev.fibo-quickstart.nt  
   ${JENA_ARQ} --data=${tag_root}/prod.fibo-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/prod.fibo-quickstart.nt
