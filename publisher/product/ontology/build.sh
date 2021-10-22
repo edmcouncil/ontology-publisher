@@ -636,6 +636,11 @@ __HERE__
     --query=/publisher/lib/noimport_noontology.sparql \
     --results=TTL > "${TMPDIR}/external.ttl"
 
+  log "Getting metadata"
+  "${JENA_ARQ}" $(find "${source_family_root}" -name "MetadataFIBO.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
+    --query=/publisher/lib/metadata.sparql \
+    --results=TTL > "${TMPDIR}/metadata.ttl"
+
 
   #
   # Get ontologies for Dev
@@ -648,6 +653,7 @@ __HERE__
   ${JENA_ARQ} \
     --data ${TMPDIR}/external.ttl \
     --data ${TMPDIR}/pre_dev.fibo-quickstart.ttl \
+    --data ${TMPDIR}/metadata.ttl \
     --query=/publisher/lib/echo.sparql \
     --results=TTL > ${tag_root}/dev.fibo-quickstart.ttl
 
@@ -664,6 +670,7 @@ __HERE__
   ${JENA_ARQ} \
     --data ${TMPDIR}/external.ttl \
     --data ${TMPDIR}/pre_prod.fibo-quickstart.ttl \
+    --data ${TMPDIR}/metadata.ttl \
     --query=/publisher/lib/echo.sparql \
     --results=TTL > ${tag_root}/prod.fibo-quickstart.ttl
 	
