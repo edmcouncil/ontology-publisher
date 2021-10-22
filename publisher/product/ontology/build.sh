@@ -659,7 +659,7 @@ __HERE__
   "${JENA_ARQ}" \
     $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
     --query=/publisher/lib/noimport_noontology.sparql \
-    --results=TTL > ${tag_root}/pre_prod.fibo-quickstart.ttl
+    --results=TTL > ${TMPDIR}/pre_prod.fibo-quickstart.ttl
 
   ${JENA_ARQ} \
     --data ${TMPDIR}/external.ttl \
