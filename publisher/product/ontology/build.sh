@@ -478,6 +478,14 @@ function ontologyZipFiles () {
     #
     chmod -R g+r,o+r .
 
+    #
+    # [edmcouncil/ontology-publisher#25](https://github.com/edmcouncil/ontology-publisher/issues/25)
+    # [INFRA-498](https://jira.edmcouncil.org/browse/INFRA-498)
+    #
+    # formatting the '@prefix ...' lines
+    #
+    find . -type f -name \*\.ttl -exec /bin/bash -c 'perl -pi -e "s/^\s*(\@prefix)\s+([^\s]+)\s+(\<[^\>]*\>)\s+(\.)\s*$/\1 \2 \3 \4\n/g" "{}"' \;
+
 
     ${FIND}  "${family_product_branch_tag}" -name '*.ttl' -print | ${GREP} -v etc |  ${GREP} -v "LoadFIBOProd.ttl" | grep -v About |  xargs zip ${zipttlDevFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipttlDevFile}
