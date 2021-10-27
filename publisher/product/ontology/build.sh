@@ -631,8 +631,14 @@ __HERE__
 
   setProduct ontology || return $?
 
-  log "Merging all external ontologies into one RDF file: $(logFileName ${TMPDIR}/external.ttl)"
-  "${JENA_ARQ}" $(find "${SCRIPT_DIR}/lib/imports/" -name "*.rdf" | sed "s/^/--data=/") \
+
+  log "Merging all LCC ontologies into one ontology"
+  "${JENA_ARQ}" $(find "${INPUT}/LCC" -name "*.rdf" | sed "s/^/--data=/") \
+    --query=/publisher/lib/noimport_noontology.sparql \
+    --results=TTL > "${TMPDIR}/lcc.ttl"
+
+  log "Merging all external ontologies into one ontology"
+  "${JENA_ARQ}" $(find "${SCRIPT_DIR}/lib/ontologies" -name "*.rdf" | sed "s/^/--data=/") \
     --query=/publisher/lib/noimport_noontology.sparql \
     --results=TTL > "${TMPDIR}/external.ttl"
 
@@ -640,7 +646,6 @@ __HERE__
   "${JENA_ARQ}" $(find "${source_family_root}" -name "MetadataFIBO.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
     --query=/publisher/lib/metadata.sparql \
     --results=TTL > "${TMPDIR}/metadata.ttl"
-
 
   #
   # Get ontologies for Dev
@@ -651,9 +656,9 @@ __HERE__
     --results=TTL > ${TMPDIR}/pre_dev.fibo-quickstart.ttl
 
   ${JENA_ARQ} \
-    --data ${TMPDIR}/external.ttl \
-    --data ${TMPDIR}/pre_dev.fibo-quickstart.ttl \
+    --data ${TMPDIR}/lcc.ttl \
     --data ${TMPDIR}/metadata.ttl \
+    --data ${TMPDIR}/pre_dev.fibo-quickstart.ttl \
     --query=/publisher/lib/echo.sparql \
     --results=TTL > ${tag_root}/dev.fibo-quickstart.ttl
 
@@ -668,9 +673,9 @@ __HERE__
     --results=TTL > ${TMPDIR}/pre_prod.fibo-quickstart.ttl
 
   ${JENA_ARQ} \
-    --data ${TMPDIR}/external.ttl \
-    --data ${TMPDIR}/pre_prod.fibo-quickstart.ttl \
+    --data ${TMPDIR}/lcc.ttl \
     --data ${TMPDIR}/metadata.ttl \
+    --data ${TMPDIR}/pre_prod.fibo-quickstart.ttl \
     --query=/publisher/lib/echo.sparql \
     --results=TTL > ${tag_root}/prod.fibo-quickstart.ttl
 	

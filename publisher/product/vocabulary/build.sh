@@ -49,9 +49,14 @@ function vocabularyGetOntologies() {
   #
   # Get external ontologies
   #
-  log "Merging all external ontologies into one RDF file: $(logFileName ${TMPDIR}/external.ttl)"
-  "${JENA_ARQ}" $(find "${SCRIPT_DIR}/lib/imports/" -name "*.rdf" | sed "s/^/--data=/") \
-    --query=/publisher/lib/echo.sparql \
+  log "Merging all LCC ontologies into one ontology"
+  "${JENA_ARQ}" $(find "${INPUT}/LCC" -name "*.rdf" | sed "s/^/--data=/") \
+    --query=/publisher/lib/noimport_noontology.sparql \
+    --results=TTL > "${TMPDIR}/lcc.ttl"
+
+  log "Merging all external ontologies into one ontology"
+  "${JENA_ARQ}" $(find "${SCRIPT_DIR}/lib/ontologies" -name "*.rdf" | sed "s/^/--data=/") \
+    --query=/publisher/lib/noimport_noontology.sparql \
     --results=TTL > "${TMPDIR}/external.ttl"
     
   #
@@ -63,10 +68,11 @@ function vocabularyGetOntologies() {
     --results=TTL > "${TMPDIR}/pre_dev.ttl"
   
   ${JENA_ARQ} \
+    --data ${TMPDIR}/lcc.ttl \
     --data ${TMPDIR}/external.ttl \
-	--data ${TMPDIR}/pre_dev.ttl \
-	--query=/publisher/lib/echo.sparql \
-	--results=TTL > ${TMPDIR}/dev.ttl
+    --data ${TMPDIR}/pre_dev.ttl \
+    --query=/publisher/lib/echo.sparql \
+    --results=TTL > ${TMPDIR}/dev.ttl
 
   #
   # Get ontologies for Prod
@@ -78,10 +84,11 @@ function vocabularyGetOntologies() {
     --results=TTL > "${TMPDIR}/pre_prod.ttl"
   
   ${JENA_ARQ} \
+    --data ${TMPDIR}/lcc.ttl \
     --data ${TMPDIR}/external.ttl \
-	--data ${TMPDIR}/pre_prod.ttl \
-	--query=/publisher/lib/echo.sparql \
-	--results=TTL > ${TMPDIR}/prod.ttl
+    --data ${TMPDIR}/pre_prod.ttl \
+    --query=/publisher/lib/echo.sparql \
+    --results=TTL > ${TMPDIR}/prod.ttl
 
   return 0
 }
