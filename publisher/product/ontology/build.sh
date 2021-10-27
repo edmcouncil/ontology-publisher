@@ -588,12 +588,12 @@ __HERE__
   
   ${JENA_ARQ} \
       --query=${tmpflatecho} \
-      --data="${SCRIPT_DIR}"/lib/ontologies/www.omg.org/spec/LCC/Countries/CountryRepresentation.rdf \
+      --data="${INPUT}/LCC/Countries/CountryRepresentation.rdf \
       --results=NT \
       > "$lcccr"
   ${JENA_ARQ} \
       --query=${tmpflatecho} \
-      --data="${SCRIPT_DIR}"/lib/ontologies/www.omg.org/spec/LCC/Languages/LanguageRepresentation.rdf \
+      --data="${INPUT}/LCC/Languages/LanguageRepresentation.rdf \
       --results=NT \
       > "$lcccc"
 
