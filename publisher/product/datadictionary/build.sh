@@ -85,14 +85,7 @@ function publishProductDataDictionaryContent() {
   "${JENA_ARQ}" \
     $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
     --query=/publisher/lib/echo.sparql \
-    --results=RDF > "${TMPDIR}/pre_prod.rdf"
-  
-  ${JENA_ARQ} \
-    --data ${TMPDIR}/lcc.ttl \
-    --data ${TMPDIR}/external.ttl \
-    --data ${TMPDIR}/pre_prod.rdf \
-    --query=/publisher/lib/echo.sparql \
-    --results=RDF > ${TMPDIR}/prod.rdf
+    --results=RDF > "${TMPDIR}/prod.rdf"
   
   if [ ${PIPESTATUS[0]} -ne 0 ] ; then
     error "Could not collect ontologies"

@@ -81,15 +81,8 @@ function vocabularyGetOntologies() {
   "${JENA_ARQ}" \
     $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > "${TMPDIR}/pre_prod.ttl"
+    --results=TTL > "${TMPDIR}/prod.ttl"
   
-  ${JENA_ARQ} \
-    --data ${TMPDIR}/lcc.ttl \
-    --data ${TMPDIR}/external.ttl \
-    --data ${TMPDIR}/pre_prod.ttl \
-    --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${TMPDIR}/prod.ttl
-
   return 0
 }
 

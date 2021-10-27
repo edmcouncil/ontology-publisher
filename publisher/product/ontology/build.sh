@@ -673,7 +673,6 @@ __HERE__
     --results=TTL > ${TMPDIR}/pre_prod.fibo-quickstart.ttl
 
   ${JENA_ARQ} \
-    --data ${TMPDIR}/lcc.ttl \
     --data ${TMPDIR}/metadata.ttl \
     --data ${TMPDIR}/pre_prod.fibo-quickstart.ttl \
     --query=/publisher/lib/echo.sparql \
