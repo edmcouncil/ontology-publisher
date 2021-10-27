@@ -657,7 +657,6 @@ __HERE__
 
   ${JENA_ARQ} \
     --data ${TMPDIR}/lcc.ttl \
-    --data ${TMPDIR}/external.ttl \
     --data ${TMPDIR}/metadata.ttl \
     --data ${TMPDIR}/pre_dev.fibo-quickstart.ttl \
     --query=/publisher/lib/echo.sparql \
@@ -675,7 +674,6 @@ __HERE__
 
   ${JENA_ARQ} \
     --data ${TMPDIR}/lcc.ttl \
-    --data ${TMPDIR}/external.ttl \
     --data ${TMPDIR}/metadata.ttl \
     --data ${TMPDIR}/pre_prod.fibo-quickstart.ttl \
     --query=/publisher/lib/echo.sparql \
