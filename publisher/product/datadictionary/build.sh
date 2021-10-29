@@ -53,10 +53,15 @@ function publishProductDataDictionaryContent() {
   
   # Get external ontologies
   #
-  log "Merging all external ontologies into one RDF file: $(logFileName ${TMPDIR}/external.rdf)"
-  "${JENA_ARQ}" $(find "${SCRIPT_DIR}/lib/imports/" -name "*.rdf" | sed "s/^/--data=/") \
-    --query=/publisher/lib/echo.sparql  \
-    --results=RDF > "${TMPDIR}/external.rdf"
+  log "Merging all LCC ontologies into one ontology"
+  "${JENA_ARQ}" $(find "${INPUT}/LCC" -name "*.rdf" | sed "s/^/--data=/") \
+    --query=/publisher/lib/noimport_noontology.sparql \
+    --results=TTL > "${TMPDIR}/lcc.ttl"
+
+  log "Merging all external ontologies into one ontology"
+  "${JENA_ARQ}" $(find "${SCRIPT_DIR}/lib/ontologies" -name "*.rdf" | sed "s/^/--data=/") \
+    --query=/publisher/lib/noimport_noontology.sparql \
+    --results=TTL > "${TMPDIR}/external.ttl"
     
   #
   # Get ontologies for Dev
@@ -67,7 +72,8 @@ function publishProductDataDictionaryContent() {
     --results=RDF > "${TMPDIR}/pre_dev.rdf"
   
   ${JENA_ARQ} \
-    --data ${TMPDIR}/external.rdf \
+    --data ${TMPDIR}/lcc.ttl \
+    --data ${TMPDIR}/external.ttl \
     --data ${TMPDIR}/pre_dev.rdf \
     --query=/publisher/lib/echo.sparql \
     --results=RDF > ${TMPDIR}/dev.rdf
@@ -80,9 +86,9 @@ function publishProductDataDictionaryContent() {
     $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
     --query=/publisher/lib/echo.sparql \
     --results=RDF > "${TMPDIR}/pre_prod.rdf"
-  
+
   ${JENA_ARQ} \
-    --data ${TMPDIR}/external.rdf \
+    --data ${TMPDIR}/external.ttl \
     --data ${TMPDIR}/pre_prod.rdf \
     --query=/publisher/lib/echo.sparql \
     --results=RDF > ${TMPDIR}/prod.rdf

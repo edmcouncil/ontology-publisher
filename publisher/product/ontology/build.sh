@@ -588,12 +588,12 @@ __HERE__
   
   ${JENA_ARQ} \
       --query=${tmpflatecho} \
-      --data="${SCRIPT_DIR}"/lib/ontologies/www.omg.org/spec/LCC/Countries/CountryRepresentation.rdf \
+      --data="${INPUT}/LCC/Countries/CountryRepresentation.rdf" \
       --results=NT \
       > "$lcccr"
   ${JENA_ARQ} \
       --query=${tmpflatecho} \
-      --data="${SCRIPT_DIR}"/lib/ontologies/www.omg.org/spec/LCC/Languages/LanguageRepresentation.rdf \
+      --data="${INPUT}/LCC/Languages/LanguageRepresentation.rdf" \
       --results=NT \
       > "$lcccc"
 
@@ -631,11 +631,21 @@ __HERE__
 
   setProduct ontology || return $?
 
-  log "Merging all external ontologies into one RDF file: $(logFileName ${TMPDIR}/external.ttl)"
-  "${JENA_ARQ}" $(find "${SCRIPT_DIR}/lib/ontologies/www.omg.org/spec/" -name "*.rdf" | sed "s/^/--data=/") \
+
+  log "Merging all LCC ontologies into one ontology"
+  "${JENA_ARQ}" $(find "${INPUT}/LCC" -name "*.rdf" | sed "s/^/--data=/") \
+    --query=/publisher/lib/noimport_noontology.sparql \
+    --results=TTL > "${TMPDIR}/lcc.ttl"
+
+  log "Merging all external ontologies into one ontology"
+  "${JENA_ARQ}" $(find "${SCRIPT_DIR}/lib/ontologies" -name "*.rdf" | sed "s/^/--data=/") \
     --query=/publisher/lib/noimport_noontology.sparql \
     --results=TTL > "${TMPDIR}/external.ttl"
 
+  log "Getting metadata"
+  "${JENA_ARQ}" $(find "${source_family_root}" -name "MetadataFIBO.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
+    --query=/publisher/lib/metadata.sparql \
+    --results=TTL > "${TMPDIR}/metadata.ttl"
 
   #
   # Get ontologies for Dev
@@ -646,7 +656,8 @@ __HERE__
     --results=TTL > ${TMPDIR}/pre_dev.fibo-quickstart.ttl
 
   ${JENA_ARQ} \
-    --data ${TMPDIR}/external.ttl \
+    --data ${TMPDIR}/lcc.ttl \
+    --data ${TMPDIR}/metadata.ttl \
     --data ${TMPDIR}/pre_dev.fibo-quickstart.ttl \
     --query=/publisher/lib/echo.sparql \
     --results=TTL > ${tag_root}/dev.fibo-quickstart.ttl
@@ -659,6 +670,13 @@ __HERE__
   "${JENA_ARQ}" \
     $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
     --query=/publisher/lib/noimport_noontology.sparql \
+    --results=TTL > ${TMPDIR}/pre_prod.fibo-quickstart.ttl
+
+  ${JENA_ARQ} \
+    --data ${TMPDIR}/lcc.ttl \
+    --data ${TMPDIR}/metadata.ttl \
+    --data ${TMPDIR}/pre_prod.fibo-quickstart.ttl \
+    --query=/publisher/lib/echo.sparql \
     --results=TTL > ${tag_root}/prod.fibo-quickstart.ttl
 	
   ${JENA_ARQ} --data=${tag_root}/dev.fibo-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/dev.fibo-quickstart.nt  
