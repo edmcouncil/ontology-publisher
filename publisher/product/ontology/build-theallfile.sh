@@ -29,6 +29,7 @@ function ontologyCreateTheAllTtlFile() {
 
   if ((verbose)) ; then
     python3 ${SCRIPT_DIR}/lib/trigify.py \
+      --dir="${INPUT}/LCC" \
       --dir=${tag_root} \
       --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/AboutFIBODev/" \
       --top="https://spec.edmcouncil.org/fibo/ontology/MetadataFIBO/" \
@@ -38,6 +39,7 @@ function ontologyCreateTheAllTtlFile() {
      rc=$?
   else
     python3 ${SCRIPT_DIR}/lib/trigify.py \
+      --dir="${INPUT}/LCC" \
       --dir=${tag_root} \
       --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/AboutFIBODev/" \
       --top="https://spec.edmcouncil.org/fibo/ontology/MetadataFIBO/" \
