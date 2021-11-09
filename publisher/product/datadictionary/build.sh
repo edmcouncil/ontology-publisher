@@ -113,14 +113,24 @@ function publishProductDataDictionaryContent() {
   JVM_ARGS="${JVM_ARGS} -Djava.io.tmpdir=\"${TMPDIR}\""
   export JVM_ARGS
   logVar JVM_ARGS
-	
-  ${JENA_ARQ} --data ${TMPDIR}/dev.rdf --query ${SCRIPT_DIR}/product/datadictionary/data_dictionary.sparql --results=CSV > ${TMPDIR}/dev_proto_data_dictionary.csv
-  ${JENA_ARQ} --data ${TMPDIR}/prod.rdf --query ${SCRIPT_DIR}/product/datadictionary/data_dictionary.sparql --results=CSV > ${TMPDIR}/prod_proto_data_dictionary.csv
-        
-  logRule "Extending data dictionaries with generated definitions"
-		
-  ${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker_no_sparql.py --input ${TMPDIR}/dev_proto_data_dictionary.csv --output "${datadictionaryBaseName}-dev.csv"
-  ${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker_no_sparql.py --input ${TMPDIR}/prod_proto_data_dictionary.csv --output "${datadictionaryBaseName}-prod.csv"
+
+  logRule "Running OntoViewer Toolkit to generate CSV files containing data from ontologies for DEV from path ${source_family_root}"
+  ${ONTOVIEWER_TOOLKIT_JAVA} $(find "${SCRIPT_DIR}/lib/imports/" | sed 's/:.*$//;s/^/--data /' | grep -F ".rdf") $(find "${source_family_root}" | sed 's/:.*$//;s/^/--data /' | grep -F ".rdf") \
+    --output "${datadictionaryBaseName}-dev.csv" \
+    --filter-pattern edmcouncil
+
+  logRule "Running OntoViewer Toolkit to generate CSV files containing data from ontologies for PROD from path ${source_family_root}"
+  ${ONTOVIEWER_TOOLKIT_JAVA} $(find "${SCRIPT_DIR}/lib/imports/" | sed 's/:.*$//;s/^/--data /' | grep -F ".rdf") $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data /' | grep -F ".rdf") \
+    --output "${datadictionaryBaseName}-prod.csv" \
+    --filter-pattern edmcouncil
+
+#  ${JENA_ARQ} --data ${TMPDIR}/dev.rdf --query ${SCRIPT_DIR}/product/datadictionary/data_dictionary.sparql --results=CSV > ${TMPDIR}/dev_proto_data_dictionary.csv
+#  ${JENA_ARQ} --data ${TMPDIR}/prod.rdf --query ${SCRIPT_DIR}/product/datadictionary/data_dictionary.sparql --results=CSV > ${TMPDIR}/prod_proto_data_dictionary.csv
+#
+#  logRule "Extending data dictionaries with generated definitions"
+#
+#  ${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker_no_sparql.py --input ${TMPDIR}/dev_proto_data_dictionary.csv --output "${datadictionaryBaseName}-dev.csv"
+#  ${PYTHON3} ${SCRIPT_DIR}/lib/dictionary_maker_no_sparql.py --input ${TMPDIR}/prod_proto_data_dictionary.csv --output "${datadictionaryBaseName}-prod.csv"
   
   logRule "Writing from csv files to xlsx files"
 
