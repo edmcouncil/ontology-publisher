@@ -194,7 +194,7 @@ ENV RDFTOOLKIT_JAR=/publisher/lib/rdf-toolkit.jar
 ENV ONTOVIEWER_TOOLKIT_JAR=/usr/share/java/onto-viewer/onto-viewer-toolkit.jar
 RUN \
   echo "================================= install OntoViewer Toolkit" >&2 && \
-  url='https://jenkins.edmcouncil.org/view/onto-viewer/job/onto-viewer-build-dev/lastSuccessfulBuild/artifact/onto-viewer-toolkit/target/onto-viewer-toolkit.jar' ; \
+  url='https://jenkins.edmcouncil.org/view/onto-viewer/job/onto-viewer-build/lastSuccessfulBuild/artifact/onto-viewer-toolkit/target/onto-viewer-toolkit.jar' ; \
   mkdir -p /usr/share/java/onto-viewer ; \
   echo "Downloading ${url}:" >&2 ; \
   curl --location --silent --show-error --output "${ONTOVIEWER_TOOLKIT_JAR}" --url "${url}"
