@@ -689,6 +689,16 @@ function initRepoBasedTools() {
     return 1
   fi
 
+  # Initializing OntoViewer Toolkit
+  if [ ! -d /usr/share/java/onto-viewer ] ; then
+    error "Could not find OntoViewer"
+    return 1
+  fi
+
+  ONTOVIEWER_TOOLKIT_JAVA="java -Dlogging.level.org.edmcouncil.spec.ontoviewer=INFO -Dlogging.level.org.edmcouncil.spec.ontoviewer.toolkit=DEBUG -Dlogging.level.org.springframework=INFO -jar ${ONTOVIEWER_TOOLKIT_JAR}"
+  export ONTOVIEWER_TOOLKIT_JAVA
+  echo "ONTOVIEWER_TOOLKIT_JAVA = ${ONTOVIEWER_TOOLKIT_JAVA}"
+
   return 0
 }
 

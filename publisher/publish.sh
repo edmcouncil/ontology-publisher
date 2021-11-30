@@ -262,6 +262,8 @@ function main() {
     products="${products} publish"
   fi
 
+  log "Products selected: ${products}"
+
   for product in ${products} ; do
     if [[ "${product}" != "publish" && ! "${product}" =~ ^--* ]] ; then
       logRule "Publish ${ONTPUB_FAMILY}-product \"${product}\""
