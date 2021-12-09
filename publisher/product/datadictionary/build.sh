@@ -53,11 +53,13 @@ function publishProductDataDictionaryContent() {
   debug=false ${ONTOVIEWER_TOOLKIT_JAVA} $(find "${SCRIPT_DIR}/lib/imports/" | sed 's/:.*$//;s/^/--data /' | grep -F ".rdf") $(find "${source_family_root}" | grep -v "/etc/" | sed 's/:.*$//;s/^/--data /' | grep -F ".rdf") \
     --output "${datadictionaryBaseName}-dev.csv" \
     --filter-pattern edmcouncil
+    --ontology-mapping "${source_family_root}/catalog-v001.xml" 
 
   logRule "Running OntoViewer Toolkit to generate CSV files containing data from ontologies for PROD from path ${source_family_root}"
   debug=false ${ONTOVIEWER_TOOLKIT_JAVA} $(find "${SCRIPT_DIR}/lib/imports/" | sed 's/:.*$//;s/^/--data /' | grep -F ".rdf") $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | grep -v "/etc/" | sed 's/:.*$//;s/^/--data /' | grep -F ".rdf") \
     --output "${datadictionaryBaseName}-prod.csv" \
     --filter-pattern edmcouncil
+    --ontology-mapping "${source_family_root}/catalog-v001.xml" 
 
   logRule "Writing from csv files to xlsx files"
 
