@@ -87,6 +87,43 @@ function runHygieneTests() {
   setProduct ontology || return $?
 
   #
+  # Run consistency-check for DEV and PROD ontologies
+  #
+  logRule "consistency-check: run for ..."
+
+  export DEV_SPEC="${DEV_SPEC:-About${ONTPUB_FAMILY^^}Dev.rdf}"
+  if [ -s "${source_family_root}/${DEV_SPEC}" ] ; then
+    rm -f ${TMPDIR}/{console.txt,ret.txt}
+    logItem " DEV:${DEV_SPEC}" "$(getOntologyIRI < "${source_family_root}/${DEV_SPEC}")"
+    if ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${DEV_SPEC}" \
+        --output ${TMPDIR}/ret.txt $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
+        --goal consistency-check &> ${TMPDIR}/console.txt ; then
+      head -n 1 "${TMPDIR}/ret.txt" | grep '^true$' &>/dev/null || echo -e "\t\x1b\x5b\x33\x33\x6dWARN\x1b\x5b\x30\x6d:  consistency-check=$(cat "${TMPDIR}/ret.txt")"
+    else
+      echo -e "\t\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d: running consistency-check - see '${TMPDIR}/console.txt'"
+      return 1
+    fi
+  fi
+
+  export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"
+  if [ -s "${source_family_root}/${PROD_SPEC}" ] ; then
+    rm -f ${TMPDIR}/{console.txt,ret.txt}
+    logItem "PROD:${PROD_SPEC}" "$(getOntologyIRI < "${source_family_root}/${PROD_SPEC}")"
+    if ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${PROD_SPEC}" \
+        --output ${TMPDIR}/ret.txt $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
+        --goal consistency-check &> ${TMPDIR}/console.txt ; then
+      head -n 1 "${TMPDIR}/ret.txt" | grep '^true$' &>/dev/null || { echo -e "\t\x1b\x5b\x33\x33\x6dERROR\x1b\x5b\x30\x6d: consistency-check=$(cat "${TMPDIR}/ret.txt")" ; return 1 ; }
+    else
+      echo -e "\t\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d: running consistency-check - see '${TMPDIR}/console.txt'"
+      return 1
+    fi
+  fi
+
+  rm -f ${TMPDIR}/{console.txt,ret.txt}
+
+  logRule "consistency-check: end"
+
+  #
   # Get ontologies for Dev
   #
   log "Merging all dev ontologies into one RDF file: $(logFileName ${tag_root}/DEV.ttl)"
