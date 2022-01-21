@@ -126,14 +126,14 @@ function runHygieneTests() {
   #
   # Get ontologies for Dev
   #
-  log "Merging all dev ontologies into one RDF file: $(logFileName ${tag_root}/DEV.ttl)"
-  robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${tag_root}/DEV.ttl
+  log "Merging all dev ontologies into one RDF file: $(logFileName ${tag_root}/DEV.owl)"
+  robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${tag_root}/DEV.owl
 
   #
   # Get ontologies for Prod
   #
-  log "Merging all prod ontologies into one RDF file: : $(logFileName ${tag_root}/PROD.ttl)"
-  robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${tag_root}/PROD.ttl
+  log "Merging all prod ontologies into one RDF file: : $(logFileName ${tag_root}/PROD.owl)"
+  robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${tag_root}/PROD.owl
 
   logRule "Will run the following tests:"
 
@@ -150,7 +150,7 @@ function runHygieneTests() {
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
     logItem "Running test" "${banner}"
     ${JENA_ARQ} \
-      --data=${tag_root}/DEV.ttl \
+      --data=${tag_root}/DEV.owl \
       --results=csv \
       --query="${hygieneTestSparqlFile}" | \
       sed 's/^\W*PRODERROR:/WARN:/g' | \
@@ -166,7 +166,7 @@ function runHygieneTests() {
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
     logItem "Running test" "${banner}"
     ${JENA_ARQ} \
-      --data=${tag_root}/PROD.ttl \
+      --data=${tag_root}/PROD.owl \
       --results=csv \
       --query="${hygieneTestSparqlFile}" | \
       sed 's/^\W*PRODERROR:/ERROR:/g' | \
