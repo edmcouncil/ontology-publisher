@@ -47,41 +47,16 @@ function vocabularyGetOntologies() {
   log "Get ontologies for dev and prod"
   
   #
-  # Get external ontologies
-  #
-  log "Merging all LCC ontologies into one ontology"
-  "${JENA_ARQ}" $(find "${INPUT}/LCC" -name "*.rdf" | sed "s/^/--data=/") \
-    --query=/publisher/lib/noimport_noontology.sparql \
-    --results=TTL > "${TMPDIR}/lcc.ttl"
-
-  log "Merging all external ontologies into one ontology"
-  "${JENA_ARQ}" $(find "${SCRIPT_DIR}/lib/ontologies" -name "*.rdf" | sed "s/^/--data=/") \
-    --query=/publisher/lib/noimport_noontology.sparql \
-    --results=TTL > "${TMPDIR}/external.ttl"
-    
-  #
   # Get ontologies for Dev
   #
-  log "Merging all dev ontologies into one RDF file: $(logFileName ${TMPDIR}/dev.ttl)"
-  "${JENA_ARQ}" $(find "${source_family_root}" -name "*.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
-    --query=/publisher/lib/echo.sparql \
-    --results=TTL > "${TMPDIR}/pre_dev.ttl"
-  
-  ${JENA_ARQ} \
-    --data ${TMPDIR}/lcc.ttl \
-    --data ${TMPDIR}/external.ttl \
-    --data ${TMPDIR}/pre_dev.ttl \
-    --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${TMPDIR}/dev.ttl
+  log "Merging all dev ontologies into one RDF file: $(logFileName ${tag_root}/dev.ttl)"
+  robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${tag_root}/dev.ttl
 
   #
   # Get ontologies for Prod
   #
-  log "Merging all prod ontologies into one RDF file: : $(logFileName ${TMPDIR}/prod.ttl)"
-  "${JENA_ARQ}" \
-    $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
-    --query=/publisher/lib/echo.sparql \
-    --results=TTL > "${TMPDIR}/prod.ttl"
+  log "Merging all prod ontologies into one RDF file: : $(logFileName ${tag_root}/dev.ttl)"
+  robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${tag_root}/dev.ttl
   
   return 0
 }
