@@ -286,6 +286,15 @@ RUN \
   pip3 install XlsxWriter rdflib PyLD
 
 #
+# Installing [ROBOT](https://github.com/ontodev/robot)
+#
+ENV ROBOT_VERSION="v1.8.3"
+RUN \
+  wget -m -nH -nd -P /usr/local/bin https://raw.githubusercontent.com/ontodev/robot/${ROBOT_VERSION:-master}/bin/robot && \
+  wget -m -nH -nd -P /usr/local/bin https://github.com/ontodev/robot/releases/${ROBOT_VERSION:+download/}${ROBOT_VERSION:=latest/download}/robot.jar && \
+  chmod +x /usr/local/bin/robot
+
+#
 # Installing Saxon
 #
 ENV SAXON_VERSION="9-9-1-8J"
