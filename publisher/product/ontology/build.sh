@@ -131,14 +131,14 @@ function runHygieneTests() {
   # Get ontologies for Dev
   #
   log "Merging all dev ontologies into one RDF file"
-  ${PYTHON3} ${SCRIPT_DIR}/lib/ontology_collector.py --root "${source_family_root}" --input_ontology "${source_family_root}/${DEV_SPEC}" --ontology-mapping "${source_family_root}/catalog-v001.xml" --output_ontology "${tag_root}/DEV.ttt"
+  ${PYTHON3} ${SCRIPT_DIR}/lib/ontology_collector.py --root "${source_family_root}" --input_ontology "${source_family_root}/${DEV_SPEC}" --ontology-mapping "${source_family_root}/catalog-v001.xml" --output_ontology "${TMPDIR}/DEV.ttl"
 
 
   #
   # Get ontologies for Prod
   #
   log "Merging all prod ontologies into one RDF file"
-  ${PYTHON3} ${SCRIPT_DIR}/lib/ontology_collector.py --root "${source_family_root}" --input_ontology "${source_family_root}/${PROD_SPEC}" --ontology-mapping "${source_family_root}/catalog-v001.xml" --output_ontology "${tag_root}/PROD.ttl"
+  ${PYTHON3} ${SCRIPT_DIR}/lib/ontology_collector.py --root "${source_family_root}" --input_ontology "${source_family_root}/${PROD_SPEC}" --ontology-mapping "${source_family_root}/catalog-v001.xml" --output_ontology "${TMPDIR}/PROD.ttl"
 
   logRule "Will run the following tests:"
 
@@ -155,7 +155,7 @@ function runHygieneTests() {
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
     logItem "Running test" "${banner}"
     ${JENA_ARQ} \
-      --data=${tag_root}/DEV.ttl \
+      --data=${TMPDIR}/DEV.ttl \
       --results=csv \
       --query="${hygieneTestSparqlFile}" | \
       sed 's/^\W*PRODERROR:/WARN:/g' | \
@@ -171,7 +171,7 @@ function runHygieneTests() {
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
     logItem "Running test" "${banner}"
     ${JENA_ARQ} \
-      --data=${tag_root}/PROD.ttl \
+      --data=${TMPDIR}/PROD.ttl \
       --results=csv \
       --query="${hygieneTestSparqlFile}" | \
       sed 's/^\W*PRODERROR:/ERROR:/g' | \
