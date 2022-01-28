@@ -48,15 +48,19 @@ function publishProductDataDictionaryContent() {
   local datadictionaryBaseName="${datadictionary_product_tag_root}/datadictionary"
 
   logRule "Creating data dictionaries"
+
+
+  export DEV_SPEC="${DEV_SPEC:-About${ONTPUB_FAMILY^^}Dev.rdf}"
+  export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"
   
   logRule "Running OntoViewer Toolkit to generate CSV files containing data from ontologies for DEV from path ${source_family_root}"
-  debug=false ${ONTOVIEWER_TOOLKIT_JAVA} $(find "${SCRIPT_DIR}/lib/imports/" | sed 's/:.*$//;s/^/--data /' | grep -F ".rdf") $(find "${source_family_root}" | grep -v "/etc/" | sed 's/:.*$//;s/^/--data /' | grep -F ".rdf") \
+  debug=false ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${DEV_SPEC}"\
     --output "${datadictionaryBaseName}-dev.csv" \
     --filter-pattern edmcouncil \
     --ontology-mapping "${source_family_root}/catalog-v001.xml" 
 
   logRule "Running OntoViewer Toolkit to generate CSV files containing data from ontologies for PROD from path ${source_family_root}"
-  debug=false ${ONTOVIEWER_TOOLKIT_JAVA} $(find "${SCRIPT_DIR}/lib/imports/" | sed 's/:.*$//;s/^/--data /' | grep -F ".rdf") $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | grep -v "/etc/" | sed 's/:.*$//;s/^/--data /' | grep -F ".rdf") \
+  debug=false ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${PROD_SPEC}" \
     --output "${datadictionaryBaseName}-prod.csv" \
     --filter-pattern edmcouncil \
     --ontology-mapping "${source_family_root}/catalog-v001.xml" 

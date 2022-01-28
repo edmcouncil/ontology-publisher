@@ -92,7 +92,11 @@ function runHygieneTests() {
   logRule "consistency-check: run for ..."
 
   export DEV_SPEC="${DEV_SPEC:-About${ONTPUB_FAMILY^^}Dev.rdf}"
-  if [ -s "${source_family_root}/${DEV_SPEC}" ] ; then
+  export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"
+
+  # For now consistency check are turned off.  
+
+  if [ false && [ -s "${source_family_root}/${DEV_SPEC}" ] ] ; then
     rm -f ${TMPDIR}/{console.txt,ret.txt}
     logItem " DEV:${DEV_SPEC}" "$(getOntologyIRI < "${source_family_root}/${DEV_SPEC}")"
     if ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${DEV_SPEC}" \
@@ -105,8 +109,8 @@ function runHygieneTests() {
     fi
   fi
 
-  export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"
-  if [ -s "${source_family_root}/${PROD_SPEC}" ] ; then
+  
+  if [ false && [ -s "${source_family_root}/${PROD_SPEC}" ] ] ; then
     rm -f ${TMPDIR}/{console.txt,ret.txt}
     logItem "PROD:${PROD_SPEC}" "$(getOntologyIRI < "${source_family_root}/${PROD_SPEC}")"
     if ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${PROD_SPEC}" \
@@ -126,14 +130,15 @@ function runHygieneTests() {
   #
   # Get ontologies for Dev
   #
-  log "Merging all dev ontologies into one RDF file: $(logFileName ${tag_root}/DEV.owl)"
-  robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${tag_root}/DEV.owl
+  log "Merging all dev ontologies into one RDF file"
+  ${PYTHON3} ${SCRIPT_DIR}/lib/ontology_collector.py --root "${source_family_root}" --input_ontology "${source_family_root}/${DEV_SPEC}" --ontology-mapping "${source_family_root}/catalog-v001.xml" --output_ontology "${tag_root}/DEV.ttt"
+
 
   #
   # Get ontologies for Prod
   #
-  log "Merging all prod ontologies into one RDF file: : $(logFileName ${tag_root}/PROD.owl)"
-  robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${tag_root}/PROD.owl
+  log "Merging all prod ontologies into one RDF file"
+  ${PYTHON3} ${SCRIPT_DIR}/lib/ontology_collector.py --root "${source_family_root}" --input_ontology "${source_family_root}/${PROD_SPEC}" --ontology-mapping "${source_family_root}/catalog-v001.xml" --output_ontology "${tag_root}/PROD.ttl"
 
   logRule "Will run the following tests:"
 
@@ -150,7 +155,7 @@ function runHygieneTests() {
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
     logItem "Running test" "${banner}"
     ${JENA_ARQ} \
-      --data=${tag_root}/DEV.owl \
+      --data=${tag_root}/DEV.ttl \
       --results=csv \
       --query="${hygieneTestSparqlFile}" | \
       sed 's/^\W*PRODERROR:/WARN:/g' | \
@@ -166,7 +171,7 @@ function runHygieneTests() {
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
     logItem "Running test" "${banner}"
     ${JENA_ARQ} \
-      --data=${tag_root}/PROD.owl \
+      --data=${tag_root}/PROD.ttl \
       --results=csv \
       --query="${hygieneTestSparqlFile}" | \
       sed 's/^\W*PRODERROR:/ERROR:/g' | \
@@ -672,50 +677,36 @@ __HERE__
   setProduct ontology || return $?
 
 
-  log "Merging all LCC ontologies into one ontology"
-  "${JENA_ARQ}" $(find "${INPUT}/LCC" -name "*.rdf" | sed "s/^/--data=/") \
-    --query=/publisher/lib/noimport_noontology.sparql \
-    --results=TTL > "${TMPDIR}/lcc.ttl"
-
-  log "Merging all external ontologies into one ontology"
-  "${JENA_ARQ}" $(find "${SCRIPT_DIR}/lib/ontologies" -name "*.rdf" | sed "s/^/--data=/") \
-    --query=/publisher/lib/noimport_noontology.sparql \
-    --results=TTL > "${TMPDIR}/external.ttl"
-
   log "Getting metadata"
   "${JENA_ARQ}" $(find "${source_family_root}" -name "MetadataFIBO.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
     --query=/publisher/lib/metadata.sparql \
     --results=TTL > "${TMPDIR}/metadata.ttl"
 
+  export DEV_SPEC="${DEV_SPEC:-About${ONTPUB_FAMILY^^}Dev.rdf}"
+  export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"
+  
   #
   # Get ontologies for Dev
   #
-  log "Merging all dev ontologies into one RDF file: $(logFileName ${tag_root}/dev.fibo-quickstart.ttl)"
-  "${JENA_ARQ}" $(find "${source_family_root}" -name "*.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
-    --query=/publisher/lib/noimport_noontology.sparql \
-    --results=TTL > ${TMPDIR}/pre_dev.fibo-quickstart.ttl
-
+  log "Merging all dev ontologies into one RDF file"
+  robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${TMPDIR}/pre_dev.fibo-quickstart.owl
+ 
   ${JENA_ARQ} \
-    --data ${TMPDIR}/lcc.ttl \
     --data ${TMPDIR}/metadata.ttl \
-    --data ${TMPDIR}/pre_dev.fibo-quickstart.ttl \
+    --data ${TMPDIR}/pre_dev.fibo-quickstart.owl \
     --query=/publisher/lib/echo.sparql \
     --results=TTL > ${tag_root}/dev.fibo-quickstart.ttl
-
 
   #
   # Get ontologies for Prod
   #
-  log "Merging all prod ontologies into one RDF file: : $(logFileName ${tag_root}/prod.fibo-quickstart.ttl)"
-  "${JENA_ARQ}" \
-    $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
-    --query=/publisher/lib/noimport_noontology.sparql \
-    --results=TTL > ${TMPDIR}/pre_prod.fibo-quickstart.ttl
+  log "Merging all prod ontologies into one RDF file"
+  robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${TMPDIR}/pre_prod.fibo-quickstart.owl
 
+  
   ${JENA_ARQ} \
-    --data ${TMPDIR}/lcc.ttl \
     --data ${TMPDIR}/metadata.ttl \
-    --data ${TMPDIR}/pre_prod.fibo-quickstart.ttl \
+    --data ${TMPDIR}/pre_prod.fibo-quickstart.owl \
     --query=/publisher/lib/echo.sparql \
     --results=TTL > ${tag_root}/prod.fibo-quickstart.ttl
 	
