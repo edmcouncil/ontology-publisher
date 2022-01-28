@@ -96,7 +96,7 @@ function runHygieneTests() {
 
   # For now consistency check are turned off.  
 
-  if [ false && [ -s "${source_family_root}/${DEV_SPEC}" ] ] ; then
+  if false && [ -s "${source_family_root}/${DEV_SPEC}" ] ; then
     rm -f ${TMPDIR}/{console.txt,ret.txt}
     logItem " DEV:${DEV_SPEC}" "$(getOntologyIRI < "${source_family_root}/${DEV_SPEC}")"
     if ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${DEV_SPEC}" \
@@ -110,7 +110,7 @@ function runHygieneTests() {
   fi
 
   
-  if [ false && [ -s "${source_family_root}/${PROD_SPEC}" ] ] ; then
+  if false && [ -s "${source_family_root}/${PROD_SPEC}" ] ; then
     rm -f ${TMPDIR}/{console.txt,ret.txt}
     logItem "PROD:${PROD_SPEC}" "$(getOntologyIRI < "${source_family_root}/${PROD_SPEC}")"
     if ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${PROD_SPEC}" \
