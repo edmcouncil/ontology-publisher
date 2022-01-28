@@ -41,6 +41,7 @@ ARG ONTPUB_FAMILY
 ARG ONTPUB_SPEC_HOST
 ARG ONTPUB_IS_DARK_MODE
 ARG ONTPUB_VERSION
+ARG DEV_SPEC
 ARG PROD_SPEC
 
 ENV \
@@ -349,8 +350,10 @@ RUN \
   echo PATH=${PATH} && \
   sed -i -e 's/export PATH=\(.*\)/export PATH=${PATH}/g' /etc/profile && \
   echo "export PATH=${PATH}" >> /etc/bashrc && \
+  echo 'export DEV_SPEC="${DEV_SPEC:-About${ONTPUB_FAMILY^^}Dev.rdf}"' >> /etc/bashrc && \
+  echo 'export DEV_SPEC="${DEV_SPEC:-About${ONTPUB_FAMILY^^}Dev.rdf}"' >> /etc/profile.d/spec.sh && \
   echo 'export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"' >> /etc/bashrc && \
-  echo 'export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"' > /etc/profile.d/prod_spec.sh
+  echo 'export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"' >> /etc/profile.d/spec.sh
 
 CMD ["./publish.sh"]
 

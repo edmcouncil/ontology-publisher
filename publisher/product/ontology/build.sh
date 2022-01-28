@@ -91,9 +91,6 @@ function runHygieneTests() {
   #
   logRule "consistency-check: run for ..."
 
-  export DEV_SPEC="${DEV_SPEC:-About${ONTPUB_FAMILY^^}Dev.rdf}"
-  export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"
-
   # For now consistency check are turned off.  
 
   if false && [ -s "${source_family_root}/${DEV_SPEC}" ] ; then
@@ -682,9 +679,6 @@ __HERE__
     --query=/publisher/lib/metadata.sparql \
     --results=TTL > "${TMPDIR}/metadata.ttl"
 
-  export DEV_SPEC="${DEV_SPEC:-About${ONTPUB_FAMILY^^}Dev.rdf}"
-  export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"
-  
   #
   # Get ontologies for Dev
   #

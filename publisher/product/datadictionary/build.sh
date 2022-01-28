@@ -49,10 +49,6 @@ function publishProductDataDictionaryContent() {
 
   logRule "Creating data dictionaries"
 
-
-  export DEV_SPEC="${DEV_SPEC:-About${ONTPUB_FAMILY^^}Dev.rdf}"
-  export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"
-  
   logRule "Running OntoViewer Toolkit to generate CSV files containing data from ontologies for DEV from path ${source_family_root}"
   debug=false ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${DEV_SPEC}"\
     --output "${datadictionaryBaseName}-dev.csv" \
