@@ -133,6 +133,9 @@ function runHygieneTests() {
      --input_ontology "${source_family_root}/${DEV_SPEC}" \
      --ontology-mapping "${source_family_root}/catalog-v001.xml" \
      --output_ontology "${TMPDIR}/DEV.ttl"
+
+  success=$?
+  if [ "${success}" != 0 ] ; then return -1 ; fi
   
   #
   # Get ontologies for Prod
@@ -143,6 +146,9 @@ function runHygieneTests() {
      --input_ontology "${source_family_root}/${PROD_SPEC}" \
      --ontology-mapping "${source_family_root}/catalog-v001.xml" \
      --output_ontology "${TMPDIR}/PROD.ttl"
+
+  success=$?
+  if [ "${success}" != 0 ] ; then return -1 ; fi
     
   logRule "Will run the following tests:"
 
