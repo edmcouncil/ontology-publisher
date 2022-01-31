@@ -128,15 +128,22 @@ function runHygieneTests() {
   # Get ontologies for Dev
   #
   log "Merging all dev ontologies into one RDF file"
-  ${PYTHON3} ${SCRIPT_DIR}/lib/ontology_collector.py --root "${source_family_root}" --input_ontology "${source_family_root}/${DEV_SPEC}" --ontology-mapping "${source_family_root}/catalog-v001.xml" --output_ontology "${TMPDIR}/DEV.ttl"
-
-
+  ${PYTHON3} ${SCRIPT_DIR}/lib/ontology_collector.py \
+     --root "${source_family_root}" \
+     --input_ontology "${source_family_root}/${DEV_SPEC}" \
+     --ontology-mapping "${source_family_root}/catalog-v001.xml" \
+     --output_ontology "${TMPDIR}/DEV.ttl"
+  
   #
   # Get ontologies for Prod
   #
   log "Merging all prod ontologies into one RDF file"
-  ${PYTHON3} ${SCRIPT_DIR}/lib/ontology_collector.py --root "${source_family_root}" --input_ontology "${source_family_root}/${PROD_SPEC}" --ontology-mapping "${source_family_root}/catalog-v001.xml" --output_ontology "${TMPDIR}/PROD.ttl"
-
+  ${PYTHON3} ${SCRIPT_DIR}/lib/ontology_collector.py \
+     --root "${source_family_root}" \
+     --input_ontology "${source_family_root}/${PROD_SPEC}" \
+     --ontology-mapping "${source_family_root}/catalog-v001.xml" \
+     --output_ontology "${TMPDIR}/PROD.ttl"
+    
   logRule "Will run the following tests:"
 
   while read -r hygieneTestSparqlFile ; do
