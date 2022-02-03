@@ -47,41 +47,16 @@ function vocabularyGetOntologies() {
   log "Get ontologies for dev and prod"
   
   #
-  # Get external ontologies
-  #
-  log "Merging all LCC ontologies into one ontology"
-  "${JENA_ARQ}" $(find "${INPUT}/LCC" -name "*.rdf" | sed "s/^/--data=/") \
-    --query=/publisher/lib/noimport_noontology.sparql \
-    --results=TTL > "${TMPDIR}/lcc.ttl"
-
-  log "Merging all external ontologies into one ontology"
-  "${JENA_ARQ}" $(find "${SCRIPT_DIR}/lib/ontologies" -name "*.rdf" | sed "s/^/--data=/") \
-    --query=/publisher/lib/noimport_noontology.sparql \
-    --results=TTL > "${TMPDIR}/external.ttl"
-    
-  #
   # Get ontologies for Dev
   #
-  log "Merging all dev ontologies into one RDF file: $(logFileName ${TMPDIR}/dev.ttl)"
-  "${JENA_ARQ}" $(find "${source_family_root}" -name "*.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
-    --query=/publisher/lib/echo.sparql \
-    --results=TTL > "${TMPDIR}/pre_dev.ttl"
-  
-  ${JENA_ARQ} \
-    --data ${TMPDIR}/lcc.ttl \
-    --data ${TMPDIR}/external.ttl \
-    --data ${TMPDIR}/pre_dev.ttl \
-    --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${TMPDIR}/dev.ttl
+  log "Merging all dev ontologies into one RDF file: $(logFileName ${tag_root}/dev.owl)"
+  robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${TMPDIR}/dev.owl
 
   #
   # Get ontologies for Prod
   #
-  log "Merging all prod ontologies into one RDF file: : $(logFileName ${TMPDIR}/prod.ttl)"
-  "${JENA_ARQ}" \
-    $(grep -r 'utl-av[:;.]Release' "${source_family_root}" | sed 's/:.*$//;s/^/--data=/' | grep -F ".rdf") \
-    --query=/publisher/lib/echo.sparql \
-    --results=TTL > "${TMPDIR}/prod.ttl"
+  log "Merging all prod ontologies into one RDF file: : $(logFileName ${tag_root}/prod.owl)"
+  robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${TMPDIR}/prod.owl
   
   return 0
 }
@@ -95,10 +70,10 @@ function vocabularyCreateFromOntologies() {
   
 
   log "Creating Dev vocabulary"
-  ${JENA_ARQ} --data ${TMPDIR}/dev.ttl --query ${SCRIPT_DIR}/product/vocabulary/classes.sparql --results=TTL > ${TMPDIR}/classes.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/dev.ttl --query ${SCRIPT_DIR}/product/vocabulary/subclasses.sparql --results=TTL > ${TMPDIR}/subclasses.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/dev.ttl --query ${SCRIPT_DIR}/product/vocabulary/properties.sparql --results=TTL > ${TMPDIR}/properties.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/dev.ttl --query ${SCRIPT_DIR}/product/vocabulary/subproperties.sparql --results=TTL > ${TMPDIR}/subproperties.ttl
+  ${JENA_ARQ} --data ${TMPDIR}/dev.owl --query ${SCRIPT_DIR}/product/vocabulary/classes.sparql --results=TTL > ${TMPDIR}/classes.ttl
+  ${JENA_ARQ} --data ${TMPDIR}/dev.owl --query ${SCRIPT_DIR}/product/vocabulary/subclasses.sparql --results=TTL > ${TMPDIR}/subclasses.ttl
+  ${JENA_ARQ} --data ${TMPDIR}/dev.owl --query ${SCRIPT_DIR}/product/vocabulary/properties.sparql --results=TTL > ${TMPDIR}/properties.ttl
+  ${JENA_ARQ} --data ${TMPDIR}/dev.owl --query ${SCRIPT_DIR}/product/vocabulary/subproperties.sparql --results=TTL > ${TMPDIR}/subproperties.ttl
   
 
   ${JENA_ARQ} \
@@ -111,10 +86,10 @@ function vocabularyCreateFromOntologies() {
     --results=TTL > ${vocabulary_product_tag_root}/fibo-vD.ttl
 	
   log "Creating Prod vocabulary"
-  ${JENA_ARQ} --data ${TMPDIR}/prod.ttl --query ${SCRIPT_DIR}/product/vocabulary/classes.sparql --results=TTL > ${TMPDIR}/classes.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/prod.ttl --query ${SCRIPT_DIR}/product/vocabulary/subclasses.sparql --results=TTL > ${TMPDIR}/subclasses.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/prod.ttl --query ${SCRIPT_DIR}/product/vocabulary/properties.sparql --results=TTL > ${TMPDIR}/properties.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/prod.ttl --query ${SCRIPT_DIR}/product/vocabulary/subproperties.sparql --results=TTL > ${TMPDIR}/subproperties.ttl
+  ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query ${SCRIPT_DIR}/product/vocabulary/classes.sparql --results=TTL > ${TMPDIR}/classes.ttl
+  ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query ${SCRIPT_DIR}/product/vocabulary/subclasses.sparql --results=TTL > ${TMPDIR}/subclasses.ttl
+  ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query ${SCRIPT_DIR}/product/vocabulary/properties.sparql --results=TTL > ${TMPDIR}/properties.ttl
+  ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query ${SCRIPT_DIR}/product/vocabulary/subproperties.sparql --results=TTL > ${TMPDIR}/subproperties.ttl
   
   ${JENA_ARQ} \
     --data ${SCRIPT_DIR}/product/vocabulary/scaffolding.ttl \

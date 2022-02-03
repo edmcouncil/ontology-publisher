@@ -41,6 +41,7 @@ ARG ONTPUB_FAMILY
 ARG ONTPUB_SPEC_HOST
 ARG ONTPUB_IS_DARK_MODE
 ARG ONTPUB_VERSION
+ARG DEV_SPEC
 ARG PROD_SPEC
 
 ENV \
@@ -286,6 +287,15 @@ RUN \
   pip3 install XlsxWriter rdflib PyLD
 
 #
+# Installing [ROBOT](https://github.com/ontodev/robot)
+#
+ENV ROBOT_VERSION="v1.8.3"
+RUN \
+  wget -m -nH -nd -P /usr/local/bin https://raw.githubusercontent.com/ontodev/robot/${ROBOT_VERSION:-master}/bin/robot && \
+  wget -m -nH -nd -P /usr/local/bin https://github.com/ontodev/robot/releases/${ROBOT_VERSION:+download/}${ROBOT_VERSION:=latest/download}/robot.jar && \
+  chmod +x /usr/local/bin/robot
+
+#
 # Installing Saxon
 #
 ENV SAXON_VERSION="9-9-1-8J"
@@ -340,8 +350,10 @@ RUN \
   echo PATH=${PATH} && \
   sed -i -e 's/export PATH=\(.*\)/export PATH=${PATH}/g' /etc/profile && \
   echo "export PATH=${PATH}" >> /etc/bashrc && \
+  echo 'export DEV_SPEC="${DEV_SPEC:-About${ONTPUB_FAMILY^^}Dev.rdf}"' >> /etc/bashrc && \
+  echo 'export DEV_SPEC="${DEV_SPEC:-About${ONTPUB_FAMILY^^}Dev.rdf}"' >> /etc/profile.d/spec.sh && \
   echo 'export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"' >> /etc/bashrc && \
-  echo 'export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"' > /etc/profile.d/prod_spec.sh
+  echo 'export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"' >> /etc/profile.d/spec.sh
 
 CMD ["./publish.sh"]
 

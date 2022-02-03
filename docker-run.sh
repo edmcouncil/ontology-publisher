@@ -342,6 +342,10 @@ function buildImage() {
   opts+=("ONTPUB_IS_DARK_MODE=${cli_option_dark}")
   opts+=('--build-arg')
   opts+=("ONTPUB_VERSION=${ONTPUB_VERSION}")
+  if [ -n "${DEV_SPEC}" ] ; then
+    opts+=('--build-arg')
+    opts+=("DEV_SPEC=${DEV_SPEC}")
+  fi
   if [ -n "${PROD_SPEC}" ] ; then
     opts+=('--build-arg')
     opts+=("PROD_SPEC=${PROD_SPEC}")
@@ -434,6 +438,10 @@ function run() {
   opts+=("ONTPUB_FAMILY=${ONTPUB_FAMILY}")
   opts+=('--env')
   opts+=("ONTPUB_SPEC_HOST=${ONTPUB_SPEC_HOST}")
+  if [ -n "${DEV_SPEC}" ] ; then
+    opts+=('--env')
+    opts+=("DEV_SPEC=${DEV_SPEC}")
+  fi
   if [ -n "${PROD_SPEC}" ] ; then
     opts+=('--env')
     opts+=("PROD_SPEC=${PROD_SPEC}")
