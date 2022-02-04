@@ -76,7 +76,7 @@ function getBannerFromSparqlTestFile() {
 
 function getHygieneTestFiles() {
 
-  find "${ontology_product_tag_root}/ontology/hygiene_parameterized" -name 'testHygiene*.sparql'
+  find "${TMPDIR}/hygiene/" -name 'testHygiene*.sparql'
 }
 
 
