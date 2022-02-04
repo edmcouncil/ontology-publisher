@@ -51,6 +51,8 @@ ENV \
   INPUT=/input \
   OUTPUT=/output \
   TMPDIR=/var/tmp
+  HYGIENE_TEST_PARAMETER=<HYGIENE_TESTS_FILTER_PARAMETER>
+  HYGIENE_TEST_PARAMETER_VALUE="edmcouncil"
 
 RUN mkdir -p /publisher ${TMPDIR} || true
 
