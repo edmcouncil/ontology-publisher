@@ -283,7 +283,7 @@ function checkCommandLine() {
 function dockerFile() {
 
   if ((cli_option_dev_mode)) ; then
-    cat "${SCRIPT_DIR}/Dockerfile" | sed '/skip in dev mode begin/,/skip in dev mode end/ d' > "${SCRIPT_DIR}/Dockerfile.dev"
+    cat "${SCRIPT_DIR}/Dockerfile" | sed 's#/rdf-toolkit-build/#/rdf-toolkit-build-dev/#g ; s#/onto-viewer-build/#/onto-viewer-build-dev/#g' | sed '/skip in dev mode begin/,/skip in dev mode end/ d' > "${SCRIPT_DIR}/Dockerfile.dev"
     echo -n "${SCRIPT_DIR}/Dockerfile.dev"
   else
     echo -n "${SCRIPT_DIR}/Dockerfile"
