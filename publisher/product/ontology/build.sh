@@ -88,15 +88,14 @@ function runHygieneTests() {
 
   ontology_product_tag_root="${tag_root:?}"
   hygiene_product_tag_root="${ontology_product_tag_root/ontology/hygiene}"
-  hygiene_product_tag_root="${ontology_product_tag_root}/ontology/hygiene_parameterized"
   install -dv "${hygiene_product_tag_root}"
 
   #
   # Set up hygiene tests
   #  
   mkdir -p "${TMPDIR}/hygiene/"
-  cp -R ${ontology_product_tag_root/ontology/hygiene_parameterized}/. ${TMPDIR}/hygiene/
-  sed -i '' 's/${HYGIENE_TEST_PARAMETER}/${HYGIENE_TEST_PARAMETER_VALUE}/g ${TMPDIR}/hygiene/
+  cp ${source_family_root}/etc/testing/hygiene_parameterized/. ${TMPDIR}/hygiene/
+  sed -i '' 's/${HYGIENE_TEST_PARAMETER}/${HYGIENE_TEST_PARAMETER_VALUE}/g ${TMPDIR}/hygiene/*.sparql
 
 
   #
