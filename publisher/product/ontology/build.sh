@@ -91,12 +91,14 @@ function runHygieneTests() {
   install -dv "${hygiene_product_tag_root}"
 
   #
-  # Set up hygiene tests
+  # Paramterize hygiene tests
   #  
   mkdir -p "${TMPDIR}/hygiene/"
-  cp ${source_family_root}/etc/testing/hygiene_parameterized/* ${TMPDIR}/hygiene/
-  sed -i '' "s|${HYGIENE_TEST_PARAMETER}|${HYGIENE_TEST_PARAMETER_VALUE}|g" ${TMPDIR}/hygiene/*.sparql
-
+  ${PYTHON3} ${SCRIPT_DIR}/lib/hygiene_tests_parametizer.py \
+  --input_folder "${source_family_root}/etc/testing/hygiene_parameterized/" \
+  --pattern "${HYGIENE_TEST_PARAMETER}" \
+  --value "${HYGIENE_TEST_PARAMETER_VALUE}" \
+  --output_folder "${TMPDIR}/hygiene/"
 
   #
   # Run consistency-check for DEV and PROD ontologies
