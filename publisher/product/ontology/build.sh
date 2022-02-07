@@ -95,7 +95,7 @@ function runHygieneTests() {
   #  
   mkdir -p "${TMPDIR}/hygiene/"
   cp ${source_family_root}/etc/testing/hygiene_parameterized/* ${TMPDIR}/hygiene/
-  sed -i 's/${HYGIENE_TEST_PARAMETER}/${HYGIENE_TEST_PARAMETER_VALUE}/g' ${TMPDIR}/hygiene/*.sparql
+  sed -i '' "s|${HYGIENE_TEST_PARAMETER}|${HYGIENE_TEST_PARAMETER_VALUE}|g" ${TMPDIR}/hygiene/*.sparql
 
 
   #
