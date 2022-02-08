@@ -76,7 +76,7 @@ function getBannerFromSparqlTestFile() {
 
 function getHygieneTestFiles() {
 
-  find "${source_family_root}/etc" -name 'testHygiene*.sparql'
+  find "${TMPDIR}/hygiene/" -name 'testHygiene*.sparql'
 }
 
 
@@ -89,6 +89,16 @@ function runHygieneTests() {
   ontology_product_tag_root="${tag_root:?}"
   hygiene_product_tag_root="${ontology_product_tag_root/ontology/hygiene}"
   install -dv "${hygiene_product_tag_root}"
+
+  #
+  # Paramterize hygiene tests
+  #  
+  mkdir -p "${TMPDIR}/hygiene/"
+  ${PYTHON3} ${SCRIPT_DIR}/lib/hygiene_tests_parametizer.py \
+  --input_folder "${source_family_root}/etc/testing/hygiene_parameterized/" \
+  --pattern "${HYGIENE_TEST_PARAMETER}" \
+  --value "${HYGIENE_TEST_PARAMETER_VALUE}" \
+  --output_folder "${TMPDIR}/hygiene/"
 
   #
   # Run consistency-check for DEV and PROD ontologies
