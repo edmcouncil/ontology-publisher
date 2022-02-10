@@ -18,7 +18,7 @@ def get_local_ontology_map(ontology_catalog_path: str):
         ontologies = local_ontology_map_regex.findall(string=ontology_catalog)
         for ontology in ontologies:
             ontology_iri = ontology[0]
-            ontology_local_path = ontology[1][2:]
+            ontology_local_path = ontology[1]
             local_ontology_map[ontology_iri] = ontology_local_path
     except Exception as exception:
         print('Exception occurred while getting local ontology map', str(exception))
