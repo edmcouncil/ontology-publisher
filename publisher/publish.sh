@@ -44,25 +44,6 @@ if [ -f ${SCRIPT_DIR}/product/vocabulary/build.sh ] ; then
 else
   source product/vocabulary/build.sh # This line is only there to make the IntelliJ Bash plugin see product/vocabulary/build.sh
 fi
-if [ -f ${SCRIPT_DIR}/product/reference/build.sh ] ; then
-  # shellcheck source=product/reference/build.sh
-  source ${SCRIPT_DIR}/product/reference/build.sh
-else
-  source product/reference/build.sh # This line is only there to make the IntelliJ Bash plugin see product/reference/build.sh
-fi
-if [ -f ${SCRIPT_DIR}/product/fibopedia/build.sh ] ; then
-  # shellcheck source=product/fibopedia/build.sh
-  source ${SCRIPT_DIR}/product/fibopedia/build.sh
-else
-  source product/fibopedia/build.sh # This line is only there to make the IntelliJ Bash plugin see product/fibopedia/build.sh
-fi
-if [ -f ${SCRIPT_DIR}/product/htmlpages/build.sh ] ; then
-  # shellcheck source=product/htmlpages/build.sh
-  source ${SCRIPT_DIR}/product/htmlpages/build.sh
-else
-  source product/htmlpages/build.sh # This line is only there to make the IntelliJ Bash plugin see product/htmlpages/build.sh
-fi
-
 #
 # This function returns true if the given file name resides in the test/dev "domain" (a root directory)
 #
@@ -95,9 +76,7 @@ function cleanupBeforePublishing() {
   require spec_root || return $?
   require tag_root || return $?
 
-  #find "${tag_root}" -type f -name 'ont-policy.*' -delete
-  #find "${tag_root}" -type f -name 'location-mapping.*' -delete
-  #
+ 
   # find all empty files in /tmp directory and delete them
   #
   find "${tag_root}" -type f -empty -delete
@@ -284,15 +263,6 @@ function main() {
       datadict*)
         product="datadictionary"
         publishProductDataDictionary || return $?
-        ;;
-      fibopedia)
-        publishProductFIBOpedia || return $?
-        ;;
-      htmlpages)
-        publishProductHTMLPages || return $?
-        ;;
-      refe*)
-        publishProductReference || return $?
         ;;
       publish)
         #

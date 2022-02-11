@@ -89,47 +89,6 @@ RUN \
   rm -rf /var/lib/apt/lists/*
 
 #
-# Installing LaTex seperately since it's such a giant layer (3GB)
-# We'll have to figure out how to make it smaller.
-#
-
-# The standard alpine version of texlive is the 2017 version and it's not properly installed, so commenting
-# this section out until its fixed in Alpine and installing TexLive 2018 manually.
-#RUN \
-#  echo ================================= install LaTex >&2 && \
-#  apk --no-cache add biber texlive-full && \
-#  #
-#  # Clean up
-#  #
-#  rm -rf /var/lib/apt/lists/*
-
-#
-# Installing TexLive 2018 manually
-#
-# NOTE: It took a LONG time to figure this one out: this version of Aline is based on "musl" which is in a way making
-#       it a new operating system for which certain packages that are part of TexLive are not built. Such as biber,
-#       which we use for citations in the generated LaTex reference. So we need to install TexLive for 2 platforms and
-#       give preference to the x86_64-linuxmusl binaries if they exist and otherwise use the x86_64-linux binaries.
-#       Hence the weird PATH statement below.
-#
-#COPY /usr/share/scripts/install-texlive.sh /usr/share/scripts/install-texlive.sh
-#RUN \
-#  echo ================================= install LaTex >&2 && \
-#  /usr/share/scripts/install-texlive.sh
-#ENV \
-#  MANPATH=/usr/local/texlive/2018/texmf-dist/doc/man:${MANPATH} \
-#  INFOPATH=/usr/local/texlive/2018/texmf-dist/doc/info:${INFOPATH} \
-#  PATH=${PATH}:/usr/local/texlive/2018/bin/x86_64-linuxmusl:/usr/local/texlive/2018/bin/x86_64-linux
-
-#
-# Installing biblatex manually
-#
-#COPY /usr/share/scripts/install-biber.sh /usr/share/scripts/install-biber.sh
-#RUN \
-#  echo ================================= install biblatex-biber >&2 && \
-#  /usr/share/scripts/install-biber.sh
-
-#
 # Installing pandoc
 #
 ENV \
@@ -314,7 +273,6 @@ RUN \
 
 COPY etc /etc
 COPY root /root
-COPY usr /usr
 
 #
 # <skip in dev mode begin>
