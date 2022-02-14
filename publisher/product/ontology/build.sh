@@ -49,7 +49,6 @@ function publishProductOntology() {
   ontologyBuildIndex  || return $?
   ontologyCreateAboutFiles || return $?
   ontologyConvertRdfToAllFormats || return $?
-  ontologyCreateTheAllTtlFile || return $?
 
   createQuickVersions || return $?
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?

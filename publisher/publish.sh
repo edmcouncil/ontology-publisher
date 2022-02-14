@@ -153,55 +153,6 @@ function zipOntologyFiles () {
   return 0
 }
 
-#
-# Called by publishProductVocabulary(), sets the names of all modules in the global variable modules and their
-# root directories in the global variable module_directories
-#
-# 1) Determine which modules will be included. They are kept on a property
-#    called <http://www.edmcouncil.org/skosify#module> in skosify.ttl
-#
-# JG>Apache jena3 is also installed on the Jenkins server itself, so maybe
-#    no need to have this in the fibs-infra repo.
-#
-function vocabularyGetModules() {
-
-  require vocabulary_script_dir || return $?
-  require ontology_product_tag_root || return $?
-
-  #
-  # Set the memory for ARQ
-  #
-  export JVM_ARGS=${JVM_ARGS:--Xmx4G}
-
-  log "Query the skosify.ttl file for the list of modules (TODO: Should come from rdf-toolkit.ttl)"
-
-  ${JENA_ARQ} \
-    --results=CSV \
-    --data="${vocabulary_script_dir}/skosify.ttl" \
-    --query="${vocabulary_script_dir}/get-module.sparql" | ${GREP} -v list > \
-    "${TMPDIR}/module"
-
-  if [ ${PIPESTATUS[0]} -ne 0 ] ; then
-    error "Could not get modules"
-    return 1
-  fi
-
-  cat "${TMPDIR}/module"
-
-  export modules="$(< "${TMPDIR}/module")"
-
-  export module_directories="$(for module in ${modules} ; do echo -n "${ontology_product_tag_root}/${module} " ; done)"
-
-  log "Found the following modules:"
-  echo ${modules}
-
-  log "Using the following directories:"
-  echo ${module_directories}
-
-  rm -f "${TMPDIR}/module"
-
-  return 0
-}
 
 #
 # Stuff for building nquads files

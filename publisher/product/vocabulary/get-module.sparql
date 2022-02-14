@@ -1,8 +1,0 @@
-#
-# Get the modules (formerly called domains)
-#
-SELECT (GROUP_CONCAT (?module) AS ?list)
-WHERE {
-  [] <http://www.edmcouncil.org/skosify#domain> ?module
-}
-
