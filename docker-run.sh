@@ -11,7 +11,7 @@ export ONTPUB_ORG="edmcouncil"
 export ONTPUB_ORG_TLD="org"
 export ONTPUB_SPEC_HOST="${ONTPUB_SPEC_HOST:-spec.${ONTPUB_ORG}.${ONTPUB_ORG_TLD}}"
 export ONTPUB_INPUT_REPOS="${ONTPUB_INPUT_REPOS:-${ONTPUB_FAMILY} LCC}"
-export ONTPUB_VERSION="$(< ${SCRIPT_DIR}/VERSION)"
+export ONTPUB_VERSION="$(git -C "${SCRIPT_DIR}" rev-parse --abbrev-ref HEAD)"
 
 if [[ -f ${SCRIPT_DIR}/publisher/lib/_functions.sh ]] ; then
   # shellcheck source=publisher/lib/_functions.sh
@@ -355,14 +355,12 @@ function buildImage() {
   opts+=('--label')
   opts+=("${ONTPUB_ORG_TLD}.${ONTPUB_ORG}.ontology-publisher.release-date="$(date "+%Y-%m-%d")"")
   opts+=('--tag')
-  opts+=("${ONTPUB_ORG}/${containerName}:latest")
-  opts+=('--tag')
   opts+=("${ONTPUB_ORG}/${containerName}:${ONTPUB_VERSION}")
   opts+=('--file')
   opts+=("$(dockerFile) .")
 
   #
-  # Build the image and tag it as ontology-publisher:latest and ontology-publisher:VERSION (see content of VERSION file)
+  # Build the image and tag it as ontology-publisher:${ONTPUB_VERSION}
   #
   log "docker ${opts[@]}"
   if docker ${opts[@]} ; then
@@ -483,7 +481,7 @@ function run() {
     log "Launching the container"
   fi
 
-  opts+=("${ONTPUB_ORG}/${containerName}:latest")
+  opts+=("${ONTPUB_ORG}/${containerName}:${ONTPUB_VERSION}")
 
   if ((cli_option_shell)) ; then
     opts+=('-l')
