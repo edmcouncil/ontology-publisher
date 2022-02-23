@@ -13,17 +13,10 @@
 # Using Alpine linux because it's ultra-lightweight, designed for running in a Docker
 # container.
 #
-# About the base image: we're using the latest and greatest version of OpenJDK:
-#
-# - 13 means Java 13 General-Availability build (see https://jdk.java.net/13/)
-#   We want this version because it works best in a docker container, respecting CPU and memory limits.
-#   It'll also be more likely to be the fastest Java available.
-# - jdk means that we're using the Java Developer Kit (JDK) and not just the Java Runtime Engine (JRE)
-#   TODO: Please document which parts of the ontology-publisher actually need this
 # - alpine is the name of the Linux brand we're using, which is the smallest linux keeping the image as small
 #   as possible.
 #
-FROM alpine:3.13
+FROM alpine:3.15
 
 #
 # Some meta data, can only have one maintainer unfortunately
@@ -68,17 +61,7 @@ RUN \
     openjdk11 \
     python3-dev py3-pip py3-wheel py3-cachetools py3-frozendict py3-isodate py3-lxml cython py3-pandas \
     libxml2-dev libxslt-dev \
-    perl perl-utils \
-    perl-log-log4perl perl-class-accessor perl-datetime perl-datetime-format-builder \
-    perl-datetime-calendar-julian perl-text-csv perl-data-compare perl-data-dump perl-file-slurper \
-    perl-list-allutils perl-autovivification perl-xml-libxml-simple perl-regexp-common \
-    perl-data-uniqid perl-text-roman perl-unicode-linebreak perl-sort-key perl-text-bibtex \
-    perl-module-build perl-business-isbn perl-business-ismn perl-business-issn perl-encode-eucjpascii \
-    perl-encode-hanextra perl-encode-jis2k perl-lingua-translit perl-text-csv_xs perl-perlio-utf8_strict \
-    perl-xml-libxslt perl-xml-writer perl-lwp-protocol-https perl-list-moreutils-xs perl-mozilla-ca \
-    perl-unicode-collate perl-unicode-linebreak perl-unicode-normalize perl-config-autoconf \
-    perl-extutils-libbuilder perl-file-which perl-test-differences \
-    fontconfig make npm \
+    perl fontconfig make \
     gcc g++ linux-headers libc-dev && \
     # "bash" preferable to "busybox"
     ln -sf bash /bin/sh && \
@@ -139,16 +122,16 @@ RUN \
 #
 # Installing the rdf-toolkit
 #
-ENV RDFTOOLKIT_JAR=/publisher/lib/rdf-toolkit.jar
-#ENV RDFTOOLKIT_JAR=/usr/share/java/rdf-toolkit/rdf-toolkit.jar
-#RUN \
-#  echo ================================= install the RDF toolkit >&2 && \
-#  toolkit_build="23" ; \
-#  url="https://jenkins.edmcouncil.org/view/rdf-toolkit/job/rdf-toolkit-build/" ; \
-#  url="${url}${toolkit_build}/artifact/target/scala-2.12/rdf-toolkit.jar" ; \
-#  echo "Downloading ${url}:" >&2 ; \
-#  mkdir -p /usr/share/java/rdf-toolkit ; \
-#  curl --location --silent --show-error --output ${RDFTOOLKIT_JAR} --url "${url}"
+#ENV RDFTOOLKIT_JAR=/publisher/lib/rdf-toolkit.jar
+ENV RDFTOOLKIT_JAR=/usr/share/java/rdf-toolkit/rdf-toolkit.jar
+RUN \
+  echo ================================= install the RDF toolkit >&2 && \
+  toolkit_build="lastSuccessfulBuild" ; \
+  url="https://jenkins.edmcouncil.org/view/rdf-toolkit/job/rdf-toolkit-build/" ; \
+  url="${url}${toolkit_build}/artifact/target/rdf-toolkit.jar" ; \
+  echo "Downloading ${url}:" >&2 ; \
+  mkdir -p /usr/share/java/rdf-toolkit ; \
+  curl --location --silent --show-error --output ${RDFTOOLKIT_JAR} --url "${url}"
 
 #
 # Install OntoViewer Toolkit
@@ -301,10 +284,6 @@ RUN find /publisher/ -name '*.sh' | xargs sed -i 's/\r//'
 VOLUME ["${TMPDIR}"]
 
 WORKDIR /publisher
-
-ENV \
-  PERL5LIB=/usr/local/biber/lib \
-  PATH=/usr/local/biber/bin:${PATH}
 
 RUN \
   echo PATH=${PATH} && \

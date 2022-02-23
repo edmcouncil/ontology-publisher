@@ -633,8 +633,8 @@ function initOSBasedTools() {
   #
   export JQ=jq
 
-  if which jq >/dev/null 2>&1 ; then
-    export JQ=$(which jq)
+  if jq --version >/dev/null 2>&1 ; then
+    export JQ=jq
   else
     error "jq not found"
     return 1
@@ -645,8 +645,8 @@ function initOSBasedTools() {
   #
   export PYTHON3=python3
 
-  if which python3 >/dev/null 2>&1 ; then
-    export PYTHON3=$(which python3)
+  if python3 --version >/dev/null 2>&1 ; then
+    export PYTHON3=python3
   elif which python3.6 >/dev/null 2>&1 ; then
     export PYTHON3=$(which python3.6)
   else
