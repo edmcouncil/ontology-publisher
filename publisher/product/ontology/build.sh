@@ -46,11 +46,9 @@ function publishProductOntology() {
   ontologyCopyRdfToTarget || return $?
   ontologySearchAndReplaceStuff || return $?
   ontologyBuildCatalogs  || return $?
-  ontologyConvertMarkdownToHtml || return $?
   ontologyBuildIndex  || return $?
   ontologyCreateAboutFiles || return $?
   ontologyConvertRdfToAllFormats || return $?
-  ontologyCreateTheAllTtlFile || return $?
 
   createQuickVersions || return $?
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
@@ -416,27 +414,6 @@ function ontologyFixTopBraidBaseURICookie() {
   ${SED} -i "1s;^;${uri}\n;" "${ontologyFile}"
 }
 
-function ontologyConvertMarkdownToHtml() {
-
-  logStep "ontologyConvertMarkdownToHtml"
-
-  if ((pandoc_available == 0)) ; then
-    error "Could not convert Markdown files to HTML since pandoc is missing"
-    return 0 # Ignoring this error though
-  fi
-
-  (
-    cd "${tag_root}" || return $?
-
-    for markdownFile in **/*.md ; do
-      ontologyIsInTestDomain "${markdownFile}" || continue
-      log "Convert ${markdownFile} to html"
-      ${pandoc_bin} --quiet --standalone --from markdown --to html -o "${markdownFile/.md/.html}" "${markdownFile}"
-    done
-  )
-  return $?
-}
-
 #
 # The "index" of fibo is a list of all the ontology files, in their
 # directory structure.  This is an attempt to automatically produce
@@ -447,8 +424,6 @@ function ontologyBuildIndex () {
   require tag_root || return $?
   require tag_root_url || return $?
   require GIT_TAG_NAME || return $?
-
-  logStep "build tree.html files"
 
   (
   	cd ${tag_root:?} || return $?
