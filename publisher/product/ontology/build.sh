@@ -363,7 +363,7 @@ function ontologyFixTopBraidBaseURICookie() {
 }
 
 #
-# The "index" of fibo is a list of all the ontology files, in their
+# The "index" is a list of all the ontology files, in their
 # directory structure.  This is an attempt to automatically produce
 # this.
 #
@@ -471,26 +471,26 @@ function ontologyZipFiles () {
     find . -type f -name \*\.ttl -exec /bin/bash -c 'perl -pi -e "s/^\s*(\@prefix)\s+([^\s]+)\s+(\<[^\>]*\>)\s+(\.)\s*$/\1 \2 \3 \4\n/g" "{}"' \;
 
 
-    ${FIND}  "${family_product_branch_tag}" -name '*.ttl' -print | ${GREP} -v etc |  ${GREP} -v "LoadFIBOProd.ttl" | grep -v About |  xargs zip ${zipttlDevFile}
+    ${FIND}  "${family_product_branch_tag}" -name '*.ttl' -print | ${GREP} -v etc |  ${GREP} -v "Load${ONTPUB_FAMILY}Prod.ttl" | grep -v About |  xargs zip ${zipttlDevFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipttlDevFile}
 
-    ${FIND}  "${family_product_branch_tag}" -name '*.rdf' -print | ${GREP} -v etc | ${GREP} -v "LoadFIBOProd.rdf" |  grep -v About |xargs zip ${ziprdfDevFile}
+    ${FIND}  "${family_product_branch_tag}" -name '*.rdf' -print | ${GREP} -v etc | ${GREP} -v "Load${ONTPUB_FAMILY}Prod.rdf" |  grep -v About |xargs zip ${ziprdfDevFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${ziprdfDevFile}
 
-    ${FIND}  "${family_product_branch_tag}" -name '*.jsonld' -print | ${GREP} -v etc | ${GREP} -v "LoadFIBOProd.jsonld" |  grep -v About |  xargs zip ${zipjsonldDevFile}
+    ${FIND}  "${family_product_branch_tag}" -name '*.jsonld' -print | ${GREP} -v etc | ${GREP} -v "Load${ONTPUB_FAMILY}Prod.jsonld" |  grep -v About |  xargs zip ${zipjsonldDevFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipjsonldDevFile}
 
 
     
 
     ${GREP} -r 'utl-av[:;.]Release' "${family_product_branch_tag}" | ${GREP} -F ".ttl" | ${SED} 's/:.*$//' | xargs zip -r ${zipttlProdFile}
-    ${FIND}  "${family_product_branch_tag}" -name '*Load*.ttl' -print | ${GREP} -v "LoadFIBODev.ttl" |  xargs zip ${zipttlProdFile}
+    ${FIND}  "${family_product_branch_tag}" -name '*Load*.ttl' -print | ${GREP} -v "Load${ONTPUB_FAMILY}Dev.ttl" |  xargs zip ${zipttlProdFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipttlProdFile}
     ${GREP} -r 'utl-av[:;.]Release' "${family_product_branch_tag}" | ${GREP} -F ".rdf" |   ${SED} 's/:.*$//' | xargs zip -r ${ziprdfProdFile}
-    ${FIND}  "${family_product_branch_tag}" -name '*Load*.rdf' -print | ${GREP} -v "LoadFIBODev.rdf" | xargs zip ${ziprdfProdFile}
+    ${FIND}  "${family_product_branch_tag}" -name '*Load*.rdf' -print | ${GREP} -v "Load${ONTPUB_FAMILY}Dev.rdf" | xargs zip ${ziprdfProdFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${ziprdfProdFile}
-    ${GREP} -r 'https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/Release' "${family_product_branch_tag}" | ${GREP} -F ".jsonld" |   ${SED} 's/:.*$//' | xargs zip -r ${zipjsonldProdFile}
-    ${FIND}  "${family_product_branch_tag}" -name '*Load*.jsonld' -print | ${GREP} -v "LoadFIBODev.jsonld" | xargs zip ${zipjsonldProdFile}
+    ${GREP} -r 'https://spec.edmcouncil.org/${ONTPUB_FAMILY}/ontology/FND/Utilities/AnnotationVocabulary/Release' "${family_product_branch_tag}" | ${GREP} -F ".jsonld" |   ${SED} 's/:.*$//' | xargs zip -r ${zipjsonldProdFile}
+    ${FIND}  "${family_product_branch_tag}" -name '*Load*.jsonld' -print | ${GREP} -v "Load${ONTPUB_FAMILY}Dev.jsonld" | xargs zip ${zipjsonldProdFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipjsonldProdFile}
 
   )
@@ -502,21 +502,21 @@ function ontologyZipFiles () {
 
 function buildquads () {
 
-  local ProdQuadsFile="${tag_root}/prod.fibo.nq"
-  local DevQuadsFile="${tag_root}/dev.fibo.nq"
+  local ProdQuadsFile="${tag_root}/prod.${ONTPUB_FAMILY}.nq"
+  local DevQuadsFile="${tag_root}/dev.${ONTPUB_FAMILY}.nq"
 
-  local ProdFlatNT="${tag_root}/old_prod.fibo-quickstart.nt"
-  local DevFlatNT="${tag_root}/old_dev.fibo-quickstart.nt"
+  local ProdFlatNT="${tag_root}/old_prod.${ONTPUB_FAMILY}-quickstart.nt"
+  local DevFlatNT="${tag_root}/old_dev.${ONTPUB_FAMILY}-quickstart.nt"
 
-  local ProdFlatTTL="${tag_root}/old_prod.fibo-quickstart.ttl"
-  local DevFlatTTL="${tag_root}/old_dev.fibo-quickstart.ttl"
+  local ProdFlatTTL="${tag_root}/old_prod.${ONTPUB_FAMILY}-quickstart.ttl"
+  local DevFlatTTL="${tag_root}/old_dev.${ONTPUB_FAMILY}-quickstart.ttl"
 
   local ProdTMPTTL="$(mktemp ${TMPDIR}/prod.temp.XXXXXX.ttl)"
   local DevTMPTTL="$(mktemp ${TMPDIR}/dev.temp.XXXXXX.ttl)"
 
-  local CSVPrefixes="${tag_root}/prefixes.fibo.csv"
-  local TTLPrefixes="${tag_root}/prefixes.fibo.ttl"
-  local SPARQLPrefixes="${tag_root}/prefixes.fibo.sq"
+  local CSVPrefixes="${tag_root}/prefixes.${ONTPUB_FAMILY}.csv"
+  local TTLPrefixes="${tag_root}/prefixes.${ONTPUB_FAMILY}.ttl"
+  local SPARQLPrefixes="${tag_root}/prefixes.${ONTPUB_FAMILY}.sq"
 
 
   local tmpflat="$(mktemp ${TMPDIR}/flatten.XXXXXX.sq)"
@@ -604,7 +604,7 @@ __HERE__
 
 	  ${FIND} . -mindepth 2 -name '*.ttl' -print | while read file; do quadify "$file"; done > "${DevQuadsFile}"
 	  echo "starting prod"
-	  ${GREP} -rl 'fibo-fnd-utl-av:hasMaturityLevel fibo-fnd-utl-av:Release' | \
+	  ${GREP} -rl '${ONTPUB_FAMILY}-fnd-utl-av:hasMaturityLevel ${ONTPUB_FAMILY}-fnd-utl-av:Release' | \
 	      while read file ; do quadify $file ; done > ${ProdQuadsFile}
      set -x
 	  ${FIND} ${INPUT} -name "Metadata*.rdf" -exec \
@@ -625,7 +625,7 @@ __HERE__
 
 
   log "Getting metadata"
-  "${JENA_ARQ}" $(find "${source_family_root}" -name "MetadataFIBO.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
+  "${JENA_ARQ}" $(find "${source_family_root}" -name "Metadata${ONTPUB_FAMILY}.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
     --query=/publisher/lib/metadata.sparql \
     --results=TTL > "${TMPDIR}/metadata.ttl"
 
@@ -633,33 +633,33 @@ __HERE__
   # Get ontologies for Dev
   #
   log "Merging all dev ontologies into one RDF file"
-  robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${TMPDIR}/pre_dev.fibo-quickstart.owl
+  robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${TMPDIR}/pre_dev.${ONTPUB_FAMILY}-quickstart.owl
  
   ${JENA_ARQ} \
     --data ${TMPDIR}/metadata.ttl \
-    --data ${TMPDIR}/pre_dev.fibo-quickstart.owl \
+    --data ${TMPDIR}/pre_dev.${ONTPUB_FAMILY}-quickstart.owl \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${tag_root}/dev.fibo-quickstart.ttl
+    --results=TTL > ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl
 
   #
   # Get ontologies for Prod
   #
   log "Merging all prod ontologies into one RDF file"
-  robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${TMPDIR}/pre_prod.fibo-quickstart.owl
+  robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${TMPDIR}/pre_prod.${ONTPUB_FAMILY}-quickstart.owl
 
   
   ${JENA_ARQ} \
     --data ${TMPDIR}/metadata.ttl \
-    --data ${TMPDIR}/pre_prod.fibo-quickstart.owl \
+    --data ${TMPDIR}/pre_prod.${ONTPUB_FAMILY}-quickstart.owl \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${tag_root}/prod.fibo-quickstart.ttl
+    --results=TTL > ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl
 	
-  ${JENA_ARQ} --data=${tag_root}/dev.fibo-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/dev.fibo-quickstart.nt  
-  ${JENA_ARQ} --data=${tag_root}/prod.fibo-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/prod.fibo-quickstart.nt
+  ${JENA_ARQ} --data=${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt  
+  ${JENA_ARQ} --data=${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.nt
   
-  zip ${tag_root}/dev.fibo-quickstart.ttl.zip ${tag_root}/dev.fibo-quickstart.ttl
-  zip ${tag_root}/prod.fibo-quickstart.ttl.zip ${tag_root}/prod.fibo-quickstart.ttl
-  zip ${tag_root}/dev.fibo-quickstart.nt.zip ${tag_root}/dev.fibo-quickstart.nt
-  zip ${tag_root}/prod.fibo-quickstart.nt.zip ${tag_root}/prod.fibo-quickstart.nt
+  zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl.zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl
+  zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl.zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl
+  zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt.zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt
+  zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.nt.zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.nt
 
 }

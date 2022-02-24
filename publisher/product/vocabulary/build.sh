@@ -1,8 +1,6 @@
 #
 # Produce all artifacts for the vocabulary product
 #
-# The output is in .ttl form in a file called fibo-v.ttl
-#
 function publishProductVocabulary() {
 
   #
@@ -83,7 +81,7 @@ function vocabularyCreateFromOntologies() {
     --data ${TMPDIR}/properties.ttl \
     --data ${TMPDIR}/subproperties.ttl \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${vocabulary_product_tag_root}/fibo-vD.ttl
+    --results=TTL > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vD.ttl
 	
   log "Creating Prod vocabulary"
   ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query ${SCRIPT_DIR}/product/vocabulary/classes.sparql --results=TTL > ${TMPDIR}/classes.ttl
@@ -98,7 +96,7 @@ function vocabularyCreateFromOntologies() {
     --data ${TMPDIR}/properties.ttl \
     --data ${TMPDIR}/subproperties.ttl \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${vocabulary_product_tag_root}/fibo-vP.ttl  
+    --results=TTL > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vP.ttl  
 
   touch ${vocabulary_product_tag_root}/vocabulary.log
 
@@ -114,26 +112,26 @@ function saveVocabulariesInOtherFormats() {
   log "Saving Dev vocabulary"
   
   ${JENA_ARQ} \
-    --data ${vocabulary_product_tag_root}/fibo-vD.ttl \
+    --data ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vD.ttl \
 	--query=/publisher/lib/echo.sparql \
-	--results=RDF > ${vocabulary_product_tag_root}/fibo-vD.rdf
+	--results=RDF > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vD.rdf
 	
   ${JENA_ARQ} \
-    --data ${vocabulary_product_tag_root}/fibo-vD.ttl \
+    --data ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vD.ttl \
 	--query=/publisher/lib/echo.sparql \
-	--results=JSONLD > ${vocabulary_product_tag_root}/fibo-vD.jsonld
+	--results=JSONLD > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vD.jsonld
 	
   log "Saving Prod vocabulary"
 	
   ${JENA_ARQ} \
-    --data ${vocabulary_product_tag_root}/fibo-vP.ttl \
+    --data ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vP.ttl \
 	--query=/publisher/lib/echo.sparql \
-	--results=RDF > ${vocabulary_product_tag_root}/fibo-vP.rdf
+	--results=RDF > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vP.rdf
 	
   ${JENA_ARQ} \
-    --data ${vocabulary_product_tag_root}/fibo-vP.ttl \
+    --data ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vP.ttl \
 	--query=/publisher/lib/echo.sparql \
-	--results=JSONLD > ${vocabulary_product_tag_root}/fibo-vP.jsonld
+	--results=JSONLD > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vP.jsonld
 	
   return 0
 }
@@ -145,28 +143,28 @@ function zipThemAll () {
   (cd "${tag_root}"; rm -f **.zip)
 
   #
-  # gzip --best --stdout "${tag_root}/fibo-vD.ttl" > "${tag_root}/fibo-vD.ttl.gz"
+  # gzip --best --stdout "${tag_root}/${ONTPUB_FAMILY}-vD.ttl" > "${tag_root}/${ONTPUB_FAMILY}-vD.ttl.gz"
   #
-  (cd "${tag_root}" ; zip fibo-vD.ttl.zip fibo-vD.ttl)
+  (cd "${tag_root}" ; zip ${ONTPUB_FAMILY}-vD.ttl.zip ${ONTPUB_FAMILY}-vD.ttl)
   #
-  # gzip --best --stdout "${tag_root}/fibo-vD.rdf" > "${tag_root}/fibo-vD.rdf.gz"
+  # gzip --best --stdout "${tag_root}/${ONTPUB_FAMILY}-vD.rdf" > "${tag_root}/${ONTPUB_FAMILY}-vD.rdf.gz"
   #
-  (cd "${tag_root}" ; zip  fibo-vD.rdf.zip fibo-vD.rdf)
+  (cd "${tag_root}" ; zip  ${ONTPUB_FAMILY}-vD.rdf.zip ${ONTPUB_FAMILY}-vD.rdf)
   #
-  # gzip --best --stdout "${tag_root}/fibo-vD.jsonld" > "${tag_root}/fibo-vD.jsonld.gz"
+  # gzip --best --stdout "${tag_root}/${ONTPUB_FAMILY}-vD.jsonld" > "${tag_root}/${ONTPUB_FAMILY}-vD.jsonld.gz"
   #
-  (cd "${tag_root}" ; zip  fibo-vD.jsonld.zip fibo-vD.jsonld)
+  (cd "${tag_root}" ; zip  ${ONTPUB_FAMILY}-vD.jsonld.zip ${ONTPUB_FAMILY}-vD.jsonld)
   #
-  # gzip --best --stdout "${tag_root}/fibo-vP.ttl" > "${tag_root}/fibo-vP.ttl.gz"
+  # gzip --best --stdout "${tag_root}/${ONTPUB_FAMILY}-vP.ttl" > "${tag_root}/${ONTPUB_FAMILY}-vP.ttl.gz"
   #
-  (cd "${tag_root}" ; zip  fibo-vP.ttl.zip fibo-vP.ttl)
+  (cd "${tag_root}" ; zip  ${ONTPUB_FAMILY}-vP.ttl.zip ${ONTPUB_FAMILY}-vP.ttl)
   #
-  # gzip --best --stdout "${tag_root}/fibo-vP.rdf" > "${tag_root}/fibo-vP.rdf.gz"
+  # gzip --best --stdout "${tag_root}/${ONTPUB_FAMILY}-vP.rdf" > "${tag_root}/${ONTPUB_FAMILY}-vP.rdf.gz"
   #
-  (cd "${tag_root}" ; zip  fibo-vP.rdf.zip fibo-vP.rdf)
+  (cd "${tag_root}" ; zip  ${ONTPUB_FAMILY}-vP.rdf.zip ${ONTPUB_FAMILY}-vP.rdf)
   #
-  # gzip --best --stdout "${tag_root}/fibo-vP.jsonld" > "${tag_root}/fibo-vP.jsonld.gz"
+  # gzip --best --stdout "${tag_root}/${ONTPUB_FAMILY}-vP.jsonld" > "${tag_root}/${ONTPUB_FAMILY}-vP.jsonld.gz"
   #
-  (cd "${tag_root}" ; zip  fibo-vP.jsonld.zip fibo-vP.jsonld)
+  (cd "${tag_root}" ; zip  ${ONTPUB_FAMILY}-vP.jsonld.zip ${ONTPUB_FAMILY}-vP.jsonld)
 }
 

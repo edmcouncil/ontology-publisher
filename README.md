@@ -64,7 +64,7 @@ TODO: The text below this point needs to be updated.
 
 ## How can I get access?
 
-The FIBO Jenkins server runs at https://jenkins.edmcouncil.org.
+The Jenkins server runs at https://jenkins.edmcouncil.org.
 It uses Github user authentication, so everyone needs to have a Github userid in order to access the Jenkins server.
 This userid needs to be part of the EDM Council organization on Github.
 
