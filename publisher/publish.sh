@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 #
-# Build, Test and Publish all products of the FIBO ontology family.
+# Build, Test and Publish all products of the ontology family.
 #
 # This script needs to be run inside the Docker container that is based on the ontology-publisher image.
-#datadictionary
-# TODO: Make this script fibo independent, should support any "ontology family"
 #
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)" || exit 1
 
 if [ -f ${SCRIPT_DIR}/lib/_functions.sh ] ; then

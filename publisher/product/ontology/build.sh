@@ -213,7 +213,7 @@ function runHygieneTests() {
 }
 
 #
-# Copy all publishable files from the fibo repo to the appropriate target directory (${tag_root})
+# Copy all publishable files from the ontology repo to the appropriate target directory (${tag_root})
 # where they will be converted to publishable artifacts
 #
 function ontologyCopyRdfToTarget() {
@@ -282,59 +282,7 @@ function ontologySearchAndReplaceStuff() {
   local -r sedfile=$(mktemp ${TMPDIR}/sed.XXXXXX)
 
   cat > "${sedfile}" << __HERE__
-#
-# First replace all http:// urls to https:// if that's not already done
-#
-s@http://${ONTPUB_SPEC_HOST}@${spec_root_url}@g
-#
-# Replace all IRIs in the form:
-#
-# - https://spec.edmcouncil.org/fibo/XXX/ with
-# - https://spec.edmcouncil.org/fibo/ontology/XXX/
-#
-# This replacement should not really be necessary since we've changed all those non-/ontology/ IRIs
-# in the git sources with their /ontology/-counterparts but the publisher should be able to support
-# older versions of the sources as well so we leave this in here.
-#
-s@${spec_family_root_url}/\([A-Z]*\)/@${product_root_url}/\1/@g
-#
-# Dealing with special case /ext/.
-#
-s@${spec_family_root_url}/ext/@${product_root_url}/ext/@g
-#
-# Then replace some odd ones with a version number in it like:
-#
-# - https://spec.edmcouncil.org/fibo/ontology/20150201/
-#
-# with
-#
-# - https://spec.edmcouncil.org/fibo/ontology/
-#
-# or:
-#
-# - https://spec.edmcouncil.org/fibo/ontology/BE/20150201/
-#
-# with
-#
-# - https://spec.edmcouncil.org/fibo/ontology/BE/
-#
-s@${product_root_url}/\([A-Z]*/\)\?[0-9]*/@${product_root_url}/\1@g
-#
-# We only want the following types of IRIs to be versioned: owl:imports and owl:versionIRI.
-#
-# - <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/InformationExt/InfoCore/"/> becomes:
-# - <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/master/latest/FND/InformationExt/InfoCore/"/>
-#
-s@\(owl:imports rdf:resource="${product_root_url}/\)@\1${branch_tag}/@g
-#
-# And then the same for the owl:versionIRI.
-#
-s@\(owl:versionIRI rdf:resource="${product_root_url}/\)@\1${branch_tag}/@g
-#
-# Just to be sure that we don't see any 'ontology/ontology' IRIs:
-#
-s@/ontology/ontology/@/ontology/@g
-#
+
 __HERE__
 
 #   cat "${sedfile}"
@@ -437,8 +385,8 @@ function ontologyBuildIndex () {
             -e 's/BODY {.*}/BODY { font-family : "Courier New"; font-size: 12pt ; line-height: 0.90}/g' \
             -e 's/ariel/"Courier New"/g' \
             -e 's/<hr>//g' \
-            -e "s@>Directory Tree<@>FIBO Ontology file directory ${directory/.\//}<@g" \
-            -e 's@h1>\n<p>@h1><p>This is the directory structure of FIBO; you can download individual files this way.  To load all of FIBO, please follow the instructions for particular tools at <a href="http://spec.edmcouncil.org/fibo">the main fibo download page</a>.<p/>@' \
+            -e "s@>Directory Tree<@>Ontology file directory ${directory/.\//}<@g" \
+            -e 's@h1>\n<p>@h1><p>This is the directory structure of ontology; you can download individual files this way.</a>.<p/>@' \
             -e "s@<a href=\".*>${spec_root_url}/.*</a>@@" > tree.html
   	  )
   	done < <(${FIND} . -type d)

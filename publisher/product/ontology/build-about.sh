@@ -3,17 +3,9 @@
 # Create a Load file in RDF/XML format, do this BEFORE we convert all .rdf files to the other
 # formats so that this load file will also be converted.
 #
-#
-
-#
-# Looks silly but fools IntelliJ to see the functions in the included files
-#
-false && source ../../lib/_functions.sh
 
 function ontologyCreateAboutFiles () {
 
-    # The name of these files has been changed to "All" instead of "About"
-    
   require TMPDIR || return $?
   require tag_root || return $?
 
