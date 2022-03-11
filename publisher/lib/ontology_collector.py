@@ -47,7 +47,6 @@ def collect_ontologies(
                     input_ontology_path=str(object_value))
     except Exception as exception:
         print('Exception occurred while getting imported ontology', str(exception))
-        sys.exit(-1)
     if save_output:
         output_graph.serialize(output_graph_path)
 
