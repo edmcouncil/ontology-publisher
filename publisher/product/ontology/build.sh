@@ -282,7 +282,73 @@ function ontologySearchAndReplaceStuff() {
   local -r sedfile=$(mktemp ${TMPDIR}/sed.XXXXXX)
 
   cat > "${sedfile}" << __HERE__
+  #
+  # First replace all http:// urls to https:// if that's not already done
+  #
 
+  s@http://${ONTPUB_SPEC_HOST}@${spec_root_url}@g
+  
+  #
+  # Replace all IRIs in the form:
+  #
+  # - https://spec.edmcouncil.org/fibo/XXX/ with
+  # - https://spec.edmcouncil.org/fibo/ontology/XXX/
+  #
+  # This replacement should not really be necessary since we've changed all those non-/ontology/ IRIs
+  # in the git sources with their /ontology/-counterparts but the publisher should be able to support
+  # older versions of the sources as well so we leave this in here.
+  #
+  
+  s@${spec_family_root_url}/\([A-Z]*\)/@${product_root_url}/\1/@g
+  
+  #
+  # Dealing with special case /ext/.
+  #
+  
+  s@${spec_family_root_url}/ext/@${product_root_url}/ext/@g
+  
+  #
+  # Then replace some odd ones with a version number in it like:
+  #
+  # - https://spec.edmcouncil.org/fibo/ontology/20150201/
+  #
+  # with
+  #
+  # - https://spec.edmcouncil.org/fibo/ontology/
+  #
+  # or:
+  #
+  # - https://spec.edmcouncil.org/fibo/ontology/BE/20150201/
+  #
+  # with
+  #
+  # - https://spec.edmcouncil.org/fibo/ontology/BE/
+  #
+  
+  s@${product_root_url}/\([A-Z]*/\)\?[0-9]*/@${product_root_url}/\1@g
+  
+  #
+  # We only want the following types of IRIs to be versioned: owl:imports and owl:versionIRI.
+  #
+  # - <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/InformationExt/InfoCore/"/> becomes:
+  # - <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/master/latest/FND/InformationExt/InfoCore/"/>
+  #
+  
+  s@\(owl:imports rdf:resource="${product_root_url}/\)@\1${branch_tag}/@g
+  
+  #
+  # And then the same for the owl:versionIRI.
+  #
+  
+  s@\(owl:versionIRI rdf:resource="${product_root_url}/\)@\1${branch_tag}/@g
+  
+  #
+  # Just to be sure that we don't see any 'ontology/ontology' IRIs:
+  #
+  
+  s@/ontology/ontology/@/ontology/@g
+  
+  #
 __HERE__
 
 #   cat "${sedfile}"
