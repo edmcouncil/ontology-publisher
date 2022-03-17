@@ -555,7 +555,7 @@ function ontologyZipFiles () {
     ${GREP} -r 'utl-av[:;.]Release' "${family_product_branch_tag}" | ${GREP} -F ".rdf" |   ${SED} 's/:.*$//' | xargs zip -r ${ziprdfProdFile}
     ${FIND}  "${family_product_branch_tag}" -name '*Load*.rdf' -print | ${GREP} -v "Load${ONTPUB_FAMILY^^}Dev.rdf" | xargs zip ${ziprdfProdFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${ziprdfProdFile}
-    ${GREP} -r 'https://spec.edmcouncil.org/${ONTPUB_FAMILY^^}/ontology/FND/Utilities/AnnotationVocabulary/Release' "${family_product_branch_tag}" | ${GREP} -F ".jsonld" |   ${SED} 's/:.*$//' | xargs zip -r ${zipjsonldProdFile}
+    ${GREP} -r 'https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/Release' "${family_product_branch_tag}" | ${GREP} -F ".jsonld" |   ${SED} 's/:.*$//' | xargs zip -r ${zipjsonldProdFile}
     ${FIND}  "${family_product_branch_tag}" -name '*Load*.jsonld' -print | ${GREP} -v "Load${ONTPUB_FAMILY^^}Dev.jsonld" | xargs zip ${zipjsonldProdFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipjsonldProdFile}
 
@@ -568,21 +568,21 @@ function ontologyZipFiles () {
 
 function buildquads () {
 
-  local ProdQuadsFile="${tag_root}/prod.${ONTPUB_FAMILY^^}.nq"
-  local DevQuadsFile="${tag_root}/dev.${ONTPUB_FAMILY^^}.nq"
+  local ProdQuadsFile="${tag_root}/prod.${ONTPUB_FAMILY}.nq"
+  local DevQuadsFile="${tag_root}/dev.${ONTPUB_FAMILY}.nq"
 
-  local ProdFlatNT="${tag_root}/old_prod.${ONTPUB_FAMILY^^}-quickstart.nt"
-  local DevFlatNT="${tag_root}/old_dev.${ONTPUB_FAMILY^^}-quickstart.nt"
+  local ProdFlatNT="${tag_root}/old_prod.${ONTPUB_FAMILY}-quickstart.nt"
+  local DevFlatNT="${tag_root}/old_dev.${ONTPUB_FAMILY}-quickstart.nt"
 
-  local ProdFlatTTL="${tag_root}/old_prod.${ONTPUB_FAMILY^^}-quickstart.ttl"
-  local DevFlatTTL="${tag_root}/old_dev.${ONTPUB_FAMILY^^}-quickstart.ttl"
+  local ProdFlatTTL="${tag_root}/old_prod.${ONTPUB_FAMILY}-quickstart.ttl"
+  local DevFlatTTL="${tag_root}/old_dev.${ONTPUB_FAMILY}-quickstart.ttl"
 
   local ProdTMPTTL="$(mktemp ${TMPDIR}/prod.temp.XXXXXX.ttl)"
   local DevTMPTTL="$(mktemp ${TMPDIR}/dev.temp.XXXXXX.ttl)"
 
-  local CSVPrefixes="${tag_root}/prefixes.${ONTPUB_FAMILY^^}.csv"
-  local TTLPrefixes="${tag_root}/prefixes.${ONTPUB_FAMILY^^}.ttl"
-  local SPARQLPrefixes="${tag_root}/prefixes.${ONTPUB_FAMILY^^}.sq"
+  local CSVPrefixes="${tag_root}/prefixes.${ONTPUB_FAMILY}.csv"
+  local TTLPrefixes="${tag_root}/prefixes.${ONTPUB_FAMILY}.ttl"
+  local SPARQLPrefixes="${tag_root}/prefixes.${ONTPUB_FAMILY}.sq"
 
 
   local tmpflat="$(mktemp ${TMPDIR}/flatten.XXXXXX.sq)"
@@ -670,7 +670,7 @@ __HERE__
 
 	  ${FIND} . -mindepth 2 -name '*.ttl' -print | while read file; do quadify "$file"; done > "${DevQuadsFile}"
 	  echo "starting prod"
-	  ${GREP} -rl '${ONTPUB_FAMILY^^}-fnd-utl-av:hasMaturityLevel ${ONTPUB_FAMILY^^}-fnd-utl-av:Release' | \
+	  ${GREP} -rl 'fibo-fnd-utl-av:hasMaturityLevel fibo-fnd-utl-av:Release' | \
 	      while read file ; do quadify $file ; done > ${ProdQuadsFile}
      set -x
 	  ${FIND} ${INPUT} -name "Metadata*.rdf" -exec \
@@ -699,33 +699,33 @@ __HERE__
   # Get ontologies for Dev
   #
   log "Merging all dev ontologies into one RDF file"
-  robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${TMPDIR}/pre_dev.${ONTPUB_FAMILY^^}-quickstart.owl
+  robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${TMPDIR}/pre_dev.${ONTPUB_FAMILY}-quickstart.owl
  
   ${JENA_ARQ} \
     --data ${TMPDIR}/metadata.ttl \
-    --data ${TMPDIR}/pre_dev.${ONTPUB_FAMILY^^}-quickstart.owl \
+    --data ${TMPDIR}/pre_dev.${ONTPUB_FAMILY}-quickstart.owl \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${tag_root}/dev.${ONTPUB_FAMILY^^}-quickstart.ttl
+    --results=TTL > ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl
 
   #
   # Get ontologies for Prod
   #
   log "Merging all prod ontologies into one RDF file"
-  robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${TMPDIR}/pre_prod.${ONTPUB_FAMILY^^}-quickstart.owl
+  robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${TMPDIR}/pre_prod.${ONTPUB_FAMILY}-quickstart.owl
 
   
   ${JENA_ARQ} \
     --data ${TMPDIR}/metadata.ttl \
-    --data ${TMPDIR}/pre_prod.${ONTPUB_FAMILY^^}-quickstart.owl \
+    --data ${TMPDIR}/pre_prod.${ONTPUB_FAMILY}-quickstart.owl \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${tag_root}/prod.${ONTPUB_FAMILY^^}-quickstart.ttl
+    --results=TTL > ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl
 	
-  ${JENA_ARQ} --data=${tag_root}/dev.${ONTPUB_FAMILY^^}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/dev.${ONTPUB_FAMILY^^}-quickstart.nt  
-  ${JENA_ARQ} --data=${tag_root}/prod.${ONTPUB_FAMILY^^}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/prod.${ONTPUB_FAMILY^^}-quickstart.nt
+  ${JENA_ARQ} --data=${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt  
+  ${JENA_ARQ} --data=${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.nt
   
-  zip ${tag_root}/dev.${ONTPUB_FAMILY^^}-quickstart.ttl.zip ${tag_root}/dev.${ONTPUB_FAMILY^^}-quickstart.ttl
-  zip ${tag_root}/prod.${ONTPUB_FAMILY^^}-quickstart.ttl.zip ${tag_root}/prod.${ONTPUB_FAMILY^^}-quickstart.ttl
-  zip ${tag_root}/dev.${ONTPUB_FAMILY^^}-quickstart.nt.zip ${tag_root}/dev.${ONTPUB_FAMILY^^}-quickstart.nt
-  zip ${tag_root}/prod.${ONTPUB_FAMILY^^}-quickstart.nt.zip ${tag_root}/prod.${ONTPUB_FAMILY^^}-quickstart.nt
+  zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl.zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl
+  zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl.zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl
+  zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt.zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt
+  zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.nt.zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.nt
 
 }

@@ -32,7 +32,7 @@ function ontologyCreateTheAllTtlFile() {
       --dir="${INPUT}/LCC" \
       --dir=${tag_root} \
       --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/About${ONTPUB_FAMILY^^}Dev/" \
-      --top="https://spec.edmcouncil.org/${ONTPUB_FAMILY^^}/ontology/Metadata${ONTPUB_FAMILY^^}/" \
+      --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/ontology/Metadata${ONTPUB_FAMILY^^}/" \
       --output="${TMPDIR}/all.ttl" \
       --verbose \
       --format=ttl
@@ -42,7 +42,7 @@ function ontologyCreateTheAllTtlFile() {
       --dir="${INPUT}/LCC" \
       --dir=${tag_root} \
       --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/About${ONTPUB_FAMILY^^}Dev/" \
-      --top="https://spec.edmcouncil.org/${ONTPUB_FAMILY^^}/ontology/Metadata${ONTPUB_FAMILY^^}/" \
+      --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/ontology/Metadata${ONTPUB_FAMILY^^}/" \
       --output="${TMPDIR}/all.ttl" \
       --format=ttl
       rc=$?
