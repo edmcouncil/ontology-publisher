@@ -31,8 +31,8 @@ function ontologyCreateTheAllTtlFile() {
     python3 ${SCRIPT_DIR}/lib/trigify.py \
       --dir="${INPUT}/LCC" \
       --dir=${tag_root} \
-      --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/AboutFIBODev/" \
-      --top="https://spec.edmcouncil.org/${ONTPUB_FAMILY}/ontology/Metadata${ONTPUB_FAMILY}/" \
+      --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/About${ONTPUB_FAMILY^^}Dev/" \
+      --top="https://spec.edmcouncil.org/${ONTPUB_FAMILY^^}/ontology/Metadata${ONTPUB_FAMILY^^}/" \
       --output="${TMPDIR}/all.ttl" \
       --verbose \
       --format=ttl
@@ -41,8 +41,8 @@ function ontologyCreateTheAllTtlFile() {
     python3 ${SCRIPT_DIR}/lib/trigify.py \
       --dir="${INPUT}/LCC" \
       --dir=${tag_root} \
-      --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/About${ONTPUB_FAMILY}Dev/" \
-      --top="https://spec.edmcouncil.org/${ONTPUB_FAMILY}/ontology/Metadata${ONTPUB_FAMILY}/" \
+      --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/About${ONTPUB_FAMILY^^}Dev/" \
+      --top="https://spec.edmcouncil.org/${ONTPUB_FAMILY^^}/ontology/Metadata${ONTPUB_FAMILY^^}/" \
       --output="${TMPDIR}/all.ttl" \
       --format=ttl
       rc=$?
@@ -85,7 +85,7 @@ SELECT DISTINCT ?modfile WHERE {
     .
   }
   UNION {
-    BIND ("Metadata${ONTPUB_FAMILY}.rdf" AS ?modfile)
+    BIND ("Metadata${ONTPUB_FAMILY^^}.rdf" AS ?modfile)
   }
 }
 ORDER BY ?mod
