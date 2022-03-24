@@ -658,7 +658,7 @@ function initOSBasedTools() {
 }
 
 #
-# Initialize the (locations of) the tools that are installed via the fibo-infra repo
+# Initialize the (locations of) the tools that are installed via the infra repo
 #
 function initRepoBasedTools() {
 

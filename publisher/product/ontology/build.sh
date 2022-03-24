@@ -213,7 +213,7 @@ function runHygieneTests() {
 }
 
 #
-# Copy all publishable files from the fibo repo to the appropriate target directory (${tag_root})
+# Copy all publishable files from the ontology repo to the appropriate target directory (${tag_root})
 # where they will be converted to publishable artifacts
 #
 function ontologyCopyRdfToTarget() {
@@ -282,59 +282,73 @@ function ontologySearchAndReplaceStuff() {
   local -r sedfile=$(mktemp ${TMPDIR}/sed.XXXXXX)
 
   cat > "${sedfile}" << __HERE__
-#
-# First replace all http:// urls to https:// if that's not already done
-#
-s@http://${ONTPUB_SPEC_HOST}@${spec_root_url}@g
-#
-# Replace all IRIs in the form:
-#
-# - https://spec.edmcouncil.org/fibo/XXX/ with
-# - https://spec.edmcouncil.org/fibo/ontology/XXX/
-#
-# This replacement should not really be necessary since we've changed all those non-/ontology/ IRIs
-# in the git sources with their /ontology/-counterparts but the publisher should be able to support
-# older versions of the sources as well so we leave this in here.
-#
-s@${spec_family_root_url}/\([A-Z]*\)/@${product_root_url}/\1/@g
-#
-# Dealing with special case /ext/.
-#
-s@${spec_family_root_url}/ext/@${product_root_url}/ext/@g
-#
-# Then replace some odd ones with a version number in it like:
-#
-# - https://spec.edmcouncil.org/fibo/ontology/20150201/
-#
-# with
-#
-# - https://spec.edmcouncil.org/fibo/ontology/
-#
-# or:
-#
-# - https://spec.edmcouncil.org/fibo/ontology/BE/20150201/
-#
-# with
-#
-# - https://spec.edmcouncil.org/fibo/ontology/BE/
-#
-s@${product_root_url}/\([A-Z]*/\)\?[0-9]*/@${product_root_url}/\1@g
-#
-# We only want the following types of IRIs to be versioned: owl:imports and owl:versionIRI.
-#
-# - <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/InformationExt/InfoCore/"/> becomes:
-# - <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/master/latest/FND/InformationExt/InfoCore/"/>
-#
-s@\(owl:imports rdf:resource="${product_root_url}/\)@\1${branch_tag}/@g
-#
-# And then the same for the owl:versionIRI.
-#
-s@\(owl:versionIRI rdf:resource="${product_root_url}/\)@\1${branch_tag}/@g
-#
-# Just to be sure that we don't see any 'ontology/ontology' IRIs:
-#
-s@/ontology/ontology/@/ontology/@g
-#
+  #
+  # First replace all http:// urls to https:// if that's not already done
+  #
+
+  s@http://${ONTPUB_SPEC_HOST}@${spec_root_url}@g
+  
+  #
+  # Replace all IRIs in the form:
+  #
+  # - https://spec.edmcouncil.org/fibo/XXX/ with
+  # - https://spec.edmcouncil.org/fibo/ontology/XXX/
+  #
+  # This replacement should not really be necessary since we've changed all those non-/ontology/ IRIs
+  # in the git sources with their /ontology/-counterparts but the publisher should be able to support
+  # older versions of the sources as well so we leave this in here.
+  #
+  
+  s@${spec_family_root_url}/\([A-Z]*\)/@${product_root_url}/\1/@g
+  
+  #
+  # Dealing with special case /ext/.
+  #
+  
+  s@${spec_family_root_url}/ext/@${product_root_url}/ext/@g
+  
+  #
+  # Then replace some odd ones with a version number in it like:
+  #
+  # - https://spec.edmcouncil.org/fibo/ontology/20150201/
+  #
+  # with
+  #
+  # - https://spec.edmcouncil.org/fibo/ontology/
+  #
+  # or:
+  #
+  # - https://spec.edmcouncil.org/fibo/ontology/BE/20150201/
+  #
+  # with
+  #
+  # - https://spec.edmcouncil.org/fibo/ontology/BE/
+  #
+  
+  s@${product_root_url}/\([A-Z]*/\)\?[0-9]*/@${product_root_url}/\1@g
+  
+  #
+  # We only want the following types of IRIs to be versioned: owl:imports and owl:versionIRI.
+  #
+  # - <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/InformationExt/InfoCore/"/> becomes:
+  # - <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/master/latest/FND/InformationExt/InfoCore/"/>
+  #
+  
+  s@\(owl:imports rdf:resource="${product_root_url}/\)@\1${branch_tag}/@g
+  
+  #
+  # And then the same for the owl:versionIRI.
+  #
+  
+  s@\(owl:versionIRI rdf:resource="${product_root_url}/\)@\1${branch_tag}/@g
+  
+  #
+  # Just to be sure that we don't see any 'ontology/ontology' IRIs:
+  #
+  
+  s@/ontology/ontology/@/ontology/@g
+  
+  #
 __HERE__
 
 #   cat "${sedfile}"
@@ -415,7 +429,7 @@ function ontologyFixTopBraidBaseURICookie() {
 }
 
 #
-# The "index" of fibo is a list of all the ontology files, in their
+# The "index" is a list of all the ontology files, in their
 # directory structure.  This is an attempt to automatically produce
 # this.
 #
@@ -437,8 +451,8 @@ function ontologyBuildIndex () {
             -e 's/BODY {.*}/BODY { font-family : "Courier New"; font-size: 12pt ; line-height: 0.90}/g' \
             -e 's/ariel/"Courier New"/g' \
             -e 's/<hr>//g' \
-            -e "s@>Directory Tree<@>FIBO Ontology file directory ${directory/.\//}<@g" \
-            -e 's@h1>\n<p>@h1><p>This is the directory structure of FIBO; you can download individual files this way.  To load all of FIBO, please follow the instructions for particular tools at <a href="http://spec.edmcouncil.org/fibo">the main fibo download page</a>.<p/>@' \
+            -e "s@>Directory Tree<@>Ontology file directory ${directory/.\//}<@g" \
+            -e 's@h1>\n<p>@h1><p>This is the directory structure of ontology; you can download individual files this way.</a>.<p/>@' \
             -e "s@<a href=\".*>${spec_root_url}/.*</a>@@" > tree.html
   	  )
   	done < <(${FIND} . -type d)
@@ -523,26 +537,26 @@ function ontologyZipFiles () {
     find . -type f -name \*\.ttl -exec /bin/bash -c 'perl -pi -e "s/^\s*(\@prefix)\s+([^\s]+)\s+(\<[^\>]*\>)\s+(\.)\s*$/\1 \2 \3 \4\n/g" "{}"' \;
 
 
-    ${FIND}  "${family_product_branch_tag}" -name '*.ttl' -print | ${GREP} -v etc |  ${GREP} -v "LoadFIBOProd.ttl" | grep -v About |  xargs zip ${zipttlDevFile}
+    ${FIND}  "${family_product_branch_tag}" -name '*.ttl' -print | ${GREP} -v etc |  ${GREP} -v "Load${ONTPUB_FAMILY^^}Prod.ttl" | grep -v About |  xargs zip ${zipttlDevFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipttlDevFile}
 
-    ${FIND}  "${family_product_branch_tag}" -name '*.rdf' -print | ${GREP} -v etc | ${GREP} -v "LoadFIBOProd.rdf" |  grep -v About |xargs zip ${ziprdfDevFile}
+    ${FIND}  "${family_product_branch_tag}" -name '*.rdf' -print | ${GREP} -v etc | ${GREP} -v "Load${ONTPUB_FAMILY^^}Prod.rdf" |  grep -v About |xargs zip ${ziprdfDevFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${ziprdfDevFile}
 
-    ${FIND}  "${family_product_branch_tag}" -name '*.jsonld' -print | ${GREP} -v etc | ${GREP} -v "LoadFIBOProd.jsonld" |  grep -v About |  xargs zip ${zipjsonldDevFile}
+    ${FIND}  "${family_product_branch_tag}" -name '*.jsonld' -print | ${GREP} -v etc | ${GREP} -v "Load${ONTPUB_FAMILY^^}Prod.jsonld" |  grep -v About |  xargs zip ${zipjsonldDevFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipjsonldDevFile}
 
 
     
 
     ${GREP} -r 'utl-av[:;.]Release' "${family_product_branch_tag}" | ${GREP} -F ".ttl" | ${SED} 's/:.*$//' | xargs zip -r ${zipttlProdFile}
-    ${FIND}  "${family_product_branch_tag}" -name '*Load*.ttl' -print | ${GREP} -v "LoadFIBODev.ttl" |  xargs zip ${zipttlProdFile}
+    ${FIND}  "${family_product_branch_tag}" -name '*Load*.ttl' -print | ${GREP} -v "Load${ONTPUB_FAMILY^^}Dev.ttl" |  xargs zip ${zipttlProdFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipttlProdFile}
     ${GREP} -r 'utl-av[:;.]Release' "${family_product_branch_tag}" | ${GREP} -F ".rdf" |   ${SED} 's/:.*$//' | xargs zip -r ${ziprdfProdFile}
-    ${FIND}  "${family_product_branch_tag}" -name '*Load*.rdf' -print | ${GREP} -v "LoadFIBODev.rdf" | xargs zip ${ziprdfProdFile}
+    ${FIND}  "${family_product_branch_tag}" -name '*Load*.rdf' -print | ${GREP} -v "Load${ONTPUB_FAMILY^^}Dev.rdf" | xargs zip ${ziprdfProdFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${ziprdfProdFile}
     ${GREP} -r 'https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/Release' "${family_product_branch_tag}" | ${GREP} -F ".jsonld" |   ${SED} 's/:.*$//' | xargs zip -r ${zipjsonldProdFile}
-    ${FIND}  "${family_product_branch_tag}" -name '*Load*.jsonld' -print | ${GREP} -v "LoadFIBODev.jsonld" | xargs zip ${zipjsonldProdFile}
+    ${FIND}  "${family_product_branch_tag}" -name '*Load*.jsonld' -print | ${GREP} -v "Load${ONTPUB_FAMILY^^}Dev.jsonld" | xargs zip ${zipjsonldProdFile}
     ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipjsonldProdFile}
 
   )
@@ -554,21 +568,21 @@ function ontologyZipFiles () {
 
 function buildquads () {
 
-  local ProdQuadsFile="${tag_root}/prod.fibo.nq"
-  local DevQuadsFile="${tag_root}/dev.fibo.nq"
+  local ProdQuadsFile="${tag_root}/prod.${ONTPUB_FAMILY}.nq"
+  local DevQuadsFile="${tag_root}/dev.${ONTPUB_FAMILY}.nq"
 
-  local ProdFlatNT="${tag_root}/old_prod.fibo-quickstart.nt"
-  local DevFlatNT="${tag_root}/old_dev.fibo-quickstart.nt"
+  local ProdFlatNT="${tag_root}/old_prod.${ONTPUB_FAMILY}-quickstart.nt"
+  local DevFlatNT="${tag_root}/old_dev.${ONTPUB_FAMILY}-quickstart.nt"
 
-  local ProdFlatTTL="${tag_root}/old_prod.fibo-quickstart.ttl"
-  local DevFlatTTL="${tag_root}/old_dev.fibo-quickstart.ttl"
+  local ProdFlatTTL="${tag_root}/old_prod.${ONTPUB_FAMILY}-quickstart.ttl"
+  local DevFlatTTL="${tag_root}/old_dev.${ONTPUB_FAMILY}-quickstart.ttl"
 
   local ProdTMPTTL="$(mktemp ${TMPDIR}/prod.temp.XXXXXX.ttl)"
   local DevTMPTTL="$(mktemp ${TMPDIR}/dev.temp.XXXXXX.ttl)"
 
-  local CSVPrefixes="${tag_root}/prefixes.fibo.csv"
-  local TTLPrefixes="${tag_root}/prefixes.fibo.ttl"
-  local SPARQLPrefixes="${tag_root}/prefixes.fibo.sq"
+  local CSVPrefixes="${tag_root}/prefixes.${ONTPUB_FAMILY}.csv"
+  local TTLPrefixes="${tag_root}/prefixes.${ONTPUB_FAMILY}.ttl"
+  local SPARQLPrefixes="${tag_root}/prefixes.${ONTPUB_FAMILY}.sq"
 
 
   local tmpflat="$(mktemp ${TMPDIR}/flatten.XXXXXX.sq)"
@@ -677,7 +691,7 @@ __HERE__
 
 
   log "Getting metadata"
-  "${JENA_ARQ}" $(find "${source_family_root}" -name "MetadataFIBO.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
+  "${JENA_ARQ}" $(find "${source_family_root}" -name "Metadata${ONTPUB_FAMILY^^}.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
     --query=/publisher/lib/metadata.sparql \
     --results=TTL > "${TMPDIR}/metadata.ttl"
 
@@ -685,33 +699,33 @@ __HERE__
   # Get ontologies for Dev
   #
   log "Merging all dev ontologies into one RDF file"
-  robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${TMPDIR}/pre_dev.fibo-quickstart.owl
+  robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${TMPDIR}/pre_dev.${ONTPUB_FAMILY}-quickstart.owl
  
   ${JENA_ARQ} \
     --data ${TMPDIR}/metadata.ttl \
-    --data ${TMPDIR}/pre_dev.fibo-quickstart.owl \
+    --data ${TMPDIR}/pre_dev.${ONTPUB_FAMILY}-quickstart.owl \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${tag_root}/dev.fibo-quickstart.ttl
+    --results=TTL > ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl
 
   #
   # Get ontologies for Prod
   #
   log "Merging all prod ontologies into one RDF file"
-  robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${TMPDIR}/pre_prod.fibo-quickstart.owl
+  robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${TMPDIR}/pre_prod.${ONTPUB_FAMILY}-quickstart.owl
 
   
   ${JENA_ARQ} \
     --data ${TMPDIR}/metadata.ttl \
-    --data ${TMPDIR}/pre_prod.fibo-quickstart.owl \
+    --data ${TMPDIR}/pre_prod.${ONTPUB_FAMILY}-quickstart.owl \
     --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${tag_root}/prod.fibo-quickstart.ttl
+    --results=TTL > ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl
 	
-  ${JENA_ARQ} --data=${tag_root}/dev.fibo-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/dev.fibo-quickstart.nt  
-  ${JENA_ARQ} --data=${tag_root}/prod.fibo-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/prod.fibo-quickstart.nt
+  ${JENA_ARQ} --data=${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt  
+  ${JENA_ARQ} --data=${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.nt
   
-  zip ${tag_root}/dev.fibo-quickstart.ttl.zip ${tag_root}/dev.fibo-quickstart.ttl
-  zip ${tag_root}/prod.fibo-quickstart.ttl.zip ${tag_root}/prod.fibo-quickstart.ttl
-  zip ${tag_root}/dev.fibo-quickstart.nt.zip ${tag_root}/dev.fibo-quickstart.nt
-  zip ${tag_root}/prod.fibo-quickstart.nt.zip ${tag_root}/prod.fibo-quickstart.nt
+  zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl.zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl
+  zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl.zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl
+  zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt.zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt
+  zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.nt.zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.nt
 
 }
