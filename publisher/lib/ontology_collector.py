@@ -28,13 +28,14 @@ def get_local_ontology_map(ontology_catalog_path: str):
 def collect_ontologies(
         root: str,
         input_ontology_path: str,
+		import_failure: bool,
         output_graph_path=str(),
-        save_output=False):
+        save_output=False) -> bool:
     global output_graph
     if input_ontology_path in local_ontology_map:
         input_ontology_path = os.path.join(root, local_ontology_map[input_ontology_path])
     if input_ontology_path in visited_ontologies:
-        return
+        return import_failure
     input_ontology = Graph()
     try:
         input_ontology.parse(input_ontology_path)
@@ -42,14 +43,17 @@ def collect_ontologies(
         output_graph += input_ontology
         for subject, predicate, object_value in input_ontology:
             if predicate == OWL.imports:
-                collect_ontologies(
+                import_failure = \
+                  collect_ontologies(
                     root=root,
-                    input_ontology_path=str(object_value))
+                    input_ontology_path=str(object_value),
+                    import_failure=import_failure)
     except Exception as exception:
         print('Exception occurred while getting imported ontology', str(exception))
-        sys.exit(-1)
+        import_failure = True
     if save_output:
         output_graph.serialize(output_graph_path)
+    return import_failure
 
 
 if __name__ == "__main__":
@@ -65,10 +69,15 @@ if __name__ == "__main__":
     
     output_graph = Graph()
     
-    collect_ontologies(
+    import_failure = \
+      collect_ontologies(
         root=args.root,
         input_ontology_path=args.input_ontology,
         output_graph_path=args.output_ontology,
-        save_output=True)
+        save_output=True,
+        import_failure=False)
     
     output_graph.close(True)
+    
+    if import_failure:
+      sys.exit(-1)

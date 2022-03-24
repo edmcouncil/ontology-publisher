@@ -147,7 +147,7 @@ function runHygieneTests() {
      --output_ontology "${TMPDIR}/DEV.ttl"
 
   success=$?
-  if [ "${success}" != 0 ] ; then return -1 ; fi
+  if [ "${success}" != 0 ] ; then log "Merging dev ontologies encountered problem(s), so hygiene test results may be incomplete." ; fi
   
   #
   # Get ontologies for Prod
@@ -160,7 +160,7 @@ function runHygieneTests() {
      --output_ontology "${TMPDIR}/PROD.ttl"
 
   success=$?
-  if [ "${success}" != 0 ] ; then return -1 ; fi
+  if [ "${success}" != 0 ] ; then log "Merging prod ontologies encountered problem(s), so hygiene test results may be incomplete." ; fi
     
   logRule "Will run the following tests:"
 
