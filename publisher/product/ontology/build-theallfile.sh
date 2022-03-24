@@ -31,8 +31,8 @@ function ontologyCreateTheAllTtlFile() {
     python3 ${SCRIPT_DIR}/lib/trigify.py \
       --dir="${INPUT}/LCC" \
       --dir=${tag_root} \
-      --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/AboutFIBODev/" \
-      --top="https://spec.edmcouncil.org/fibo/ontology/MetadataFIBO/" \
+      --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/About${ONTPUB_FAMILY^^}Dev/" \
+      --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/ontology/Metadata${ONTPUB_FAMILY^^}/" \
       --output="${TMPDIR}/all.ttl" \
       --verbose \
       --format=ttl
@@ -41,8 +41,8 @@ function ontologyCreateTheAllTtlFile() {
     python3 ${SCRIPT_DIR}/lib/trigify.py \
       --dir="${INPUT}/LCC" \
       --dir=${tag_root} \
-      --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/AboutFIBODev/" \
-      --top="https://spec.edmcouncil.org/fibo/ontology/MetadataFIBO/" \
+      --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/About${ONTPUB_FAMILY^^}Dev/" \
+      --top="https://spec.edmcouncil.org/${family_product_branch_tag:?}/ontology/Metadata${ONTPUB_FAMILY^^}/" \
       --output="${TMPDIR}/all.ttl" \
       --format=ttl
       rc=$?
@@ -62,11 +62,12 @@ function ontologyCreateTheAllTtlFile() {
 
   cat > "${TMPDIR}/maturemodule.sq" << __HERE__
 #
-# Finds all the modules in FIBO that have parts that have maturily level :Release 
+# Finds all the modules that have parts that have maturily level :Release 
 # Those are the ones that should 
 # 
 # TODO: Also, why not do this in trigify.py itself? rdflib supports SPARQL. Would save the arq startup time.
 #
+
 PREFIX fibo-fnd-utl-av: <https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/>
 PREFIX dct:  <http://purl.org/dc/terms/>
 PREFIX sm: <http://www.omg.org/techprocess/ab/SpecificationMetadata/>
@@ -84,7 +85,7 @@ SELECT DISTINCT ?modfile WHERE {
     .
   }
   UNION {
-    BIND ("MetadataFIBO.rdf" AS ?modfile)
+    BIND ("Metadata${ONTPUB_FAMILY^^}.rdf" AS ?modfile)
   }
 }
 ORDER BY ?mod

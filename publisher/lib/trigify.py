@@ -68,11 +68,8 @@ class Trigger():
 							if name.endswith(".rdf") and
 								("etc" not in root or ("etc" in root and "imports" in root)) and
 								"git" not in root and
-								# "AboutFIBO" not in name and
 								"All" not in name and
 								"ont-policy.rdf" not in name
-								# and ("Metadata" not in name
-								# or "SpecificationMetadata" in name)
 			])
 		return gs
   
