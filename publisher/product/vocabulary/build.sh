@@ -68,14 +68,14 @@ function vocabularyCreateFromOntologies() {
   
 
   log "Creating Dev vocabulary"
-  ${JENA_ARQ} --data ${TMPDIR}/dev.owl --query ${source_family_root}/etc/classes.sparql --results=TTL > ${TMPDIR}/classes.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/dev.owl --query ${source_family_root}/etc/subclasses.sparql --results=TTL > ${TMPDIR}/subclasses.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/dev.owl --query ${source_family_root}/etc/properties.sparql --results=TTL > ${TMPDIR}/properties.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/dev.owl --query ${source_family_root}/etc/subproperties.sparql --results=TTL > ${TMPDIR}/subproperties.ttl
+  ${JENA_ARQ} --data ${TMPDIR}/dev.owl --query ${source_family_root}/etc/vocabulary/classes.sparql --results=TTL > ${TMPDIR}/classes.ttl
+  ${JENA_ARQ} --data ${TMPDIR}/dev.owl --query ${source_family_root}/etc/vocabulary/subclasses.sparql --results=TTL > ${TMPDIR}/subclasses.ttl
+  ${JENA_ARQ} --data ${TMPDIR}/dev.owl --query ${source_family_root}/etc/vocabulary/properties.sparql --results=TTL > ${TMPDIR}/properties.ttl
+  ${JENA_ARQ} --data ${TMPDIR}/dev.owl --query ${source_family_root}/etc/vocabulary/subproperties.sparql --results=TTL > ${TMPDIR}/subproperties.ttl
   
 
   ${JENA_ARQ} \
-    --data ${source_family_root}/etc/scaffolding.ttl \
+    --data ${source_family_root}/etc/vocabulary/scaffolding.ttl \
     --data ${TMPDIR}/classes.ttl \
     --data ${TMPDIR}/subclasses.ttl \
     --data ${TMPDIR}/properties.ttl \
@@ -84,13 +84,13 @@ function vocabularyCreateFromOntologies() {
     --results=TTL > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vD.ttl
 	
   log "Creating Prod vocabulary"
-  ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query ${source_family_root}/etc/classes.sparql --results=TTL > ${TMPDIR}/classes.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query ${source_family_root}/etc/subclasses.sparql --results=TTL > ${TMPDIR}/subclasses.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query ${source_family_root}/etc/properties.sparql --results=TTL > ${TMPDIR}/properties.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query ${source_family_root}/etc/subproperties.sparql --results=TTL > ${TMPDIR}/subproperties.ttl
+  ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query ${source_family_root}/etc/vocabulary/classes.sparql --results=TTL > ${TMPDIR}/classes.ttl
+  ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query ${source_family_root}/etc/vocabulary/subclasses.sparql --results=TTL > ${TMPDIR}/subclasses.ttl
+  ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query ${source_family_root}/etc/vocabulary/properties.sparql --results=TTL > ${TMPDIR}/properties.ttl
+  ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query ${source_family_root}/etc/vocabulary/subproperties.sparql --results=TTL > ${TMPDIR}/subproperties.ttl
   
   ${JENA_ARQ} \
-    --data ${source_family_root}/etc/scaffolding.ttl \
+    --data ${source_family_root}/etc/vocabulary/scaffolding.ttl \
     --data ${TMPDIR}/classes.ttl \
     --data ${TMPDIR}/subclasses.ttl \
     --data ${TMPDIR}/properties.ttl \
