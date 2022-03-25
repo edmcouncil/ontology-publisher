@@ -7,6 +7,8 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)" || exit 1
 
+if [ -n "$BASH_ENV" ]; then . "$BASH_ENV"; fi
+
 if [ -f ${SCRIPT_DIR}/lib/_functions.sh ] ; then
   # shellcheck source=lib/_functions.sh
   source ${SCRIPT_DIR}/lib/_functions.sh || exit $?
