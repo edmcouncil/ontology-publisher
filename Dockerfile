@@ -32,22 +32,19 @@ LABEL owner="Enterprise Data Management Council"
 #
 ARG ONTPUB_FAMILY
 ARG ONTPUB_SPEC_HOST
-ARG ONTPUB_IS_DARK_MODE
-ARG ONTPUB_VERSION
 ARG DEV_SPEC
 ARG PROD_SPEC
+ARG HYGIENE_TEST_PARAMETER_VALUE
+ARG ONTPUB_IS_DARK_MODE
 
 ENV \
-  ONTPUB_FAMILY=${ONTPUB_FAMILY:-fibo} \
-  ONTPUB_VERSION=${ONTPUB_VERSION:-latest} \
-  ONTPUB_IS_DARK_MODE=${ONTPUB_IS_DARK_MODE:-1} \
+  BASH_ENV=/etc/profile \
   INPUT=/input \
   OUTPUT=/output \
-  TMPDIR=/var/tmp \
-  HYGIENE_TEST_PARAMETER=<HYGIENE_TESTS_FILTER_PARAMETER> \
-  HYGIENE_TEST_PARAMETER_VALUE=edmcouncil
+  TMPDIR=/var/tmp
 
-RUN mkdir -p /publisher ${TMPDIR} || true
+RUN install -dv -m0755 /publisher "${TMPDIR}" && \
+  ln -s /etc/bashrc /etc/profile.d/spec.sh
 
 #
 # Installing bash, curl, git, grep, coreutils
@@ -287,12 +284,7 @@ WORKDIR /publisher
 
 RUN \
   echo PATH=${PATH} && \
-  sed -i -e 's/export PATH=\(.*\)/export PATH=${PATH}/g' /etc/profile && \
-  echo "export PATH=${PATH}" >> /etc/bashrc && \
-  echo 'export DEV_SPEC="${DEV_SPEC:-About${ONTPUB_FAMILY^^}Dev.rdf}"' >> /etc/bashrc && \
-  echo 'export DEV_SPEC="${DEV_SPEC:-About${ONTPUB_FAMILY^^}Dev.rdf}"' >> /etc/profile.d/spec.sh && \
-  echo 'export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"' >> /etc/bashrc && \
-  echo 'export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"' >> /etc/profile.d/spec.sh
+  echo "export PATH=${PATH}" >> /etc/bashrc
 
 CMD ["./publish.sh"]
 

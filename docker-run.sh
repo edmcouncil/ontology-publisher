@@ -195,7 +195,7 @@ function checkCommandLine() {
   fi
 
   #
-  # The --rebuild option builds the image from scratch
+  # The --rebuild option builds the image from scratch with the ability to change the default values for certain environment variables
   #
   if [[ "$*" =~ .*--rebuildimage($|[[:space:]]) || "$*" =~ .*--rebuild($|[[:space:]]) ]] ; then
     cli_option_buildimage=1
@@ -333,7 +333,9 @@ function buildImage() {
   local -a opts=()
 
   opts+=('build')
-  ((cli_option_rebuildimage)) && opts+=('--no-cache')
+ if ((cli_option_rebuildimage)) ; then
+  opts+=('--no-cache')
+  # TODO: add modification of ontology-specific environment variables in /etc/bashrc
   opts+=('--build-arg')
   opts+=("ONTPUB_FAMILY=${ONTPUB_FAMILY}")
   opts+=('--build-arg')
@@ -350,6 +352,11 @@ function buildImage() {
     opts+=('--build-arg')
     opts+=("PROD_SPEC=${PROD_SPEC}")
   fi
+  if [ -n "${HYGIENE_TEST_PARAMETER_VALUE}" ] ; then
+    opts+=('--build-arg')
+    opts+=("HYGIENE_TEST_PARAMETER_VALUE=${HYGIENE_TEST_PARAMETER_VALUE}")
+  fi
+ fi
   opts+=('--label')
   opts+=('${ONTPUB_ORG_TLD}.${ONTPUB_ORG}.ontology-publisher.version="${ONTPUB_VERSION/v/}"')
   opts+=('--label')
@@ -443,6 +450,10 @@ function run() {
   if [ -n "${PROD_SPEC}" ] ; then
     opts+=('--env')
     opts+=("PROD_SPEC=${PROD_SPEC}")
+  fi
+  if [ -n "${HYGIENE_TEST_PARAMETER_VALUE}" ] ; then
+    opts+=('--env')
+    opts+=("HYGIENE_TEST_PARAMETER_VALUE=${HYGIENE_TEST_PARAMETER_VALUE}")
   fi
 
   logVar ONTPUB_FAMILY
