@@ -52,6 +52,14 @@ If you'd like to just build the image:
 ./docker-run.sh --buildimage
 ```
 
+The `--rebuildimage` option forces the image to be rebuilt with the ability
+to change the default values for certain environment variables (see [docker-run.sh function buildImage()](./docker-run.sh)), e.g .:
+
+```bash
+env ONTPUB_FAMILY="onto" ./docker-run.sh --rebuildimage
+```
+sets the default ontology family to `onto`.
+
 If you'd like to publish the image to Docker Hub:
 
 ```bash

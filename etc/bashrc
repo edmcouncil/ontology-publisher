@@ -4,3 +4,17 @@
 # Putting stuff in this file while it resides in git doesnt work since at container startup this file
 # is overwritten somehow
 #
+
+export INPUT=/input
+export OUTPUT=/output
+export TMPDIR=/var/tmp
+
+export HYGIENE_TEST_PARAMETER="<HYGIENE_TESTS_FILTER_PARAMETER>"
+
+export ONTPUB_FAMILY="${ONTPUB_FAMILY:-fibo}"
+export ONTPUB_SPEC_HOST="${ONTPUB_SPEC_HOST:-spec.edmcouncil.org}"
+export DEV_SPEC="${DEV_SPEC:-About${ONTPUB_FAMILY^^}Dev.rdf}"
+export PROD_SPEC="${PROD_SPEC:-About${ONTPUB_FAMILY^^}Prod.rdf}"
+export HYGIENE_TEST_PARAMETER_VALUE="${HYGIENE_TEST_PARAMETER_VALUE:-edmcouncil}"
+export ONTPUB_IS_DARK_MODE="${ONTPUB_IS_DARK_MODE:-1}"
+
