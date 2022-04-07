@@ -1,9 +1,8 @@
+PREFIX ONTPUB_FAMILY-skos: <PRODUCT_ROOT_URL/>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX fibo-skos: <https://spec.edmcouncil.org/fibo/vocabulary/>
-prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX bla: <http://bla.da#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
 
 CONSTRUCT 
 {
@@ -11,7 +10,7 @@ CONSTRUCT
         ?annotationPropertyForClass ?annotation ;
         rdfs:isDefinedBy ?classIRI ;
         skos:prefLabel ?label ;
-        skos:inScheme fibo-skos:ClassConcepts .
+        skos:inScheme ONTPUB_FAMILY-skos:ClassConcepts .
 }
 WHERE
 {
@@ -19,7 +18,7 @@ WHERE
     {
         ?classIRI a owl:Class
         FILTER (isIRI(?classIRI))
-        FILTER (CONTAINS(str(?classIRI), 'edmcouncil')) .
+        FILTER (regex(str(?classIRI), "HYGIENE_TEST_PARAMETER_VALUE", "i")) .
 
         BIND (IRI(REPLACE(str(?classIRI), "/ontology/", "/vocabulary/")) as ?vocClassIRI)
 
@@ -33,4 +32,3 @@ WHERE
         }
     }
 }
-

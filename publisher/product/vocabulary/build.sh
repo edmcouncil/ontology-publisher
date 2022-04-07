@@ -47,56 +47,72 @@ function vocabularyGetOntologies() {
   #
   # Get ontologies for Dev
   #
-  log "Merging all dev ontologies into one RDF file: $(logFileName ${tag_root}/dev.owl)"
+  logItem "Merging all dev" "$(logFileName ${tag_root}/dev.owl)"
   robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${TMPDIR}/dev.owl
 
   #
   # Get ontologies for Prod
   #
-  log "Merging all prod ontologies into one RDF file: : $(logFileName ${tag_root}/prod.owl)"
+  logItem "Merging all prod" "$(logFileName ${tag_root}/prod.owl)"
   robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${TMPDIR}/prod.owl
   
   return 0
 }
 
+function replace_variables() {
+  sed	-e "s&ONTPUB_FAMILY&${ONTPUB_FAMILY}&g" \
+	-e "s&PRODUCT_ROOT_URL&${product_root_url}&g" \
+	-e "s&HYGIENE_TEST_PARAMETER_VALUE&${HYGIENE_TEST_PARAMETER_VALUE}&g" \
+	-e "s&ONTPUB_NAME&${ONTPUB_FAMILY^^}&g"
+}
+
 function vocabularyCreateFromOntologies() {
 
+  require ONTPUB_FAMILY || return $?
+  require product_root_url || return $?
+  require HYGIENE_TEST_PARAMETER_VALUE || return ?
   require vocabulary_script_dir || return $?
+  require vocabulary_product_tag_root || return $?
   
   logStep "vocabularyCreateFromOntologies"
-  log "Creating vocabularies form ontologies"
-  
+  log "Creating vocabularies from ontologies"
+
+  logItem "Creating scaffolding file" "$(logFileName ${tag_root}/scaffolding.ttl)"
+  rm -f "${TMPDIR}/scaffolding.ttl" ; replace_variables < "${SCRIPT_DIR}/product/vocabulary/scaffolding.ttl" > "${TMPDIR}/scaffolding.ttl"
 
   log "Creating Dev vocabulary"
-  ${JENA_ARQ} --data ${TMPDIR}/dev.owl --query ${SCRIPT_DIR}/product/vocabulary/classes.sparql --results=TTL > ${TMPDIR}/classes.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/dev.owl --query ${SCRIPT_DIR}/product/vocabulary/subclasses.sparql --results=TTL > ${TMPDIR}/subclasses.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/dev.owl --query ${SCRIPT_DIR}/product/vocabulary/properties.sparql --results=TTL > ${TMPDIR}/properties.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/dev.owl --query ${SCRIPT_DIR}/product/vocabulary/subproperties.sparql --results=TTL > ${TMPDIR}/subproperties.ttl
-  
+  export data_ttl=""
+  for SPARQL in ${SCRIPT_DIR}/product/vocabulary/*.sparql ; do
+   if [ -r "${SPARQL}" ] ; then
+    ttl="${TMPDIR}/$(basename "${SPARQL}" | sed 's/.sparql/.ttl/g')" ; rm -f "${ttl}"
+    logItem "$(logFileName $(basename ${SPARQL}))" "$(logFileName ${tag_root}/$(basename ${ttl}))"
+    ${JENA_ARQ} --data ${TMPDIR}/dev.owl --query <(replace_variables < "${SPARQL}") --results=TTL > "${ttl}" && export data_ttl="${data_ttl} --data ${ttl}"
+   fi
+  done
 
+  logItem "Creating dev file" "$(logFileName ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vD.ttl)"
   ${JENA_ARQ} \
-    --data ${SCRIPT_DIR}/product/vocabulary/scaffolding.ttl \
-    --data ${TMPDIR}/classes.ttl \
-    --data ${TMPDIR}/subclasses.ttl \
-    --data ${TMPDIR}/properties.ttl \
-    --data ${TMPDIR}/subproperties.ttl \
-    --query=/publisher/lib/echo.sparql \
+    --data "${TMPDIR}/scaffolding.ttl" \
+    ${data_ttl} \
+    --query=<(echo 'CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}') \
     --results=TTL > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vD.ttl
-	
+
   log "Creating Prod vocabulary"
-  ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query ${SCRIPT_DIR}/product/vocabulary/classes.sparql --results=TTL > ${TMPDIR}/classes.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query ${SCRIPT_DIR}/product/vocabulary/subclasses.sparql --results=TTL > ${TMPDIR}/subclasses.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query ${SCRIPT_DIR}/product/vocabulary/properties.sparql --results=TTL > ${TMPDIR}/properties.ttl
-  ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query ${SCRIPT_DIR}/product/vocabulary/subproperties.sparql --results=TTL > ${TMPDIR}/subproperties.ttl
-  
+  export data_ttl=""
+  for SPARQL in ${SCRIPT_DIR}/product/vocabulary/*.sparql ; do
+   if [ -r "${SPARQL}" ] ; then
+    ttl="${TMPDIR}/$(basename "${SPARQL}" | sed 's/.sparql/.ttl/g')" ; rm -f "${ttl}"
+    logItem "$(logFileName $(basename ${SPARQL}))" "$(logFileName ${tag_root}/$(basename ${ttl}))"
+    ${JENA_ARQ} --data ${TMPDIR}/prod.owl --query <(replace_variables < "${SPARQL}") --results=TTL > "${ttl}" && export data_ttl="${data_ttl} --data ${ttl}"
+   fi
+  done
+
+  logItem "Creating prod file" "$(logFileName ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vP.ttl)"
   ${JENA_ARQ} \
-    --data ${SCRIPT_DIR}/product/vocabulary/scaffolding.ttl \
-    --data ${TMPDIR}/classes.ttl \
-    --data ${TMPDIR}/subclasses.ttl \
-    --data ${TMPDIR}/properties.ttl \
-    --data ${TMPDIR}/subproperties.ttl \
-    --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vP.ttl  
+    --data "${TMPDIR}/scaffolding.ttl" \
+    ${data_ttl} \
+    --query=<(echo 'CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}') \
+    --results=TTL > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vP.ttl
 
   touch ${vocabulary_product_tag_root}/vocabulary.log
 
@@ -113,24 +129,24 @@ function saveVocabulariesInOtherFormats() {
   
   ${JENA_ARQ} \
     --data ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vD.ttl \
-	--query=/publisher/lib/echo.sparql \
+	--query=<(echo 'CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}') \
 	--results=RDF > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vD.rdf
 	
   ${JENA_ARQ} \
     --data ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vD.ttl \
-	--query=/publisher/lib/echo.sparql \
+	--query=<(echo 'CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}') \
 	--results=JSONLD > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vD.jsonld
 	
   log "Saving Prod vocabulary"
 	
   ${JENA_ARQ} \
     --data ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vP.ttl \
-	--query=/publisher/lib/echo.sparql \
+	--query=<(echo 'CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}') \
 	--results=RDF > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vP.rdf
 	
   ${JENA_ARQ} \
     --data ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vP.ttl \
-	--query=/publisher/lib/echo.sparql \
+	--query=<(echo 'CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}') \
 	--results=JSONLD > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vP.jsonld
 	
   return 0
