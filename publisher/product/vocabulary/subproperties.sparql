@@ -1,8 +1,8 @@
+PREFIX ONTPUB_FAMILY-skos: <PRODUCT_ROOT_URL/>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
-PREFIX fibo-skos: <https://spec.edmcouncil.org/fibo/vocabulary/>
-prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
 
 CONSTRUCT 
 {
@@ -14,14 +14,14 @@ WHERE
     {
         ?propertyIRI a owl:ObjectProperty 
         FILTER (isIRI(?propertyIRI))
-        FILTER (CONTAINS(str(?propertyIRI), 'edmcouncil')) .
+        FILTER (regex(str(?propertyIRI), "HYGIENE_TEST_PARAMETER_VALUE", "i")) .
         BIND (IRI(REPLACE(str(?propertyIRI), "/ontology/", "/vocabulary/")) as ?vocPropertyIRI)
      
         ?propertyIRI rdfs:subPropertyOf ?parentPropertyIRI .
     
         ?parentPropertyIRI a owl:ObjectProperty 
         FILTER (isIRI(?parentPropertyIRI))
-        FILTER (CONTAINS(str(?parentPropertyIRI), 'edmcouncil')) .
+        FILTER (regex(str(?parentPropertyIRI), "HYGIENE_TEST_PARAMETER_VALUE", "i")) .
         BIND (IRI(REPLACE(str(?parentPropertyIRI), "/ontology/", "/vocabulary/")) as ?vocParentPropertyIRI)
     }
 }
