@@ -129,24 +129,24 @@ function saveVocabulariesInOtherFormats() {
   
   ${JENA_ARQ} \
     --data ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vD.ttl \
-	--query=/publisher/lib/echo.sparql \
+	--query=<(echo 'CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}') \
 	--results=RDF > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vD.rdf
 	
   ${JENA_ARQ} \
     --data ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vD.ttl \
-	--query=/publisher/lib/echo.sparql \
+	--query=<(echo 'CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}') \
 	--results=JSONLD > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vD.jsonld
 	
   log "Saving Prod vocabulary"
 	
   ${JENA_ARQ} \
     --data ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vP.ttl \
-	--query=/publisher/lib/echo.sparql \
+	--query=<(echo 'CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}') \
 	--results=RDF > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vP.rdf
 	
   ${JENA_ARQ} \
     --data ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vP.ttl \
-	--query=/publisher/lib/echo.sparql \
+	--query=<(echo 'CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}') \
 	--results=JSONLD > ${vocabulary_product_tag_root}/${ONTPUB_FAMILY}-vP.jsonld
 	
   return 0
