@@ -32,6 +32,7 @@ function publishProductDataDictionaryContent() {
 
   logRule "Publishing the content files of the datadictionary product"
 
+  require HYGIENE_TEST_PARAMETER_VALUE || return ?
   require source_family_root || return $?
   require ontology_product_tag_root || return $?
   require datadictionary_product_tag_root || return $?
@@ -52,13 +53,13 @@ function publishProductDataDictionaryContent() {
   logRule "Running OntoViewer Toolkit to generate CSV files containing data from ontologies for DEV from path ${source_family_root}"
   debug=false ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${DEV_SPEC}"\
     --output "${datadictionaryBaseName}-dev.csv" \
-    --filter-pattern edmcouncil \
+    --filter-pattern "${HYGIENE_TEST_PARAMETER_VALUE}" \
     --ontology-mapping "${source_family_root}/catalog-v001.xml" 
 
   logRule "Running OntoViewer Toolkit to generate CSV files containing data from ontologies for PROD from path ${source_family_root}"
   debug=false ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${PROD_SPEC}" \
     --output "${datadictionaryBaseName}-prod.csv" \
-    --filter-pattern edmcouncil \
+    --filter-pattern "${HYGIENE_TEST_PARAMETER_VALUE}" \
     --ontology-mapping "${source_family_root}/catalog-v001.xml" 
 
   logRule "Writing from csv files to xlsx files"
