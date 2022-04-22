@@ -352,6 +352,14 @@ function buildImage() {
     opts+=('--build-arg')
     opts+=("PROD_SPEC=${PROD_SPEC}")
   fi
+  if [ -n "${HYGIENE_SPEC_WARN}" ] ; then
+    opts+=('--build-arg')
+    opts+=("HYGIENE_SPEC_WARN=${HYGIENE_SPEC_WARN}")
+  fi
+  if [ -n "${HYGIENE_SPEC_ERROR}" ] ; then
+    opts+=('--build-arg')
+    opts+=("HYGIENE_SPEC_ERROR=${HYGIENE_SPEC_ERROR}")
+  fi
   if [ -n "${HYGIENE_TEST_PARAMETER_VALUE}" ] ; then
     opts+=('--build-arg')
     opts+=("HYGIENE_TEST_PARAMETER_VALUE=${HYGIENE_TEST_PARAMETER_VALUE}")
@@ -450,6 +458,14 @@ function run() {
   if [ -n "${PROD_SPEC}" ] ; then
     opts+=('--env')
     opts+=("PROD_SPEC=${PROD_SPEC}")
+  fi
+  if [ -n "${HYGIENE_SPEC_WARN}" ] ; then
+    opts+=('--env')
+    opts+=("HYGIENE_SPEC_WARN=${HYGIENE_SPEC_WARN}")
+  fi
+  if [ -n "${HYGIENE_SPEC_ERROR}" ] ; then
+    opts+=('--env')
+    opts+=("HYGIENE_SPEC_ERROR=${HYGIENE_SPEC_ERROR}")
   fi
   if [ -n "${HYGIENE_TEST_PARAMETER_VALUE}" ] ; then
     opts+=('--env')
