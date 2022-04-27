@@ -23,7 +23,7 @@ function gitSafeDirectories() {
 
   # [JIDIDMP-66] CVE-2022-24765
   for DIR in /input/* ; do
-    test -d "${DIR}" && ! git config --global --get safe.directory "^${DIR}$" && git config --global --add safe.directory "${DIR}" ; true
+    test -d "${DIR}" && ! git config --global --get safe.directory "^${DIR}$" &>/dev/null && git config --global --add safe.directory "${DIR}" ; true
   done
 }
 
