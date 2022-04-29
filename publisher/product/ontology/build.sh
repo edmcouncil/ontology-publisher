@@ -86,7 +86,7 @@ function runHygieneTests() {
 
   ontology_product_tag_root="${tag_root:?}"
   hygiene_product_tag_root="${ontology_product_tag_root/ontology/hygiene}"
-  install -dv "${hygiene_product_tag_root}"
+  install -d "${hygiene_product_tag_root}"
 
   #
   # Paramterize hygiene tests
@@ -101,18 +101,22 @@ function runHygieneTests() {
   #
   # Run consistency-check for DEV and PROD ontologies
   #
-  logRule "consistency-check: $(echo -e "\x1b\x5b\x33\x33\x6dWARN\x1b\x5b\x30\x6d")"
 
-  # For now consistency check are turned off.  
+  rm -f "${hygiene_product_tag_root}/consistency-check.log" &>/dev/null
 
-  for SPEC in ${HYGIENE_SPEC_WARN:-${DEV_SPEC}} ; do
+  test -n "${HYGIENE_SPEC_WARN}" && logRule "run consistency check at level: warning" && \
+  for SPEC in ${HYGIENE_SPEC_WARN} ; do
    if [ -s "${source_family_root}/${SPEC}" ] && [ ! -d "${source_family_root}/${SPEC}" ] ; then
-    rm -f ${TMPDIR}/{console.txt,ret.txt}
+    rm -f ${TMPDIR}/console.txt
     logItem "${SPEC}" "$(getOntologyIRI < "${source_family_root}/${SPEC}")"
     if ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${SPEC}" \
-        --output ${TMPDIR}/ret.txt $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
+        --output ${TMPDIR}/console.txt $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
         --goal consistency-check &> "${hygiene_product_tag_root}/consistency-check.log" ; then
-      head -n 1 "${TMPDIR}/ret.txt" | grep '^true$' &>/dev/null || echo -e "\t\x1b\x5b\x33\x33\x6dWARN\x1b\x5b\x30\x6d:  consistency-check=$(cat "${TMPDIR}/ret.txt")"
+      if head -n 1 "${TMPDIR}/console.txt" | grep '^true$' &>/dev/null ; then
+        echo -e "\t\x1b\x5b\x33\x32\x6d$(echo "Ontology \"${SPEC}\" is consistent."   | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
+      else
+        echo -e "\t\x1b\x5b\x33\x31\x6d$(echo "Ontology \"${SPEC}\" is inconsistent." | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
+      fi
     else
       echo -e "\t\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d: running consistency-check - see 'consistency-check.log'"
       return 1
@@ -120,15 +124,19 @@ function runHygieneTests() {
    fi
   done
 
-  logRule "consistency-check: $(echo -e "\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d")"
-  for SPEC in ${HYGIENE_SPEC_ERROR:-${PROD_SPEC}} ; do
+  test -n "${HYGIENE_SPEC_ERROR}" && logRule "run consistency check at level: error" && \
+  for SPEC in ${HYGIENE_SPEC_ERROR} ; do
    if [ -s "${source_family_root}/${SPEC}" ] && [ ! -d "${source_family_root}/${SPEC}" ] ; then
-    rm -f ${TMPDIR}/{console.txt,ret.txt}
+    rm -f ${TMPDIR}/console.txt
     logItem "${SPEC}" "$(getOntologyIRI < "${source_family_root}/${SPEC}")"
     if ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${SPEC}" \
-        --output ${TMPDIR}/ret.txt $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
+        --output ${TMPDIR}/console.txt $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
         --goal consistency-check &>> "${hygiene_product_tag_root}/consistency-check.log" ; then
-      head -n 1 "${TMPDIR}/ret.txt" | grep '^true$' &>/dev/null || { echo -e "\t\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d: consistency-check=$(cat "${TMPDIR}/ret.txt")" ; return 1 ; }
+      if head -n 1 "${TMPDIR}/console.txt" | grep '^true$' &>/dev/null ; then
+        echo -e "\t\x1b\x5b\x33\x32\x6d$(echo "Ontology \"${SPEC}\" is consistent."   | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
+      else
+        echo -e "\t\x1b\x5b\x33\x31\x6d$(echo "Ontology \"${SPEC}\" is inconsistent." | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
+      fi
     else
       echo -e "\t\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d: running consistency-check - see 'consistency-check.log'"
       return 1
@@ -136,9 +144,9 @@ function runHygieneTests() {
    fi
   done
 
-  rm -f ${TMPDIR}/{console.txt,ret.txt}
+  rm -f ${TMPDIR}/console.txt &>/dev/null
 
-  logRule "consistency-check: end"
+  test -n "${HYGIENE_SPEC_WARN}${HYGIENE_SPEC_ERROR}" && logRule "consistency-check: end"
 
   #
   # Get ontologies for Dev
