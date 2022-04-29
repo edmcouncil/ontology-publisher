@@ -19,6 +19,14 @@ function checkShell() {
   return 0
 }
 
+function gitSafeDirectories() {
+
+  # [JIDIDMP-66] CVE-2022-24765
+  for DIR in /input/* ; do
+    test -d "${DIR}" && ! git config --global --get safe.directory "^${DIR}$" &>/dev/null && git config --global --add safe.directory "${DIR}" ; true
+  done
+}
+
 function isMacOSX() {
 
   test "$(uname -s)" == "Darwin"
@@ -1186,5 +1194,6 @@ function getIsDarkMode() {
 }
 
 checkShell || return $?
+isRunningInDockerContainer && gitSafeDirectories
 
 declare -r -g is_dark_mode=$(getIsDarkMode ; echo $?)

@@ -119,31 +119,6 @@ RUN \
   test "$(which serdi)" == "${SERD}"
 
 #
-# Installing the rdf-toolkit
-#
-#ENV RDFTOOLKIT_JAR=/publisher/lib/rdf-toolkit.jar
-ENV RDFTOOLKIT_JAR=/usr/share/java/rdf-toolkit/rdf-toolkit.jar
-RUN \
-  echo ================================= install the RDF toolkit >&2 && \
-  toolkit_build="lastSuccessfulBuild" ; \
-  url="https://jenkins.edmcouncil.org/view/rdf-toolkit/job/rdf-toolkit-build/" ; \
-  url="${url}${toolkit_build}/artifact/target/rdf-toolkit.jar" ; \
-  echo "Downloading ${url}:" >&2 ; \
-  mkdir -p /usr/share/java/rdf-toolkit ; \
-  curl --location --silent --show-error --output ${RDFTOOLKIT_JAR} --url "${url}"
-
-#
-# Install OntoViewer Toolkit
-#
-ENV ONTOVIEWER_TOOLKIT_JAR=/usr/share/java/onto-viewer/onto-viewer-toolkit.jar
-RUN \
-  echo "================================= install OntoViewer Toolkit" >&2 && \
-  url='https://jenkins.edmcouncil.org/view/onto-viewer/job/onto-viewer-build/lastSuccessfulBuild/artifact/onto-viewer-toolkit/target/onto-viewer-toolkit.jar' ; \
-  mkdir -p /usr/share/java/onto-viewer ; \
-  echo "Downloading ${url}:" >&2 ; \
-  curl --location --silent --show-error --output "${ONTOVIEWER_TOOLKIT_JAR}" --url "${url}"
-
-#
 # Installing Apache Jena
 # INFRA-496 jena-arq-${JENA_VERSION}.jar: workaround to change default JSON-LD output: JSONLD = JSONLD_EXPAND_PRETTY instead of JSONLD_COMPACT_PRETTY
 #
@@ -257,6 +232,31 @@ COPY etc /etc
 COPY root /root
 
 #
+# Installing the rdf-toolkit
+#
+#ENV RDFTOOLKIT_JAR=/publisher/lib/rdf-toolkit.jar
+ENV RDFTOOLKIT_JAR=/usr/share/java/rdf-toolkit/rdf-toolkit.jar
+RUN \
+  echo ================================= install the RDF toolkit >&2 && \
+  toolkit_build="lastSuccessfulBuild" ; \
+  url="https://jenkins.edmcouncil.org/view/rdf-toolkit/job/rdf-toolkit-build/" ; \
+  url="${url}${toolkit_build}/artifact/target/rdf-toolkit.jar" ; \
+  echo "Downloading ${url}:" >&2 ; \
+  mkdir -p /usr/share/java/rdf-toolkit ; \
+  curl --location --silent --show-error --output ${RDFTOOLKIT_JAR} --url "${url}"
+
+#
+# Install OntoViewer Toolkit
+#
+ENV ONTOVIEWER_TOOLKIT_JAR=/usr/share/java/onto-viewer/onto-viewer-toolkit.jar
+RUN \
+  echo "================================= install OntoViewer Toolkit" >&2 && \
+  url='https://jenkins.edmcouncil.org/view/onto-viewer/job/onto-viewer-build/lastSuccessfulBuild/artifact/onto-viewer-toolkit/target/onto-viewer-toolkit.jar' ; \
+  mkdir -p /usr/share/java/onto-viewer ; \
+  echo "Downloading ${url}:" >&2 ; \
+  curl --location --silent --show-error --output "${ONTOVIEWER_TOOLKIT_JAR}" --url "${url}"
+
+#
 # <skip in dev mode begin>
 #
 COPY /publisher /publisher
@@ -286,7 +286,9 @@ WORKDIR /publisher
 
 RUN \
   echo PATH=${PATH} && \
-  echo "export PATH=${PATH}" >> /etc/bashrc
+  echo "export PATH=${PATH}" >> /etc/bashrc && \
+  ln -sf /var/tmp/.gitconfig /root/.gitconfig && \
+  rm -rvf /root/{.wget-hsts,.cache} /var/tmp/pandoc*.tar.gz
 
 CMD ["./publish.sh"]
 
