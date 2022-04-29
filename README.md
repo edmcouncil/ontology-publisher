@@ -53,7 +53,7 @@ If you'd like to just build the image:
 ```
 
 The `--rebuildimage` option forces the image to be rebuilt with the ability
-to change the default values for certain environment variables (see [docker-run.sh function buildImage()](./docker-run.sh)), e.g .:
+to change the default values for certain environment variables (see [docker-run.sh --rebuild option](./docker-run.sh)), e.g .:
 
 ```bash
 env ONTPUB_FAMILY="onto" ./docker-run.sh --rebuildimage
@@ -65,6 +65,31 @@ If you'd like to publish the image to Docker Hub:
 ```bash
 ./docker-run.sh --pushimage
 ```
+
+## Environment variables
+
+When running ontology-publisher it is possible to set environment variables appropriate for the processed ontology as follows:
+
+```bash
+env <VARIABLE_NAME>=<VARIABLE_VALUE> [<VARIABLE_NAME1>=<VARIABLE_VALUE1>...] ./docker-run.sh [OPTION...]
+```
+
+for example:
+
+```bash
+env ONTPUB_FAMILY="onto" ONTPUB_INPUT_REPOS="onto core" ./docker-run.sh --shell --dev
+```
+
+List of allowed `<VARIABLE_NAME>` (and defaults for `<VARIABLE_VALUE>`):
+
+- `ONTPUB_FAMILY` :- ontology name (base for many other values), e.g. `onto` (default: `fibo`); this variable is also possible to set during build time (see `--rebuildimage` option)
+- `ONTPUB_SPEC_HOST` :- the basis of the ontology IRI=`https://${ONTPUB_SPEC_HOST}/${ONTPUB_FAMILY}/ontology/`, e.g. `onto.example.org` (default: `spec.edmcouncil.org`); this variable is also possible to set during build time (see `--rebuildimage` option)
+- `ONTPUB_INPUT_REPOS` :- list of directories (located in the user's home directory) containing input ontologies that will be mounted in the _/input_ directory inside container, e.g. `onto core` (default: `${ONTPUB_FAMILY} LCC`)
+- `DEV_SPEC` :- the name of the file (inside the directory named `${ONTPUB FAMILY}`, in the `${ONTPUB_INPUT_REPOS}` list) containing the "Development" ontology, e.g. `Devel.rdf` (default: `About${ONTPUB_FAMILY}Dev.rdf`)
+- `PROD_SPEC` :- the name of the file (inside the directory named `${ONTPUB FAMILY}`, in the `${ONTPUB_INPUT_REPOS}` list) containing the "Production" ontology, e.g. `Prod.rdf` (default: `About${ONTPUB_FAMILY}Prod.rdf`)
+- `HYGIENE_TEST_PARAMETER_VALUE` :- filter pattern, e.g. `example` (default: `edmcouncil`); this variable is also possible to set during build time (see `--rebuildimage` option)
+- `HYGIENE_SPEC_WARN` :- the name of the file (inside the directory named `${ONTPUB FAMILY}`, in the `${ONTPUB_INPUT_REPOS}` list) for which the "warning" level consistency check test will be performed (i.e. in the case of a lack of consistency, the ontology building process is not terminated), e.g. `Devel.rdf` (no default - in the absence of a value, the tests will not be run)
+- `HYGIENE_SPEC_ERROR` :- the name of the file (inside the directory named `${ONTPUB FAMILY}`, in the `${ONTPUB_INPUT_REPOS}` list) for which the "error" level consistency check test will be performed (i.e. in the case of a lack of consistency, the ontology building process is terminated with an error message), e.g. `Prod.rdf` (no default - in the absence of a value, the tests will not be run)
 
 ## Jenkins
 
