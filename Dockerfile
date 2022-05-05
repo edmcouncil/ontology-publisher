@@ -30,12 +30,10 @@ LABEL owner="Enterprise Data Management Council"
 # their value is copied into a same named ENV variable. They're just there during the image build process itself.
 # You can override their default values with any number of "--build-arg" options on the "docker build" command line.
 #
-ARG ONTPUB_FAMILY
-ARG ONTPUB_SPEC_HOST
-ARG DEV_SPEC
-ARG PROD_SPEC
-ARG HYGIENE_TEST_PARAMETER_VALUE
-ARG ONTPUB_IS_DARK_MODE
+ARG ONTPUB_FAMILY=fibo
+ARG ONTPUB_SPEC_HOST=spec.edmcouncil.org
+ARG HYGIENE_TEST_PARAMETER_VALUE=edmcouncil
+ARG ONTPUB_IS_DARK_MODE=1
 
 ENV \
   BASH_ENV=/etc/profile \
@@ -285,6 +283,7 @@ WORKDIR /publisher
 RUN \
   echo PATH=${PATH} && \
   echo "export PATH=${PATH}" >> /etc/bashrc && \
+  sed -i "s/<ONTPUB_FAMILY>/${ONTPUB_FAMILY}/g ; s/<ONTPUB_SPEC_HOST>/${ONTPUB_SPEC_HOST}/g ; s/<HYGIENE_TEST_PARAMETER_VALUE>/${HYGIENE_TEST_PARAMETER_VALUE}/g ; s/<ONTPUB_IS_DARK_MODE>/${ONTPUB_IS_DARK_MODE}/g" /etc/bashrc && \
   ln -sf /var/tmp/.gitconfig /root/.gitconfig && \
   rm -rvf /root/{.wget-hsts,.cache} /var/tmp/pandoc*.tar.gz
 

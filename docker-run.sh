@@ -11,6 +11,7 @@ export ONTPUB_ORG="edmcouncil"
 export ONTPUB_ORG_TLD="org"
 export ONTPUB_SPEC_HOST="${ONTPUB_SPEC_HOST:-spec.${ONTPUB_ORG}.${ONTPUB_ORG_TLD}}"
 export ONTPUB_INPUT_REPOS="${ONTPUB_INPUT_REPOS:-${ONTPUB_FAMILY} LCC}"
+export HYGIENE_TEST_PARAMETER_VALUE="${HYGIENE_TEST_PARAMETER_VALUE:-edmcouncil}"
 export ONTPUB_VERSION="$(git -C "${SCRIPT_DIR}" rev-parse --abbrev-ref HEAD)"
 
 if [[ -f ${SCRIPT_DIR}/publisher/lib/_functions.sh ]] ; then
@@ -333,9 +334,11 @@ function buildImage() {
   local -a opts=()
 
   opts+=('build')
+ #
+ # The --rebuild option builds the image from scratch with the ability to change the default values for certain environment variables
+ #
  if ((cli_option_rebuildimage)) ; then
   opts+=('--no-cache')
-  # TODO: add modification of ontology-specific environment variables in /etc/bashrc
   opts+=('--build-arg')
   opts+=("ONTPUB_FAMILY=${ONTPUB_FAMILY}")
   opts+=('--build-arg')
@@ -343,19 +346,7 @@ function buildImage() {
   opts+=('--build-arg')
   opts+=("ONTPUB_IS_DARK_MODE=${cli_option_dark}")
   opts+=('--build-arg')
-  opts+=("ONTPUB_VERSION=${ONTPUB_VERSION}")
-  if [ -n "${DEV_SPEC}" ] ; then
-    opts+=('--build-arg')
-    opts+=("DEV_SPEC=${DEV_SPEC}")
-  fi
-  if [ -n "${PROD_SPEC}" ] ; then
-    opts+=('--build-arg')
-    opts+=("PROD_SPEC=${PROD_SPEC}")
-  fi
-  if [ -n "${HYGIENE_TEST_PARAMETER_VALUE}" ] ; then
-    opts+=('--build-arg')
-    opts+=("HYGIENE_TEST_PARAMETER_VALUE=${HYGIENE_TEST_PARAMETER_VALUE}")
-  fi
+  opts+=("HYGIENE_TEST_PARAMETER_VALUE=${HYGIENE_TEST_PARAMETER_VALUE}")
  fi
   opts+=('--label')
   opts+=('${ONTPUB_ORG_TLD}.${ONTPUB_ORG}.ontology-publisher.version="${ONTPUB_VERSION/v/}"')
@@ -450,6 +441,14 @@ function run() {
   if [ -n "${PROD_SPEC}" ] ; then
     opts+=('--env')
     opts+=("PROD_SPEC=${PROD_SPEC}")
+  fi
+  if [ -n "${HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME}" ] ; then
+    opts+=('--env')
+    opts+=("HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME=${HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME}")
+  fi
+  if [ -n "${HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME}" ] ; then
+    opts+=('--env')
+    opts+=("HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME=${HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME}")
   fi
   if [ -n "${HYGIENE_TEST_PARAMETER_VALUE}" ] ; then
     opts+=('--env')
