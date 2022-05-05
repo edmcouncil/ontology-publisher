@@ -104,8 +104,8 @@ function runHygieneTests() {
 
   rm -f "${hygiene_product_tag_root}/consistency-check.log" &>/dev/null
 
-  test -n "${HYGIENE_SPEC_WARN}" && logRule "run consistency check at level: warning" && \
-  for SPEC in ${HYGIENE_SPEC_WARN} ; do
+  test -n "${HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME}" && logRule "run consistency check at level: warning" && \
+  for SPEC in ${HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME} ; do
    if [ -s "${source_family_root}/${SPEC}" ] && [ ! -d "${source_family_root}/${SPEC}" ] ; then
     rm -f ${TMPDIR}/console.txt
     logItem "${SPEC}" "$(getOntologyIRI < "${source_family_root}/${SPEC}")"
@@ -124,8 +124,8 @@ function runHygieneTests() {
    fi
   done
 
-  test -n "${HYGIENE_SPEC_ERROR}" && logRule "run consistency check at level: error" && \
-  for SPEC in ${HYGIENE_SPEC_ERROR} ; do
+  test -n "${HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME}" && logRule "run consistency check at level: error" && \
+  for SPEC in ${HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME} ; do
    if [ -s "${source_family_root}/${SPEC}" ] && [ ! -d "${source_family_root}/${SPEC}" ] ; then
     rm -f ${TMPDIR}/console.txt
     logItem "${SPEC}" "$(getOntologyIRI < "${source_family_root}/${SPEC}")"
@@ -146,7 +146,7 @@ function runHygieneTests() {
 
   rm -f ${TMPDIR}/console.txt &>/dev/null
 
-  test -n "${HYGIENE_SPEC_WARN}${HYGIENE_SPEC_ERROR}" && logRule "consistency-check: end"
+  test -n "${HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME}${HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME}" && logRule "consistency-check: end"
 
   #
   # Get ontologies for Dev

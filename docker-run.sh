@@ -442,13 +442,13 @@ function run() {
     opts+=('--env')
     opts+=("PROD_SPEC=${PROD_SPEC}")
   fi
-  if [ -n "${HYGIENE_SPEC_WARN}" ] ; then
+  if [ -n "${HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME}" ] ; then
     opts+=('--env')
-    opts+=("HYGIENE_SPEC_WARN=${HYGIENE_SPEC_WARN}")
+    opts+=("HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME=${HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME}")
   fi
-  if [ -n "${HYGIENE_SPEC_ERROR}" ] ; then
+  if [ -n "${HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME}" ] ; then
     opts+=('--env')
-    opts+=("HYGIENE_SPEC_ERROR=${HYGIENE_SPEC_ERROR}")
+    opts+=("HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME=${HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME}")
   fi
   if [ -n "${HYGIENE_TEST_PARAMETER_VALUE}" ] ; then
     opts+=('--env')
