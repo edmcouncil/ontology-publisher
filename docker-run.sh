@@ -418,8 +418,8 @@ function run() {
   opts+=('run')
   opts+=('--rm')
   opts+=('--tty')
-# opts+=('--network')
-# opts+=('none')
+  opts+=('-u')
+  opts+=("${UID}:65534")
   opts+=('--name')
   opts+=("${containerName}")
   #

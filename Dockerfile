@@ -41,7 +41,7 @@ ENV \
   OUTPUT=/output \
   TMPDIR=/var/tmp
 
-RUN install -dv -m0755 /publisher "${TMPDIR}" && \
+RUN install -dv -m0755 /publisher && install -dv -g 65534 -m0775 "${TMPDIR}" && \
   ln -s /etc/bashrc /etc/profile.d/spec.sh
 
 #
@@ -85,7 +85,7 @@ RUN \
   cd bin && \
   mv * .. && \
   cd .. && \
-  rm -rf bin share && \
+  rm -rf bin share /var/tmp/${targz} && \
   ln -s /usr/share/pandoc/pandoc /usr/local/bin/pandoc && \
   ./pandoc --version
 
@@ -285,7 +285,8 @@ RUN \
   echo "export PATH=${PATH}" >> /etc/bashrc && \
   sed -i "s/<ONTPUB_FAMILY>/${ONTPUB_FAMILY}/g ; s/<ONTPUB_SPEC_HOST>/${ONTPUB_SPEC_HOST}/g ; s/<HYGIENE_TEST_PARAMETER_VALUE>/${HYGIENE_TEST_PARAMETER_VALUE}/g ; s/<ONTPUB_IS_DARK_MODE>/${ONTPUB_IS_DARK_MODE}/g" /etc/bashrc && \
   ln -sf /var/tmp/.gitconfig /root/.gitconfig && \
-  rm -rvf /root/{.wget-hsts,.cache} /var/tmp/pandoc*.tar.gz
+  ln -sf /var/tmp/.gitconfig /.gitconfig && \
+  rm -rvf /root/{.wget-hsts,.cache}
 
 CMD ["./publish.sh"]
 
