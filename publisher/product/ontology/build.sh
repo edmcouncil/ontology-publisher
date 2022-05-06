@@ -181,43 +181,63 @@ function runHygieneTests() {
     logItem "$(basename "${hygieneTestSparqlFile}")" "${banner}"
   done < <(getHygieneTestFiles)
 
-  rm -f ${TMPDIR}/console.txt
-
   logRule "Errors in DEV:"
 
+  DEVerrorscount=0
+  DEVwarningscount=0
   while read -r hygieneTestSparqlFile ; do
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
     logItem "Running test" "${banner}"
     ${JENA_ARQ} \
       --data=${TMPDIR}/DEV.ttl \
-      --results=csv \
-      --query="${hygieneTestSparqlFile}" | \
-      sed 's/^\W*PRODERROR:/WARN:/g' | \
-      grep -vP "^\W*error(|\W.*)$" | \
-      sed -e 's#^\W*\(ERROR:.*\)$#\t\x1b\x5b\x33\x31\x6d\1\x1b\x5b\x30\x6d#g' \
-          -e 's#^\W*\(WARN:.*\)$#\t\x1b\x5b\x33\x33\x6d\1\x1b\x5b\x30\x6d#g' | \
-      tee -a ${TMPDIR}/console.txt
+      --results=tsv \
+      --query="${hygieneTestSparqlFile}" | tail -n +2 | dos2unix | \
+      sed 's/^\(\W*\)PRODERROR:/\1WARN:/g' | \
+      tee "${TMPDIR}"/console.txt | \
+      sed -e 's#^"\(ERROR:[^\"]*\)"#\t\x1b\x5b\x33\x31\x6d\1\x1b\x5b\x30\x6d#g' \
+          -e 's#^"\(WARN:[^\"]*\)"#\t\x1b\x5b\x33\x33\x6d\1\x1b\x5b\x30\x6d#g' \
+          -e 's#^"\(INFO:[^\"]*\)"#\t\x1b\x5b\x33\x32\x6d\1\x1b\x5b\x30\x6d#g'
+      errorscount=$(grep '^"ERROR:' "${TMPDIR}"/console.txt | wc -l) ; DEVerrorscount=$((${DEVerrorscount} + ${errorscount}))
+      warningscount=$(grep '^"WARN:' "${TMPDIR}"/console.txt | wc -l) ; DEVwarningscount=$((${DEVwarningscount} + ${warningscount}))
+      test   ${errorscount} -gt 0 && echo -e "   \x1b\x5b\x33\x32\x6derrors count per test\x1b\x5b\x30\x6d  :\t${errorscount}"
+      test ${warningscount} -gt 0 && echo -e "   \x1b\x5b\x33\x32\x6dwarnings count per test\x1b\x5b\x30\x6d:\t${warningscount}"
   done < <(getHygieneTestFiles)
+
+  test ${DEVwarningscount} -gt 0 && echo -e " \x1b\x5b\x33\x33\x6dDEV warnings count\x1b\x5b\x30\x6d:\t${DEVwarningscount}"
+  test   ${DEVerrorscount} -gt 0 && echo -e " \x1b\x5b\x33\x31\x6dDEV errors count\x1b\x5b\x30\x6d  :\t${DEVerrorscount}"
 
   logRule "Errors in PROD:"
 
+  PRODerrorscount=0
+  PRODwarningscount=0
   while read -r hygieneTestSparqlFile ; do
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
     logItem "Running test" "${banner}"
     ${JENA_ARQ} \
       --data=${TMPDIR}/PROD.ttl \
-      --results=csv \
-      --query="${hygieneTestSparqlFile}" | \
-      sed 's/^\W*PRODERROR:/ERROR:/g' | \
-      grep -vP "^\W*error(|\W.*)$" | \
-      sed -e 's#^\W*\(ERROR:.*\)$#\t\x1b\x5b\x33\x31\x6d\1\x1b\x5b\x30\x6d#g' \
-          -e 's#^\W*\(WARN:.*\)$#\t\x1b\x5b\x33\x33\x6d\1\x1b\x5b\x30\x6d#g' | \
-      tee -a ${TMPDIR}/console.txt
+      --results=tsv \
+      --query="${hygieneTestSparqlFile}" | tail -n +2 | dos2unix | \
+      sed 's/^\(\W*\)PRODERROR:/\1ERROR:/g' | \
+      tee "${TMPDIR}"/console.txt | \
+      sed -e 's#^"\(ERROR:[^\"]*\)"#\t\x1b\x5b\x33\x31\x6d\1\x1b\x5b\x30\x6d#g' \
+          -e 's#^"\(WARN:[^\"]*\)"#\t\x1b\x5b\x33\x33\x6d\1\x1b\x5b\x30\x6d#g' \
+          -e 's#^"\(INFO:[^\"]*\)"#\t\x1b\x5b\x33\x32\x6d\1\x1b\x5b\x30\x6d#g'
+      errorscount=$(grep '^"ERROR:' "${TMPDIR}"/console.txt | wc -l) ; PRODerrorscount=$((${PRODerrorscount} + ${errorscount}))
+      warningscount=$(grep '^"WARN:' "${TMPDIR}"/console.txt | wc -l) ; PRODwarningscount=$((${PRODwarningscount} + ${warningscount}))
+      test   ${errorscount} -gt 0 && echo -e "   \x1b\x5b\x33\x32\x6derrors count per test\x1b\x5b\x30\x6d  :\t${errorscount}"
+      test ${warningscount} -gt 0 && echo -e "   \x1b\x5b\x33\x32\x6dwarnings count per test\x1b\x5b\x30\x6d:\t${warningscount}"
   done < <(getHygieneTestFiles)
 
-  grep -P "^\t\x1b\x5b\x33\x31\x6dERROR:" ${TMPDIR}/console.txt &>/dev/null && return 1
+  test ${PRODwarningscount} -gt 0 && echo -e " \x1b\x5b\x33\x33\x6dPROD warnings count\x1b\x5b\x30\x6d:\t${PRODwarningscount}"
+  test   ${PRODerrorscount} -gt 0 && echo -e " \x1b\x5b\x33\x31\x6dPROD errors count\x1b\x5b\x30\x6d  :\t${PRODerrorscount}"
 
-  rm -f ${TMPDIR}/console.txt
+  allwarningscount=$((${DEVwarningscount} + ${PRODwarningscount}))
+  allerrorscount=$((${DEVerrorscount} + ${PRODerrorscount}))
+  test $((${allwarningscount} + ${allerrorscount})) -gt 0 && echo -en "\n"
+  test ${allwarningscount} -gt 0 && logItem "$(echo -e '\x1b\x5b\x33\x33\x6dall warnings count\x1b\x5b\x30\x6d')" ${allwarningscount}
+  test   ${allerrorscount} -gt 0 && logItem "$(echo -e '\x1b\x5b\x33\x31\x6dall errors count\x1b\x5b\x30\x6d  ')" ${allerrorscount} && return 1
+
+  rm -f "${TMPDIR}"/console.txt
 
   logRule "Passed all the hygiene tests"
 
