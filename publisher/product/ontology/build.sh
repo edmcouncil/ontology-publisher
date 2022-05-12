@@ -203,8 +203,8 @@ function runHygieneTests() {
       test ${warningscount} -gt 0 && echo -e "   \x1b\x5b\x33\x32\x6dwarnings count per test\x1b\x5b\x30\x6d:\t${warningscount}"
   done < <(getHygieneTestFiles)
 
-  test ${DEVwarningscount} -gt 0 && echo -e " \x1b\x5b\x33\x33\x6dDEV warnings count\x1b\x5b\x30\x6d:\t${DEVwarningscount}"
-  test   ${DEVerrorscount} -gt 0 && echo -e " \x1b\x5b\x33\x31\x6dDEV errors count\x1b\x5b\x30\x6d  :\t${DEVerrorscount}"
+  test ${DEVwarningscount} -gt 0 && echo -e " \x1b\x5b\x33\x32\x6dDEV all warnings count\x1b\x5b\x30\x6d:\t${DEVwarningscount}"
+  test   ${DEVerrorscount} -gt 0 && echo -e " \x1b\x5b\x33\x32\x6dDEV all errors count\x1b\x5b\x30\x6d  :\t${DEVerrorscount}"
 
   logRule "Errors in PROD:"
 
@@ -228,16 +228,13 @@ function runHygieneTests() {
       test ${warningscount} -gt 0 && echo -e "   \x1b\x5b\x33\x32\x6dwarnings count per test\x1b\x5b\x30\x6d:\t${warningscount}"
   done < <(getHygieneTestFiles)
 
-  test ${PRODwarningscount} -gt 0 && echo -e " \x1b\x5b\x33\x33\x6dPROD warnings count\x1b\x5b\x30\x6d:\t${PRODwarningscount}"
-  test   ${PRODerrorscount} -gt 0 && echo -e " \x1b\x5b\x33\x31\x6dPROD errors count\x1b\x5b\x30\x6d  :\t${PRODerrorscount}"
+  test ${PRODwarningscount} -gt 0 && echo -e " \x1b\x5b\x33\x32\x6dPROD all warnings count\x1b\x5b\x30\x6d:\t${PRODwarningscount}"
+  test   ${PRODerrorscount} -gt 0 && echo -e " \x1b\x5b\x33\x32\x6dPROD all errors count\x1b\x5b\x30\x6d  :\t${PRODerrorscount}"
 
-  allwarningscount=$((${DEVwarningscount} + ${PRODwarningscount}))
   allerrorscount=$((${DEVerrorscount} + ${PRODerrorscount}))
-  test $((${allwarningscount} + ${allerrorscount})) -gt 0 && echo -en "\n"
-  test ${allwarningscount} -gt 0 && logItem "$(echo -e '\x1b\x5b\x33\x33\x6dall warnings count\x1b\x5b\x30\x6d')" ${allwarningscount}
-  test   ${allerrorscount} -gt 0 && logItem "$(echo -e '\x1b\x5b\x33\x31\x6dall errors count\x1b\x5b\x30\x6d  ')" ${allerrorscount} && return 1
+  test ${allerrorscount} -gt 0 && logItem "$(echo -e '\n\x1b\x5b\x33\x32\x6dall errors count\x1b\x5b\x30\x6d  ')" ${allerrorscount} && return 1
 
-  rm -f "${TMPDIR}"/console.txt
+  mv -f "${TMPDIR}"/console.txt "${hygiene_product_tag_root}"/hygiene-test.log
 
   logRule "Passed all the hygiene tests"
 
