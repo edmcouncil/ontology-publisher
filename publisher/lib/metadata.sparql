@@ -12,5 +12,6 @@ WHERE
 {
   ?meta_ontology a owl:Ontology .
   ?meta_ontology dct:issued ?date .
-  BIND (IRI(REPLACE(STR(?meta_ontology), "MetadataFIBO/", "quick/")) as ?ontology)
+  FILTER (CONTAINS(STR(?meta_ontology), "Metadata"))
+  BIND (IRI(REPLACE(STR(?meta_ontology), "Metadata", "Quick")) as ?ontology)
 }
