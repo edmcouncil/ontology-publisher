@@ -718,36 +718,21 @@ __HERE__
 
   setProduct ontology || return $?
 
-
-  log "Getting metadata"
-  "${JENA_ARQ}" $(find "${source_family_root}" -name "Metadata${ONTPUB_FAMILY^^}.rdf" | grep -v "/etc/" | sed "s/^/--data=/") \
-    --query=/publisher/lib/metadata.sparql \
-    --results=TTL > "${TMPDIR}/metadata.ttl"
+  ONTPUB_FAMILY_FIRST_UPPERCASE=${ONTPUB_FAMILY^}
 
   #
   # Get ontologies for Dev
   #
   log "Merging all dev ontologies into one RDF file"
-  robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${TMPDIR}/pre_dev.${ONTPUB_FAMILY}-quickstart.owl
- 
-  ${JENA_ARQ} \
-    --data ${TMPDIR}/metadata.ttl \
-    --data ${TMPDIR}/pre_dev.${ONTPUB_FAMILY}-quickstart.owl \
-    --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl
+  robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl
+  sed -i "s/\/About${ONTPUB_FAMILY^^}Dev\//\/Quick${ONTPUB_FAMILY^^}Dev\//" "${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl"
 
   #
   # Get ontologies for Prod
   #
   log "Merging all prod ontologies into one RDF file"
-  robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${TMPDIR}/pre_prod.${ONTPUB_FAMILY}-quickstart.owl
-
-  
-  ${JENA_ARQ} \
-    --data ${TMPDIR}/metadata.ttl \
-    --data ${TMPDIR}/pre_prod.${ONTPUB_FAMILY}-quickstart.owl \
-    --query=/publisher/lib/echo.sparql \
-    --results=TTL > ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl
+  robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl
+  sed -i "s/\/About${ONTPUB_FAMILY^^}Prod\//\/Quick${ONTPUB_FAMILY^^}Prod\//" "${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl"
 	
   ${JENA_ARQ} --data=${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt  
   ${JENA_ARQ} --data=${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.nt
