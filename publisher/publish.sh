@@ -112,6 +112,25 @@ function zipWholeTagDir() {
   return 0
 }
 
+#
+# Given that the onto-viewer needs to get the latest config files ontology-publisher should process those alongside with ontology files.
+# https://github.com/edmcouncil/ontology-publisher/issues/100
+#
+function publishOntoViewerConfigFiles () {
+
+  require source_family_root || return $?
+  require tag_root || return $?
+  require tag_root_url || return $?
+
+  config_path="etc/onto-viewer-web-app/config"
+
+  rm -rvf "${tag_root}/${config_path}" && test -d "${source_family_root}/${config_path}" && install -d "${tag_root}/${config_path}" && \
+    logRule "install onto-viewer config files into \"$(logFileName "${tag_root_url}/${config_path}/")\""
+    for CONFIG_FILE in $(find "${source_family_root}/${config_path}" -type f) ; do
+      logItem "config file" "$(logFileName "$(basename "${CONFIG_FILE}")")"
+      install -p -m0644 "${CONFIG_FILE}" "${tag_root}/${config_path}/"
+    done
+}
 
 function zipOntologyFiles () {
 
@@ -224,6 +243,7 @@ function main() {
         logRule "Final publish stage"
         cleanupBeforePublishing || return $?
         zipWholeTagDir || return $?
+        publishOntoViewerConfigFiles || return $?
         ;;
       --*)
         continue
