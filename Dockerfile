@@ -16,7 +16,7 @@
 # - alpine is the name of the Linux brand we're using, which is the smallest linux keeping the image as small
 #   as possible.
 #
-FROM alpine:3.15
+FROM alpine:3.16
 
 #
 # Some meta data, can only have one maintainer unfortunately

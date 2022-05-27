@@ -835,7 +835,8 @@ function initGitVars() {
 
   (
     cd "${source_family_root}" || return $?
-    logItem "Git status" "$(git remote get-url $(git remote show))/tree/$(git rev-parse --abbrev-ref HEAD | tr '[:upper:]' '[:lower:]')"
+    local -r git_url="$(git remote get-url origin | head -n 1)"
+    logItem "Git status" "${git_url%%.git}/tree/$(git rev-parse --abbrev-ref HEAD | tr '[:upper:]' '[:lower:]')"
     git status 2>&1 | sed 's/^/\t/g' | pipelog
     git status &>/dev/null
     local -r git_status_rc=$?

@@ -238,6 +238,9 @@ function runHygieneTests() {
   allerrorscount=$((${DEVerrorscount} + ${PRODerrorscount}))
   test ${allerrorscount} -gt 0 && logItem "$(echo -e '\n\x1b\x5b\x33\x32\x6dall errors count\x1b\x5b\x30\x6d  ')" ${allerrorscount} && return 1
 
+  cp -avf "${hygiene_product_tag_root}"/hygiene-test.DEV.log "${hygiene_product_tag_root}"/hygiene-test.DEV.tsv
+  cp -avf "${hygiene_product_tag_root}"/hygiene-test.PROD.log "${hygiene_product_tag_root}"/hygiene-test.PROD.tsv
+
   logRule "Passed all the hygiene tests"
 
   return 0
