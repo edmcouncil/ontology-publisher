@@ -705,7 +705,7 @@ function initRepoBasedTools() {
 
   ONTOVIEWER_TOOLKIT_JAVA="java -Dlogging.level.org.edmcouncil.spec.ontoviewer=INFO -Dlogging.level.org.edmcouncil.spec.ontoviewer.toolkit=DEBUG -Dlogging.level.org.springframework=INFO -jar ${ONTOVIEWER_TOOLKIT_JAR}"
   export ONTOVIEWER_TOOLKIT_JAVA
-  echo "ONTOVIEWER_TOOLKIT_JAVA = ${ONTOVIEWER_TOOLKIT_JAVA}"
+  #echo "ONTOVIEWER_TOOLKIT_JAVA = ${ONTOVIEWER_TOOLKIT_JAVA}"
 
   return 0
 }
@@ -835,21 +835,21 @@ function initGitVars() {
 
   (
     cd "${source_family_root}" || return $?
-    log "Git status:"
-    git status 2>&1 | pipelog
+    logItem "Git status" "$(git remote get-url $(git remote show))/tree/$(git rev-parse --abbrev-ref HEAD | tr '[:upper:]' '[:lower:]')"
+    git status 2>&1 | sed 's/^/\t/g' | pipelog
+    git status &>/dev/null
     local -r git_status_rc=$?
     logVar git_status_rc
     return ${git_status_rc}
   ) || return $?
 
-  if [ -z "${GIT_COMMIT}" ] ; then
-    export GIT_COMMIT="$(cd ${source_family_root} && git rev-parse --short HEAD)"
-    ((verbose)) && logVar GIT_COMMIT
-  fi
-
   if [ -z "${GIT_COMMENT}" ] ; then
     export GIT_COMMENT=$(cd ${source_family_root} && git log --format=%B -n 1 ${GIT_COMMIT} | ${GREP} -v "^$")
-    ((verbose)) && logVar GIT_COMMENT
+  fi
+
+  if [ -z "${GIT_COMMIT}" ] ; then
+    export GIT_COMMIT="$(cd ${source_family_root} && git rev-parse --short HEAD)"
+    ((verbose)) && logItem "Comment for GIT_COMMIT" "${GIT_COMMIT}" && echo "${GIT_COMMENT}" | ${GREP} -v "^$" | sed 's/^/\t/g' | pipelog
   fi
 
   if [ -z "${GIT_AUTHOR}" ] ; then
