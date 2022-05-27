@@ -124,11 +124,35 @@ function publishOntoViewerConfigFiles () {
 
   config_path="etc/onto-viewer-web-app/config"
 
-  rm -rvf "${tag_root}/${config_path}" && test -d "${source_family_root}/${config_path}" && install -d "${tag_root}/${config_path}" && \
-    logRule "install onto-viewer config files into \"$(logFileName "${tag_root_url}/${config_path}/")\""
+  rm -rf "${tag_root}/${config_path}" && test -d "${source_family_root}/${config_path}" && install -d "${tag_root}/${config_path}" && \
+    logRule "install onto-viewer config files into \"$(logFileName "${tag_root_url}/${config_path}/")\"" && \
     for CONFIG_FILE in $(find "${source_family_root}/${config_path}" -type f) ; do
       logItem "config file" "$(logFileName "$(basename "${CONFIG_FILE}")")"
       install -p -m0644 "${CONFIG_FILE}" "${tag_root}/${config_path}/"
+    done
+}
+
+#
+# We should output hygiene test results in some computer readable format, like csv.
+# This should include the consistency results if they are available.
+# https://github.com/edmcouncil/ontology-publisher/issues/97
+#
+function publishHygieneFiles () {
+
+  require spec_family_root || return $?
+  require tag_root || return $?
+  require tag_root_url || return $?
+
+  ontology_product_tag_root="${tag_root:?}"
+  hygiene_product_tag_root="${ontology_product_tag_root/ontology/hygiene}"
+
+  hygiene_path="etc/hygiene"
+
+  rm -rf "${ontology_product_tag_root}/${hygiene_path}" && test -d "${hygiene_product_tag_root}" && install -d "${ontology_product_tag_root}/${hygiene_path}" && \
+    logRule "install hygiene test results into \"$(logFileName "${tag_root_url}/${hygiene_path}/")\"" && \
+    for HYGIENE_FILE in $(find "${hygiene_product_tag_root}" -type f) ; do
+      logItem "hygiene test file" "$(logFileName "$(basename "${HYGIENE_FILE}")")"
+      install -p -m0644 "${HYGIENE_FILE}" "${ontology_product_tag_root}/${hygiene_path}/"
     done
 }
 
@@ -244,6 +268,7 @@ function main() {
         cleanupBeforePublishing || return $?
         zipWholeTagDir || return $?
         publishOntoViewerConfigFiles || return $?
+        publishHygieneFiles || return $?
         ;;
       --*)
         continue

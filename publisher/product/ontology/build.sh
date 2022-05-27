@@ -185,6 +185,7 @@ function runHygieneTests() {
 
   DEVerrorscount=0
   DEVwarningscount=0
+  echo -e "level\tinfo\tvalue" > "${hygiene_product_tag_root}"/hygiene-test.DEV.log
   while read -r hygieneTestSparqlFile ; do
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
     logItem "Running test" "${banner}"
@@ -193,7 +194,7 @@ function runHygieneTests() {
       --results=tsv \
       --query="${hygieneTestSparqlFile}" | tail -n +2 | dos2unix | \
       sed 's/^\(\W*\)PRODERROR:/\1WARN:/g' | \
-      tee "${TMPDIR}"/console.txt | \
+      tee "${TMPDIR}"/console.txt | tee -a "${hygiene_product_tag_root}"/hygiene-test.DEV.log | \
       sed -e 's#^"\(ERROR:[^\"]*\)"#\t\x1b\x5b\x33\x31\x6d\1\x1b\x5b\x30\x6d#g' \
           -e 's#^"\(WARN:[^\"]*\)"#\t\x1b\x5b\x33\x33\x6d\1\x1b\x5b\x30\x6d#g' \
           -e 's#^"\(INFO:[^\"]*\)"#\t\x1b\x5b\x33\x32\x6d\1\x1b\x5b\x30\x6d#g'
@@ -202,6 +203,7 @@ function runHygieneTests() {
       test   ${errorscount} -gt 0 && echo -e "   \x1b\x5b\x33\x32\x6derrors count per test\x1b\x5b\x30\x6d  :\t${errorscount}"
       test ${warningscount} -gt 0 && echo -e "   \x1b\x5b\x33\x32\x6dwarnings count per test\x1b\x5b\x30\x6d:\t${warningscount}"
   done < <(getHygieneTestFiles)
+  perl -pi -e 's/^\s*\"?(\S+?)\:?\s+([^\t]+?)\"?(?:\t\"?(.*?)\"?)?$/\1\t\2\t\3/g' "${hygiene_product_tag_root}"/hygiene-test.DEV.log
 
   test ${DEVwarningscount} -gt 0 && echo -e " \x1b\x5b\x33\x32\x6dDEV all warnings count\x1b\x5b\x30\x6d:\t${DEVwarningscount}"
   test   ${DEVerrorscount} -gt 0 && echo -e " \x1b\x5b\x33\x32\x6dDEV all errors count\x1b\x5b\x30\x6d  :\t${DEVerrorscount}"
@@ -210,6 +212,7 @@ function runHygieneTests() {
 
   PRODerrorscount=0
   PRODwarningscount=0
+  echo -e "level\tinfo\tvalue" > "${hygiene_product_tag_root}"/hygiene-test.PROD.log
   while read -r hygieneTestSparqlFile ; do
     banner=$(getBannerFromSparqlTestFile "${hygieneTestSparqlFile}")
     logItem "Running test" "${banner}"
@@ -218,7 +221,7 @@ function runHygieneTests() {
       --results=tsv \
       --query="${hygieneTestSparqlFile}" | tail -n +2 | dos2unix | \
       sed 's/^\(\W*\)PRODERROR:/\1ERROR:/g' | \
-      tee "${TMPDIR}"/console.txt | \
+      tee "${TMPDIR}"/console.txt | tee -a "${hygiene_product_tag_root}"/hygiene-test.PROD.log | \
       sed -e 's#^"\(ERROR:[^\"]*\)"#\t\x1b\x5b\x33\x31\x6d\1\x1b\x5b\x30\x6d#g' \
           -e 's#^"\(WARN:[^\"]*\)"#\t\x1b\x5b\x33\x33\x6d\1\x1b\x5b\x30\x6d#g' \
           -e 's#^"\(INFO:[^\"]*\)"#\t\x1b\x5b\x33\x32\x6d\1\x1b\x5b\x30\x6d#g'
@@ -227,14 +230,13 @@ function runHygieneTests() {
       test   ${errorscount} -gt 0 && echo -e "   \x1b\x5b\x33\x32\x6derrors count per test\x1b\x5b\x30\x6d  :\t${errorscount}"
       test ${warningscount} -gt 0 && echo -e "   \x1b\x5b\x33\x32\x6dwarnings count per test\x1b\x5b\x30\x6d:\t${warningscount}"
   done < <(getHygieneTestFiles)
+  perl -pi -e 's/^\s*\"?(\S+?)\:?\s+([^\t]+?)\"?(?:\t\"?(.*?)\"?)?$/\1\t\2\t\3/g' "${hygiene_product_tag_root}"/hygiene-test.PROD.log
 
   test ${PRODwarningscount} -gt 0 && echo -e " \x1b\x5b\x33\x32\x6dPROD all warnings count\x1b\x5b\x30\x6d:\t${PRODwarningscount}"
   test   ${PRODerrorscount} -gt 0 && echo -e " \x1b\x5b\x33\x32\x6dPROD all errors count\x1b\x5b\x30\x6d  :\t${PRODerrorscount}"
 
   allerrorscount=$((${DEVerrorscount} + ${PRODerrorscount}))
   test ${allerrorscount} -gt 0 && logItem "$(echo -e '\n\x1b\x5b\x33\x32\x6dall errors count\x1b\x5b\x30\x6d  ')" ${allerrorscount} && return 1
-
-  mv -f "${TMPDIR}"/console.txt "${hygiene_product_tag_root}"/hygiene-test.log
 
   logRule "Passed all the hygiene tests"
 

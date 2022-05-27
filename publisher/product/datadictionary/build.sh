@@ -50,31 +50,36 @@ function publishProductDataDictionaryContent() {
 
   logRule "Creating data dictionaries"
 
-  logRule "Running OntoViewer Toolkit to generate CSV files containing data from ontologies for DEV from path ${source_family_root}"
+  logRule "Running OntoViewer Toolkit to generate CSV files containing data from ontologies - see logs \"$(logFileName datadictionary.DEV.log)\""
+  logItem "$(basename "${DEV_SPEC}")" "$(logFileName "${tag_root_url}/$(basename "${datadictionaryBaseName}-dev.csv")")"
   debug=false ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${DEV_SPEC}"\
     --output "${datadictionaryBaseName}-dev.csv" \
     --filter-pattern "${HYGIENE_TEST_PARAMETER_VALUE}" \
-    --ontology-mapping "${source_family_root}/catalog-v001.xml" 
+    --ontology-mapping "${source_family_root}/catalog-v001.xml" > "${datadictionary_product_tag_root}/datadictionary.DEV.log" 2>&1
 
-  logRule "Running OntoViewer Toolkit to generate CSV files containing data from ontologies for PROD from path ${source_family_root}"
+  logRule "Running OntoViewer Toolkit to generate CSV files containing data from ontologies - see logs \"$(logFileName datadictionary.PROD.log)\""
+  logItem "$(basename "${PROD_SPEC}")" "$(logFileName "${tag_root_url}/$(basename "${datadictionaryBaseName}-prod.csv")")"
   debug=false ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${PROD_SPEC}" \
     --output "${datadictionaryBaseName}-prod.csv" \
     --filter-pattern "${HYGIENE_TEST_PARAMETER_VALUE}" \
-    --ontology-mapping "${source_family_root}/catalog-v001.xml" 
+    --ontology-mapping "${source_family_root}/catalog-v001.xml" > "${datadictionary_product_tag_root}/datadictionary.PROD.log" 2>&1
 
-  logRule "Writing from csv files to xlsx files"
+  logRule "Writing from csv files to xlsx files for prod"
 
-  touch "${datadictionary_product_tag_root}/datadictionary.log"
+  echo -e "==== $(basename "${datadictionaryBaseName}-prod.xlsx")" > "${datadictionary_product_tag_root}/datadictionary.log"
   
   ${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py \
     "${datadictionaryBaseName}-prod.csv" \
     "${datadictionaryBaseName}-prod.xlsx" \
-    "${datadictionary_script_dir}/csvconfig"
+    "${datadictionary_script_dir}/csvconfig" 2>&1 | tee -a "${datadictionary_product_tag_root}/datadictionary.log"
 
+  logRule "Writing from csv files to xlsx files for dev"
+
+  echo -e "\n==== $(basename "${datadictionaryBaseName}-dev.xlsx")" >> "${datadictionary_product_tag_root}/datadictionary.log"
   ${PYTHON3} ${SCRIPT_DIR}/lib/csv-to-xlsx.py \
     "${datadictionaryBaseName}-dev.csv" \
     "${datadictionaryBaseName}-dev.xlsx" \
-    "${datadictionary_script_dir}/csvconfig"
+    "${datadictionary_script_dir}/csvconfig" 2>&1 | tee -a "${datadictionary_product_tag_root}/datadictionary.log"
   
   return 0
 }
