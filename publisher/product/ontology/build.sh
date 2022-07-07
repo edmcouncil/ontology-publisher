@@ -48,6 +48,7 @@ function publishProductOntology() {
   ontologyBuildCatalogs  || return $?
   ontologyBuildIndex  || return $?
   ontologyCreateAboutFiles || return $?
+  ontologyCreateMergedFiles || return $?
   ontologyConvertRdfToAllFormats || return $?
 
   createQuickVersions || return $?
@@ -493,6 +494,51 @@ function ontologyBuildIndex () {
 	)
 
 	return $?
+}
+
+function ontologyCreateMergedFiles() {
+
+  require source_family_root || return $?
+  require tag_root || return $?
+
+  logStep "ontologyCreateMergedFiles"
+
+  pushd "${tag_root:?}" >/dev/null || return $?
+
+  local -r maxParallelJobs=1
+  local numberOfParallelJobs=0
+
+  log "Running ${maxParallelJobs} 'merge-imports' jobs in parallel:"
+
+  # include only the RDF files with the ontologies listed in the source "catalog-v001.xml"
+  for rdfFile in $(cat "${source_family_root}"/catalog-v001.xml 2>/dev/null | xml c14n 2>/dev/null | xml sel -T -t -v '//@uri' -n 2>/dev/null | grep -i '\.rdf') ; do
+    ontologyIsInTestDomain "${rdfFile}" || continue
+    #isProductOntology "${rdfFile}" || continue
+    test "${rdfFile}" = "${rdfFile%-Merged.rdf}" || continue
+
+    # temporary workaround - include only ontolgyIRI ending with "/"
+    #getOntologyIRI < "${rdfFile}" | grep '/$' &>/dev/null || continue
+
+    if ((maxParallelJobs == 1)) ; then
+      ${SCRIPT_DIR}/utils/createMergedFile.sh "${rdfFile}" "catalog-v001.xml" "-Merged" || return $?
+    else
+      ${SCRIPT_DIR}/utils/createMergedFile.sh "${rdfFile}" "catalog-v001.xml" "-Merged" &
+      ((numberOfParallelJobs++))
+      if ((numberOfParallelJobs >= maxParallelJobs)) ; then
+        wait
+        numberOfParallelJobs=0
+      fi
+    fi
+  done || return $?
+  rc=$?
+
+#  ((maxParallelJobs > 1)) && wait
+
+  popd >/dev/null || return $?
+
+  log "End of ontologyCreateMergedFiles"
+
+  return $?
 }
 
 function ontologyConvertRdfToAllFormats() {
