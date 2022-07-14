@@ -510,8 +510,7 @@ function ontologyCreateMergedFiles() {
 
   log "Running ${maxParallelJobs} 'merge-imports' jobs in parallel:"
 
-  # include only the RDF files with the ontologies listed in the source "catalog-v001.xml"
-  for rdfFile in $(cat "${source_family_root}"/catalog-v001.xml 2>/dev/null | xml c14n 2>/dev/null | xml sel -T -t -v '//@uri' -n 2>/dev/null | grep -i '\.rdf') ; do
+  for rdfFile in **/*.rdf ; do
     ontologyIsInTestDomain "${rdfFile}" || continue
     #isProductOntology "${rdfFile}" || continue
     test "${rdfFile}" = "${rdfFile%-Merged.rdf}" || continue
