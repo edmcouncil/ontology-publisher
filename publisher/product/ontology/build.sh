@@ -505,21 +505,21 @@ function ontologyCreateMergedFiles() {
 
   pushd "${tag_root:?}" >/dev/null || return $?
 
-  local -r maxParallelJobs=1
+  local -r maxParallelJobs=4
   local numberOfParallelJobs=0
 
   log "Running ${maxParallelJobs} 'merge-imports' jobs in parallel:"
 
   for rdfFile in **/*.rdf ; do
     ontologyIsInTestDomain "${rdfFile}" || continue
-    #isProductOntology "${rdfFile}" || continue
+    isIRIInScope "$(getOntologyIRI < "${rdfFile}")" || continue
     test "${rdfFile}" = "${rdfFile%-Merged.rdf}" || continue
 
     # temporary workaround - include only ontolgyIRI ending with "/"
     #getOntologyIRI < "${rdfFile}" | grep '/$' &>/dev/null || continue
 
     if ((maxParallelJobs == 1)) ; then
-      ${SCRIPT_DIR}/utils/createMergedFile.sh "${rdfFile}" "catalog-v001.xml" "-Merged" || return $?
+      ${SCRIPT_DIR}/utils/createMergedFile.sh "${rdfFile}" "catalog-v001.xml" "-Merged"
     else
       ${SCRIPT_DIR}/utils/createMergedFile.sh "${rdfFile}" "catalog-v001.xml" "-Merged" &
       ((numberOfParallelJobs++))
@@ -528,10 +528,10 @@ function ontologyCreateMergedFiles() {
         numberOfParallelJobs=0
       fi
     fi
-  done || return $?
+  done
   rc=$?
 
-#  ((maxParallelJobs > 1)) && wait
+  ((maxParallelJobs > 1)) && wait
 
   popd >/dev/null || return $?
 

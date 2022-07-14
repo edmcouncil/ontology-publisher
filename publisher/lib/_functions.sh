@@ -1169,13 +1169,13 @@ function getOntologyPrefix() {
 }
 
 #
-# whether the ontology has a prefix equal to "product_root_url"
+# whether the ontology IRI has a prefix equal to "product_root_url"
 #
-function isProductOntology() {
+function isIRIInScope() {
 
   requireValue product_root_url || return $?
 
-  local ontologyIRI="$(getOntologyIRI < "${1}")"
+  local ontologyIRI="${1}"
   ontologyIRI="${ontologyIRI,,}"
   product_root_url="${product_root_url%/}"
   product_root_url="${product_root_url,,}"
