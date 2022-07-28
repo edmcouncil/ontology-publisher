@@ -1168,6 +1168,23 @@ function getOntologyPrefix() {
 			| sed -r '/^\W*$/d' | head -n 1
 }
 
+#
+# whether the ontology IRI has a prefix equal to "product_root_url"
+#
+function isIRIInScope() {
+
+  requireValue product_root_url || return $?
+
+  local ontologyIRI="${1}"
+  ontologyIRI="${ontologyIRI,,}"
+  product_root_url="${product_root_url%/}"
+  product_root_url="${product_root_url,,}"
+
+  test "${product_root_url}/" = "${ontologyIRI:0:$((${#product_root_url} + 1))}" && return 0
+
+  return 1
+}
+
 function getIsDarkMode() {
 
   [[ -n "${ONTPUB_IS_DARK_MODE}" ]] && return ${ONTPUB_IS_DARK_MODE}
