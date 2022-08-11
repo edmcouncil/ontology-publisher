@@ -151,11 +151,10 @@ RUN \
   test "${version}" == "${JENA_VERSION}"
 
 #
-# Installing old version of Apache Jena because SPIN 2.0.0 needs it
-#
+# Installing old version of Apache Jena
 ENV JENA_OLD_VERSION="3.0.1"
 RUN \
-  echo ================================= install jena ${JENA_OLD_VERSION} for SPIN >&2 && \
+  echo ================================= install jena ${JENA_OLD_VERSION} >&2 && \
   name="apache-jena-${JENA_OLD_VERSION}" ; \
   targz="${name}.tar.gz" ; \
   url="http://archive.apache.org/dist/jena/binaries/${targz}" ; \
@@ -169,28 +168,6 @@ RUN \
   ln -s ${JENA_OLD_VERSION} jena-old && \
   cd ${JENA_OLD_VERSION} && \
   rm -rf src-examples lib-src bat javadoc-* && \
-  cd /
-
-#
-# Installing SPIN
-#
-ENV SPIN_VERSION="2.0.0"
-RUN \
-  echo ================================= install SPIN ${SPIN_VERSION} >&2 && \
-  name="spin-${SPIN_VERSION}" ; \
-  zip="${name}-distribution.zip" ; \
-  url="https://www.topquadrant.com/repository/spin/org/topbraid/spin/${SPIN_VERSION}/${zip}" ; \
-  echo "Downloading ${url}:" >&2 ; \
-  curl --location --silent --show-error --output /var/tmp/${zip} --url "${url}" && \
-  (mkdir -p /usr/share/java/spin || true) && \
-  cd /usr/share/java/spin && \
-  unzip -q /var/tmp/${zip} && \
-  rm -f /var/tmp/${zip} && \
-  cd src-tools && \
-  find . -name '*.java' | \
-  xargs javac -cp "/usr/share/java/jena/jena-old/lib/*:/usr/share/java/spin/spin-${SPIN_VERSION}.jar" && \
-  cd .. && \
-  rm -rf src-examples src README.TXT RELEASE-NOTES.TXT && \
   cd /
 
 #

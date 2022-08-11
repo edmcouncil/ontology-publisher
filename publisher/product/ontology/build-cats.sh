@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Stuff for building catalog files for products like Protegé and Jena (which is needed for SPIN 2.0)
+# Stuff for building catalog files for products like Protegé and Jena
 #
 
 #
