@@ -67,54 +67,6 @@ RUN \
   rm -rf /var/lib/apt/lists/*
 
 #
-# Installing pandoc
-#
-ENV \
-  pandoc_available=1 \
-  pandoc_bin=/usr/local/bin/pandoc
-RUN \
-  pandoc_version="2.11.4" ; \
-  echo ================================= install pandoc ${pandoc_version} >&2 && \
-  targz="pandoc-${pandoc_version}-linux-amd64.tar.gz" ; \
-  url="https://github.com/jgm/pandoc/releases/download/${pandoc_version}/${targz}" ; \
-  echo "Downloading ${url}:" >&2 ; \
-  curl --location --silent --show-error --output /var/tmp/${targz} --url "${url}" && \
-  mkdir -p /usr/share/pandoc && \
-  cd /usr/share/pandoc && \
-  tar xzf /var/tmp/${targz} --strip-components 1 -C . && \
-  cd bin && \
-  mv * .. && \
-  cd .. && \
-  rm -rf bin share /var/tmp/${targz} && \
-  ln -s /usr/share/pandoc/pandoc /usr/local/bin/pandoc && \
-  ./pandoc --version
-
-#
-# Install serd
-#
-ENV \
-  SERD=/usr/local/bin/serdi \
-  SERDI=/usr/local/bin/serdi
-RUN \
-  serd_version="0.30.10" ; \
-  echo ================================= install serd ${serd_version} >&2 && \
-  name="serd-${serd_version}" ; \
-  tarbz2="${name}.tar.bz2" ; \
-  url="http://download.drobilla.net/${tarbz2}" ; \
-  ( \
-    mkdir -p /var/tmp/build-serd ; \
-    cd /var/tmp/build-serd ; \
-    curl --location --silent --show-error --output "${tarbz2}" --url "${url}" ; \
-    cat "${tarbz2}" | tar -xj ; \
-    cd "${name}" ; \
-    ./waf configure ; \
-    ./waf ; \
-    ./waf install ; \
-  ) && \
-  rm -rf /var/tmp/build-serd && \
-  test "$(which serdi)" == "${SERD}"
-
-#
 # Installing Apache Jena
 # INFRA-496 jena-arq-${JENA_VERSION}.jar: workaround to change default JSON-LD output: JSONLD = JSONLD_EXPAND_PRETTY instead of JSONLD_COMPACT_PRETTY
 #
@@ -151,26 +103,6 @@ RUN \
   test "${version}" == "${JENA_VERSION}"
 
 #
-# Installing old version of Apache Jena
-ENV JENA_OLD_VERSION="3.0.1"
-RUN \
-  echo ================================= install jena ${JENA_OLD_VERSION} >&2 && \
-  name="apache-jena-${JENA_OLD_VERSION}" ; \
-  targz="${name}.tar.gz" ; \
-  url="http://archive.apache.org/dist/jena/binaries/${targz}" ; \
-  echo "Downloading ${url}:" >&2 ; \
-  curl --location --silent --show-error --output /var/tmp/${targz} --url "${url}" && \
-  (mkdir -p /usr/share/java/jena || true) && \
-  cd /usr/share/java/jena && \
-  tar xzf /var/tmp/${targz} && \
-  rm -f /var/tmp/${targz} && \
-  mv ${name} ${JENA_OLD_VERSION} && \
-  ln -s ${JENA_OLD_VERSION} jena-old && \
-  cd ${JENA_OLD_VERSION} && \
-  rm -rf src-examples lib-src bat javadoc-* && \
-  cd /
-
-#
 # Installing XlsxWriter, rdflib, PyLD
 #
 RUN \
@@ -185,21 +117,6 @@ RUN \
   wget -m -nH -nd -P /usr/local/bin https://raw.githubusercontent.com/ontodev/robot/${ROBOT_VERSION:-master}/bin/robot && \
   wget -m -nH -nd -P /usr/local/bin https://github.com/ontodev/robot/releases/${ROBOT_VERSION:+download/}${ROBOT_VERSION:=latest/download}/robot.jar && \
   chmod +x /usr/local/bin/robot
-
-#
-# Installing Saxon
-#
-ENV SAXON_VERSION="9-9-1-8J"
-RUN \
-  echo ================================= install saxon ${SAXON_VERSION} >&2 && \
-  curl --location --silent --show-error \
-    --output /var/tmp/SaxonHE${SAXON_VERSION}.zip \
-    --url "https://sourceforge.net/projects/saxon/files/Saxon-HE/9.9/SaxonHE${SAXON_VERSION}.zip/download" && \
-  (mkdir -p /usr/share/java/saxon || true) && \
-  cd /usr/share/java/saxon && \
-  unzip -q /var/tmp/SaxonHE${SAXON_VERSION}.zip && \
-  rm /var/tmp/SaxonHE${SAXON_VERSION}.zip
-    
 
 COPY etc /etc
 COPY root /root
