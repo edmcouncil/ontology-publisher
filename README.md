@@ -90,6 +90,7 @@ List of allowed `<VARIABLE_NAME>` (and defaults for `<VARIABLE_VALUE>`):
 - `HYGIENE_TEST_PARAMETER_VALUE` :- filter pattern, e.g. `example` (default: `edmcouncil`); this variable is also possible to set during build time (see `--rebuildimage` option)
 - `HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME` :- the name of the file (inside the directory named `${ONTPUB FAMILY}`, in the `${ONTPUB_INPUT_REPOS}` list) for which the "warning" level consistency check test will be performed (i.e. in the case of a lack of consistency, the ontology building process is not terminated), e.g. `AboutFIBODev.rdf` (no default - in the absence of a value, the tests will not be run)
 - `HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME` :- the name of the file (inside the directory named `${ONTPUB FAMILY}`, in the `${ONTPUB_INPUT_REPOS}` list) for which the "error" level consistency check test will be performed (i.e. in the case of a lack of consistency, the ontology building process is terminated with an error message), e.g. `AboutFIBOProd.rdf` (no default - in the absence of a value, the tests will not be run)
+- `ONTPUB_MERGED_INFIX` :- infix for "merged" files, e.g. `-Merged` (no default - in the absence of a value, the merged files will not be created)
 
 ## Jenkins
 

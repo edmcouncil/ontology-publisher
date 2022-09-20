@@ -454,6 +454,10 @@ function run() {
     opts+=('--env')
     opts+=("HYGIENE_TEST_PARAMETER_VALUE=${HYGIENE_TEST_PARAMETER_VALUE}")
   fi
+  if [ -n "${ONTPUB_MERGED_INFIX}" ] ; then
+    opts+=('--env')
+    opts+=("ONTPUB_MERGED_INFIX=${ONTPUB_MERGED_INFIX}")
+  fi
 
   logVar ONTPUB_FAMILY
 
