@@ -203,8 +203,8 @@ function zipOntologyFiles () {
 #
 function quadify () {
     # extract owl:Ontology
-    export O="$(serdi -o nquads "${1}" 2>/dev/null | grep -P '^\s*(\<[^\>]*\>)\s+<http\:\/\/www.w3.org\/1999\/02\/22-rdf-syntax-ns\#type>\s+<http:\/\/www.w3.org\/2002\/07\/owl#Ontology>\s+\.\s*$' | perl -p -e 's/^\s*\<([^\>]*)\>\s+.*$/\1/g')"
-    test -n "${O}" && serdi -p "$(cat /proc/sys/kernel/random/uuid)" -o nquads "${1}" 2>"${1}.err" | sed "s<\.\s*$<\<${O}\> .<g" && rm -f "${1}.err"
+    export O="$(rdfpipe -o pretty-xml "${1}" 2>/dev/null | getOntologyIRI)"
+    test -n "${O}" && rdfpipe -o nquads "${1}" | sed "s#<file://$(realpath "${1}")>#<${O}>#g"
   }
   
 
