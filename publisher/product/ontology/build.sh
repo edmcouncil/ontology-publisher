@@ -592,15 +592,6 @@ function ontologyZipFiles () {
   require family_product_branch_tag || return $?
   require tag_root || return $?
 
-  logStep "ontologyZipFiles"
-
-  local zipttlDevFile="${tag_root}/dev.ttl.zip"
-  local ziprdfDevFile="${tag_root}/dev.rdf.zip"
-  local zipjsonldDevFile="${tag_root}/dev.jsonld.zip"
-  local zipttlProdFile="${tag_root}/prod.ttl.zip"
-  local ziprdfProdFile="${tag_root}/prod.rdf.zip"
-  local zipjsonldProdFile="${tag_root}/prod.jsonld.zip"
-
   (
     cd "${spec_root}"
     #
@@ -616,29 +607,65 @@ function ontologyZipFiles () {
     #
     find . -type f -name \*\.ttl -exec /bin/bash -c 'perl -pi -e "s/^\s*(\@prefix)\s+([^\s]+)\s+(\<[^\>]*\>)\s+(\.)\s*$/\1 \2 \3 \4\n/g" "{}"' \;
 
+    # [Improve the function "ontologyZipFiles" #105](https://github.com/edmcouncil/ontology-publisher/issues/105)
 
-    ${FIND}  "${family_product_branch_tag}" -name '*.ttl' -print | ${GREP} -v etc |  ${GREP} -v "Load${ONTPUB_FAMILY^^}Prod.ttl" | grep -v About |  xargs zip ${zipttlDevFile}
-    ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipttlDevFile}
+    logStep "ontologyZipFiles - Dev"
+    local zipttlFile="${tag_root}/dev.ttl.zip"
+    local ziprdfFile="${tag_root}/dev.rdf.zip"
+    local zipjsonldFile="${tag_root}/dev.jsonld.zip"
+    export ziptmpDir="$(mktemp -d 2>/dev/null)"
+    ${FIND} "${family_product_branch_tag}" -type f -name "*.rdf" -not -path "${family_product_branch_tag}/etc/*" -not -name "*${ONTPUB_FAMILY^^}Prod.rdf" -exec install -D -m0644 "{}" "${ziptmpDir}/{}" \;
+    export tag_root_orig="${tag_root}"
+    tag_root="${ziptmpDir}/${family_product_branch_tag}" && ontologyBuildCatalogs
+    export tag_root="${tag_root_orig}"
 
-    ${FIND}  "${family_product_branch_tag}" -name '*.rdf' -print | ${GREP} -v etc | ${GREP} -v "Load${ONTPUB_FAMILY^^}Prod.rdf" |  grep -v About |xargs zip ${ziprdfDevFile}
-    ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${ziprdfDevFile}
+    pushd "${ziptmpDir}" &>/dev/null
+     ${FIND} "${family_product_branch_tag}" -type f -name '*.rdf' -exec /bin/bash -c "pushd \"${spec_root}\" &>/dev/null && \
+        zip \"${ziprdfFile}\" \"{}\" && \
+        zip \"${zipttlFile}\" \"\$(echo \"{}\" | sed 's/.rdf/.ttl/g')\" && \
+        zip \"${zipjsonldFile}\" \"\$(echo \"{}\" | sed 's/.rdf/.jsonld/g')\" && \
+        popd &>/dev/null" \;
 
-    ${FIND}  "${family_product_branch_tag}" -name '*.jsonld' -print | ${GREP} -v etc | ${GREP} -v "Load${ONTPUB_FAMILY^^}Prod.jsonld" |  grep -v About |  xargs zip ${zipjsonldDevFile}
-    ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipjsonldDevFile}
+     ${FIND} "${family_product_branch_tag}" -type f -name '*catalog*.xml' -print | xargs zip ${ziprdfFile}
 
+     ${FIND} "${family_product_branch_tag}" -type f -name '*catalog*.xml' -exec sed -i 's#.rdf"/>#.ttl"/>#g' "{}" \;
+     ${FIND} "${family_product_branch_tag}" -type f -name '*catalog*.xml' -print | xargs zip ${zipttlFile}
 
-    
+     ${FIND} "${family_product_branch_tag}" -type f -name '*catalog*.xml' -exec sed -i 's#.ttl"/>#.jsonld"/>#g' "{}" \;
+     ${FIND} "${family_product_branch_tag}" -type f -name '*catalog*.xml' -print | xargs zip ${zipjsonldFile}
+    popd &>/dev/null
+    rm -rf "${ziptmpDir}"
 
-    ${GREP} -r 'utl-av[:;.]Release' "${family_product_branch_tag}" | ${GREP} -F ".ttl" | ${SED} 's/:.*$//' | xargs zip -r ${zipttlProdFile}
-    ${FIND}  "${family_product_branch_tag}" -name '*Load*.ttl' -print | ${GREP} -v "Load${ONTPUB_FAMILY^^}Dev.ttl" |  xargs zip ${zipttlProdFile}
-    ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipttlProdFile}
-    ${GREP} -r 'utl-av[:;.]Release' "${family_product_branch_tag}" | ${GREP} -F ".rdf" |   ${SED} 's/:.*$//' | xargs zip -r ${ziprdfProdFile}
-    ${FIND}  "${family_product_branch_tag}" -name '*Load*.rdf' -print | ${GREP} -v "Load${ONTPUB_FAMILY^^}Dev.rdf" | xargs zip ${ziprdfProdFile}
-    ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${ziprdfProdFile}
-    ${GREP} -r 'https://spec.edmcouncil.org/fibo/ontology/FND/Utilities/AnnotationVocabulary/Release' "${family_product_branch_tag}" | ${GREP} -F ".jsonld" |   ${SED} 's/:.*$//' | xargs zip -r ${zipjsonldProdFile}
-    ${FIND}  "${family_product_branch_tag}" -name '*Load*.jsonld' -print | ${GREP} -v "Load${ONTPUB_FAMILY^^}Dev.jsonld" | xargs zip ${zipjsonldProdFile}
-    ${FIND}  "${family_product_branch_tag}" -name '*catalog*.xml' -print | xargs zip ${zipjsonldProdFile}
+    logStep "ontologyZipFiles - Prod"
+    local zipttlFile="${tag_root}/prod.ttl.zip"
+    local ziprdfFile="${tag_root}/prod.rdf.zip"
+    local zipjsonldFile="${tag_root}/prod.jsonld.zip"
+    export ziptmpDir="$(mktemp -d 2>/dev/null)"
+    ${FIND} "${family_product_branch_tag}" -type f -name "*.rdf" -not -path "${family_product_branch_tag}/etc/*" -not -name "*${ONTPUB_FAMILY^^}Dev.rdf" -exec /bin/bash -c "${GREP} -P '(^|.*\W)fibo-fnd-utl-av[:;.]hasMaturityLevel\s+fibo-fnd-utl-av[:;.]Release(\W.*|$)' \"{}\" && install -Dv -m0644 \"{}\" \"${ziptmpDir}/{}\"" \;
+    if [ $(${FIND} "${ziptmpDir}" -type f | wc -l) -gt 0 ] ; then
+     export tag_root_orig="${tag_root}"
+     tag_root="${ziptmpDir}/${family_product_branch_tag}" && ontologyBuildCatalogs
+     export tag_root="${tag_root_orig}"
 
+     pushd "${ziptmpDir}" &>/dev/null
+      ${FIND} "${family_product_branch_tag}" -type f -name '*.rdf' -exec /bin/bash -c "pushd \"${spec_root}\" &>/dev/null && \
+        zip \"${ziprdfFile}\" \"{}\" && \
+        zip \"${zipttlFile}\" \"\$(echo \"{}\" | sed 's/.rdf/.ttl/g')\" && \
+        zip \"${zipjsonldFile}\" \"\$(echo \"{}\" | sed 's/.rdf/.jsonld/g')\" && \
+        popd &>/dev/null" \;
+
+      ${FIND} "${family_product_branch_tag}" -type f -name '*catalog*.xml' -print | xargs zip ${ziprdfFile}
+
+      ${FIND} "${family_product_branch_tag}" -type f -name '*catalog*.xml' -exec sed -i 's#.rdf"/>#.ttl"/>#g' "{}" \;
+      ${FIND} "${family_product_branch_tag}" -type f -name '*catalog*.xml' -print | xargs zip ${zipttlFile}
+
+      ${FIND} "${family_product_branch_tag}" -type f -name '*catalog*.xml' -exec sed -i 's#.ttl"/>#.jsonld"/>#g' "{}" \;
+      ${FIND} "${family_product_branch_tag}" -type f -name '*catalog*.xml' -print | xargs zip ${zipjsonldFile}
+     popd &>/dev/null
+     rm -rf "${ziptmpDir}"
+    else
+     warning "missing Prod ontologies"
+    fi
   )
 
   log "Step: ontologyZipFiles finished"
