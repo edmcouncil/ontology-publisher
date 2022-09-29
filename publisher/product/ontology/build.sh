@@ -48,8 +48,8 @@ function publishProductOntology() {
   ontologyBuildCatalogs  || return $?
   ontologyBuildIndex  || return $?
   ontologyCreateAboutFiles || return $?
-  ontologyCreateMergedFiles || return $?
   ontologyConvertRdfToAllFormats || return $?
+  test -z "${ONTPUB_MERGED_INFIX}" || ontologyCreateMergedFiles || return $?
 
   createQuickVersions || return $?
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
@@ -500,6 +500,7 @@ function ontologyCreateMergedFiles() {
 
   require source_family_root || return $?
   require tag_root || return $?
+  require ONTPUB_MERGED_INFIX || return $?
 
   logStep "ontologyCreateMergedFiles"
 
@@ -513,15 +514,15 @@ function ontologyCreateMergedFiles() {
   for rdfFile in **/*.rdf ; do
     ontologyIsInTestDomain "${rdfFile}" || continue
     isIRIInScope "$(getOntologyIRI < "${rdfFile}")" || continue
-    test "${rdfFile}" = "${rdfFile%-Merged.rdf}" || continue
+    test "${rdfFile}" = "${rdfFile%${ONTPUB_MERGED_INFIX}.rdf}" || continue
 
     # temporary workaround - include only ontolgyIRI ending with "/"
     #getOntologyIRI < "${rdfFile}" | grep '/$' &>/dev/null || continue
 
     if ((maxParallelJobs == 1)) ; then
-      ${SCRIPT_DIR}/utils/createMergedFile.sh "${rdfFile}" "catalog-v001.xml" "-Merged"
+      ${SCRIPT_DIR}/utils/createMergedFile.sh "${rdfFile}" "catalog-v001.xml" "${ONTPUB_MERGED_INFIX}"
     else
-      ${SCRIPT_DIR}/utils/createMergedFile.sh "${rdfFile}" "catalog-v001.xml" "-Merged" &
+      ${SCRIPT_DIR}/utils/createMergedFile.sh "${rdfFile}" "catalog-v001.xml" "${ONTPUB_MERGED_INFIX}" &
       ((numberOfParallelJobs++))
       if ((numberOfParallelJobs >= maxParallelJobs)) ; then
         wait
