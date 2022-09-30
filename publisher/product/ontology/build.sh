@@ -614,7 +614,13 @@ function ontologyZipFiles () {
     local ziprdfFile="${tag_root}/dev.rdf.zip"
     local zipjsonldFile="${tag_root}/dev.jsonld.zip"
     export ziptmpDir="$(mktemp -d 2>/dev/null)"
-    ${FIND} "${family_product_branch_tag}" -type f -name "*.rdf" -not -path "${family_product_branch_tag}/etc/*" -not -name "*${ONTPUB_FAMILY^^}Prod.rdf" -exec install -D -m0644 "{}" "${ziptmpDir}/{}" \;
+    for uri in $(getOwlImports < "${source_family_root}/${DEV_SPEC}" | getUris "${family_product_branch_tag}/catalog-v001.xml") ; do
+      if [ -e "${family_product_branch_tag}/${uri}" ] ; then
+        install -D -m0644 "${family_product_branch_tag}/${uri}" "${ziptmpDir}/${family_product_branch_tag}/${uri}"
+      else
+        warning "the ontology \"${uri}\" has no corresponding file in \"${family_product_branch_tag}/catalog-v001.xml\""
+      fi
+    done
     export tag_root_orig="${tag_root}"
     tag_root="${ziptmpDir}/${family_product_branch_tag}" && ontologyBuildCatalogs
     export tag_root="${tag_root_orig}"
@@ -641,7 +647,13 @@ function ontologyZipFiles () {
     local ziprdfFile="${tag_root}/prod.rdf.zip"
     local zipjsonldFile="${tag_root}/prod.jsonld.zip"
     export ziptmpDir="$(mktemp -d 2>/dev/null)"
-    ${FIND} "${family_product_branch_tag}" -type f -name "*.rdf" -not -path "${family_product_branch_tag}/etc/*" -not -name "*${ONTPUB_FAMILY^^}Dev.rdf" -exec /bin/bash -c "${GREP} -P '(^|.*\W)fibo-fnd-utl-av[:;.]hasMaturityLevel\s+fibo-fnd-utl-av[:;.]Release(\W.*|$)' \"{}\" && install -Dv -m0644 \"{}\" \"${ziptmpDir}/{}\"" \;
+    for uri in $(getOwlImports < "${source_family_root}/${PROD_SPEC}" | getUris "${family_product_branch_tag}/catalog-v001.xml") ; do
+      if [ -e "${family_product_branch_tag}/${uri}" ] ; then
+        install -D -m0644 "${family_product_branch_tag}/${uri}" "${ziptmpDir}/${family_product_branch_tag}/${uri}"
+      else
+        warning "the ontology \"${uri}\" has no corresponding file in \"${family_product_branch_tag}/catalog-v001.xml\""
+      fi
+    done
     if [ $(${FIND} "${ziptmpDir}" -type f | wc -l) -gt 0 ] ; then
      export tag_root_orig="${tag_root}"
      tag_root="${ziptmpDir}/${family_product_branch_tag}" && ontologyBuildCatalogs
