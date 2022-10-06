@@ -1056,23 +1056,20 @@ function isRunningInDockerContainer() {
 }
 
 #
-# Return all the .rdf files that go into "dev"
+# Return a list of all "rdf:resource" correspond to "owl:imports" in stdin
 #
-function getDevOntologies() {
+function getOwlImports() {
+  xml -q c14n 2>/dev/null | xml sel -t -v '/rdf:RDF/owl:Ontology/owl:imports/@rdf:resource' -nl 2>/dev/null | sed -r '/^\W*$/d'
+}
 
-  requireValue ontology_product_tag_root || return $?
-
-  ${FIND} "${ontology_product_tag_root}" \
-    -mindepth 2 \
-    -name 'ont-policy.rdf' -prune -o \
-    -path '*/etc*' -prune -o \
-    -name '*About*' -prune -o \
-    -name 'All*' -prune -o \
-    -name 'Metadata*' -prune -o \
-    -name '*Load*' -prune -o \
-    -name '*.rdfX' -prune -o \
-    -name '*.rdf.orig' -prune -o \
-    -name '*.rdf' -print
+#
+# Return a list of (paths to files with|original names of) ontologies, the list of names of which is on stdin (based on the "catalog-v001.xml" file - function argument)
+#
+function getUris() {
+  for name in $(cat) ; do
+    cat "${1}" 2>/dev/null | xml sel -N _=urn:oasis:names:tc:entity:xmlns:xml:catalog -t -v "/_:catalog/_:uri[@name=\"${name}\"]/@uri" -nl
+   # 2>/dev/null || echo "${name}"
+  done
 }
 
 function getDevOntologiesInRDFXMLFormatInCurrentDirectory() {
