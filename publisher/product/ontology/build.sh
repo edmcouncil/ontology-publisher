@@ -587,6 +587,14 @@ function ontologyConvertRdfToAllFormats() {
   return $?
 }
 
+function copyOntologies () {
+ for uri in "${1}" $(getOwlImports < "${source_family_root}/${1}" 2>/dev/null | getUris "${family_product_branch_tag}/catalog-v001.xml" 2>/dev/null) ; do
+  if [ -e "${family_product_branch_tag}/${uri}" ] && [ ! -e "${ziptmpDir}/${family_product_branch_tag}/${uri}" ] ; then
+   install -D -m0644 "${family_product_branch_tag}/${uri}" "${ziptmpDir}/${family_product_branch_tag}/${uri}" && copyOntologies "${uri}"
+  fi
+ done
+}
+
 function ontologyZipFiles () {
 
   require family_product_branch_tag || return $?
@@ -614,13 +622,14 @@ function ontologyZipFiles () {
     local ziprdfFile="${tag_root}/dev.rdf.zip"
     local zipjsonldFile="${tag_root}/dev.jsonld.zip"
     export ziptmpDir="$(mktemp -d 2>/dev/null)"
-    for uri in $(getOwlImports < "${source_family_root}/${DEV_SPEC}" | getUris "${family_product_branch_tag}/catalog-v001.xml") ; do
-      if [ -e "${family_product_branch_tag}/${uri}" ] ; then
-        install -D -m0644 "${family_product_branch_tag}/${uri}" "${ziptmpDir}/${family_product_branch_tag}/${uri}"
-      else
-        warning "the ontology \"${uri}\" has no corresponding file in \"${family_product_branch_tag}/catalog-v001.xml\""
-      fi
+
+    # create DEV zipFiles based on: 1) DEV_SPEC 2) source ontologies from file "ontology_config.yaml" except PROD_SPEC
+    for ontologies in "${DEV_SPEC}" $(yq '.ontologies.source[].url' < "${source_family_root}/etc/onto-viewer-web-app/config/ontology_config.yaml" 2>/dev/null | getUris "${family_product_branch_tag}/catalog-v001.xml" 2>/dev/null) ; do
+        test -n "${ontologies}" && test -f "${family_product_branch_tag}/${ontologies}" && \
+            test "$(realpath "${family_product_branch_tag}/${ontologies}" 2>/dev/null)" != "$(realpath "${family_product_branch_tag}/${PROD_SPEC}" 2>/dev/null)" && \
+            copyOntologies "${ontologies}"
     done
+
     export tag_root_orig="${tag_root}"
     tag_root="${ziptmpDir}/${family_product_branch_tag}" && ontologyBuildCatalogs
     export tag_root="${tag_root_orig}"
@@ -647,13 +656,14 @@ function ontologyZipFiles () {
     local ziprdfFile="${tag_root}/prod.rdf.zip"
     local zipjsonldFile="${tag_root}/prod.jsonld.zip"
     export ziptmpDir="$(mktemp -d 2>/dev/null)"
-    for uri in $(getOwlImports < "${source_family_root}/${PROD_SPEC}" | getUris "${family_product_branch_tag}/catalog-v001.xml") ; do
-      if [ -e "${family_product_branch_tag}/${uri}" ] ; then
-        install -D -m0644 "${family_product_branch_tag}/${uri}" "${ziptmpDir}/${family_product_branch_tag}/${uri}"
-      else
-        warning "the ontology \"${uri}\" has no corresponding file in \"${family_product_branch_tag}/catalog-v001.xml\""
-      fi
+
+    # create PROD zipFiles based on: 1) PROD_SPEC 2) source ontologies from file "ontology_config.yaml" except DEV_SPEC
+    for ontologies in "${PROD_SPEC}" $(yq '.ontologies.source[].url' < "${source_family_root}/etc/onto-viewer-web-app/config/ontology_config.yaml" 2>/dev/null | getUris "${family_product_branch_tag}/catalog-v001.xml" 2>/dev/null) ; do
+        test -n "${ontologies}" && test -f "${family_product_branch_tag}/${ontologies}" && \
+            test "$(realpath "${family_product_branch_tag}/${ontologies}" 2>/dev/null)" != "$(realpath "${family_product_branch_tag}/${DEV_SPEC}" 2>/dev/null)" && \
+            copyOntologies "${ontologies}"
     done
+
     if [ $(${FIND} "${ziptmpDir}" -type f | wc -l) -gt 0 ] ; then
      export tag_root_orig="${tag_root}"
      tag_root="${ziptmpDir}/${family_product_branch_tag}" && ontologyBuildCatalogs

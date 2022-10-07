@@ -51,7 +51,7 @@ RUN \
   echo ================================= install basics >&2 && \
   apk --no-cache add \
     curl wget \
-    bash git grep sed findutils coreutils tree jq bc xmlstarlet \
+    bash git grep sed findutils coreutils tree jq yq bc xmlstarlet \
     zip tar xz \
     openjdk11 \
     python3-dev py3-pip py3-wheel py3-cachetools py3-frozendict py3-isodate py3-lxml cython py3-pandas \
