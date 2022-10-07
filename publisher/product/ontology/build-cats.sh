@@ -15,7 +15,7 @@ function ontologyBuildProtegeCatalog () {
 
   (
     cd "${directory}" || return $?    # Build the catalog in this directory
-    ((verbose)) && logItem "Protegé catalog" "$(logFileName "${directory}")"
+    ((verbose)) && logItem "Protegé catalog" "$(logFileName "${directory}")" >&2
 
     cat > catalog-v001.xml << __HERE__
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -38,15 +38,16 @@ __HERE__
        # is ontologyIRI already in "catalog-v001.xml"?
        #
        if ! xml sel -t -c "/_:catalog/_:uri[@name='${ontologyIRI}']" catalog-v001.xml &>/dev/null ; then
-        echo -en "."
+        echo -en "." >&2
         xml -q ed -P -L -s '/_:catalog' --type elem -n 'uri' -v "" -a '$prev' --type attr -n 'name' -v "${ontologyIRI}" -a '$prev/..' --type attr -n 'uri' -v "${ontologyRdfFile}" catalog-v001.xml
        else
-        echo -en ":"
+        echo -en ":" >&2
        fi
       done
      fi
     done
     cat "catalog-v001.xml" | xml fo -s 4 -N > "catalog-v001.xml.tmp" 2>/dev/null && mv -f "catalog-v001.xml.tmp" "catalog-v001.xml"
+    echo -e "|" >&2
   )
 }
 
@@ -68,17 +69,13 @@ function ontologyBuildProtegeCatalogs () {
       -regex "\(.*/ext\)\|\(.*/etc\)\|\(.*/.git\)$" -prune  -o -print \
     \) | while read file ; do
       ontologyIsInTestDomain "${file}" || continue
-      ontologyBuildProtegeCatalog "$file" ".." &
+      ontologyBuildProtegeCatalog "$file" ".."
     done
 
   #
   # Run build1catalog in the main directory
   #
-  ontologyBuildProtegeCatalog "${tag_root}" "." &
-
-  wait
-
-  echo -e '|'
+  ontologyBuildProtegeCatalog "${tag_root}" "."
 
   return $?
 }
@@ -94,7 +91,7 @@ function makeFileUrl() {
 
 function ontologyBuildCatalogs() {
 
-  logStep "ontologyBuildCatalogs"
+  logStep "ontologyBuildCatalogs" >&2
 
   ontologyBuildProtegeCatalogs
 }
