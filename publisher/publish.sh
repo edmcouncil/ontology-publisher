@@ -119,10 +119,11 @@ function zipWholeTagDir() {
 function publishOntoViewerConfigFiles () {
 
   require source_family_root || return $?
+  require family_product_branch_tag || return $?
   require tag_root || return $?
   require tag_root_url || return $?
 
-  config_path="etc/onto-viewer-web-app/config"
+  local config_path="etc/onto-viewer-web-app/config"
 
   rm -rf "${tag_root}/${config_path}" && test -d "${source_family_root}/${config_path}" && install -d "${tag_root}/${config_path}" && \
     logRule "install onto-viewer config files into \"$(logFileName "${tag_root_url}/${config_path}/")\"" && \
@@ -130,6 +131,22 @@ function publishOntoViewerConfigFiles () {
       logItem "config file" "$(logFileName "$(basename "${CONFIG_FILE}")")"
       install -p -m0644 "${CONFIG_FILE}" "${tag_root}/${config_path}/"
     done
+
+  #
+  # Set the appropriate values in "ontology_config.yaml"
+  # https://github.com/edmcouncil/ontology-publisher/issues/115
+  #
+  local ontologyConfigYamlFile="${tag_root}/${config_path}/ontology_config.yaml"
+  logRule "setup onto-viewer config file \"$(logFileName "${tag_root_url}/${config_path}/ontology_config.yaml")\""
+  install -d "$(dirname "${ontologyConfigYamlFile}")"
+  test -f "${ontologyConfigYamlFile}" || touch "${ontologyConfigYamlFile}"
+  logItem "download_directory" "$(logFileName "ontologies")" && \
+	yq -i ".ontologies.download_directory = [\"ontologies\"]" "${ontologyConfigYamlFile}"
+  logItem "catalog_path" "$(logFileName "ontologies/${family_product_branch_tag}/catalog-v001.xml")" && \
+	yq -i ".ontologies.catalog_path = [\"ontologies/${family_product_branch_tag}/catalog-v001.xml\"]" "${ontologyConfigYamlFile}"
+  logItem "zip" "$(logFileName "${tag_root_url}/dev.rdf.zip")" && \
+	yq -i "del(.ontologies.source.[] | select(has(\"zip\")))" "${ontologyConfigYamlFile}" && \
+	yq -i ".ontologies.source += {\"zip\":\"${tag_root_url}/dev.rdf.zip\"}" "${ontologyConfigYamlFile}"
 }
 
 #
