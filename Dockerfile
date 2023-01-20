@@ -16,7 +16,7 @@
 # - alpine is the name of the Linux brand we're using, which is the smallest linux keeping the image as small
 #   as possible.
 #
-FROM alpine:3.16
+FROM alpine:3.17
 
 #
 # Some meta data, can only have one maintainer unfortunately
@@ -68,10 +68,10 @@ RUN \
 
 #
 # Installing Apache Jena
-# INFRA-496 jena-arq-${JENA_VERSION}.jar: workaround to change default JSON-LD output: JSONLD = JSONLD_EXPAND_PRETTY instead of JSONLD_COMPACT_PRETTY
+# INFRA-496 jena-arq-${JENA_VERSION}.jar: workaround to change default JSON-LD-10 output: JSONLD10 = JSONLD10_EXPAND_PRETTY instead of JSONLD10_COMPACT_PRETTY
 #
 ENV \
-  JENA_VERSION="3.17.0" \
+  JENA_VERSION="4.6.1" \
   JENA_HOME=/usr/share/java/jena/latest \
   PATH=${PATH}:/usr/lib/jvm/java-11-openjdk/bin:/usr/share/java/jena/latest/bin
 RUN \
@@ -93,7 +93,7 @@ RUN \
   cd ${JENA_VERSION} && \
   unzip lib-src/jena-arq-${JENA_VERSION}-sources.jar org/apache/jena/riot/RDFFormat.java && \
   rm -rf src-examples lib-src bat && \
-  perl -pi -e 's/(JSONLD\s+=\s+JSONLD)_COMPACT_(PRETTY)/\1_EXPAND_\2/g' org/apache/jena/riot/RDFFormat.java && \
+  perl -pi -e 's/(\WJSONLD10\s+=\s+JSONLD(?:10)?_)(?:COMPACT_)?(PRETTY)/\1EXPAND_\2/g' org/apache/jena/riot/RDFFormat.java && \
   javac -cp /usr/share/java/jena/${JENA_VERSION}/lib/jena-arq-${JENA_VERSION}.jar org/apache/jena/riot/RDFFormat.java && \
   zip -u /usr/share/java/jena/${JENA_VERSION}/lib/jena-arq-${JENA_VERSION}.jar org/apache/jena/riot/RDFFormat.class && \
   rm -rf org && \
@@ -112,7 +112,7 @@ RUN \
 #
 # Installing [ROBOT](https://github.com/ontodev/robot)
 #
-ENV ROBOT_VERSION="v1.9.0"
+ENV ROBOT_VERSION="v1.9.1"
 RUN \
   wget -m -nH -nd -P /usr/local/bin https://raw.githubusercontent.com/ontodev/robot/${ROBOT_VERSION:-master}/bin/robot && \
   wget -m -nH -nd -P /usr/local/bin https://github.com/ontodev/robot/releases/${ROBOT_VERSION:+download/}${ROBOT_VERSION:=latest/download}/robot.jar && \
