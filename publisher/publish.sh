@@ -134,19 +134,19 @@ function publishOntoViewerConfigFiles () {
 
   #
   # Set the appropriate values in "ontology_config.yaml"
-  # https://github.com/edmcouncil/ontology-publisher/issues/115
+  # https://github.com/edmcouncil/ontology-publisher/issues/115 + https://github.com/edmcouncil/ontology-publisher/issues/120
   #
   local ontologyConfigYamlFile="${tag_root}/${config_path}/ontology_config.yaml"
   logRule "setup onto-viewer config file \"$(logFileName "${tag_root_url}/${config_path}/ontology_config.yaml")\""
   install -d "$(dirname "${ontologyConfigYamlFile}")"
   test -f "${ontologyConfigYamlFile}" || touch "${ontologyConfigYamlFile}"
-  logItem "download_directory" "$(logFileName "ontologies")" && \
-	yq -i ".ontologies.download_directory = [\"ontologies\"]" "${ontologyConfigYamlFile}"
-  logItem "catalog_path" "$(logFileName "ontologies/${family_product_branch_tag}/catalog-v001.xml")" && \
-	yq -i ".ontologies.catalog_path = [\"ontologies/${family_product_branch_tag}/catalog-v001.xml\"]" "${ontologyConfigYamlFile}"
-  logItem "zip" "$(logFileName "${tag_root_url}/dev.rdf.zip")" && \
+#  logItem "download_directory" "$(logFileName "ontologies")" && \
+#	yq -i ".ontologies.download_directory = [\"ontologies\"]" "${ontologyConfigYamlFile}"
+#  logItem "catalog_path" "$(logFileName "ontologies/${family_product_branch_tag}/catalog-v001.xml")" && \
+#	yq -i ".ontologies.catalog_path = [\"ontologies/${family_product_branch_tag}/catalog-v001.xml\"]" "${ontologyConfigYamlFile}"
+  logItem "zip" "$(logFileName "${tag_root_url}/dev.rdf.zip#${family_product_branch_tag}/catalog-v001.xml")" && \
 	yq -i "del(.ontologies.source.[] | select(has(\"zip\")))" "${ontologyConfigYamlFile}" && \
-	yq -i ".ontologies.source += {\"zip\":\"${tag_root_url}/dev.rdf.zip\"}" "${ontologyConfigYamlFile}"
+	yq -i ".ontologies.source += {\"zip\":\"${tag_root_url}/dev.rdf.zip#${family_product_branch_tag}/catalog-v001.xml\"}" "${ontologyConfigYamlFile}"
 }
 
 #
