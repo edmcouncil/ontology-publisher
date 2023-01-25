@@ -125,12 +125,14 @@ function publishOntoViewerConfigFiles () {
 
   local config_path="etc/onto-viewer-web-app/config"
 
-  rm -rf "${tag_root}/${config_path}" && test -d "${source_family_root}/${config_path}" && install -d "${tag_root}/${config_path}" && \
+  rm -rf "${tag_root}/${config_path}" ; install -d "${tag_root}/${config_path}"
+  if [ -d "${source_family_root}/${config_path}" ] ; then
     logRule "install onto-viewer config files into \"$(logFileName "${tag_root_url}/${config_path}/")\"" && \
-    for CONFIG_FILE in $(find "${source_family_root}/${config_path}" -type f) ; do
+    for CONFIG_FILE in $(find "${source_family_root}/${config_path}" -type f -not -name \.\* ) ; do
       logItem "config file" "$(logFileName "$(basename "${CONFIG_FILE}")")"
       install -p -m0644 "${CONFIG_FILE}" "${tag_root}/${config_path}/"
     done
+  fi
 
   #
   # Set the appropriate values in "ontology_config.yaml"
@@ -144,7 +146,7 @@ function publishOntoViewerConfigFiles () {
 #	yq -i ".ontologies.download_directory = [\"ontologies\"]" "${ontologyConfigYamlFile}"
 #  logItem "catalog_path" "$(logFileName "ontologies/${family_product_branch_tag}/catalog-v001.xml")" && \
 #	yq -i ".ontologies.catalog_path = [\"ontologies/${family_product_branch_tag}/catalog-v001.xml\"]" "${ontologyConfigYamlFile}"
-  logItem "zip" "$(logFileName "${tag_root_url}/dev.rdf.zip#${family_product_branch_tag}/catalog-v001.xml")" && \
+  logItem ".ontologies.source.zip" "$(logFileName "${tag_root_url}/dev.rdf.zip#${family_product_branch_tag}/catalog-v001.xml")" && \
 	yq -i "del(.ontologies.source.[] | select(has(\"zip\")))" "${ontologyConfigYamlFile}" && \
 	yq -i ".ontologies.source += {\"zip\":\"${tag_root_url}/dev.rdf.zip#${family_product_branch_tag}/catalog-v001.xml\"}" "${ontologyConfigYamlFile}"
 }
@@ -165,12 +167,15 @@ function publishHygieneFiles () {
 
   hygiene_path="etc/hygiene"
 
-  rm -rf "${ontology_product_tag_root}/${hygiene_path}" && test -d "${hygiene_product_tag_root}" && install -d "${ontology_product_tag_root}/${hygiene_path}" && \
+  rm -rf "${ontology_product_tag_root}/${hygiene_path}"
+  if [ -d "${hygiene_product_tag_root}" ] ; then
+    install -d "${ontology_product_tag_root}/${hygiene_path}" && \
     logRule "install hygiene test results into \"$(logFileName "${tag_root_url}/${hygiene_path}/")\"" && \
     for HYGIENE_FILE in $(find "${hygiene_product_tag_root}" -type f) ; do
       logItem "hygiene test file" "$(logFileName "$(basename "${HYGIENE_FILE}")")"
       install -p -m0644 "${HYGIENE_FILE}" "${ontology_product_tag_root}/${hygiene_path}/"
     done
+  fi
 }
 
 function zipOntologyFiles () {
