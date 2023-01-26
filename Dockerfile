@@ -31,7 +31,6 @@ LABEL owner="Enterprise Data Management Council"
 # You can override their default values with any number of "--build-arg" options on the "docker build" command line.
 #
 ARG ONTPUB_FAMILY=fibo
-ARG ONTPUB_SPEC_HOST=spec.edmcouncil.org
 ARG HYGIENE_TEST_PARAMETER_VALUE=edmcouncil
 ARG ONTPUB_IS_DARK_MODE=1
 
@@ -51,7 +50,7 @@ RUN \
   echo ================================= install basics >&2 && \
   apk --no-cache add \
     curl wget \
-    bash git grep sed findutils coreutils tree jq yq bc xmlstarlet \
+    bash git grep sed findutils coreutils tree jq yq bc xmlstarlet util-linux \
     zip tar xz \
     openjdk11 \
     python3-dev py3-pip py3-wheel py3-cachetools py3-frozendict py3-isodate py3-lxml cython py3-pandas \
@@ -177,7 +176,7 @@ WORKDIR /publisher
 RUN \
   echo PATH=${PATH} && \
   echo "export PATH=${PATH}" >> /etc/bashrc && \
-  sed -i "s/<ONTPUB_FAMILY>/${ONTPUB_FAMILY}/g ; s/<ONTPUB_SPEC_HOST>/${ONTPUB_SPEC_HOST}/g ; s/<HYGIENE_TEST_PARAMETER_VALUE>/${HYGIENE_TEST_PARAMETER_VALUE}/g ; s/<ONTPUB_IS_DARK_MODE>/${ONTPUB_IS_DARK_MODE}/g" /etc/bashrc && \
+  sed -i "s/<ONTPUB_FAMILY>/${ONTPUB_FAMILY}/g ; s/<HYGIENE_TEST_PARAMETER_VALUE>/${HYGIENE_TEST_PARAMETER_VALUE}/g ; s/<ONTPUB_IS_DARK_MODE>/${ONTPUB_IS_DARK_MODE}/g" /etc/bashrc && \
   ln -sf /var/tmp/.gitconfig /root/.gitconfig && \
   ln -sf /var/tmp/.gitconfig /.gitconfig && \
   rm -rvf /root/{.wget-hsts,.cache}
