@@ -346,7 +346,7 @@ function buildImage() {
   opts+=("HYGIENE_TEST_PARAMETER_VALUE=${HYGIENE_TEST_PARAMETER_VALUE}")
  fi
   opts+=('--label')
-  opts+=("org.${ONTPUB_ORG}.ontology-publisher.version="${ONTPUB_VERSION/v/}"")
+  opts+=("org.${ONTPUB_ORG}.ontology-publisher.version="${ONTPUB_VERSION}"")
   opts+=('--label')
   opts+=("org.${ONTPUB_ORG}.ontology-publisher.release-date="$(date "+%Y-%m-%d")"")
   opts+=('--tag')
