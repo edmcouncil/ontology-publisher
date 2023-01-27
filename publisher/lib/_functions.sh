@@ -715,7 +715,6 @@ function initWorkspaceVars() {
   require INPUT || return $?
   require OUTPUT || return $?
   require ONTPUB_FAMILY || return $?
-  require ONTPUB_SPEC_HOST || return $?
 
   #
   # We use logVar here and not logDir because we really want to show the actual WORKSPACE directory
@@ -760,11 +759,6 @@ function initWorkspaceVars() {
   # Ontology root is required for other products
   #
   export ontology_product_tag_root=""
-  #
-  # TODO: Make URL configurable
-  #
-  export spec_root_url="https://${ONTPUB_SPEC_HOST}"
-  export spec_family_root_url="${spec_root_url}/${ONTPUB_FAMILY}"
   export product_root_url=""
   export branch_root_url=""
   export tag_root_url=""
@@ -790,7 +784,13 @@ function setProduct() {
   ((verbose)) && logDir spec_family_root
 
   export product_root="${spec_family_root}/${ontology_publisher_current_product}"
-  export product_root_url="${spec_family_root_url}/${ontology_publisher_current_product}"
+  export ontology_root_url="${URI_SPACE:-https://${ONTPUB_SPEC_HOST:-spec.edmcouncil.org}/${ONTPUB_FAMILY}/ontology/}"
+ if [ "${ontology_publisher_current_product}" = "ontology" ] ; then
+  export product_root_url="$(echo "${ontology_root_url}" | sed 's#/*$##g')"
+ else
+  #	assume all products other than "ontology" are at the same level in the directory hierarchy as "ontology"
+  export product_root_url="$(dirname "${ontology_root_url}")/${ontology_publisher_current_product}"
+ fi
 
   if [[ ! -d "${product_root}" ]] ; then
     mkdir -p "${product_root}" || return $?

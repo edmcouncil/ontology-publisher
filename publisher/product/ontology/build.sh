@@ -24,12 +24,6 @@ if [[ -f ${SCRIPT_DIR}/product/ontology/build-about.sh ]] ; then
 else
   source build-about.sh # This line is only there to make the IntelliJ Bash plugin see build-about.sh
 fi
-if [[ -f ${SCRIPT_DIR}/product/ontology/build-theallfile.sh ]] ; then
-  # shellcheck source=build-theallfile.sh
-  source ${SCRIPT_DIR}/product/ontology/build-theallfile.sh
-else
-  source build-theallfile.sh # This line is only there to make the IntelliJ Bash plugin see build-theallfile.sh
-fi
 
 #
 # Produce all artifacts for the ontology product
@@ -78,6 +72,13 @@ function getHygieneTestFiles() {
   find "${TMPDIR}/hygiene/" -name 'testHygiene*.sparql'
 }
 
+function displayMissingImports() {
+  if [ $(jq -r '.loadingDetails.missingImports | length' < "${1}") -gt 0 ] ; then
+    echo -e "\n   missingImports"
+    jq -r '.loadingDetails.missingImports | (.[0]|keys_unsorted|(.,map(length*"-"))),.[]|map(.)|@tsv' < "${1}" | column -ts $'\t' | sed 's/^/\t/g'
+    echo -e ""
+  fi
+}
 
 function runHygieneTests() {
 
@@ -108,16 +109,17 @@ function runHygieneTests() {
   test -n "${HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME}" && logRule "run consistency check at level: warning" && \
   for SPEC in ${HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME} ; do
    if [ -s "${source_family_root}/${SPEC}" ] && [ ! -d "${source_family_root}/${SPEC}" ] ; then
-    rm -f ${TMPDIR}/console.txt
+    rm -f ${TMPDIR}/output.json
     logItem "${SPEC}" "$(getOntologyIRI < "${source_family_root}/${SPEC}")"
     if ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${SPEC}" \
-        --output ${TMPDIR}/console.txt $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
-        --goal consistency-check &> "${hygiene_product_tag_root}/consistency-check.log" ; then
-      if head -n 1 "${TMPDIR}/console.txt" | grep '^true$' &>/dev/null ; then
+        --output ${TMPDIR}/output.json $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
+        --goal consistency-check &> "${hygiene_product_tag_root}/consistency-check.log" && jq -e "" &>/dev/null < "${TMPDIR}/output.json" ; then
+      if [ "$(jq -r ".consistent" < "${TMPDIR}/output.json")" = "true" ] ; then
         echo -e "\t\x1b\x5b\x33\x32\x6d$(echo "Ontology \"${SPEC}\" is consistent."   | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
       else
         echo -e "\t\x1b\x5b\x33\x31\x6d$(echo "Ontology \"${SPEC}\" is inconsistent." | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
       fi
+      displayMissingImports "${TMPDIR}/output.json"
     else
       echo -e "\t\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d: running consistency-check - see 'consistency-check.log'"
       return 1
@@ -128,16 +130,17 @@ function runHygieneTests() {
   test -n "${HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME}" && logRule "run consistency check at level: error" && \
   for SPEC in ${HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME} ; do
    if [ -s "${source_family_root}/${SPEC}" ] && [ ! -d "${source_family_root}/${SPEC}" ] ; then
-    rm -f ${TMPDIR}/console.txt
+    rm -f ${TMPDIR}/output.json
     logItem "${SPEC}" "$(getOntologyIRI < "${source_family_root}/${SPEC}")"
     if ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${SPEC}" \
-        --output ${TMPDIR}/console.txt $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
-        --goal consistency-check &>> "${hygiene_product_tag_root}/consistency-check.log" ; then
-      if head -n 1 "${TMPDIR}/console.txt" | grep '^true$' &>/dev/null ; then
+        --output ${TMPDIR}/output.json $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
+        --goal consistency-check &>> "${hygiene_product_tag_root}/consistency-check.log" && jq -e "" &>/dev/null < "${TMPDIR}/output.json" ; then
+      if [ "$(jq -r ".consistent" < "${TMPDIR}/output.json")" = "true" ] ; then
         echo -e "\t\x1b\x5b\x33\x32\x6d$(echo "Ontology \"${SPEC}\" is consistent."   | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
       else
         echo -e "\t\x1b\x5b\x33\x31\x6d$(echo "Ontology \"${SPEC}\" is inconsistent." | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
       fi
+      displayMissingImports "${TMPDIR}/output.json"
     else
       echo -e "\t\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d: running consistency-check - see 'consistency-check.log'"
       return 1
@@ -145,7 +148,7 @@ function runHygieneTests() {
    fi
   done
 
-  rm -f ${TMPDIR}/console.txt &>/dev/null
+  rm -f ${TMPDIR}/output.json &>/dev/null
 
   test -n "${HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME}${HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME}" && logRule "consistency-check: end"
 
@@ -308,8 +311,6 @@ function ontologySearchAndReplaceStuff() {
 
   logStep "ontologySearchAndReplaceStuff"
 
-  require ONTPUB_SPEC_HOST || return $?
-  require spec_family_root_url || return $?
   require product_root_url || return $?
   require GIT_BRANCH || return $?
   require GIT_TAG_NAME || return $?
@@ -317,12 +318,6 @@ function ontologySearchAndReplaceStuff() {
   local -r sedfile=$(mktemp ${TMPDIR}/sed.XXXXXX)
 
   cat > "${sedfile}" << __HERE__
-  #
-  # First replace all http:// urls to https:// if that's not already done
-  #
-
-  s@http://${ONTPUB_SPEC_HOST}@${spec_root_url}@g
-  
   #
   # Replace all IRIs in the form:
   #
@@ -334,13 +329,13 @@ function ontologySearchAndReplaceStuff() {
   # older versions of the sources as well so we leave this in here.
   #
   
-  s@${spec_family_root_url}/\([A-Z]*\)/@${product_root_url}/\1/@g
+  s@$(dirname "${product_root_url}")/\([A-Z]*\)/@${product_root_url}/\1/@g
   
   #
   # Dealing with special case /ext/.
   #
   
-  s@${spec_family_root_url}/ext/@${product_root_url}/ext/@g
+  s@$(dirname "${product_root_url}")/ext/@${product_root_url}/ext/@g
   
   #
   # Then replace some odd ones with a version number in it like:
@@ -487,8 +482,7 @@ function ontologyBuildIndex () {
             -e 's/ariel/"Courier New"/g' \
             -e 's/<hr>//g' \
             -e "s@>Directory Tree<@>Ontology file directory ${directory/.\//}<@g" \
-            -e 's@h1>\n<p>@h1><p>This is the directory structure of ontology; you can download individual files this way.</a>.<p/>@' \
-            -e "s@<a href=\".*>${spec_root_url}/.*</a>@@" > tree.html
+            -e 's@h1>\n<p>@h1><p>This is the directory structure of ontology; you can download individual files this way.</a>.<p/>@' > tree.html
   	  )
   	done < <(${FIND} . -type d)
 	)
@@ -624,7 +618,7 @@ function ontologyZipFiles () {
     export ziptmpDir="$(mktemp -d 2>/dev/null)"
 
     # create DEV zipFiles based on: 1) DEV_SPEC 2) source ontologies from file "ontology_config.yaml" except PROD_SPEC
-    for ontologies in "${DEV_SPEC}" $(yq '.ontologies.source[].url' < "${source_family_root}/etc/onto-viewer-web-app/config/ontology_config.yaml" 2>/dev/null | getUris "${family_product_branch_tag}/catalog-v001.xml" 2>/dev/null) ; do
+    for ontologies in "${DEV_SPEC}" $(yq '.ontologies.source[].url' 2>/dev/null < "${source_family_root}/etc/onto-viewer-web-app/config/ontology_config.yaml" | getUris "${family_product_branch_tag}/catalog-v001.xml" 2>/dev/null) ; do
         test -n "${ontologies}" && test -f "${family_product_branch_tag}/${ontologies}" && \
             test "$(realpath "${family_product_branch_tag}/${ontologies}" 2>/dev/null)" != "$(realpath "${family_product_branch_tag}/${PROD_SPEC}" 2>/dev/null)" && \
             copyOntologies "${ontologies}"
@@ -658,7 +652,7 @@ function ontologyZipFiles () {
     export ziptmpDir="$(mktemp -d 2>/dev/null)"
 
     # create PROD zipFiles based on: 1) PROD_SPEC 2) source ontologies from file "ontology_config.yaml" except DEV_SPEC
-    for ontologies in "${PROD_SPEC}" $(yq '.ontologies.source[].url' < "${source_family_root}/etc/onto-viewer-web-app/config/ontology_config.yaml" 2>/dev/null | getUris "${family_product_branch_tag}/catalog-v001.xml" 2>/dev/null) ; do
+    for ontologies in "${PROD_SPEC}" $(yq '.ontologies.source[].url' 2>/dev/null < "${source_family_root}/etc/onto-viewer-web-app/config/ontology_config.yaml" | getUris "${family_product_branch_tag}/catalog-v001.xml" 2>/dev/null) ; do
         test -n "${ontologies}" && test -f "${family_product_branch_tag}/${ontologies}" && \
             test "$(realpath "${family_product_branch_tag}/${ontologies}" 2>/dev/null)" != "$(realpath "${family_product_branch_tag}/${DEV_SPEC}" 2>/dev/null)" && \
             copyOntologies "${ontologies}"

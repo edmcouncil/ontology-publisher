@@ -6,10 +6,9 @@
 #
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)" || exit 1
 
-export ONTPUB_FAMILY="${ONTPUB_FAMILY:-fibo}"
 export ONTPUB_ORG="edmcouncil"
-export ONTPUB_ORG_TLD="org"
-export ONTPUB_SPEC_HOST="${ONTPUB_SPEC_HOST:-spec.${ONTPUB_ORG}.${ONTPUB_ORG_TLD}}"
+
+export ONTPUB_FAMILY="${ONTPUB_FAMILY:-fibo}"
 export ONTPUB_INPUT_REPOS="${ONTPUB_INPUT_REPOS:-${ONTPUB_FAMILY} LCC}"
 export HYGIENE_TEST_PARAMETER_VALUE="${HYGIENE_TEST_PARAMETER_VALUE:-edmcouncil}"
 export ONTPUB_VERSION="$(git -C "${SCRIPT_DIR}" rev-parse --abbrev-ref HEAD)"
@@ -342,18 +341,16 @@ function buildImage() {
   opts+=('--build-arg')
   opts+=("ONTPUB_FAMILY=${ONTPUB_FAMILY}")
   opts+=('--build-arg')
-  opts+=("ONTPUB_SPEC_HOST=${ONTPUB_SPEC_HOST}")
-  opts+=('--build-arg')
   opts+=("ONTPUB_IS_DARK_MODE=${cli_option_dark}")
   opts+=('--build-arg')
   opts+=("HYGIENE_TEST_PARAMETER_VALUE=${HYGIENE_TEST_PARAMETER_VALUE}")
  fi
   opts+=('--label')
-  opts+=('${ONTPUB_ORG_TLD}.${ONTPUB_ORG}.ontology-publisher.version="${ONTPUB_VERSION/v/}"')
+  opts+=('org.${ONTPUB_ORG}.ontology-publisher.version="${ONTPUB_VERSION/v/}"')
   opts+=('--label')
-  opts+=("${ONTPUB_ORG_TLD}.${ONTPUB_ORG}.ontology-publisher.release-date="$(date "+%Y-%m-%d")"")
+  opts+=("org.${ONTPUB_ORG}.ontology-publisher.release-date="$(date "+%Y-%m-%d")"")
   opts+=('--tag')
-  opts+=("${ONTPUB_ORG}/${containerName}:${ONTPUB_VERSION}")
+  opts+=("edmcouncil/${containerName}:${ONTPUB_VERSION}")
   opts+=('--file')
   opts+=("$(dockerFile) .")
 
@@ -432,8 +429,10 @@ function run() {
   opts+=("ONTPUB_IS_DARK_MODE=${cli_option_dark}")
   opts+=('--env')
   opts+=("ONTPUB_FAMILY=${ONTPUB_FAMILY}")
-  opts+=('--env')
-  opts+=("ONTPUB_SPEC_HOST=${ONTPUB_SPEC_HOST}")
+  if [ -n "${ONTPUB_SPEC_HOST}" ] ; then
+    opts+=('--env')
+    opts+=("ONTPUB_SPEC_HOST=${ONTPUB_SPEC_HOST}")
+  fi
   if [ -n "${DEV_SPEC}" ] ; then
     opts+=('--env')
     opts+=("DEV_SPEC=${DEV_SPEC}")
@@ -457,6 +456,10 @@ function run() {
   if [ -n "${ONTPUB_MERGED_INFIX}" ] ; then
     opts+=('--env')
     opts+=("ONTPUB_MERGED_INFIX=${ONTPUB_MERGED_INFIX}")
+  fi
+  if [ -n "${URI_SPACE}" ] ; then
+    opts+=('--env')
+    opts+=("URI_SPACE=${URI_SPACE}")
   fi
 
   logVar ONTPUB_FAMILY
