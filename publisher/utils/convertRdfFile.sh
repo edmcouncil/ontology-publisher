@@ -85,8 +85,8 @@ function convertRdfFileTo() {
   #
   if [[ "${targetFormat}" == "turtle" ]] ; then
 #   ((verbose)) && logItem "Adjusting ttl base IRI" "$(logFileName "${rdfFile}")"
-    ${SED} -i "s?^\(\(# baseURI:\)\|\(@base\)\).*ontology/?&${branch_tag}/?" "${targetFile}"
-    ${SED} -i "s@${branch_tag}/${branch_tag}/@${branch_tag}/@" \
+    ${SED} -i "s?^\(\(# baseURI:\)\|\(@base\)\).*ontology/?&${branch_tag:+${branch_tag}/}?" "${targetFile}"
+    test -z "${branch_tag}" || ${SED} -i "s@${branch_tag}/${branch_tag}/@${branch_tag}/@" \
 	  "${targetFile}"
   fi
 
