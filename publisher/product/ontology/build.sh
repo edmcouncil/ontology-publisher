@@ -582,7 +582,7 @@ function ontologyConvertRdfToAllFormats() {
 }
 
 function copyOntologies () {
- for uri in "${1}" $(getOwlImports < "${source_family_root}/${1}" 2>/dev/null | getUris "${family_product_branch_tag}/catalog-v001.xml" 2>/dev/null) ; do
+ for uri in "${1}" $(getOwlImports < "${family_product_branch_tag}/${1}" 2>/dev/null | getUris "${family_product_branch_tag}/catalog-v001.xml" 2>/dev/null) ; do
   if [ -e "${family_product_branch_tag}/${uri}" ] && [ ! -e "${ziptmpDir}/${family_product_branch_tag}/${uri}" ] ; then
    install -D -m0644 "${family_product_branch_tag}/${uri}" "${ziptmpDir}/${family_product_branch_tag}/${uri}" && copyOntologies "${uri}"
   fi
