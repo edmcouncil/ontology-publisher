@@ -422,21 +422,10 @@ function ontologySetVersionIRI () {
 			${SED} "s@^\(${product_root_url}/\)@\1$( \
 				echo -n "${BRANCH_TAG}" | sed 's#/\+#/#g ; s#^/\+##g ; s#/\+$##g ; s#^\(.\+\)$#\1/#g')@g" \
 			)"
-    xml -q c14n "${file}" 2>/dev/null | xml sel -Q -t -c '/rdf:RDF/owl:Ontology/owl:versionIRI' &>/dev/null || \
-     xml edit -P -L \
-	--subnode '/rdf:RDF/owl:Ontology' --type elem -n 'owl:versionIRI' \
-	"${file}"
-    if [ $(getOntologyVersionIRI < "${file}" | grep -v '^$' | wc -l) -eq 0 ] ; then
-     xml edit -P -L \
-	--insert '/rdf:RDF/owl:Ontology/owl:versionIRI' --type attr -n 'rdf:resource' \
-		--value "${versionIRI}" \
-	"${file}"
-    else
-     xml edit -P -L \
+    xml edit -P -L \
 	--update '/rdf:RDF/owl:Ontology/owl:versionIRI/@rdf:resource' \
 		--value "${versionIRI}" \
 	"${file}"
-    fi
   fi
 
   return $?
