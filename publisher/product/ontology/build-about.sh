@@ -13,6 +13,7 @@ function ontologyCreateAboutFiles () {
 
   require TMPDIR || return $?
   require tag_root || return $?
+  require product_root_url || return $?
 
   logStep "ontologyCreateAboutFiles"
 
@@ -32,7 +33,7 @@ function ontologyCreateAboutFiles () {
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
 @prefix owl: <http://www.w3.org/2002/07/owl#> 
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-<${tag_root_url}/Load${ONTPUB_FAMILY^^}Prod/> a owl:Ontology;
+<${product_root_url}/Load${ONTPUB_FAMILY^^}Prod/> a owl:Ontology;
 __HERE__
 
     getOwlImports < "${tag_root}/${PROD_SPEC}" 2>/dev/null | \
@@ -61,7 +62,7 @@ __HERE__
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
 @prefix owl: <http://www.w3.org/2002/07/owl#> 
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-<${tag_root_url}/Load${ONTPUB_FAMILY^^}Dev/> a owl:Ontology;
+<${product_root_url}/Load${ONTPUB_FAMILY^^}Dev/> a owl:Ontology;
 __HERE__
 
     getOwlImports < "${tag_root}/${DEV_SPEC}" 2>/dev/null | \
