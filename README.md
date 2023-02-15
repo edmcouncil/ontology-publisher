@@ -84,6 +84,9 @@ List of allowed `<VARIABLE_NAME>` (and defaults for `<VARIABLE_VALUE>`):
 
 - `ONTPUB_FAMILY` :- ontology name (base for many other values), e.g. `onto` (default: `fibo`); this variable is also possible to set during build time (see `--rebuildimage` option)
 - `URI_SPACE` :- a common "URI namespace" for all ontologies - see [4.2 Patterns for resource URIs](https://www.w3.org/TR/void/#pattern), e.g. `https://spec.edmcouncil.org/fibo/ontology/`; overrides ontology IRI=`https://${ONTPUB_SPEC_HOST}/${ONTPUB_FAMILY}/ontology/`
+- `BRANCH_TAG` :- suffix appended to common "URI namespace" used to construct `versionIRI` and `rdf:resource` for `owl:imports`, e.g. `release/202101`
+  overrides the default _branch/tag_, where `branch` and `tag` are values calculated from the parameters of the git repository containing the Ontology Family
+  use `/` to set a blank value
 - `ONTPUB_SPEC_HOST` :- the basis of the ontology IRI=`https://${ONTPUB_SPEC_HOST}/${ONTPUB_FAMILY}/ontology/`, e.g. `onto.example.org` (default: `spec.edmcouncil.org`)
 - `ONTPUB_INPUT_REPOS` :- list of directories (located in the user's home directory) containing input ontologies that will be mounted in the _/input_ directory inside container, e.g. `onto core` (default: `${ONTPUB_FAMILY} LCC`)
 - `DEV_SPEC` :- the name of the file (inside the directory named `${ONTPUB FAMILY}`, in the `${ONTPUB_INPUT_REPOS}` list) containing the "Development" ontology, e.g. `AboutFIBODev.rdf` (default: `About${ONTPUB_FAMILY}Dev.rdf`)

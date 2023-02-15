@@ -823,7 +823,7 @@ function setProduct() {
   ((verbose)) && logDir tag_root
 
   export branch_tag="${GIT_BRANCH}/${GIT_TAG_NAME}"
-  export product_branch_tag="${ontology_publisher_current_product}/${branch_tag}"
+  export product_branch_tag="${ontology_publisher_current_product}${branch_tag:+/${branch_tag}}"
   export family_product_branch_tag="${ONTPUB_FAMILY}/${product_branch_tag}"
 
   ((verbose)) && logVar tag_root_url

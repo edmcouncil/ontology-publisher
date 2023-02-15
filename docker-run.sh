@@ -461,6 +461,10 @@ function run() {
     opts+=('--env')
     opts+=("URI_SPACE=${URI_SPACE}")
   fi
+  if [ -n "${BRANCH_TAG}" ] ; then
+    opts+=('--env')
+    opts+=("BRANCH_TAG=${BRANCH_TAG}")
+  fi
 
   logVar ONTPUB_FAMILY
 

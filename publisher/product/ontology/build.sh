@@ -312,8 +312,6 @@ function ontologySearchAndReplaceStuff() {
   logStep "ontologySearchAndReplaceStuff"
 
   require product_root_url || return $?
-  require GIT_BRANCH || return $?
-  require GIT_TAG_NAME || return $?
 
   local -r sedfile=$(mktemp ${TMPDIR}/sed.XXXXXX)
 
@@ -364,13 +362,13 @@ function ontologySearchAndReplaceStuff() {
   # - <owl:imports rdf:resource="https://spec.edmcouncil.org/fibo/ontology/master/latest/FND/InformationExt/InfoCore/"/>
   #
   
-  s@\(owl:imports rdf:resource="${product_root_url}/\)@\1${branch_tag}/@g
+  s@\(owl:imports rdf:resource="${product_root_url}/\)@\1$(echo -n "${BRANCH_TAG:=${branch_tag}}" | sed 's#/\+#/#g ; s#^/\+##g ; s#/\+$##g ; s#^\(.\+\)$#\1/#g')@g
   
   #
   # And then the same for the owl:versionIRI.
   #
   
-  s@\(owl:versionIRI rdf:resource="${product_root_url}/\)@\1${branch_tag}/@g
+  s@\(owl:versionIRI rdf:resource="${product_root_url}/\)@\1${branch_tag:+${branch_tag}/}@g
   
   #
   # Just to be sure that we don't see any 'ontology/ontology' IRIs:
@@ -397,12 +395,40 @@ __HERE__
 	else
 	  #${tag_root}/ -type f  -name '*.rdf' -not -name '*About*'  -print | \
 	  #xargs -P $(nproc) -I fileName
+	  # force versionIRI setting if BRANCH_TAG is present
+	  test -z "${BRANCH_TAG}" || ${FIND} ${tag_root}/ -type f  -name '*.rdf' -print | while read file ; do
+	    ontologySetVersionIRI "${file}"
+	  done
 	  ${FIND} ${tag_root}/ -type f  -name '*.rdf' -not -name '*About*'  -print | while read file ; do
 	    ontologyAddIsDefinedBy "${file}"
     done
   fi
 
   return 0
+}
+
+#
+# Set versionIRI triple to a single file
+#
+function ontologySetVersionIRI () {
+
+  local file="$1"
+
+  require BRANCH_TAG || return $?
+
+  if isOntology < "${file}" &>/dev/null && isIRIInScope "$(getOntologyIRI < "${file}")" &>/dev/null ; then
+    logItem "set versionIRI in" "$(logFileName "${file}")"
+    local versionIRI="$(getOntologyIRI < "${file}" | \
+			${SED} "s@^\(${product_root_url}/\)@\1$( \
+				echo -n "${BRANCH_TAG}" | sed 's#/\+#/#g ; s#^/\+##g ; s#/\+$##g ; s#^\(.\+\)$#\1/#g')@g" \
+			)"
+    xml edit -P -L \
+	--update '/rdf:RDF/owl:Ontology/owl:versionIRI/@rdf:resource' \
+		--value "${versionIRI}" \
+	"${file}"
+  fi
+
+  return $?
 }
 
 #
@@ -421,41 +447,6 @@ function ontologyAddIsDefinedBy () {
   ${SCRIPT_DIR}/utils/convertRdfFile.sh turtle "${file/.rdf/.ttl}" "rdf-xml"
 
   return $?
-}
-
-#
-# For the .ttl files, find the ontology, and compute the version IRI from it.
-# Put it in a cookie where TopBraid will find it.
-#
-function ontologyFixTopBraidBaseURICookie() {
-
-  local ontologyFile="$1"
-  local queryFile="$2"
-  local baseURI
-  local uri
-
-  log "Annotating $(logFileName "${ontologyFile}")"
-
-  log "CSV output of query is:"
-
-  "${JENA_ARQ}" \
-      --query="${queryFile}" \
-      --data="${ontologyFile}" \
-      --results=csv
-
-  baseURI=$( \
-    "${JENA_ARQ}" \
-      --query="${queryFile}" \
-      --data="${ontologyFile}" \
-      --results=csv | \
-      ${GREP} edmcouncil | \
-      ${SED} "s@\(${product_root_url}/\)@\1${branch_tag}/@" | \
-      ${SED} "s@${branch_tag}/${branch_tag}/@${branch_tag}/@" \
-  )
-
-  uri="# baseURI: ${baseURI}"
-
-  ${SED} -i "1s;^;${uri}\n;" "${ontologyFile}"
 }
 
 #
