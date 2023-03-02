@@ -465,6 +465,10 @@ function run() {
     opts+=('--env')
     opts+=("BRANCH_TAG=${BRANCH_TAG}")
   fi
+  if [ -n "${DATADICTIONARY_COLUMNS}" ] ; then
+    opts+=('--env')
+    opts+=("DATADICTIONARY_COLUMNS=${DATADICTIONARY_COLUMNS}")
+  fi
 
   logVar ONTPUB_FAMILY
 
