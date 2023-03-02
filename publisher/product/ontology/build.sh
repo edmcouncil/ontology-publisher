@@ -114,12 +114,13 @@ function runHygieneTests() {
     if ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${SPEC}" \
         --output ${TMPDIR}/output.json $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
         --goal consistency-check &> "${hygiene_product_tag_root}/consistency-check.log" && jq -e "" &>/dev/null < "${TMPDIR}/output.json" ; then
+      displayMissingImports "${TMPDIR}/output.json"
       if [ "$(jq -r ".consistent" < "${TMPDIR}/output.json")" = "true" ] ; then
         echo -e "\t\x1b\x5b\x33\x32\x6d$(echo "Ontology \"${SPEC}\" is consistent."   | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
       else
         echo -e "\t\x1b\x5b\x33\x31\x6d$(echo "Ontology \"${SPEC}\" is inconsistent." | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
+        return 1
       fi
-      displayMissingImports "${TMPDIR}/output.json"
     else
       echo -e "\t\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d: running consistency-check - see 'consistency-check.log'"
       return 1
@@ -135,12 +136,13 @@ function runHygieneTests() {
     if ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${SPEC}" \
         --output ${TMPDIR}/output.json $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
         --goal consistency-check &>> "${hygiene_product_tag_root}/consistency-check.log" && jq -e "" &>/dev/null < "${TMPDIR}/output.json" ; then
+      displayMissingImports "${TMPDIR}/output.json"
       if [ "$(jq -r ".consistent" < "${TMPDIR}/output.json")" = "true" ] ; then
         echo -e "\t\x1b\x5b\x33\x32\x6d$(echo "Ontology \"${SPEC}\" is consistent."   | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
       else
         echo -e "\t\x1b\x5b\x33\x31\x6d$(echo "Ontology \"${SPEC}\" is inconsistent." | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
+        return 1
       fi
-      displayMissingImports "${TMPDIR}/output.json"
     else
       echo -e "\t\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d: running consistency-check - see 'consistency-check.log'"
       return 1
