@@ -29,7 +29,7 @@ function createMergedFileFrom() {
 
   local rc=0
 
-  echo java \
+  java \
     --add-opens java.base/java.lang=ALL-UNNAMED \
     -Xmx1G \
     -Xms1G \
@@ -39,9 +39,9 @@ function createMergedFileFrom() {
     --data "${rdfFile}" \
     --ontology-iri "${ontologyMergedIRI}" $(test -s "${ontologyMappingFile}" && echo "--ontology-mapping \"${ontologyMappingFile}\"") \
     --output "${rdfMergedFile}" &>/dev/null
-  robot merge --input "${rdfFile}" $(test -s "${ontologyMappingFile}" && echo "--catalog \"${ontologyMappingFile}\"") \
-    annotate --ontology-iri "${ontologyMergedIRI}" --version-iri "${ontologyMergedVersionIRI}" \
-    convert --format owl --output "${rdfMergedFile}"
+  # robot merge --input "${rdfFile}" $(test -s "${ontologyMappingFile}" && echo "--catalog \"${ontologyMappingFile}\"") \
+  #   annotate --ontology-iri "${ontologyMergedIRI}" --version-iri "${ontologyMergedVersionIRI}" \
+  #   convert --format owl --output "${rdfMergedFile}"
   rc=$?
 
   return ${rc}
