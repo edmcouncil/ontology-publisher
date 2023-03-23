@@ -53,18 +53,21 @@ function publishProductDataDictionaryContent() {
   local maturityLevel="$(yq '.ontologies.maturity_level_definition.[] | "--maturity-level " + .iri + "=" + .label' < \
 	"${source_family_root}/etc/onto-viewer-web-app/config/ontology_config.yaml" 2>/dev/null | xargs echo -n)"
 
+  local maturityLevelProperty="$(yq '.ontologies | "--maturity-level-property " + .maturity_level_property' < \
+	"${source_family_root}/etc/onto-viewer-web-app/config/ontology_config.yaml" 2>/dev/null | xargs echo -n)"
+
   local extractDataColumn="${DATADICTIONARY_COLUMNS:+ --extract-data-column $(echo "${DATADICTIONARY_COLUMNS}" | sed 's/|/ --extract-data-column /g')}"
 
   logRule "Running OntoViewer Toolkit to generate CSV files containing data from ontologies - see logs \"$(logFileName datadictionary.DEV.log)\""
   logItem "$(basename "${DEV_SPEC}")" "$(logFileName "${tag_root_url}/$(basename "${datadictionaryBaseName}-dev.csv")")"
-  debug=false ${ONTOVIEWER_TOOLKIT_JAVA} --goal extract-data ${maturityLevel} ${extractDataColumn} --data "${source_family_root}/${DEV_SPEC}" \
+  debug=false ${ONTOVIEWER_TOOLKIT_JAVA} --goal extract-data ${maturityLevel} ${maturityLevelProperty} ${extractDataColumn} --data "${source_family_root}/${DEV_SPEC}" \
     --output "${datadictionaryBaseName}-dev.csv" \
     --filter-pattern "${HYGIENE_TEST_PARAMETER_VALUE}" \
     --ontology-mapping "${source_family_root}/catalog-v001.xml" > "${datadictionary_product_tag_root}/datadictionary.DEV.log" 2>&1
 
   logRule "Running OntoViewer Toolkit to generate CSV files containing data from ontologies - see logs \"$(logFileName datadictionary.PROD.log)\""
   logItem "$(basename "${PROD_SPEC}")" "$(logFileName "${tag_root_url}/$(basename "${datadictionaryBaseName}-prod.csv")")"
-  debug=false ${ONTOVIEWER_TOOLKIT_JAVA} --goal extract-data ${maturityLevel} ${extractDataColumn} --data "${source_family_root}/${PROD_SPEC}" \
+  debug=false ${ONTOVIEWER_TOOLKIT_JAVA} --goal extract-data ${maturityLevel} ${maturityLevelProperty} ${extractDataColumn} --data "${source_family_root}/${PROD_SPEC}" \
     --output "${datadictionaryBaseName}-prod.csv" \
     --filter-pattern "${HYGIENE_TEST_PARAMETER_VALUE}" \
     --ontology-mapping "${source_family_root}/catalog-v001.xml" > "${datadictionary_product_tag_root}/datadictionary.PROD.log" 2>&1
