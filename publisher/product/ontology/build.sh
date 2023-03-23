@@ -811,15 +811,36 @@ __HERE__
   # Get ontologies for Dev
   #
   log "Merging all dev ontologies into one RDF file"
-  robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl
-  sed -i "s/\/About${ONTPUB_FAMILY^^}Dev\//\/Quick${ONTPUB_FAMILY^^}Dev\//" "${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl"
+
+java \
+    --add-opens java.base/java.lang=ALL-UNNAMED \
+    -Xmx1G \
+    -Xms1G \
+    -Dfile.encoding=UTF-8 \
+    -jar "${ONTOVIEWER_TOOLKIT_JAR}" \
+    --goal merge-imports \
+    --data "${source_family_root}/${DEV_SPEC}" \
+    --ontology-iri "${ONTPUB_SPEC_HOST}/ontology/Quick${ONTPUB_FAMILY^^}Dev/" \
+    --output "${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl"
+  # robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl
+  # sed -i "s/\/About${ONTPUB_FAMILY^^}Dev\//\/Quick${ONTPUB_FAMILY^^}Dev\//" "${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl"
 
   #
   # Get ontologies for Prod
   #
   log "Merging all prod ontologies into one RDF file"
-  robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl
-  sed -i "s/\/About${ONTPUB_FAMILY^^}Prod\//\/Quick${ONTPUB_FAMILY^^}Prod\//" "${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl"
+  java \
+    --add-opens java.base/java.lang=ALL-UNNAMED \
+    -Xmx1G \
+    -Xms1G \
+    -Dfile.encoding=UTF-8 \
+    -jar "${ONTOVIEWER_TOOLKIT_JAR}" \
+    --goal merge-imports \
+    --data "${source_family_root}/${PROD_SPEC}" \
+    --ontology-iri "${ONTPUB_SPEC_HOST}/ontology/Quick${ONTPUB_FAMILY^^}Prod/" \
+    --output "${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl"
+  # robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl
+  # sed -i "s/\/About${ONTPUB_FAMILY^^}Prod\//\/Quick${ONTPUB_FAMILY^^}Prod\//" "${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl"
 	
   ${JENA_ARQ} --data=${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt  
   ${JENA_ARQ} --data=${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.nt
