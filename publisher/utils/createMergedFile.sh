@@ -36,12 +36,9 @@ function createMergedFileFrom() {
     -Dfile.encoding=UTF-8 \
     -jar "${ONTOVIEWER_TOOLKIT_JAR}" \
     --goal merge-imports \
-    --data "${rdfFile}" \
-    --ontology-iri "${ontologyMergedIRI}" $(test -s "${ontologyMappingFile}" && echo "--ontology-mapping \"${ontologyMappingFile}\"") \
+    --data "${rdfFile}" $(test -s "${ontologyMappingFile}" && echo "--ontology-mapping \"${ontologyMappingFile}\"") \
+    --ontology-iri "${ontologyMergedIRI}" $(test -n "${ontologyMergedVersionIRI}" && echo "--ontology-version-iri \"${ontologyMergedVersionIRI}\"") \
     --output "${rdfMergedFile}" &>/dev/null
-  # robot merge --input "${rdfFile}" $(test -s "${ontologyMappingFile}" && echo "--catalog \"${ontologyMappingFile}\"") \
-  #   annotate --ontology-iri "${ontologyMergedIRI}" --version-iri "${ontologyMergedVersionIRI}" \
-  #   convert --format owl --output "${rdfMergedFile}"
   rc=$?
 
   return ${rc}
