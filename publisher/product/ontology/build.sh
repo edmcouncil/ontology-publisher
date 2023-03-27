@@ -42,10 +42,10 @@ function publishProductOntology() {
   ontologyBuildCatalogs  || return $?
   ontologyBuildIndex  || return $?
   ontologyCreateAboutFiles || return $?
+  createQuickVersions || return $?
   ontologyConvertRdfToAllFormats || return $?
   test -z "${ONTPUB_MERGED_INFIX}" || ontologyCreateMergedFiles || return $?
 
-  createQuickVersions || return $?
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
 
   if ((speedy)) ; then
@@ -801,29 +801,53 @@ __HERE__
   return 0
   }
   
-  function createQuickVersions() {
+function createQuickVersions() {
+  require source_family_root || return $?
+  require tag_root || return $?
+  require product_root_url || return $?
+  require tag_root_url || return $?
 
   setProduct ontology || return $?
-
-  ONTPUB_FAMILY_FIRST_UPPERCASE=${ONTPUB_FAMILY^}
 
   #
   # Get ontologies for Dev
   #
   log "Merging all dev ontologies into one RDF file"
-  robot merge --input "${source_family_root}/${DEV_SPEC}" --output ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl
-  sed -i "s/\/About${ONTPUB_FAMILY^^}Dev\//\/Quick${ONTPUB_FAMILY^^}Dev\//" "${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl"
+
+  java \
+    --add-opens java.base/java.lang=ALL-UNNAMED \
+    -Xmx1G \
+    -Xms1G \
+    -Dfile.encoding=UTF-8 \
+    -jar "${ONTOVIEWER_TOOLKIT_JAR}" \
+    --goal merge-imports \
+    --data "${source_family_root}/${DEV_SPEC}" $(test -s "${ontologyMappingFile}" && echo "--catalog \"${ontologyMappingFile}\"") \
+    --ontology-iri "${product_root_url}/Quick${ONTPUB_FAMILY^^}Dev/" --ontology-version-iri "${tag_root_url}/Quick${ONTPUB_FAMILY^^}Dev/" \
+    --output "${tag_root}/Quick${ONTPUB_FAMILY^^}Dev.rdf" &>/dev/null
 
   #
   # Get ontologies for Prod
   #
   log "Merging all prod ontologies into one RDF file"
-  robot merge --input "${source_family_root}/${PROD_SPEC}" --output ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl
-  sed -i "s/\/About${ONTPUB_FAMILY^^}Prod\//\/Quick${ONTPUB_FAMILY^^}Prod\//" "${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl"
-	
-  ${JENA_ARQ} --data=${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt  
+  java \
+    --add-opens java.base/java.lang=ALL-UNNAMED \
+    -Xmx1G \
+    -Xms1G \
+    -Dfile.encoding=UTF-8 \
+    -jar "${ONTOVIEWER_TOOLKIT_JAR}" \
+    --goal merge-imports \
+    --data "${source_family_root}/${PROD_SPEC}" $(test -s "${ontologyMappingFile}" && echo "--catalog \"${ontologyMappingFile}\"") \
+    --ontology-iri "${product_root_url}/Quick${ONTPUB_FAMILY^^}Prod/" --ontology-version-iri "${tag_root_url}/Quick${ONTPUB_FAMILY^^}Prod/" \
+    --output "${tag_root}/Quick${ONTPUB_FAMILY^^}Prod.rdf" &>/dev/null
+
+  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${tag_root}/Quick${ONTPUB_FAMILY^^}Dev.rdf" "turtle" && \
+    mv "${tag_root}/Quick${ONTPUB_FAMILY^^}Dev.ttl" ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl
+  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${tag_root}/Quick${ONTPUB_FAMILY^^}Prod.rdf" "turtle" && \
+    mv "${tag_root}/Quick${ONTPUB_FAMILY^^}Prod.ttl" ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl
+
+  ${JENA_ARQ} --data=${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt
   ${JENA_ARQ} --data=${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.nt
-  
+
   zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl.zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl
   zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl.zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl
   zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt.zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt
