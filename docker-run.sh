@@ -9,6 +9,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)" || exit 1
 export ONTPUB_ORG="edmcouncil"
 
 export ONTPUB_FAMILY="${ONTPUB_FAMILY:-fibo}"
+export ONTPUB_INPUT_REPOS="${ONTPUB_INPUT_REPOS:-${ONTPUB_FAMILY} }"
 export HYGIENE_TEST_PARAMETER_VALUE="${HYGIENE_TEST_PARAMETER_VALUE:-edmcouncil}"
 export ONTPUB_VERSION="$(git -C "${SCRIPT_DIR}" rev-parse --abbrev-ref HEAD)"
 
@@ -476,7 +477,11 @@ function run() {
   # /input directory (so ontolory repo fibo ends up as /input/fibo inside the container)
   #
   log "Mounted:"
-  
+  for inputOntologyRepoName in ${ONTPUB_INPUT_REPOS} ; do
+    inputDirectory=$(inputDirectory "${inputOntologyRepoName}") || return $?
+    logItem "/input/${inputOntologyRepoName}" "${inputDirectory}"
+    opts+=("--mount type=bind,source=${inputDirectory},target=/input/${inputOntologyRepoName},readonly,consistency=cached")
+  done
   logItem "/output" "${outputDirectory}"
   opts+=("--mount type=bind,source=${outputDirectory},target=/output,consistency=delegated")
 #  logItem "/var/tmp" "${temporaryFilesDirectory}"
