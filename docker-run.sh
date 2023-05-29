@@ -22,7 +22,7 @@ fi
 
 function getDirectoryOfGitRepo() {
 
-  local -r gitRepoName="$1" # names like "fibo" or "LCC" etc
+  local -r gitRepoName="$1" # names like "fibo"
 
   #
   # First check some common places as they're used on Mac OS X or Linux desktops/laptops.
@@ -88,7 +88,7 @@ function getDirectoryOfGitRepo() {
 #
 function inputDirectory() {
 
-  local -r gitRepoName="$1" # names like "fibo" or "LCC" etc
+  local -r gitRepoName="$1" # names like "fibo"
 
   #
   # First try what you specified as the primary ontology name
