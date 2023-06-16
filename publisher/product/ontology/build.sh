@@ -38,13 +38,14 @@ function publishProductOntology() {
 
   
   ontologyCopyRdfToTarget || return $?
-  ontologySearchAndReplaceStuff || return $?
-  ontologyBuildCatalogs  || return $?
-  ontologyBuildIndex  || return $?
-  ontologyCreateAboutFiles || return $?
-  createQuickVersions || return $?
-  ontologyConvertRdfToAllFormats || return $?
+  # ontologySearchAndReplaceStuff || return $?
+  # ontologyBuildCatalogs  || return $?
+  # ontologyBuildIndex  || return $?
+  # ontologyCreateAboutFiles || return $?
+  # createQuickVersions || return $?
+  # ontologyConvertRdfToAllFormats || return $?
   test -z "${ONTPUB_MERGED_INFIX}" || ontologyCreateMergedFiles || return $?
+  test -z "${ONTPUB_MERGED_INFIX}" || ontologyCreateSHACLFiles || return $?
 
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
 
@@ -524,6 +525,32 @@ function ontologyCreateMergedFiles() {
   popd >/dev/null || return $?
 
   log "End of ontologyCreateMergedFiles"
+
+  return $?
+}
+
+function ontologyCreateSHACLFiles() {
+
+  require source_family_root || return $?
+  require tag_root || return $?
+  require ONTPUB_MERGED_INFIX || return $?
+
+  logStep "ontologyCreateSHACLFiles"
+
+  pushd "${tag_root:?}" >/dev/null || return $?
+
+  for rdfFile in **/*${ONTPUB_MERGED_INFIX}.rdf ; do
+    shaclFile="${rdfFile//${ONTPUB_MERGED_INFIX}/}"
+    shaclFile="${shaclFile//rdf/shacl}"
+    echo $rdfFile
+    echo $shaclFile
+    ${PYTHON3} ${SCRIPT_DIR}/lib/shacler.py --input_owl ${rdfFile} --output_shacl ${shaclFile}
+  done
+  rc=$?
+
+  popd >/dev/null || return $?
+
+  log "End of ontologyCreateSHACLFiles"
 
   return $?
 }
