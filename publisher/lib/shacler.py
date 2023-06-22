@@ -1,8 +1,6 @@
-import argparse
 import logging
-import sys
 
-from rdflib import Graph, RDF, OWL, RDFS, SH, Namespace
+from rdflib import Graph, RDF, OWL, RDFS, SH, Namespace, XSD
 from rdflib.term import Node, BNode, URIRef, Literal
 
 
@@ -46,13 +44,13 @@ class RDFSHACLList(RDFSHACLResource):
         self.listed_resources = listed_resources
 
 
-class OWLIRISHACLClass(RDFSHACLResource):
-    def __init__(self, iri: URIRef, super_classes: set = None):
+class RDFSSHACLClass(RDFSHACLResource):
+    def __init__(self, iri: URIRef):
         super().__init__(owl_construct_type=OWL.Class, iri=iri)
-        self.super_classes = super_classes
+        self.super_classes = set()
     
     def __eq__(self, other):
-        if not isinstance(other, OWLIRISHACLClass):
+        if not isinstance(other, RDFSSHACLClass):
             return False
         if self.iri is not None or other.iri is not None:
             return self.iri == other.iri
@@ -63,13 +61,28 @@ class OWLIRISHACLClass(RDFSHACLResource):
         return str(self.iri).__hash__()
 
 
-class OWLNamedIndividualSHACLClass(RDFSHACLResource):
+class OWLSHACLClass(RDFSSHACLClass):
+    def __init__(self, iri: URIRef):
+        super().__init__(iri=iri)
+
+
+class OWLSHACLDatatype(RDFSSHACLClass):
+    def __init__(self, iri: URIRef):
+        super().__init__(iri=iri)
+
+
+class OWLSHACLLiteral(RDFSSHACLClass):
+    def __init__(self, iri: URIRef):
+        super().__init__(iri=iri)
+
+
+class OWLNamedIndividualSHACL(RDFSHACLResource):
     def __init__(self, iri: URIRef, types: set = None):
         super().__init__(owl_construct_type=OWL.Class, iri=iri)
         self.types = types
     
     def __eq__(self, other):
-        if not isinstance(other, OWLNamedIndividualSHACLClass):
+        if not isinstance(other, OWLNamedIndividualSHACL):
             return False
         return self.iri == other.iri
     
@@ -83,7 +96,7 @@ class OWLSHACLProperty(RDFSHACLResource):
         self.super_properties = super_properties
     
     def __eq__(self, other):
-        if not isinstance(other, OWLIRISHACLClass):
+        if not isinstance(other, RDFSSHACLClass):
             return False
         return self.iri == other.iri
     
@@ -95,7 +108,7 @@ class OWLSHACLRestriction(RDFSHACLResource):
     restriction_registry = dict()
     
     def __init__(self, restriction_type: str, restricting_property: OWLSHACLProperty,
-                 restricting_class: OWLIRISHACLClass, restricting_cardinality: int):
+                 restricting_class: RDFSSHACLClass, restricting_cardinality: int):
         super().__init__(owl_construct_type=OWL.Restriction, iri=None)
         self.restriction_type = restriction_type
         self.restricting_property = restricting_property
@@ -154,8 +167,12 @@ class SHACLPropertyShape(SHACLShape):
         
         self.shacl_graph.add((shacl_shape, RDF.type, SH.PropertyShape))
         self.shacl_graph.add((shacl_shape, SH.path, self.owl_shacl_restriction.restricting_property.iri))
-        if isinstance(self.owl_shacl_restriction.restricting_class, OWLIRISHACLClass):
+        if isinstance(self.owl_shacl_restriction.restricting_class, OWLSHACLClass):
             self.shacl_graph.add((shacl_shape, SH.targetClass, self.owl_shacl_restriction.restricting_class.iri))
+        if isinstance(self.owl_shacl_restriction.restricting_class, OWLSHACLDatatype):
+            self.shacl_graph.add((shacl_shape, SH.datatype, self.owl_shacl_restriction.restricting_class.iri))
+        if isinstance(self.owl_shacl_restriction.restricting_class, OWLSHACLLiteral):
+            self.shacl_graph.add((shacl_shape, SH.nodeKind, SH.Literal))
         if self.owl_shacl_restriction.restriction_type == OWL.someValuesFrom:
             self.shacl_graph.add(
                 (shacl_shape, SH.minCount, Literal(self.owl_shacl_restriction.restricting_cardinality)))
@@ -164,7 +181,7 @@ class SHACLPropertyShape(SHACLShape):
 
 
 class SHACLNodeShape(SHACLShape):
-    def __init__(self, owl_shacl_class: OWLIRISHACLClass):
+    def __init__(self, owl_shacl_class: RDFSSHACLClass):
         super().__init__(rdf_shacl_resource=owl_shacl_class)
     
     def serialise(self):
@@ -184,12 +201,51 @@ class SHACLNodeShape(SHACLShape):
     
     def __get_relevant_property_shapes(self) -> set:
         relevant_shacl_property_shapes = set()
+        
+        unfiltered_restrictions = set()
         for owl_shacl_class in self.rdf_shacl_resource.super_classes:
             if isinstance(owl_shacl_class, OWLSHACLRestriction):
-                shacl_property_shape = SHACLShape.identity_registry[owl_shacl_class]
-                if shacl_property_shape in SHACLPropertyShape.serialisation_register:
-                    relevant_shacl_property_shapes.add(shacl_property_shape)
+                unfiltered_restrictions.add(owl_shacl_class)
+        filtered_out_restrictions = self.filter_out_owl_restrictions(unfiltered_restrictions=unfiltered_restrictions)
+        
+        for filtered_out_restriction in filtered_out_restrictions:
+            shacl_property_shape = SHACLShape.identity_registry[filtered_out_restriction]
+            if shacl_property_shape in SHACLPropertyShape.serialisation_register:
+                relevant_shacl_property_shapes.add(shacl_property_shape)
         return relevant_shacl_property_shapes
+    
+    @staticmethod
+    def filter_out_owl_restrictions(unfiltered_restrictions: set) -> set:
+        filtered_out_restrictions = unfiltered_restrictions.copy()
+        for owl_shacl_class_1 in unfiltered_restrictions:
+            restricting_property_1 = owl_shacl_class_1.restricting_property.iri
+            restricting_class_1 = owl_shacl_class_1.restricting_class.iri
+            for owl_shacl_class_2 in unfiltered_restrictions:
+                restricting_property_2 = owl_shacl_class_2.restricting_property.iri
+                restricting_class_2 = owl_shacl_class_2.restricting_class.iri
+                if restricting_class_1 == restricting_class_2 and restricting_property_1 == restricting_property_2:
+                    continue
+                restricting_property_2_parents = \
+                    set(RDFSHACLResource.ontology_graph.transitive_objects(
+                        subject=restricting_property_2,
+                        predicate=RDFS.subPropertyOf))
+                # restricting_property_2_parents.add(restricting_property_2)
+                restricting_class_2_parents = \
+                    set(RDFSHACLResource.ontology_graph.transitive_objects(
+                        subject=restricting_class_2,
+                        predicate=RDFS.subClassOf))
+                # restricting_class_2_parents.add(restricting_class_2)
+                if owl_shacl_class_1.restriction_type == OWL.someValuesFrom and owl_shacl_class_2.restriction_type == OWL.someValuesFrom:
+                    if restricting_property_1 in restricting_property_2_parents and restricting_class_1 in restricting_class_2_parents:
+                        if owl_shacl_class_2 in filtered_out_restrictions:
+                            filtered_out_restrictions.remove(owl_shacl_class_1)
+        
+        if len(filtered_out_restrictions) == len(unfiltered_restrictions):
+            return filtered_out_restrictions
+        
+        return SHACLNodeShape.filter_out_owl_restrictions(unfiltered_restrictions=filtered_out_restrictions)
+        
+        
     
     def __str__(self):
         return self.rdf_shacl_resource.__str__()
@@ -203,6 +259,7 @@ def __process_node(node: Node, ontology_graph: Graph) -> RDFSHACLResource:
         return __process_bnode(bnode=node, ontology_graph=ontology_graph)
     if isinstance(node, URIRef):
         return __process_iri(iri=node, ontology_graph=ontology_graph)
+    v = 0
 
 
 def __process_bnode(bnode: BNode, ontology_graph: Graph) -> RDFSHACLResource:
@@ -239,23 +296,31 @@ def __process_iri(iri: URIRef, ontology_graph: Graph) -> RDFSHACLResource:
     owl_type = RDFS.Resource
     owl_parents = list()
     
-    types = set(ontology_graph.objects(subject=iri, predicate=RDF.type))
-    if OWL.Class in types:
-        owl_type = OWL.Class
-        owl_parents = list(ontology_graph.transitive_objects(subject=iri, predicate=RDFS.subClassOf))
-        owl_shacl_resource = OWLIRISHACLClass(iri=iri)
-    if OWL.NamedIndividual in types:
-        owl_type = OWL.NamedIndividual
-        owl_parents = list(ontology_graph.objects(subject=iri, predicate=RDF.type))
-        owl_shacl_resource = OWLNamedIndividualSHACLClass(iri=iri)
-    if OWL.ObjectProperty in types:
-        owl_type = OWL.ObjectProperty
-        owl_parents = list(ontology_graph.transitive_objects(subject=iri, predicate=RDFS.subPropertyOf))
-        owl_shacl_resource = OWLSHACLProperty(iri=iri)
-    if OWL.DatatypeProperty in types:
-        owl_type = OWL.DatatypeProperty
-        owl_parents = list(ontology_graph.transitive_objects(subject=iri, predicate=RDFS.subPropertyOf))
-        owl_shacl_resource = OWLSHACLProperty(iri=iri)
+    if iri in XSD:
+        owl_type = RDFS.Datatype
+        owl_shacl_resource = OWLSHACLDatatype(iri=iri)
+    
+    elif iri is RDFS.Literal:
+        owl_type = RDFS.Literal
+        owl_shacl_resource = OWLSHACLLiteral(iri=iri)
+    else:
+        types = set(ontology_graph.objects(subject=iri, predicate=RDF.type))
+        if OWL.Class in types:
+            owl_type = OWL.Class
+            owl_parents = list(ontology_graph.transitive_objects(subject=iri, predicate=RDFS.subClassOf))
+            owl_shacl_resource = OWLSHACLClass(iri=iri)
+        if OWL.NamedIndividual in types:
+            owl_type = OWL.NamedIndividual
+            owl_parents = list(ontology_graph.objects(subject=iri, predicate=RDF.type))
+            owl_shacl_resource = OWLNamedIndividualSHACL(iri=iri)
+        if OWL.ObjectProperty in types:
+            owl_type = OWL.ObjectProperty
+            owl_parents = list(ontology_graph.transitive_objects(subject=iri, predicate=RDFS.subPropertyOf))
+            owl_shacl_resource = OWLSHACLProperty(iri=iri)
+        if OWL.DatatypeProperty in types:
+            owl_type = OWL.DatatypeProperty
+            owl_parents = list(ontology_graph.transitive_objects(subject=iri, predicate=RDFS.subPropertyOf))
+            owl_shacl_resource = OWLSHACLProperty(iri=iri)
     
     if iri in owl_parents:
         owl_parents.remove(iri)
@@ -263,7 +328,8 @@ def __process_iri(iri: URIRef, ontology_graph: Graph) -> RDFSHACLResource:
     owl_shacl_parents = set()
     for owl_parent in owl_parents:
         parent = __process_node(node=owl_parent, ontology_graph=ontology_graph)
-        owl_shacl_parents.add(parent)
+        if parent is not None:
+            owl_shacl_parents.add(parent)
     
     if owl_type == OWL.Class:
         if isinstance(iri, URIRef):
@@ -338,14 +404,12 @@ def __collect_owl_constructs(ontology_graph: Graph):
 
 
 def __populate_shacl_shape_objects():
-    for rdf_shacl_resource in RDFSHACLResource.rdf_shacl_identity_registry.values():
-        if isinstance(rdf_shacl_resource, OWLIRISHACLClass):
-            SHACLNodeShape(owl_shacl_class=rdf_shacl_resource)
-        if isinstance(rdf_shacl_resource, OWLSHACLRestriction):
-            SHACLPropertyShape(owl_shacl_restriction=rdf_shacl_resource)
-    
     for owl_shacl_restriction in OWLSHACLRestriction.restriction_registry.values():
         SHACLPropertyShape(owl_shacl_restriction=owl_shacl_restriction)
+    
+    for rdf_shacl_resource in RDFSHACLResource.rdf_shacl_identity_registry.values():
+        if isinstance(rdf_shacl_resource, RDFSSHACLClass):
+            SHACLNodeShape(owl_shacl_class=rdf_shacl_resource)
 
 
 def __prepare_shacl_graph(ontology_graph: Graph) -> Graph():
@@ -367,6 +431,12 @@ def __serialise_shacl_shape_objects(ontology_graph: Graph, output_shacl_path: st
         if isinstance(shacl_shape, SHACLNodeShape):
             shacl_shape.serialise()
     
+    # if str(RDFSHACLResource.base_namespace).endswith('-Merged'):
+    #     shacl_ontology = URIRef(str(RDFSHACLResource.base_namespace).replace('-Merged', '_SHACL'))
+    # else:
+    #     shacl_ontology = URIRef(str(RDFSHACLResource.base_namespace)[:-1] + '_SHACL/')
+    # shacl_graph.add((shacl_ontology, RDF.type, OWL.Ontology))
+    
     shacl_graph.serialize(output_shacl_path)
 
 
@@ -382,30 +452,11 @@ def __get_base_namespace_from_ontology(ontology_graph: Graph) -> str:
     return str(ontologies[0])
 
 
-def close_imports(ontology_graph: Graph, imported_ontologies: set) -> Graph:
-    importing_imported_ontologies = ontology_graph.subject_objects(predicate=OWL.imports)
-    for importing_imported_ontology in importing_imported_ontologies:
-        imported_ontology_iri = importing_imported_ontology[1]
-        if imported_ontology_iri not in imported_ontologies:
-            try:
-                imported_ontologies.add(imported_ontology_iri)
-                logging.info(msg='Importing ' + str(imported_ontology_iri))
-                imported_ontology = Graph()
-                imported_ontology.parse(imported_ontology_iri)
-                imported_ontology = close_imports(ontology_graph=imported_ontology,
-                                                  imported_ontologies=imported_ontologies)
-                ontology_graph += imported_ontology
-            except Exception as import_error:
-                logging.error(msg=import_error)
-    return ontology_graph
-
-
 def shacl(input_owl_path: str, output_shacl_path: str):
     logging.basicConfig(format='%(levelname)s %(asctime)s %(message)s', level=logging.INFO,
                         datefmt='%m/%d/%Y %I:%M:%S %p')
     ontology_graph = Graph()
     ontology_graph.parse(input_owl_path)
-    # ontology_graph = close_imports(ontology_graph=ontology_graph, imported_ontologies=set())
     base_namespace = __get_base_namespace_from_ontology(ontology_graph=ontology_graph)
     ontology_graph.bind(prefix='sh', namespace=Namespace(str(SH)))
     
@@ -417,11 +468,13 @@ def shacl(input_owl_path: str, output_shacl_path: str):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Collects all ontologies imported from input ontology')
-    parser.add_argument('--input_owl', help='Path to input ontology', metavar='IN_ONT')
-    parser.add_argument('--output_shacl', help='Path to ontology mapping file', metavar='OUT_SHACL')
-    args = parser.parse_args()
+    # parser = argparse.ArgumentParser(description='Collects all ontologies imported from input ontology')
+    # parser.add_argument('--input_owl', help='Path to input ontology', metavar='IN_ONT')
+    # parser.add_argument('--output_shacl', help='Path to ontology mapping file', metavar='OUT_SHACL')
+    # parser.add_argument('--catalog', help='Path to ontology mapping file', metavar='CATALOG')
+    # args = parser.parse_args()
     
-    shacl(input_owl_path=args.input_owl, output_shacl_path=args.output_shacl)
-    # shacl(input_owl_path='../resources/idmp_current/ISO11238-Substances-Merged.rdf',
-    #       output_shacl_path='/Users/pawel.garbacz/Documents/edmc/github/edmc/tools/shacl/idmp.shacl')
+    # shacl(input_owl_path=args.input_owl, output_shacl_path=args.output_shacl)
+    
+    shacl(input_owl_path='../resources/idmp/ISO/ISO11238-Substances-Merged.ttl',
+          output_shacl_path='/Users/pawel.garbacz/Documents/edmc/github/edmc/tools/shacl/ISO11238-Substances_SHACL.ttl')

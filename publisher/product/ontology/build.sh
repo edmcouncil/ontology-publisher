@@ -38,12 +38,12 @@ function publishProductOntology() {
 
   
   ontologyCopyRdfToTarget || return $?
-  # ontologySearchAndReplaceStuff || return $?
-  # ontologyBuildCatalogs  || return $?
-  # ontologyBuildIndex  || return $?
-  # ontologyCreateAboutFiles || return $?
-  # createQuickVersions || return $?
-  # ontologyConvertRdfToAllFormats || return $?
+  ontologySearchAndReplaceStuff || return $?
+  ontologyBuildCatalogs  || return $?
+  ontologyBuildIndex  || return $?
+  ontologyCreateAboutFiles || return $?
+  createQuickVersions || return $?
+  ontologyConvertRdfToAllFormats || return $?
   test -z "${ONTPUB_MERGED_INFIX}" || ontologyCreateMergedFiles || return $?
   test -z "${ONTPUB_MERGED_INFIX}" || ontologyCreateSHACLFiles || return $?
 
