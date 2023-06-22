@@ -230,16 +230,14 @@ class SHACLNodeShape(SHACLShape):
                     set(RDFSHACLResource.ontology_graph.transitive_objects(
                         subject=restricting_property_2,
                         predicate=RDFS.subPropertyOf))
-                # restricting_property_2_parents.add(restricting_property_2)
                 restricting_class_2_parents = \
                     set(RDFSHACLResource.ontology_graph.transitive_objects(
                         subject=restricting_class_2,
                         predicate=RDFS.subClassOf))
-                # restricting_class_2_parents.add(restricting_class_2)
                 if owl_shacl_class_1.restriction_type == OWL.someValuesFrom and owl_shacl_class_2.restriction_type == OWL.someValuesFrom:
                     if restricting_property_1 in restricting_property_2_parents and restricting_class_1 in restricting_class_2_parents:
                         if owl_shacl_class_2 in filtered_out_restrictions:
-                            filtered_out_restrictions.remove(owl_shacl_class_1)
+                            filtered_out_restrictions.remove(owl_shacl_class_2)
         
         if len(filtered_out_restrictions) == len(unfiltered_restrictions):
             return filtered_out_restrictions
@@ -473,7 +471,7 @@ if __name__ == "__main__":
     parser.add_argument('--input_owl', help='Path to input ontology', metavar='IN_ONT')
     parser.add_argument('--output_shacl', help='Path to ontology mapping file', metavar='OUT_SHACL')
     args = parser.parse_args()
-    
+
     shacl(input_owl_path=args.input_owl, output_shacl_path=args.output_shacl)
     
     # shacl(input_owl_path='../resources/idmp/ISO/ISO11238-Substances-Merged.ttl',

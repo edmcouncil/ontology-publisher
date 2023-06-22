@@ -457,6 +457,10 @@ function run() {
     opts+=('--env')
     opts+=("ONTPUB_MERGED_INFIX=${ONTPUB_MERGED_INFIX}")
   fi
+  if [ -n "${ONTPUB_SHACL_INFIX}" ] ; then
+    opts+=('--env')
+    opts+=("ONTPUB_SHACL_INFIX=${ONTPUB_SHACL_INFIX}")
+  fi
   if [ -n "${URI_SPACE}" ] ; then
     opts+=('--env')
     opts+=("URI_SPACE=${URI_SPACE}")

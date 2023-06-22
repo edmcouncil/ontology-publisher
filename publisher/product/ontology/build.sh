@@ -45,7 +45,7 @@ function publishProductOntology() {
   createQuickVersions || return $?
   ontologyConvertRdfToAllFormats || return $?
   test -z "${ONTPUB_MERGED_INFIX}" || ontologyCreateMergedFiles || return $?
-  test -z "${ONTPUB_MERGED_INFIX}" || ontologyCreateSHACLFiles || return $?
+  test -z "${ONTPUB_SHACL_INFIX}" || ontologyCreateSHACLFiles || return $?
 
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
 
@@ -534,13 +534,14 @@ function ontologyCreateSHACLFiles() {
   require source_family_root || return $?
   require tag_root || return $?
   require ONTPUB_MERGED_INFIX || return $?
+  require ONTPUB_SHACL_INFIX || return $?
 
   logStep "ontologyCreateSHACLFiles"
 
   pushd "${tag_root:?}" >/dev/null || return $?
 
   for rdfFile in **/*${ONTPUB_MERGED_INFIX}.rdf ; do
-    shaclFile="${rdfFile//${ONTPUB_MERGED_INFIX}/}"
+    shaclFile="${rdfFile//${ONTPUB_SHACL_INFIX}/}"
     shaclFile="${shaclFile//rdf/shacl}"
     echo $rdfFile
     echo $shaclFile
