@@ -1,3 +1,4 @@
+import argparse
 import logging
 
 from rdflib import Graph, RDF, OWL, RDFS, SH, Namespace, XSD
@@ -468,13 +469,12 @@ def shacl(input_owl_path: str, output_shacl_path: str):
 
 
 if __name__ == "__main__":
-    # parser = argparse.ArgumentParser(description='Collects all ontologies imported from input ontology')
-    # parser.add_argument('--input_owl', help='Path to input ontology', metavar='IN_ONT')
-    # parser.add_argument('--output_shacl', help='Path to ontology mapping file', metavar='OUT_SHACL')
-    # parser.add_argument('--catalog', help='Path to ontology mapping file', metavar='CATALOG')
-    # args = parser.parse_args()
+    parser = argparse.ArgumentParser(description='Collects all ontologies imported from input ontology')
+    parser.add_argument('--input_owl', help='Path to input ontology', metavar='IN_ONT')
+    parser.add_argument('--output_shacl', help='Path to ontology mapping file', metavar='OUT_SHACL')
+    args = parser.parse_args()
     
-    # shacl(input_owl_path=args.input_owl, output_shacl_path=args.output_shacl)
+    shacl(input_owl_path=args.input_owl, output_shacl_path=args.output_shacl)
     
-    shacl(input_owl_path='../resources/idmp/ISO/ISO11238-Substances-Merged.ttl',
-          output_shacl_path='/Users/pawel.garbacz/Documents/edmc/github/edmc/tools/shacl/ISO11238-Substances_SHACL.ttl')
+    # shacl(input_owl_path='../resources/idmp/ISO/ISO11238-Substances-Merged.ttl',
+    #       output_shacl_path='/Users/pawel.garbacz/Documents/edmc/github/edmc/tools/shacl/ISO11238-Substances_SHACL.ttl')
