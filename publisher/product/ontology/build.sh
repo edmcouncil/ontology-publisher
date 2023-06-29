@@ -543,7 +543,6 @@ function ontologyCreateSHACLFiles() {
   for rdfFile in **/*${ONTPUB_MERGED_INFIX}.rdf ; do
     shaclFile="${rdfFile//${ONTPUB_MERGED_INFIX}/${ONTPUB_SHACL_INFIX}}"
     shaclFile="${shaclFile//rdf/ttl}"
-    echo $rdfFile
     echo $shaclFile
     ${PYTHON3} ${SCRIPT_DIR}/lib/shacler.py --input_owl ${rdfFile} --output_shacl ${shaclFile}
   done

@@ -1,5 +1,6 @@
 import argparse
 import logging
+import re
 
 from rdflib import Graph, RDF, OWL, RDFS, SH, Namespace, XSD
 from rdflib.term import Node, BNode, URIRef, Literal
@@ -7,7 +8,7 @@ from rdflib.term import Node, BNode, URIRef, Literal
 
 class RDFSHACLResource:
     rdf_shacl_identity_registry = dict()
-    base_namespace = None
+    shacl_base_namespace = None
     ontology_graph = Graph()
     
     def __repr__(self):
@@ -193,7 +194,7 @@ class SHACLPropertyShape(SHACLShape):
     
     def serialise(self, use_equivalent_constraints: bool):
         shacl_shape_id = \
-            RDFSHACLResource.base_namespace + \
+            RDFSHACLResource.shacl_base_namespace + \
             self.get_iri_local_fragment(iri=self.rdf_shacl_resource.restriction_type) + \
             self.get_iri_local_fragment(iri=self.rdf_shacl_resource.restricting_property.iri) + \
             self.get_iri_local_fragment(self.rdf_shacl_resource.restricting_class.iri) + \
@@ -209,7 +210,7 @@ class SHACLPropertyShape(SHACLShape):
                     owl_shacl_inverse_restricton = OWLSHACLRestriction.equivalent_registry[self.owl_shacl_restriction]
                     inverse_of_prefix = OWL.inverseOf.fragment
                     inverse_shacl_shape_id = \
-                        RDFSHACLResource.base_namespace + \
+                        RDFSHACLResource.shacl_base_namespace + \
                         self.get_iri_local_fragment(iri=owl_shacl_inverse_restricton.restriction_type) + \
                         inverse_of_prefix + self.get_iri_local_fragment(iri=owl_shacl_inverse_restricton.restricting_property.iri) + \
                         self.get_iri_local_fragment(iri=owl_shacl_inverse_restricton.restricting_class.iri) + \
@@ -257,7 +258,7 @@ class SHACLNodeShape(SHACLShape):
         if len(relevant_shacl_property_shapes) == 0:
             return
         
-        shacl_shape_id = self.rdf_shacl_resource.iri + SH.NodeShape.fragment
+        shacl_shape_id = RDFSHACLResource.shacl_base_namespace + self.get_iri_local_fragment(iri=self.rdf_shacl_resource.iri) + SH.NodeShape.fragment
         shacl_shape = URIRef(shacl_shape_id)
         
         self.shacl_graph.add((shacl_shape, RDF.type, SH.NodeShape))
@@ -546,11 +547,32 @@ def __transform_owl_to_shacl(output_shacl_path: str, ontology_graph: Graph, use_
     __serialise_shacl_shape_objects(ontology_graph=ontology_graph, output_shacl_path=output_shacl_path, use_equivalent_constraints=use_equivalent_constraints)
 
 
-def __get_base_namespace_from_ontology(ontology_graph: Graph) -> str:
+def __get_shacl_base_namespace_from_ontology(ontology_graph: Graph) -> str:
     ontologies = list(ontology_graph.subjects(predicate=RDF.type, object=OWL.Ontology))
     if len(ontologies) == 0:
-        return 'https://example.com'
-    return str(ontologies[0])
+        return 'https://example.com/'
+    base_namespace = str(ontologies[0])
+    if base_namespace.endswith('/'):
+        shacl_base_namespace = base_namespace[:-1] + '-SHACL' + '/'
+    elif base_namespace.endswith('#'):
+        shacl_base_namespace = base_namespace[:-1] + '-SHACL' + '#'
+    else:
+        shacl_base_namespace = base_namespace + '-SHACL'
+    return shacl_base_namespace
+
+
+def __get_shacl_base_namespace_prefix(shacl_base_namespace: str) -> str:
+    if shacl_base_namespace.endswith('/') or shacl_base_namespace.endswith('#'):
+        shacl_base_namespace_trunc = shacl_base_namespace[:-1]
+    else:
+        shacl_base_namespace_trunc = shacl_base_namespace
+    prefix_base = shacl_base_namespace_trunc.split(sep='/')[-1]
+    prefix = str()
+    upper_case_regex = re.compile(r'[A-Z0-9\-]')
+    upper_case_letters = upper_case_regex.findall(string=prefix_base)
+    for upper_case_letter in upper_case_letters:
+        prefix += upper_case_letter
+    return prefix.lower()
 
 
 def shacl(input_owl_path: str, output_shacl_path: str, use_equivalent_constraints=True):
@@ -558,10 +580,12 @@ def shacl(input_owl_path: str, output_shacl_path: str, use_equivalent_constraint
                         datefmt='%m/%d/%Y %I:%M:%S %p')
     ontology_graph = Graph()
     ontology_graph.parse(input_owl_path)
-    base_namespace = __get_base_namespace_from_ontology(ontology_graph=ontology_graph)
+    shacl_base_namespace = __get_shacl_base_namespace_from_ontology(ontology_graph=ontology_graph)
+    shacl_base_namespace_prefix = __get_shacl_base_namespace_prefix(shacl_base_namespace=shacl_base_namespace)
     ontology_graph.bind(prefix='sh', namespace=Namespace(str(SH)))
+    ontology_graph.bind(prefix=shacl_base_namespace_prefix, namespace=shacl_base_namespace)
     
-    RDFSHACLResource.base_namespace = base_namespace
+    RDFSHACLResource.shacl_base_namespace = shacl_base_namespace
     RDFSHACLResource.ontology_graph = ontology_graph
     
     __collect_owl_constructs(ontology_graph=ontology_graph, use_equivalent_constraints=use_equivalent_constraints)
@@ -577,6 +601,6 @@ if __name__ == "__main__":
     shacl(input_owl_path=args.input_owl, output_shacl_path=args.output_shacl)
     
     # shacl(
-    #     input_owl_path='../resources/idmp_current/dev.idmp-quickstart.ttl',
-    #     output_shacl_path='../resources/idmp_current/dev.idmp-quickstart.shacl',
+    #     input_owl_path='../resources/idmp/ISO11615-MedicinalProducts-Merged.ttl',
+    #     output_shacl_path='../resources/idmp/ISO11615-MedicinalProducts-SHACL.ttl',
     #     use_equivalent_constraints=True)
