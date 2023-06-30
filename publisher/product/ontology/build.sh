@@ -821,7 +821,7 @@ function createQuickVersions() {
     -Dfile.encoding=UTF-8 \
     -jar "${ONTOVIEWER_TOOLKIT_JAR}" \
     --goal merge-imports \
-    --data "${source_family_root}/${DEV_SPEC}" $(test -s "${ontologyMappingFile}" && echo "--catalog \"${ontologyMappingFile}\"") \
+    --data "${source_family_root}/${DEV_SPEC}" $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping \"${source_family_root}/catalog-v001.xml\"") \
     --ontology-iri "${product_root_url}/Quick${ONTPUB_FAMILY^^}Dev/" --ontology-version-iri "${tag_root_url}/Quick${ONTPUB_FAMILY^^}Dev/" \
     --output "${tag_root}/Quick${ONTPUB_FAMILY^^}Dev.rdf" &>/dev/null
 
@@ -836,7 +836,7 @@ function createQuickVersions() {
     -Dfile.encoding=UTF-8 \
     -jar "${ONTOVIEWER_TOOLKIT_JAR}" \
     --goal merge-imports \
-    --data "${source_family_root}/${PROD_SPEC}" $(test -s "${ontologyMappingFile}" && echo "--catalog \"${ontologyMappingFile}\"") \
+    --data "${source_family_root}/${PROD_SPEC}" $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping \"${source_family_root}/catalog-v001.xml\"") \
     --ontology-iri "${product_root_url}/Quick${ONTPUB_FAMILY^^}Prod/" --ontology-version-iri "${tag_root_url}/Quick${ONTPUB_FAMILY^^}Prod/" \
     --output "${tag_root}/Quick${ONTPUB_FAMILY^^}Prod.rdf" &>/dev/null
 
