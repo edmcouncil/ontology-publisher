@@ -29,12 +29,7 @@ function createMergedFileFrom() {
 
   local rc=0
 
-  java \
-    --add-opens java.base/java.lang=ALL-UNNAMED \
-    -Xmx1G \
-    -Xms1G \
-    -Dfile.encoding=UTF-8 \
-    -jar "${ONTOVIEWER_TOOLKIT_JAR}" \
+  ${ONTOVIEWER_TOOLKIT_JAVA} \
     --goal merge-imports \
     --data "${rdfFile}" $(test -s "${ontologyMappingFile}" && echo "--ontology-mapping \"${ontologyMappingFile}\"") \
     --ontology-iri "${ontologyMergedIRI}" $(test -n "${ontologyMergedVersionIRI}" && echo "--ontology-version-iri \"${ontologyMergedVersionIRI}\"") \

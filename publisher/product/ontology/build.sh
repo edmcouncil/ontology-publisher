@@ -837,12 +837,7 @@ function createQuickVersions() {
   #
   log "Merging all dev ontologies into one RDF file"
 
-  java \
-    --add-opens java.base/java.lang=ALL-UNNAMED \
-    -Xmx1G \
-    -Xms1G \
-    -Dfile.encoding=UTF-8 \
-    -jar "${ONTOVIEWER_TOOLKIT_JAR}" \
+  ${ONTOVIEWER_TOOLKIT_JAVA} \
     --goal merge-imports \
     --data "${source_family_root}/${DEV_SPEC}" $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping \"${source_family_root}/catalog-v001.xml\"") \
     --ontology-iri "${product_root_url}/Quick${ONTPUB_FAMILY^^}Dev/" --ontology-version-iri "${tag_root_url}/Quick${ONTPUB_FAMILY^^}Dev/" \
@@ -852,12 +847,7 @@ function createQuickVersions() {
   # Get ontologies for Prod
   #
   log "Merging all prod ontologies into one RDF file"
-  java \
-    --add-opens java.base/java.lang=ALL-UNNAMED \
-    -Xmx1G \
-    -Xms1G \
-    -Dfile.encoding=UTF-8 \
-    -jar "${ONTOVIEWER_TOOLKIT_JAR}" \
+  ${ONTOVIEWER_TOOLKIT_JAVA} \
     --goal merge-imports \
     --data "${source_family_root}/${PROD_SPEC}" $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping \"${source_family_root}/catalog-v001.xml\"") \
     --ontology-iri "${product_root_url}/Quick${ONTPUB_FAMILY^^}Prod/" --ontology-version-iri "${tag_root_url}/Quick${ONTPUB_FAMILY^^}Prod/" \
