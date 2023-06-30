@@ -539,15 +539,11 @@ function ontologyCreateSHACLFiles() {
   logStep "ontologyCreateSHACLFiles"
 
   pushd "${tag_root:?}" >/dev/null || return $?
-
-  for rdfFile in **/*${ONTPUB_MERGED_INFIX}.rdf ; do
-    shaclFile="${rdfFile//${ONTPUB_MERGED_INFIX}/${ONTPUB_SHACL_INFIX}}"
-    shaclFile="${shaclFile//rdf/ttl}"
-    echo $shaclFile
-    ${PYTHON3} ${SCRIPT_DIR}/lib/shacler.py --input_owl ${rdfFile} --output_shacl ${shaclFile}
-  done
-  rc=$?
-
+    while read -r rdfFile ; do
+	shaclFile="${rdfFile%${ONTPUB_MERGED_INFIX}.rdf}${ONTPUB_SHACL_INFIX}.ttl"
+	logItem "Create SHACL file" "$(logFileName "${shaclFile#./}")"
+	${PYTHON3} ${SCRIPT_DIR}/lib/shacler.py --input_owl "${rdfFile}" --output_shacl "${shaclFile}"
+    done < <(find . -type f -name \*"${ONTPUB_MERGED_INFIX}.rdf")
   popd >/dev/null || return $?
 
   log "End of ontologyCreateSHACLFiles"
