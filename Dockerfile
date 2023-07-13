@@ -121,6 +121,12 @@ COPY etc /etc
 COPY root /root
 
 #
+# Installing [shacler](https://github.com/edmcouncil/tools/)
+#
+RUN \
+  wget -m -nH -nd -P /publisher/lib https://raw.githubusercontent.com/edmcouncil/tools/main/shacl/shacler.py
+
+#
 # Installing the rdf-toolkit
 #
 #ENV RDFTOOLKIT_JAR=/publisher/lib/rdf-toolkit.jar
