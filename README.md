@@ -77,7 +77,7 @@ env <VARIABLE_NAME>=<VARIABLE_VALUE> [<VARIABLE_NAME1>=<VARIABLE_VALUE1>...] ./d
 for example:
 
 ```bash
-env ONTPUB_FAMILY="onto" ONTPUB_INPUT_REPOS="onto core" ./docker-run.sh --shell --dev
+env ONTPUB_FAMILY="onto" ./docker-run.sh --shell --dev
 ```
 
 List of allowed `<VARIABLE_NAME>` (and defaults for `<VARIABLE_VALUE>`):
@@ -91,12 +91,11 @@ List of allowed `<VARIABLE_NAME>` (and defaults for `<VARIABLE_VALUE>`):
   used when generating [the "data dictionary" product](https://github.com/edmcouncil/ontology-publisher/tree/develop/publisher/product/datadictionary) (`extract-data` goal - see [OntoViewer Toolkit - Goals](https://github.com/edmcouncil/onto-viewer/blob/develop/onto-viewer-toolkit/README.md#goals))
   e.g. `synonym=http://example.com/synonym,https://www.omg.org/spec/Commons/AnnotationVocabulary/synonym|example=http://www.w3.org/2004/02/skos/core#example`
 - `ONTPUB_SPEC_HOST` :- the basis of the ontology IRI=`https://${ONTPUB_SPEC_HOST}/${ONTPUB_FAMILY}/ontology/`, e.g. `onto.example.org` (default: `spec.edmcouncil.org`)
-- `ONTPUB_INPUT_REPOS` :- list of directories (located in the user's home directory) containing input ontologies that will be mounted in the _/input_ directory inside container, e.g. `onto core` (default: `${ONTPUB_FAMILY} LCC`)
-- `DEV_SPEC` :- the name of the file (inside the directory named `${ONTPUB FAMILY}`, in the `${ONTPUB_INPUT_REPOS}` list) containing the "Development" ontology, e.g. `AboutFIBODev.rdf` (default: `About${ONTPUB_FAMILY}Dev.rdf`)
-- `PROD_SPEC` :- the name of the file (inside the directory named `${ONTPUB FAMILY}`, in the `${ONTPUB_INPUT_REPOS}` list) containing the "Production" ontology, e.g. `AboutFIBOProd.rdf` (default: `About${ONTPUB_FAMILY}Prod.rdf`)
+- `DEV_SPEC` :- the name of the file (inside the directory named `${ONTPUB FAMILY}` containing the "Development" ontology, e.g. `AboutFIBODev.rdf` (default: `About${ONTPUB_FAMILY}Dev.rdf`)
+- `PROD_SPEC` :- the name of the file (inside the directory named `${ONTPUB FAMILY}`containing the "Production" ontology, e.g. `AboutFIBOProd.rdf` (default: `About${ONTPUB_FAMILY}Prod.rdf`)
 - `HYGIENE_TEST_PARAMETER_VALUE` :- filter pattern, e.g. `example` (default: `edmcouncil`); this variable is also possible to set during build time (see `--rebuildimage` option)
-- `HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME` :- the name of the file (inside the directory named `${ONTPUB FAMILY}`, in the `${ONTPUB_INPUT_REPOS}` list) for which the "warning" level consistency check test will be performed (i.e. in the case of a lack of consistency, the ontology building process is not terminated), e.g. `AboutFIBODev.rdf` (no default - in the absence of a value, the tests will not be run)
-- `HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME` :- the name of the file (inside the directory named `${ONTPUB FAMILY}`, in the `${ONTPUB_INPUT_REPOS}` list) for which the "error" level consistency check test will be performed (i.e. in the case of a lack of consistency, the ontology building process is terminated with an error message), e.g. `AboutFIBOProd.rdf` (no default - in the absence of a value, the tests will not be run)
+- `HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME` :- the name of the file (inside the directory named `${ONTPUB FAMILY}`for which the "warning" level consistency check test will be performed (i.e. in the case of a lack of consistency, the ontology building process is not terminated), e.g. `AboutFIBODev.rdf` (no default - in the absence of a value, the tests will not be run)
+- `HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME` :- the name of the file (inside the directory named `${ONTPUB FAMILY}` for which the "error" level consistency check test will be performed (i.e. in the case of a lack of consistency, the ontology building process is terminated with an error message), e.g. `AboutFIBOProd.rdf` (no default - in the absence of a value, the tests will not be run)
 - `ONTPUB_MERGED_INFIX` :- infix for "merged" files, e.g. `-Merged` (no default - in the absence of a value, the merged files will not be created)
 - `ONTPUB_SHACL_INFIX` :- infix for SHACL shapes, e.g. `_SHACL` (no default - in the absence of a value, the merged files will not be created)
 The current process of creating SHACL shapes requires merged files, so if you send in `ONTPUB_SHACL_INFIX`, you also need to set up `ONTPUB_MERGED_INFIX`.

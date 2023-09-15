@@ -767,33 +767,6 @@ WHERE {?s ?p ?o}
 __HERE__
 
 
-  local tmpbasic="$(mktemp ${TMPDIR}/basic.XXXXXX.ttl)"
-  cat >"${tmpbasic}" << __HERE__
-@prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix lcc-lr: <https://www.omg.org/spec/LCC/Languages/LanguageRepresentation/> .
-@prefix lcc-cr: <https://www.omg.org/spec/LCC/Countries/CountryRepresentation/> .
-
-__HERE__
-
-
-  local lcccr="$(mktemp ${TMPDIR}/LCCCR.XXXXXX.nt)"
-  local lcccc="$(mktemp ${TMPDIR}/LCCCC.XXXXXX.nt)"
-  
-  ${JENA_ARQ} \
-      --query=${tmpflatecho} \
-      --data="${INPUT}/LCC/Countries/CountryRepresentation.rdf" \
-      --results=NT \
-      > "$lcccr"
-  ${JENA_ARQ} \
-      --query=${tmpflatecho} \
-      --data="${INPUT}/LCC/Languages/LanguageRepresentation.rdf" \
-      --results=NT \
-      > "$lcccc"
-
   local prefixes="$(mktemp ${TMPDIR}/prefixes.XXXXXX)"
 
   local tmpmodule="$(mktemp ${TMPDIR}/module.XXXXXX.nt)"

@@ -9,7 +9,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)" || exit 1
 export ONTPUB_ORG="edmcouncil"
 
 export ONTPUB_FAMILY="${ONTPUB_FAMILY:-fibo}"
-export ONTPUB_INPUT_REPOS="${ONTPUB_INPUT_REPOS:-${ONTPUB_FAMILY} LCC}"
 export HYGIENE_TEST_PARAMETER_VALUE="${HYGIENE_TEST_PARAMETER_VALUE:-edmcouncil}"
 export ONTPUB_VERSION="$(git -C "${SCRIPT_DIR}" rev-parse --abbrev-ref HEAD)"
 
@@ -22,7 +21,7 @@ fi
 
 function getDirectoryOfGitRepo() {
 
-  local -r gitRepoName="$1" # names like "fibo" or "LCC" etc
+  local -r gitRepoName="$1" # names like "fibo"
 
   #
   # First check some common places as they're used on Mac OS X or Linux desktops/laptops.
@@ -88,7 +87,7 @@ function getDirectoryOfGitRepo() {
 #
 function inputDirectory() {
 
-  local -r gitRepoName="$1" # names like "fibo" or "LCC" etc
+  local -r gitRepoName="$1" # names like "fibo"
 
   #
   # First try what you specified as the primary ontology name
@@ -481,11 +480,9 @@ function run() {
   # /input directory (so ontolory repo fibo ends up as /input/fibo inside the container)
   #
   log "Mounted:"
-  for inputOntologyRepoName in ${ONTPUB_INPUT_REPOS} ; do
-    inputDirectory=$(inputDirectory "${inputOntologyRepoName}") || return $?
-    logItem "/input/${inputOntologyRepoName}" "${inputDirectory}"
-    opts+=("--mount type=bind,source=${inputDirectory},target=/input/${inputOntologyRepoName},readonly,consistency=cached")
-  done
+  inputDirectory=$(inputDirectory "${ONTPUB_FAMILY}") || return $?
+  logItem "/input/${ONTPUB_FAMILY}" "${inputDirectory}"
+  opts+=("--mount type=bind,source=${inputDirectory},target=/input/${ONTPUB_FAMILY},readonly,consistency=cached")
   logItem "/output" "${outputDirectory}"
   opts+=("--mount type=bind,source=${outputDirectory},target=/output,consistency=delegated")
 #  logItem "/var/tmp" "${temporaryFilesDirectory}"
