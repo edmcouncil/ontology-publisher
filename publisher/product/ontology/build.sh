@@ -715,14 +715,14 @@ function createQuickVersions() {
   
   log "Merging all dev ontologies into one RDF file"
 
-  local quick_dev_spec=${DEV_SPEC/.rdf/}
-  local quick_prod_spec=${PROD_SPEC/.rdf/}
+  local quick_dev_spec=Quick${DEV_SPEC/.rdf/}
+  local quick_prod_spec=Quick${PROD_SPEC/.rdf/}
 
   ${ONTOVIEWER_TOOLKIT_JAVA} \
     --goal merge-imports \
     --data "${source_family_root}/${DEV_SPEC}" $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping \"${source_family_root}/catalog-v001.xml\"") \
-    --ontology-iri "${product_root_url}/Quick${quick_dev_spec}/" --ontology-version-iri "${tag_root_url}/Quick${quick_dev_spec}/" \
-    --output "${tag_root}/Quick${quick_dev_spec}.rdf" &>/dev/null
+    --ontology-iri "${product_root_url}/${quick_dev_spec}/" --ontology-version-iri "${tag_root_url}/${quick_dev_spec}/" \
+    --output "${tag_root}/${quick_dev_spec}.rdf" &>/dev/null
 
   #
   # Get ontologies for Prod
@@ -731,15 +731,15 @@ function createQuickVersions() {
   ${ONTOVIEWER_TOOLKIT_JAVA} \
     --goal merge-imports \
     --data "${source_family_root}/${PROD_SPEC}" $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping \"${source_family_root}/catalog-v001.xml\"") \
-    --ontology-iri "${product_root_url}/Quick${quick_prod_spec}/" --ontology-version-iri "${tag_root_url}/Quick${quick_prod_spec}/" \
-    --output "${tag_root}/Quick${quick_prod_spec}.rdf" &>/dev/null
+    --ontology-iri "${product_root_url}/${quick_prod_spec}/" --ontology-version-iri "${tag_root_url}/${quick_prod_spec}/" \
+    --output "${tag_root}/${quick_prod_spec}.rdf" &>/dev/null
 
   log "Converting quick ontologies to other formats"
 
-  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${tag_root}/Quick${quick_dev_spec}.rdf" "turtle" && \
-    mv "${tag_root}/Quick${quick_dev_spec}.ttl" ${tag_root}/${quick_dev_spec}-quickstart.ttl
-  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${tag_root}/Quick${quick_prod_spec}.rdf" "turtle" && \
-    mv "${tag_root}/Quick${quick_prod_spec}.ttl" ${tag_root}/${quick_prod_spec}-quickstart.ttl
+  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${tag_root}/${quick_dev_spec}.rdf" "turtle" && \
+    mv "${tag_root}/${quick_dev_spec}.ttl" ${tag_root}/${quick_dev_spec}-quickstart.ttl
+  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${tag_root}/${quick_prod_spec}.rdf" "turtle" && \
+    mv "${tag_root}/${quick_prod_spec}.ttl" ${tag_root}/${quick_prod_spec}-quickstart.ttl
 
   ${JENA_ARQ} --data=${tag_root}/${quick_dev_spec}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/${quick_dev_spec}-quickstart.nt
   ${JENA_ARQ} --data=${tag_root}/${quick_prod_spec}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/${quick_prod_spec}-quickstart.nt
