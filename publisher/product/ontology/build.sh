@@ -716,7 +716,7 @@ function createQuickVersions() {
   log "Merging all dev ontologies into one RDF file"
 
   local quick_dev_spec=${DEV_SPEC/.rdf/}-quickstart
-  local quick_prod_spec=Quick${PROD_SPEC/.rdf/}
+  local quick_prod_spec=${PROD_SPEC/.rdf/}-quickstart
 
   ${ONTOVIEWER_TOOLKIT_JAVA} \
     --goal merge-imports \
