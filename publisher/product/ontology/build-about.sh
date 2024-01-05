@@ -49,7 +49,7 @@ __HERE__
       --results=RDF > "${tag_root}/Load${prod_suffix}.rdf" 2> "${TMPDIR}/err.tmp"
 
     if [ -s "${TMPDIR}/err.tmp" ] ; then
-      warning "no RDF XML output generated.  Use Load${dev_suffix}.ttl file instead"
+      warning "no RDF XML output generated.  Use Load${prod_suffix}.ttl file instead"
     fi
     rm -f "${TMPDIR}/err.tmp"
   )
