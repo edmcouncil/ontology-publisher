@@ -746,7 +746,7 @@ function createQuickVersions() {
 
   zip ${tag_root}/${quick_dev_spec}-quickstart.ttl.zip ${tag_root}/${quick_dev_spec}-quickstart.ttl
   zip ${tag_root}/${quick_prod_spec}-quickstart.ttl.zip ${tag_root}/${quick_prod_spec}-quickstart.ttl
-  zip ${tag_root}/${quick_dev_spec}-quickstart.nt.zip ${tag_root}/${quick_dev_spec}-quickstart.nt
+  zip ${tag_root}/${quick_dev_spec}.nt.zip ${tag_root}/${quick_dev_spec}.nt
   zip ${tag_root}/${quick_prod_spec}.nt.zip ${tag_root}/${quick_prod_spec}.nt
 
 }
