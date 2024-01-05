@@ -738,7 +738,7 @@ function createQuickVersions() {
 
   ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${tag_root}/${quick_dev_spec}.rdf" "turtle" && \
     mv "${tag_root}/${quick_dev_spec}.ttl" ${tag_root}/${quick_dev_spec}-quickstart.ttl
-  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${tag_root}/${quick_prod_spec}.rdf" "turtle" && \
+  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${tag_root}/${quick_prod_spec}.rdf" "turtle"
     mv "${tag_root}/${quick_prod_spec}.ttl" ${tag_root}/${quick_prod_spec}-quickstart.ttl
 
   ${JENA_ARQ} --data=${tag_root}/${quick_dev_spec}.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/${quick_dev_spec}.nt
