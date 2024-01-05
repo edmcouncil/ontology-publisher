@@ -29,7 +29,7 @@ function ontologyCreateAboutFiles () {
   test -n "${PROD_SPEC}" && test -r "${tag_root:?}/${PROD_SPEC}" && (
     cd "${tag_root:?}" || return $?
 
-    logItem "<owl:imports> from \"${PROD_SPEC}\"$(echo -en '\t')" "$(logFileName "${tag_root}/Load${dev_suffix}.rdf")"
+    logItem "<owl:imports> from \"${PROD_SPEC}\"$(echo -en '\t')" "$(logFileName "${tag_root}/Load${prod_suffix}.rdf")"
 
     cat > "${tmpAboutFileProd}" << __HERE__
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
