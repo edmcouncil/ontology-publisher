@@ -46,7 +46,7 @@ __HERE__
     "${JENA_ARQ}" \
       --data="${tmpAboutFileProd}" \
       --query="${SCRIPT_DIR}/lib/echo.sparql" \
-      --results=RDF > "${tag_root}/Load${dev_suffix}.rdf" 2> "${TMPDIR}/err.tmp"
+      --results=RDF > "${tag_root}/Load${prod_suffix}.rdf" 2> "${TMPDIR}/err.tmp"
 
     if [ -s "${TMPDIR}/err.tmp" ] ; then
       warning "no RDF XML output generated.  Use Load${dev_suffix}.ttl file instead"
