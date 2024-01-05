@@ -69,7 +69,7 @@ function publishProductDataDictionaryContent() {
     --ontology-mapping "${source_family_root}/catalog-v001.xml" > "${datadictionary_product_tag_root}/datadictionary.DEV.log" 2>&1
 
   logRule "Running OntoViewer Toolkit to generate CSV files containing data from ontologies - see logs \"$(logFileName datadictionary.PROD.log)\""
-  logItem "$(basename "${PROD_SPEC}")" "$(logFileName "${tag_root_url}/$(basename "${datadictionaryBaseName}-${dev_suffix}.csv")")"
+  logItem "$(basename "${PROD_SPEC}")" "$(logFileName "${tag_root_url}/$(basename "${datadictionaryBaseName}-${prod_suffix}.csv")")"
   debug=false ${ONTOVIEWER_TOOLKIT_JAVA} --goal extract-data ${maturityLevel} ${maturityLevelProperty} ${extractDataColumn} --data "${source_family_root}/${PROD_SPEC}" \
     --output "${datadictionaryBaseName}-${prod_suffix}.csv" \
     --filter-pattern "${HYGIENE_TEST_PARAMETER_VALUE}" \
