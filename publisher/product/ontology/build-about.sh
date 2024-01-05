@@ -65,7 +65,7 @@ __HERE__
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
 @prefix owl: <http://www.w3.org/2002/07/owl#> 
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-<${product_root_url}/LoadDev/> a owl:Ontology;
+<${product_root_url}/Load${dev_suffix}/> a owl:Ontology;
 __HERE__
 
     getOwlImports < "${tag_root}/${DEV_SPEC}" 2>/dev/null | \
