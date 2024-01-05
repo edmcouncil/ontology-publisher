@@ -736,7 +736,7 @@ function createQuickVersions() {
 
   log "Converting quick ontologies to other formats"
 
-  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${tag_root}/${quick_dev_spec}.rdf" "turtle" && \
+  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${tag_root}/${quick_dev_spec}.rdf" "turtle"
     mv "${tag_root}/${quick_dev_spec}.ttl" ${tag_root}/${quick_dev_spec}-quickstart.ttl
   ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${tag_root}/${quick_prod_spec}.rdf" "turtle"
     mv "${tag_root}/${quick_prod_spec}.ttl" ${tag_root}/${quick_prod_spec}-quickstart.ttl
