@@ -22,18 +22,21 @@ function ontologyCreateAboutFiles () {
 
   rm -f "${TMPDIR}/err.tmp"
 
+  local dev_suffix=${DEV_SPEC/.rdf/}
+  local prod_suffix=${PROD_SPEC/.rdf/}
+
   # use "owl:imports" from ${PROD_SPEC} if exists
   test -n "${PROD_SPEC}" && test -r "${tag_root:?}/${PROD_SPEC}" && (
     cd "${tag_root:?}" || return $?
 
-    logItem "<owl:imports> from \"${PROD_SPEC}\"$(echo -en '\t')" "$(logFileName "${tag_root}/Load${ONTPUB_FAMILY^^}Prod.rdf")"
+    logItem "<owl:imports> from \"${PROD_SPEC}\"$(echo -en '\t')" "$(logFileName "${tag_root}/Load${prod_suffix}.rdf")"
 
     cat > "${tmpAboutFileProd}" << __HERE__
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
 @prefix owl: <http://www.w3.org/2002/07/owl#> 
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-<${product_root_url}/Load${ONTPUB_FAMILY^^}Prod/> a owl:Ontology;
+<${product_root_url}/Load${prod_suffix}/> a owl:Ontology;
 __HERE__
 
     getOwlImports < "${tag_root}/${PROD_SPEC}" 2>/dev/null | \
@@ -43,10 +46,10 @@ __HERE__
     "${JENA_ARQ}" \
       --data="${tmpAboutFileProd}" \
       --query="${SCRIPT_DIR}/lib/echo.sparql" \
-      --results=RDF > "${tag_root}/Load${ONTPUB_FAMILY^^}Prod.rdf" 2> "${TMPDIR}/err.tmp"
+      --results=RDF > "${tag_root}/Load${prod_suffix}.rdf" 2> "${TMPDIR}/err.tmp"
 
     if [ -s "${TMPDIR}/err.tmp" ] ; then
-      warning "no RDF XML output generated.  Use Load${ONTPUB_FAMILY^^}Prod.ttl file instead"
+      warning "no RDF XML output generated.  Use Load${prod_suffix}.ttl file instead"
     fi
     rm -f "${TMPDIR}/err.tmp"
   )
@@ -55,14 +58,14 @@ __HERE__
   test -n "${DEV_SPEC}" && test -r "${tag_root:?}/${PROD_SPEC}" && (
     cd "${tag_root}" || return $?
 
-    logItem "<owl:imports> from \"${DEV_SPEC}\"$(echo -en '\t')" "$(logFileName "${tag_root}/Load${ONTPUB_FAMILY^^}Dev.rdf")"
+    logItem "<owl:imports> from \"${DEV_SPEC}\"$(echo -en '\t')" "$(logFileName "${tag_root}/Load${dev_suffix}.rdf")"
 
     cat > "${tmpAboutFileDev}" << __HERE__
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
 @prefix owl: <http://www.w3.org/2002/07/owl#> 
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>
-<${product_root_url}/Load${ONTPUB_FAMILY^^}Dev/> a owl:Ontology;
+<${product_root_url}/Load${dev_suffix}/> a owl:Ontology;
 __HERE__
 
     getOwlImports < "${tag_root}/${DEV_SPEC}" 2>/dev/null | \
@@ -72,10 +75,10 @@ __HERE__
     "${JENA_ARQ}" \
       --data="${tmpAboutFileDev}" \
       --query="${SCRIPT_DIR}/lib/echo.sparql" \
-      --results=RDF > "${tag_root}/Load${ONTPUB_FAMILY^^}Dev.rdf" 2> "${TMPDIR}/err.tmp"
+      --results=RDF > "${tag_root}/Load${dev_suffix}.rdf" 2> "${TMPDIR}/err.tmp"
 
     if [ -s "${TMPDIR}/err.tmp" ] ; then
-      warning "no RDF XML output generated.  Use Load${ONTPUB_FAMILY^^}Dev.ttl file instead"
+      warning "no RDF XML output generated.  Use Load${dev_suffix}.ttl file instead"
     fi
     rm -f "${TMPDIR}/err.tmp"
   )
