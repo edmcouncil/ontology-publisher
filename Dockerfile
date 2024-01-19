@@ -16,7 +16,7 @@
 # - alpine is the name of the Linux brand we're using, which is the smallest linux keeping the image as small
 #   as possible.
 #
-FROM alpine:3.17
+FROM alpine:3.19
 
 #
 # Some meta data, can only have one maintainer unfortunately
@@ -52,8 +52,9 @@ RUN \
     curl wget \
     bash git grep sed findutils coreutils tree jq yq bc xmlstarlet util-linux \
     zip tar xz \
-    openjdk11 \
+    openjdk21 \
     python3-dev py3-pip py3-wheel py3-cachetools py3-frozendict py3-isodate py3-lxml cython py3-pandas \
+    py3-pyld py3-rdflib py3-xlsxwriter \
     libxml2-dev libxslt-dev \
     perl fontconfig make \
     gcc g++ linux-headers libc-dev && \
@@ -70,9 +71,8 @@ RUN \
 # INFRA-496 jena-arq-${JENA_VERSION}.jar: workaround to change default JSON-LD-10 output: JSONLD10 = JSONLD10_EXPAND_PRETTY instead of JSONLD10_COMPACT_PRETTY
 #
 ENV \
-  JENA_VERSION="4.6.1" \
-  JENA_HOME=/usr/share/java/jena/latest \
-  PATH=${PATH}:/usr/lib/jvm/java-11-openjdk/bin:/usr/share/java/jena/latest/bin
+  JENA_VERSION="4.10.0" \
+  JENA_HOME=/usr/share/java/jena/latest
 RUN \
   echo ================================= install jena ${JENA_VERSION} >&2 && \
   name="apache-jena-${JENA_VERSION}" ; \
@@ -80,38 +80,27 @@ RUN \
   url="http://archive.apache.org/dist/jena/binaries/${targz}" ; \
   echo "Downloading ${url}:" >&2 ; \
   curl --location --silent --show-error --output /var/tmp/${targz} --url "${url}" && \
-  (mkdir -p /usr/share/java/jena || true) && \
-  cd /usr/share/java/jena && \
-  tar xzf /var/tmp/${targz} && \
+  install -d "$(dirname "${JENA_HOME}")" && cd "$(dirname "${JENA_HOME}")" && \
+  tar xzpf /var/tmp/${targz} && \
   rm -f /var/tmp/${targz} && \
   mv ${name} ${JENA_VERSION} && \
   ln -s ${JENA_VERSION} latest && \
-  ln -s /usr/share/java/jena/latest/bin/riot /usr/local/bin/riot && \
-  ln -s /usr/share/java/jena/latest/bin/sparql /usr/local/bin/sparql && \
-  ln -s /usr/share/java/jena/latest/bin/turtle /usr/local/bin/turtle && \
-  cd ${JENA_VERSION} && \
+  sed -i 's#\\"##g' "${JENA_HOME}"/bin/{arq,riot} && \
+  cd ${JENA_HOME} && \
   unzip lib-src/jena-arq-${JENA_VERSION}-sources.jar org/apache/jena/riot/RDFFormat.java && \
   rm -rf src-examples lib-src bat && \
   perl -pi -e 's/(\WJSONLD10\s+=\s+JSONLD(?:10)?_)(?:COMPACT_)?(PRETTY)/\1EXPAND_\2/g' org/apache/jena/riot/RDFFormat.java && \
-  javac -cp /usr/share/java/jena/${JENA_VERSION}/lib/jena-arq-${JENA_VERSION}.jar org/apache/jena/riot/RDFFormat.java && \
-  zip -u /usr/share/java/jena/${JENA_VERSION}/lib/jena-arq-${JENA_VERSION}.jar org/apache/jena/riot/RDFFormat.class && \
+  javac -cp ${JENA_HOME}/lib/jena-arq-${JENA_VERSION}.jar org/apache/jena/riot/RDFFormat.java && \
+  zip -u ${JENA_HOME}/lib/jena-arq-${JENA_VERSION}.jar org/apache/jena/riot/RDFFormat.class && \
   rm -rf org && \
-  cd / && \
-  version="$(echo $(tdb2.tdbloader --version | grep Jena | grep VERSION | cut -d: -f3))" && \
+  version="$("${JENA_HOME}"/bin/arq --version | cut -d\  -f4)" && \
   echo "installed version="[${version}]"" && \
   test "${version}" == "${JENA_VERSION}"
 
 #
-# Installing XlsxWriter, rdflib, PyLD
-#
-RUN \
-  echo ================================= install XlsxWriter, rdflib, PyLD >&2 && \
-  pip3 install XlsxWriter rdflib PyLD
-
-#
 # Installing [ROBOT](https://github.com/ontodev/robot)
 #
-ENV ROBOT_VERSION="v1.9.1"
+ENV ROBOT_VERSION="v1.9.5"
 RUN \
   wget -m -nH -nd -P /usr/local/bin https://raw.githubusercontent.com/ontodev/robot/${ROBOT_VERSION:-master}/bin/robot && \
   wget -m -nH -nd -P /usr/local/bin https://github.com/ontodev/robot/releases/${ROBOT_VERSION:+download/}${ROBOT_VERSION:=latest/download}/robot.jar && \
