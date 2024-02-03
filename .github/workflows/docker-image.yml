@@ -10,13 +10,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
     steps:
       -
         name: Checkout
         uses: actions/checkout@v4
       -
         name: Login to Docker Hub
-        if: github.event_name != 'pull_request'
+        if: ${{ env.dockerhub_username != '' }}
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -29,27 +31,27 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: edmcouncil/ontology-publisher
+          images: ${{ github.repository }}
           labels: |
-            org.edmcouncil.ontology-publisher.release-date={{date 'YYYY-MM-DD'}}
-            org.edmcouncil.ontology-publisher.version={{branch}}
+            org.${{ github.repository_owner }}.ontology-publisher.release-date={{date 'YYYY-MM-DD'}}
+            org.${{ github.repository_owner }}.ontology-publisher.version={{branch}}
       -
-        name: Build and push edmcouncil/ontology-publisher:${{ steps.meta.outputs.version }} for linux/amd64 platform
+        name: Build and push ${{ github.repository }}:${{ steps.meta.outputs.version }} for linux/amd64 platform
         uses: docker/build-push-action@v5
         with:
           context: .
           platforms: linux/amd64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: edmcouncil/ontology-publisher:${{ steps.meta.outputs.version }}
+          push: ${{ env.dockerhub_username != '' }}
+          tags: ${{ github.repository }}:${{ steps.meta.outputs.version }}
           annotations: ${{ steps.meta.outputs.annotations }}
           labels: ${{ steps.meta.outputs.labels }}
       -
-        name: Build and push edmcouncil/ontology-publisher:${{ steps.meta.outputs.version }} for linux/arm64 platform
+        name: Build and push ${{ github.repository }}:${{ steps.meta.outputs.version }} for linux/arm64 platform
         uses: docker/build-push-action@v5
         with:
           context: .
           platforms: linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: edmcouncil/ontology-publisher:${{ steps.meta.outputs.version }}
+          push: ${{ env.dockerhub_username != '' }}
+          tags: ${{ github.repository }}:${{ steps.meta.outputs.version }}
           annotations: ${{ steps.meta.outputs.annotations }}
           labels: ${{ steps.meta.outputs.labels }}
