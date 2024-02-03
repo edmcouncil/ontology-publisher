@@ -35,7 +35,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
       -
         name: Get current date
-        run: echo "NOW=$(date -u +'%Y-%m-%d')" >> $env:$GITHUB_ENV
+        run: echo "NOW=$(date -u +'%Y-%m-%d')" >> $env:GITHUB_ENV
       -
         name: Extract metadata (tags, labels) for Docker
         id: meta
