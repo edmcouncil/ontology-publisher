@@ -114,7 +114,7 @@ function runHygieneTests() {
     logItem "${SPEC}" "$(getOntologyIRI < "${source_family_root}/${SPEC}")"
     if ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${SPEC}" \
         --output ${TMPDIR}/output.json $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
-        --goal consistency-check &> "${hygiene_product_tag_root}/consistency-check.log" && jq -e "" &>/dev/null < "${TMPDIR}/output.json" ; then
+        --goal consistency-check &> "${hygiene_product_tag_root}/consistency-check.log" && jq -e "." &>/dev/null < "${TMPDIR}/output.json" ; then
       displayMissingImports "${TMPDIR}/output.json"
       if [ "$(jq -r ".consistent" < "${TMPDIR}/output.json")" = "true" ] ; then
         echo -e "\t\x1b\x5b\x33\x32\x6d$(echo "Ontology \"${SPEC}\" is consistent."   | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
