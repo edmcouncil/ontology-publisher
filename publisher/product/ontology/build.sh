@@ -48,6 +48,13 @@ function publishProductOntology() {
   test -z "${ONTPUB_SHACL_INFIX}" || ontologyCreateSHACLFiles || return $?
 
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
+
+  if ((speedy)) ; then
+    log "speedy=true -> Not doing quads because they are slow"
+  else
+    buildquads || return $?
+  fi
+
   return 0
 }
 
@@ -698,6 +705,97 @@ function ontologyZipFiles () {
   return 0
 }
 
+function buildquads () {
+
+  local ProdQuadsFile="${tag_root}/prod.${ONTPUB_FAMILY}.nq"
+  local DevQuadsFile="${tag_root}/dev.${ONTPUB_FAMILY}.nq"
+
+  local ProdFlatNT="${tag_root}/old_prod.${ONTPUB_FAMILY}-quickstart.nt"
+  local DevFlatNT="${tag_root}/old_dev.${ONTPUB_FAMILY}-quickstart.nt"
+
+  local ProdFlatTTL="${tag_root}/old_prod.${ONTPUB_FAMILY}-quickstart.ttl"
+  local DevFlatTTL="${tag_root}/old_dev.${ONTPUB_FAMILY}-quickstart.ttl"
+
+  local ProdTMPTTL="$(mktemp ${TMPDIR}/prod.temp.XXXXXX.ttl)"
+  local DevTMPTTL="$(mktemp ${TMPDIR}/dev.temp.XXXXXX.ttl)"
+
+  local CSVPrefixes="${tag_root}/prefixes.${ONTPUB_FAMILY}.csv"
+  local TTLPrefixes="${tag_root}/prefixes.${ONTPUB_FAMILY}.ttl"
+  local SPARQLPrefixes="${tag_root}/prefixes.${ONTPUB_FAMILY}.sq"
+
+
+  local tmpflat="$(mktemp ${TMPDIR}/flatten.XXXXXX.sq)"
+  cat >"${tmpflat}" << __HERE__
+PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+
+CONSTRUCT {?s ?p ?o}
+WHERE {GRAPH ?g {?s ?p ?o
+FILTER NOT EXISTS {?s a owl:Ontology}
+}
+}
+__HERE__
+
+  local tmpflatecho="$(mktemp ${TMPDIR}/flattecho.XXXXXX.sq)"
+  cat >"${tmpflatecho}" << __HERE__
+PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+
+CONSTRUCT {?s ?p ?o}
+WHERE {?s ?p ?o
+FILTER NOT EXISTS {?s a owl:Ontology}
+}
+__HERE__
+
+
+  local tmppx="$(mktemp ${TMPDIR}/px.XXXXXX.sq)"
+  cat >"${tmppx}" << __HERE__
+prefix sm: <http://www.omg.org/techprocess/ab/SpecificationMetadata/>
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+
+SELECT ?line
+WHERE {graph ?g {?o a owl:Ontology ;
+sm:fileAbbreviation ?px
+BIND (CONCAT ("prefix ", ?px, ": <", xsd:string(?o), ">") AS ?line)
+}
+}
+__HERE__
+
+  local tmpecho="$(mktemp ${TMPDIR}/echo.XXXXXX.sq)"
+  cat >"${tmpecho}" << __HERE__
+CONSTRUCT {?s ?p ?o}
+WHERE {?s ?p ?o}
+__HERE__
+
+
+  local prefixes="$(mktemp ${TMPDIR}/prefixes.XXXXXX)"
+
+  local tmpmodule="$(mktemp ${TMPDIR}/module.XXXXXX.nt)"
+
+
+  log "starting buildquads with the new quadify"
+
+
+
+  (
+    cd ${ontology_product_tag_root}
+	  echo "starting dev"
+
+	  ${FIND} . -mindepth 2 -name '*.ttl' -print | while read file; do quadify "$file"; done > "${DevQuadsFile}"
+	  echo "starting prod"
+	  ${GREP} -rl 'fibo-fnd-utl-av:hasMaturityLevel fibo-fnd-utl-av:Release' | \
+	      while read file ; do quadify $file ; done > ${ProdQuadsFile}
+     set -x
+	  ${FIND} ${INPUT} -name "Metadata*.rdf" -exec \
+               ${JENA_RIOT} \
+                 --syntax=RDF/XML {} \; \
+		 > ${tmpmodule}
+
+  )
+
+  log "finished buildquads"
+
+  return 0
+  }
   
 function createQuickVersions() {
   require source_family_root || return $?
@@ -707,22 +805,16 @@ function createQuickVersions() {
 
   setProduct ontology || return $?
 
-  logStep "createQuickVersions"
-
   #
   # Get ontologies for Dev
   #
-  
   log "Merging all dev ontologies into one RDF file"
-
-  local quick_dev_spec=${DEV_SPEC/.rdf/}-quickstart
-  local quick_prod_spec=${PROD_SPEC/.rdf/}-quickstart
 
   ${ONTOVIEWER_TOOLKIT_JAVA} \
     --goal merge-imports \
     --data "${source_family_root}/${DEV_SPEC}" $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping \"${source_family_root}/catalog-v001.xml\"") \
-    --ontology-iri "${product_root_url}/${quick_dev_spec}/" --ontology-version-iri "${tag_root_url}/${quick_dev_spec}/" \
-    --output "${tag_root}/${quick_dev_spec}.rdf" &>/dev/null
+    --ontology-iri "${product_root_url}/Quick${ONTPUB_FAMILY^^}Dev/" --ontology-version-iri "${tag_root_url}/Quick${ONTPUB_FAMILY^^}Dev/" \
+    --output "${tag_root}/Quick${ONTPUB_FAMILY^^}Dev.rdf" &>/dev/null
 
   #
   # Get ontologies for Prod
@@ -731,20 +823,20 @@ function createQuickVersions() {
   ${ONTOVIEWER_TOOLKIT_JAVA} \
     --goal merge-imports \
     --data "${source_family_root}/${PROD_SPEC}" $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping \"${source_family_root}/catalog-v001.xml\"") \
-    --ontology-iri "${product_root_url}/${quick_prod_spec}/" --ontology-version-iri "${tag_root_url}/${quick_prod_spec}/" \
-    --output "${tag_root}/${quick_prod_spec}.rdf" &>/dev/null
+    --ontology-iri "${product_root_url}/Quick${ONTPUB_FAMILY^^}Prod/" --ontology-version-iri "${tag_root_url}/Quick${ONTPUB_FAMILY^^}Prod/" \
+    --output "${tag_root}/Quick${ONTPUB_FAMILY^^}Prod.rdf" &>/dev/null
 
-  log "Converting quick ontologies to other formats"
+  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${tag_root}/Quick${ONTPUB_FAMILY^^}Dev.rdf" "turtle" && \
+    mv "${tag_root}/Quick${ONTPUB_FAMILY^^}Dev.ttl" ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl
+  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${tag_root}/Quick${ONTPUB_FAMILY^^}Prod.rdf" "turtle" && \
+    mv "${tag_root}/Quick${ONTPUB_FAMILY^^}Prod.ttl" ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl
 
-  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${tag_root}/${quick_dev_spec}.rdf" "turtle"
-  ${SCRIPT_DIR}/utils/convertRdfFile.sh rdf-xml "${tag_root}/${quick_prod_spec}.rdf" "turtle"
+  ${JENA_ARQ} --data=${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt
+  ${JENA_ARQ} --data=${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.nt
 
-  ${JENA_ARQ} --data=${tag_root}/${quick_dev_spec}.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/${quick_dev_spec}.nt
-  ${JENA_ARQ} --data=${tag_root}/${quick_prod_spec}.ttl --query=/publisher/lib/echo.sparql --results=NT > ${tag_root}/${quick_prod_spec}.nt
-
-  zip ${tag_root}/${quick_dev_spec}.ttl.zip ${tag_root}/${quick_dev_spec}.ttl
-  zip ${tag_root}/${quick_prod_spec}.ttl.zip ${tag_root}/${quick_prod_spec}.ttl
-  zip ${tag_root}/${quick_dev_spec}.nt.zip ${tag_root}/${quick_dev_spec}.nt
-  zip ${tag_root}/${quick_prod_spec}.nt.zip ${tag_root}/${quick_prod_spec}.nt
+  zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl.zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.ttl
+  zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl.zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.ttl
+  zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt.zip ${tag_root}/dev.${ONTPUB_FAMILY}-quickstart.nt
+  zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.nt.zip ${tag_root}/prod.${ONTPUB_FAMILY}-quickstart.nt
 
 }
