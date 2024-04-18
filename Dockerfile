@@ -33,6 +33,7 @@ LABEL owner="Enterprise Data Management Council"
 ARG ONTPUB_FAMILY=fibo
 ARG HYGIENE_TEST_PARAMETER_VALUE=edmcouncil
 ARG ONTPUB_IS_DARK_MODE=1
+ARG RDFTOOLKIT_VERSION
 
 ENV \
   BASH_ENV=/etc/profile \
@@ -49,8 +50,7 @@ RUN install -dv -m0755 /publisher && install -dv -g 65534 -m0775 "${TMPDIR}" && 
 RUN \
   echo ================================= install basics >&2 && \
   apk --no-cache add \
-    curl wget \
-    bash git grep sed findutils coreutils tree jq yq bc xmlstarlet util-linux \
+    bash curl git grep sed findutils coreutils tree jq yq bc xmlstarlet util-linux \
     zip tar xz \
     openjdk21 \
     python3-dev py3-pip py3-wheel py3-cachetools py3-frozendict py3-isodate py3-lxml cython py3-pandas \
@@ -79,7 +79,7 @@ RUN \
   targz="${name}.tar.gz" ; \
   url="http://archive.apache.org/dist/jena/binaries/${targz}" ; \
   echo "Downloading ${url}:" >&2 ; \
-  curl --location --silent --show-error --output /var/tmp/${targz} --url "${url}" && \
+  curl -f --remote-time --location --silent --show-error --output /var/tmp/${targz} --url "${url}" && \
   install -d "$(dirname "${JENA_HOME}")" && cd "$(dirname "${JENA_HOME}")" && \
   tar xzpf /var/tmp/${targz} && \
   rm -f /var/tmp/${targz} && \
@@ -102,8 +102,8 @@ RUN \
 #
 ENV ROBOT_VERSION="v1.9.5"
 RUN \
-  wget -m -nH -nd -P /usr/local/bin https://raw.githubusercontent.com/ontodev/robot/${ROBOT_VERSION:-master}/bin/robot && \
-  wget -m -nH -nd -P /usr/local/bin https://github.com/ontodev/robot/releases/${ROBOT_VERSION:+download/}${ROBOT_VERSION:=latest/download}/robot.jar && \
+  curl -f --remote-time --location --silent --show-error --output /usr/local/bin/robot https://raw.githubusercontent.com/ontodev/robot/${ROBOT_VERSION:-master}/bin/robot && \
+  curl -f --remote-time --location --silent --show-error --output /usr/local/bin/robot.jar https://github.com/ontodev/robot/releases/${ROBOT_VERSION:+download/}${ROBOT_VERSION:=latest/download}/robot.jar && \
   chmod +x /usr/local/bin/robot
 
 COPY etc /etc
@@ -113,21 +113,25 @@ COPY root /root
 # Installing [shacler](https://github.com/edmcouncil/tools/)
 #
 RUN \
-  wget -m -nH -nd -P /publisher/lib https://raw.githubusercontent.com/edmcouncil/tools/develop/shacl/shacler.py
+  install -dv /publisher/lib && \
+  curl -f --remote-time --location --silent --show-error --output /publisher/lib/shacler.py https://raw.githubusercontent.com/edmcouncil/tools/develop/shacl/shacler.py
 
 #
-# Installing the rdf-toolkit
+# Installing [rdf-toolkit](https://github.com/edmcouncil/rdf-toolkit)
 #
-#ENV RDFTOOLKIT_JAR=/publisher/lib/rdf-toolkit.jar
+# To force not the "latest" version, pass build-arg to the build process:
+#	docker build --build-arg RDFTOOLKIT_VERSION="<RDFTOOLKIT VERSION>"
+# for example:
+#	docker build --build-arg RDFTOOLKIT_VERSION="v1.2"
+# don't set RDFTOOLKIT_VERSION to use "latest" version
+#
 ENV RDFTOOLKIT_JAR=/usr/share/java/rdf-toolkit/rdf-toolkit.jar
 RUN \
   echo ================================= install the RDF toolkit >&2 && \
-  toolkit_build="lastSuccessfulBuild" ; \
-  url="https://jenkins.edmcouncil.org/view/rdf-toolkit/job/rdf-toolkit-build/" ; \
-  url="${url}${toolkit_build}/artifact/target/rdf-toolkit.jar" ; \
-  echo "Downloading ${url}:" >&2 ; \
+  rdftoolkit_url="https://github.com/edmcouncil/rdf-toolkit/releases/${RDFTOOLKIT_VERSION:+download/}${RDFTOOLKIT_VERSION:=latest/download}/rdf-toolkit.jar" ; \
   mkdir -p /usr/share/java/rdf-toolkit ; \
-  curl --location --silent --show-error --output ${RDFTOOLKIT_JAR} --url "${url}"
+  echo "Downloading ${rdftoolkit_url}:" >&2 ; \
+  curl -f --remote-time --location --silent --show-error --output ${RDFTOOLKIT_JAR} --url "${rdftoolkit_url}"
 
 #
 # Install OntoViewer Toolkit
@@ -138,7 +142,7 @@ RUN \
   url='https://jenkins.edmcouncil.org/view/onto-viewer/job/onto-viewer-publish/lastSuccessfulBuild/artifact/onto-viewer-toolkit/target/onto-viewer-toolkit.jar' ; \
   mkdir -p /usr/share/java/onto-viewer ; \
   echo "Downloading ${url}:" >&2 ; \
-  curl --location --silent --show-error --output "${ONTOVIEWER_TOOLKIT_JAR}" --url "${url}"
+  curl -f --remote-time --location --silent --show-error --output "${ONTOVIEWER_TOOLKIT_JAR}" --url "${url}"
 
 #
 # <skip in dev mode begin>
@@ -174,7 +178,7 @@ RUN \
   sed -i "s/<ONTPUB_FAMILY>/${ONTPUB_FAMILY}/g ; s/<HYGIENE_TEST_PARAMETER_VALUE>/${HYGIENE_TEST_PARAMETER_VALUE}/g ; s/<ONTPUB_IS_DARK_MODE>/${ONTPUB_IS_DARK_MODE}/g" /etc/bashrc && \
   ln -sf /var/tmp/.gitconfig /root/.gitconfig && \
   ln -sf /var/tmp/.gitconfig /.gitconfig && \
-  rm -rvf /root/{.wget-hsts,.cache}
+  rm -rvf /root/.cache
 
 CMD ["./publish.sh"]
 

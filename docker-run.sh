@@ -282,7 +282,7 @@ function checkCommandLine() {
 function dockerFile() {
 
   if ((cli_option_dev_mode)) ; then
-    cat "${SCRIPT_DIR}/Dockerfile" | sed 's#/rdf-toolkit-build/#/rdf-toolkit-build-dev/#g ; s#/onto-viewer-publish/#/onto-viewer-build-dev/#g' | sed '/skip in dev mode begin/,/skip in dev mode end/ d' > "${SCRIPT_DIR}/Dockerfile.dev"
+    cat "${SCRIPT_DIR}/Dockerfile" | sed 's#toolkit_url="[^"]\+"#toolkit_url="https://jenkins.edmcouncil.org/view/rdf-toolkit/job/rdf-toolkit-build-dev/lastSuccessfulBuild/artifact/target/rdf-toolkit.jar"#g ; s#/onto-viewer-publish/#/onto-viewer-build-dev/#g' | sed '/skip in dev mode begin/,/skip in dev mode end/ d' > "${SCRIPT_DIR}/Dockerfile.dev"
     echo -n "${SCRIPT_DIR}/Dockerfile.dev"
   else
     echo -n "${SCRIPT_DIR}/Dockerfile"
@@ -343,6 +343,10 @@ function buildImage() {
   opts+=("ONTPUB_IS_DARK_MODE=${cli_option_dark}")
   opts+=('--build-arg')
   opts+=("HYGIENE_TEST_PARAMETER_VALUE=${HYGIENE_TEST_PARAMETER_VALUE}")
+  if [ -n "${RDFTOOLKIT_VERSION}" ] ; then
+   opts+=('--build-arg')
+   opts+=("RDFTOOLKIT_VERSION=${RDFTOOLKIT_VERSION}")
+  fi
  fi
   opts+=('--label')
   opts+=("org.${ONTPUB_ORG}.ontology-publisher.version="${ONTPUB_VERSION}"")
