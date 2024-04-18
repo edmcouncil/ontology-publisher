@@ -33,6 +33,7 @@ LABEL owner="Enterprise Data Management Council"
 ARG ONTPUB_FAMILY=fibo
 ARG HYGIENE_TEST_PARAMETER_VALUE=edmcouncil
 ARG ONTPUB_IS_DARK_MODE=1
+ARG RDFTOOLKIT_VERSION
 
 ENV \
   BASH_ENV=/etc/profile \
@@ -116,18 +117,21 @@ RUN \
   wget -m -nH -nd -P /publisher/lib https://raw.githubusercontent.com/edmcouncil/tools/develop/shacl/shacler.py
 
 #
-# Installing the rdf-toolkit
+# Installing [rdf-toolkit](https://github.com/edmcouncil/rdf-toolkit)
 #
-#ENV RDFTOOLKIT_JAR=/publisher/lib/rdf-toolkit.jar
+# To force not the "latest" version, pass build-arg to the build process:
+#	docker build --build-arg RDFTOOLKIT_VERSION="<RDFTOOLKIT VERSION>"
+# for example:
+#	docker build --build-arg RDFTOOLKIT_VERSION="v1.2"
+# don't set RDFTOOLKIT_VERSION to use "latest" version
+#
 ENV RDFTOOLKIT_JAR=/usr/share/java/rdf-toolkit/rdf-toolkit.jar
 RUN \
   echo ================================= install the RDF toolkit >&2 && \
-  toolkit_build="lastSuccessfulBuild" ; \
-  url="https://jenkins.edmcouncil.org/view/rdf-toolkit/job/rdf-toolkit-build/" ; \
-  url="${url}${toolkit_build}/artifact/target/rdf-toolkit.jar" ; \
-  echo "Downloading ${url}:" >&2 ; \
+  rdftoolkit_url="https://github.com/edmcouncil/rdf-toolkit/releases/${RDFTOOLKIT_VERSION:+download/}${RDFTOOLKIT_VERSION:=latest/download}/rdf-toolkit.jar" ; \
   mkdir -p /usr/share/java/rdf-toolkit ; \
-  curl --location --silent --show-error --output ${RDFTOOLKIT_JAR} --url "${url}"
+  echo "Downloading ${rdftoolkit_url}:" >&2 ; \
+  curl --location --silent --show-error --output ${RDFTOOLKIT_JAR} --url "${rdftoolkit_url}"
 
 #
 # Install OntoViewer Toolkit

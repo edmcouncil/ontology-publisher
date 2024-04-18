@@ -98,7 +98,8 @@ List of allowed `<VARIABLE_NAME>` (and defaults for `<VARIABLE_VALUE>`):
 - `HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME` :- the name of the file (inside the directory named `${ONTPUB FAMILY}` for which the "error" level consistency check test will be performed (i.e. in the case of a lack of consistency, the ontology building process is terminated with an error message), e.g. `AboutFIBOProd.rdf` (no default - in the absence of a value, the tests will not be run)
 - `ONTPUB_MERGED_INFIX` :- infix for "merged" files, e.g. `-Merged` (no default - in the absence of a value, the merged files will not be created)
 - `ONTPUB_SHACL_INFIX` :- infix for SHACL shapes, e.g. `_SHACL` (no default - in the absence of a value, the merged files will not be created)
-The current process of creating SHACL shapes requires merged files, so if you send in `ONTPUB_SHACL_INFIX`, you also need to set up `ONTPUB_MERGED_INFIX`.
+  The current process of creating SHACL shapes requires merged files, so if you send in `ONTPUB_SHACL_INFIX`, you also need to set up `ONTPUB_MERGED_INFIX`.
+- `RDFTOOLKIT_VERSION` :- [RDF Toolkit](https://github.com/edmcouncil/rdf-toolkit) version (default: `latest`), e.g. `v1.2`; don't set `RDFTOOLKIT_VERSION` to use `latest` version
 
 ## Jenkins
 
