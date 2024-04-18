@@ -3,7 +3,7 @@ import os.path
 import re
 import sys
 
-from rdflib import Graph, OWL
+from rdflib import Graph, OWL, util
 
 visited_ontologies = list()
 local_ontology_map_regex = re.compile(r'name="(.+)"\s+uri="(.+)"')
@@ -38,7 +38,7 @@ def collect_ontologies(
         return import_failure
     input_ontology = Graph()
     try:
-        input_ontology.parse(input_ontology_path)
+        input_ontology.parse(input_ontology_path, format=util.guess_format(input_ontology_path))
         visited_ontologies.append(input_ontology_path)
         output_graph += input_ontology
         for subject, predicate, object_value in input_ontology:
