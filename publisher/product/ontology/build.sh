@@ -102,60 +102,6 @@ function runHygieneTests() {
   --output_folder "${TMPDIR}/hygiene/"
 
   #
-  # Run consistency-check for DEV and PROD ontologies
-  #
-
-  rm -f "${hygiene_product_tag_root}/consistency-check.log" &>/dev/null
-
-  test -n "${HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME}" && logRule "run consistency check at level: warning" && \
-  for SPEC in ${HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME} ; do
-   if [ -s "${source_family_root}/${SPEC}" ] && [ ! -d "${source_family_root}/${SPEC}" ] ; then
-    rm -f ${TMPDIR}/output.json
-    logItem "${SPEC}" "$(getOntologyIRI < "${source_family_root}/${SPEC}")"
-    if ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${SPEC}" \
-        --output ${TMPDIR}/output.json $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
-        --goal consistency-check &> "${hygiene_product_tag_root}/consistency-check.log" && jq -e "." &>/dev/null < "${TMPDIR}/output.json" ; then
-      displayMissingImports "${TMPDIR}/output.json"
-      if [ "$(jq -r ".consistent" < "${TMPDIR}/output.json")" = "true" ] ; then
-        echo -e "\t\x1b\x5b\x33\x32\x6d$(echo "Ontology \"${SPEC}\" is consistent."   | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
-      else
-        echo -e "\t\x1b\x5b\x33\x31\x6d$(echo "Ontology \"${SPEC}\" is inconsistent." | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
-        return 1
-      fi
-    else
-      echo -e "\t\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d: running consistency-check - see 'consistency-check.log'"
-      return 1
-    fi
-   fi
-  done
-
-  test -n "${HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME}" && logRule "run consistency check at level: error" && \
-  for SPEC in ${HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME} ; do
-   if [ -s "${source_family_root}/${SPEC}" ] && [ ! -d "${source_family_root}/${SPEC}" ] ; then
-    rm -f ${TMPDIR}/output.json
-    logItem "${SPEC}" "$(getOntologyIRI < "${source_family_root}/${SPEC}")"
-    if ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${SPEC}" \
-        --output ${TMPDIR}/output.json $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
-        --goal consistency-check &>> "${hygiene_product_tag_root}/consistency-check.log" && jq -e "." &>/dev/null < "${TMPDIR}/output.json" ; then
-      displayMissingImports "${TMPDIR}/output.json"
-      if [ "$(jq -r ".consistent" < "${TMPDIR}/output.json")" = "true" ] ; then
-        echo -e "\t\x1b\x5b\x33\x32\x6d$(echo "Ontology \"${SPEC}\" is consistent."   | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
-      else
-        echo -e "\t\x1b\x5b\x33\x31\x6d$(echo "Ontology \"${SPEC}\" is inconsistent." | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
-        return 1
-      fi
-    else
-      echo -e "\t\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d: running consistency-check - see 'consistency-check.log'"
-      return 1
-    fi
-   fi
-  done
-
-  rm -f ${TMPDIR}/output.json &>/dev/null
-
-  test -n "${HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME}${HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME}" && logRule "consistency-check: end"
-
-  #
   # Get ontologies for Dev
   #
   log "Merging all dev ontologies into one RDF file"
@@ -180,7 +126,7 @@ function runHygieneTests() {
 
   success=$?
   if [ "${success}" != 0 ] ; then log "Merging prod ontologies encountered problem(s), so hygiene test results may be incomplete." ; fi
-    
+
   logRule "Will run the following tests:"
 
   while read -r hygieneTestSparqlFile ; do
@@ -245,10 +191,61 @@ function runHygieneTests() {
   allerrorscount=$((${DEVerrorscount} + ${PRODerrorscount}))
   test ${allerrorscount} -gt 0 && logItem "$(echo -e '\n\x1b\x5b\x33\x32\x6dall errors count\x1b\x5b\x30\x6d  ')" ${allerrorscount} && return 1
 
-  cp -avf "${hygiene_product_tag_root}"/hygiene-test.DEV.log "${hygiene_product_tag_root}"/hygiene-test.DEV.tsv
-  cp -avf "${hygiene_product_tag_root}"/hygiene-test.PROD.log "${hygiene_product_tag_root}"/hygiene-test.PROD.tsv
+  cp -af "${hygiene_product_tag_root}"/hygiene-test.DEV.log "${hygiene_product_tag_root}"/hygiene-test.DEV.tsv
+  cp -af "${hygiene_product_tag_root}"/hygiene-test.PROD.log "${hygiene_product_tag_root}"/hygiene-test.PROD.tsv
 
   logRule "Passed all the hygiene tests"
+
+  #
+  # Run consistency-check for DEV and PROD ontologies
+  #
+
+  rm -f "${hygiene_product_tag_root}/consistency-check.log" &>/dev/null
+
+  test -n "${HYGIENE_INCONSISTENCY_SPEC_FILE_NAME}" && \
+   HYGIENE_INFO_INCONSISTENCY_SPEC_FILE_NAME="${HYGIENE_INFO_INCONSISTENCY_SPEC_FILE_NAME:+${HYGIENE_INFO_INCONSISTENCY_SPEC_FILE_NAME} }${HYGIENE_INCONSISTENCY_SPEC_FILE_NAME}"
+  declare -A HYGIENE_INCONSISTENCY_SPEC_FILE_NAME
+  test -n "${HYGIENE_INFO_INCONSISTENCY_SPEC_FILE_NAME}" && \
+   HYGIENE_INCONSISTENCY_SPEC_FILE_NAME["info"]="${HYGIENE_INCONSISTENCY_SPEC_FILE_NAME["info"]:+${HYGIENE_INCONSISTENCY_SPEC_FILE_NAME["info"]} }${HYGIENE_INFO_INCONSISTENCY_SPEC_FILE_NAME}"
+  test -n "${HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME}" && \
+   HYGIENE_INCONSISTENCY_SPEC_FILE_NAME["warning"]="${HYGIENE_INCONSISTENCY_SPEC_FILE_NAME["warning"]:+${HYGIENE_INCONSISTENCY_SPEC_FILE_NAME["warning"]} }${HYGIENE_WARN_INCONSISTENCY_SPEC_FILE_NAME}"
+  test -n "${HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME}" && \
+   HYGIENE_INCONSISTENCY_SPEC_FILE_NAME["error"]="${HYGIENE_INCONSISTENCY_SPEC_FILE_NAME["error"]:+${HYGIENE_INCONSISTENCY_SPEC_FILE_NAME["error"]} }${HYGIENE_ERROR_INCONSISTENCY_SPEC_FILE_NAME}"
+
+  for level in ${!HYGIENE_INCONSISTENCY_SPEC_FILE_NAME[*]} ; do
+   test -n "${HYGIENE_INCONSISTENCY_SPEC_FILE_NAME[${level}]}" && logRule "run consistency check at level: ${level}" && \
+    for SPEC in ${HYGIENE_INCONSISTENCY_SPEC_FILE_NAME[${level}]} ; do
+     if [ -s "${source_family_root}/${SPEC}" ] && [ ! -d "${source_family_root}/${SPEC}" ] ; then
+      rm -f ${TMPDIR}/output.json
+      logItem "${SPEC}" "$(getOntologyIRI < "${source_family_root}/${SPEC}")"
+      timeout --foreground -s KILL ${CONSISTENCY_CHECK_TIMEOUT:-1h} ${ONTOVIEWER_TOOLKIT_JAVA} --data "${source_family_root}/${SPEC}" \
+        --output ${TMPDIR}/output.json $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
+        --goal consistency-check &>> "${hygiene_product_tag_root}/consistency-check.log"
+      local ret=$?
+      if [ ${ret} -eq $((128+9)) ] ; then
+       echo -e "\t\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d: consistency check at level \"${level}\" was timed out after \"${CONSISTENCY_CHECK_TIMEOUT:-1h}\""
+      elif [ ${ret} -ne 0 ] ; then
+       echo -e "\t\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d: running consistency-check - see 'consistency-check.log'"
+       return 1
+      elif jq -e "." &>/dev/null < "${TMPDIR}/output.json" ; then
+       displayMissingImports "${TMPDIR}/output.json"
+       if [ "$(jq -r ".consistent" < "${TMPDIR}/output.json")" = "true" ] ; then
+        echo -e "\t\x1b\x5b\x33\x32\x6d$(echo "Ontology \"${SPEC}\" is consistent."   | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
+       else
+        echo -e "\t\x1b\x5b\x33\x31\x6d$(echo "Ontology \"${SPEC}\" is inconsistent." | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
+        [[ "${level}" == "error" ]] && return 1
+       fi
+      else
+       echo -e "\t\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d: consistency check at level \"${level}\" did not produce the correct result"
+      fi
+      echo "--------------" >> "${hygiene_product_tag_root}/consistency-check.log"
+     fi
+    done && echo "==============" >> "${hygiene_product_tag_root}/consistency-check.log"
+  done
+
+  rm -f "${TMPDIR}"/output.json &>/dev/null
+
+  test -e "${hygiene_product_tag_root}/consistency-check.log" && logRule "consistency-check: end"
 
   return 0
 }
