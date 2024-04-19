@@ -3,7 +3,10 @@ import os.path
 import re
 import sys
 
-from rdflib import Graph, OWL, util
+from rdflib import Graph, OWL, plugin, util
+
+from rdflib.parser import Parser
+plugin.register("application/xml", Parser, "rdflib.plugins.parsers.rdfxml", "RDFXMLParser")
 
 visited_ontologies = list()
 local_ontology_map_regex = re.compile(r'name="(.+)"\s+uri="(.+)"')
@@ -21,7 +24,7 @@ def get_local_ontology_map(ontology_catalog_path: str):
             ontology_local_path = ontology[1]
             local_ontology_map[ontology_iri] = ontology_local_path
     except Exception as exception:
-        print('Exception occurred while getting local ontology map', str(exception))
+        print('\tERROR(ontology-mapping="{}"): exception occurred while getting local ontology map: "{}"'.format(str(ontology_catalog_path),str(exception)))
         sys.exit(-1)
 
 
@@ -38,7 +41,14 @@ def collect_ontologies(
         return import_failure
     input_ontology = Graph()
     try:
-        input_ontology.parse(input_ontology_path, format=util.guess_format(input_ontology_path))
+        try:
+            input_ontology.parse(input_ontology_path, format=util.guess_format(input_ontology_path))
+        except Exception as exception:
+            try:
+                # try downloading the ontology in explicit 'application/rdf+xml' format
+                input_ontology.parse(input_ontology_path, format='application/rdf+xml')
+            except Exception as exception:
+                raise Exception(str(exception))
         visited_ontologies.append(input_ontology_path)
         output_graph += input_ontology
         for subject, predicate, object_value in input_ontology:
@@ -49,7 +59,7 @@ def collect_ontologies(
                     input_ontology_path=str(object_value),
                     import_failure=import_failure)
     except Exception as exception:
-        print('Exception occurred while getting imported ontology', str(exception))
+        print('\tERROR(<{}>): collect_ontologies: "{}"'.format(str(input_ontology_path),str(exception)))
         import_failure = True
     if save_output:
         output_graph.serialize(output_graph_path)
