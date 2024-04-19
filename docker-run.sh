@@ -476,6 +476,10 @@ function run() {
     opts+=('--env')
     opts+=("DATADICTIONARY_COLUMNS=${DATADICTIONARY_COLUMNS}")
   fi
+  if [ -n "${CONSISTENCY_CHECK_TIMEOUT}" ] ; then
+    opts+=('--env')
+    opts+=("CONSISTENCY_CHECK_TIMEOUT=${CONSISTENCY_CHECK_TIMEOUT}")
+  fi
 
   logVar ONTPUB_FAMILY
 
