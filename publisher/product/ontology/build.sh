@@ -201,6 +201,7 @@ function runHygieneTests() {
   #
 
   rm -f "${hygiene_product_tag_root}/consistency-check.log" &>/dev/null
+  echo '{}' > "${hygiene_product_tag_root}/consistency-check.json"
 
   test -n "${HYGIENE_INCONSISTENCY_SPEC_FILE_NAME}" && \
    HYGIENE_INFO_INCONSISTENCY_SPEC_FILE_NAME="${HYGIENE_INFO_INCONSISTENCY_SPEC_FILE_NAME:+${HYGIENE_INFO_INCONSISTENCY_SPEC_FILE_NAME} }${HYGIENE_INCONSISTENCY_SPEC_FILE_NAME}"
@@ -224,8 +225,10 @@ function runHygieneTests() {
       local ret=$?
       if [ ${ret} -eq $((128+9)) ] ; then
        echo -e "\t\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d: consistency check at level \"${level}\" was timed out after \"${CONSISTENCY_CHECK_TIMEOUT:-1h}\""
+       echo $(jq -c ".\"${level}\".\"${SPEC}\".timeout = \"${CONSISTENCY_CHECK_TIMEOUT:-1h}\"" "${hygiene_product_tag_root}/consistency-check.json") > "${hygiene_product_tag_root}/consistency-check.json"
       elif [ ${ret} -ne 0 ] ; then
        echo -e "\t\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d: running consistency-check - see 'consistency-check.log'"
+       echo $(jq -c ".\"${level}\".\"${SPEC}\".error = \"${ret}\"" "${hygiene_product_tag_root}/consistency-check.json") > "${hygiene_product_tag_root}/consistency-check.json"
        return 1
       elif jq -e "." &>/dev/null < "${TMPDIR}/output.json" ; then
        displayMissingImports "${TMPDIR}/output.json"
@@ -235,6 +238,7 @@ function runHygieneTests() {
         echo -e "\t\x1b\x5b\x33\x31\x6d$(echo "Ontology \"${SPEC}\" is inconsistent." | tee -a "${hygiene_product_tag_root}/consistency-check.log")\x1b\x5b\x30\x6d"
         [[ "${level}" == "error" ]] && return 1
        fi
+       echo $(jq -c ".\"${level}\".\"${SPEC}\".output = $(jq -c -r "." "${TMPDIR}/output.json")" "${hygiene_product_tag_root}/consistency-check.json") > "${hygiene_product_tag_root}/consistency-check.json"
       else
        echo -e "\t\x1b\x5b\x33\x31\x6dERROR\x1b\x5b\x30\x6d: consistency check at level \"${level}\" did not produce the correct result"
       fi
