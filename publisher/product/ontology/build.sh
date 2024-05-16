@@ -45,8 +45,7 @@ function publishProductOntology() {
   createQuickVersions || return $?
   ontologyConvertRdfToAllFormats || return $?
   test -z "${ONTPUB_MERGED_INFIX}" || ontologyCreateMergedFiles || return $?
-  test -z "${ONTPUB_SHACL_INFIX}" || ontologyCreateSHACLFiles || return $?
-
+  
   ontologyZipFiles > "${tag_root}/ontology-zips.log" || return $?
 
   if ((speedy)) ; then
@@ -526,27 +525,6 @@ function ontologyCreateMergedFiles() {
   return $?
 }
 
-function ontologyCreateSHACLFiles() {
-
-  require source_family_root || return $?
-  require tag_root || return $?
-  require ONTPUB_MERGED_INFIX || return $?
-  require ONTPUB_SHACL_INFIX || return $?
-
-  logStep "ontologyCreateSHACLFiles"
-
-  pushd "${tag_root:?}" >/dev/null || return $?
-    while read -r rdfFile ; do
-	shaclFile="${rdfFile%${ONTPUB_MERGED_INFIX}.rdf}${ONTPUB_SHACL_INFIX}.ttl"
-	logItem "Create SHACL file" "$(logFileName "${shaclFile#./}")"
-	${PYTHON3} ${SCRIPT_DIR}/lib/shacler.py --input_owl "${rdfFile}" --output_shacl "${shaclFile}"
-    done < <(find . -type f -name \*"${ONTPUB_MERGED_INFIX}.rdf")
-  popd >/dev/null || return $?
-
-  log "End of ontologyCreateSHACLFiles"
-
-  return $?
-}
 
 function ontologyConvertRdfToAllFormats() {
 
