@@ -111,13 +111,6 @@ COPY etc /etc
 COPY root /root
 
 #
-# Installing [shacler](https://github.com/edmcouncil/tools/)
-#
-RUN \
-  install -dv /publisher/lib && \
-  curl -f --remote-time --location --silent --show-error --output /publisher/lib/shacler.py https://raw.githubusercontent.com/edmcouncil/tools/develop/shacl/shacler.py
-
-#
 # Installing [rdf-toolkit](https://github.com/edmcouncil/rdf-toolkit)
 #
 # To force not the "latest" version, pass build-arg to the build process:
