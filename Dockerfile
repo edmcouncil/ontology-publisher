@@ -133,7 +133,7 @@ RUN \
 ENV ONTOVIEWER_TOOLKIT_JAR=/usr/share/java/onto-viewer/onto-viewer-toolkit.jar
 RUN \
   echo "================================= install OntoViewer Toolkit" >&2 && \
-  url='https://jenkins.edmcouncil.org/view/onto-viewer/job/onto-viewer-publish/lastSuccessfulBuild/artifact/onto-viewer-toolkit/target/onto-viewer-toolkit.jar' ; \
+  url='https://jenkins.edmcouncil.org/view/onto-viewer/job/onto-viewer-build-dev/lastSuccessfulBuild/artifact/onto-viewer-toolkit/target/onto-viewer-toolkit.jar' ; \
   mkdir -p /usr/share/java/onto-viewer ; \
   echo "Downloading ${url}:" >&2 ; \
   curl -f --remote-time --location --silent --show-error --output "${ONTOVIEWER_TOOLKIT_JAR}" --url "${url}"
