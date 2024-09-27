@@ -218,7 +218,7 @@ function runHygieneTests() {
      if [ -s "${source_family_root}/${SPEC}" ] && [ ! -d "${source_family_root}/${SPEC}" ] ; then
       rm -f ${TMPDIR}/output.json
       logItem "${SPEC}" "$(getOntologyIRI < "${source_family_root}/${SPEC}")"
-      timeout --foreground -s KILL ${CONSISTENCY_CHECK_TIMEOUT:-1h} ${ONTOVIEWER_TOOLKIT_JAVA} -Xmx24G --data "${source_family_root}/${SPEC}" \
+      timeout --foreground -s KILL ${CONSISTENCY_CHECK_TIMEOUT:-1h} java  -Xmx24G -Dlogging.level.org.edmcouncil.spec.ontoviewer=INFO -Dlogging.level.org.edmcouncil.spec.ontoviewer.toolkit=DEBUG -Dlogging.level.org.springframework=INFO -jar ${ONTOVIEWER_TOOLKIT_JAR} --data "${source_family_root}/${SPEC}" \
         --output ${TMPDIR}/output.json $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
         --goal consistency-check &>> "${hygiene_product_tag_root}/consistency-check.log"
       local ret=$?
