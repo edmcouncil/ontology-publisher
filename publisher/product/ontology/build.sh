@@ -218,7 +218,7 @@ function runHygieneTests() {
      if [ -s "${source_family_root}/${SPEC}" ] && [ ! -d "${source_family_root}/${SPEC}" ] ; then
       rm -f ${TMPDIR}/output.json
       logItem "${SPEC}" "$(getOntologyIRI < "${source_family_root}/${SPEC}")"
-      timeout --foreground -s KILL ${CONSISTENCY_CHECK_TIMEOUT:-1h} ${ONTOVIEWER_TOOLKIT_JAVA} Xmx16G --data "${source_family_root}/${SPEC}" \
+      timeout --foreground -s KILL ${CONSISTENCY_CHECK_TIMEOUT:-1h} ${ONTOVIEWER_TOOLKIT_JAVA_CALL} --data "${source_family_root}/${SPEC}" \
         --output ${TMPDIR}/output.json $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping ${source_family_root}/catalog-v001.xml") \
         --goal consistency-check &>> "${hygiene_product_tag_root}/consistency-check.log"
       local ret=$?
@@ -787,8 +787,7 @@ function createQuickVersions() {
   #
   log "Merging all dev ontologies into one RDF file"
 
-  ${ONTOVIEWER_TOOLKIT_JAVA} \
-    Xmx16G \
+  ${ONTOVIEWER_TOOLKIT_JAVA_CALL} \
     --goal merge-imports \
     --data "${source_family_root}/${DEV_SPEC}" $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping \"${source_family_root}/catalog-v001.xml\"") \
     --ontology-iri "${product_root_url}/Quick${ONTPUB_FAMILY^^}Dev/" --ontology-version-iri "${tag_root_url}/Quick${ONTPUB_FAMILY^^}Dev/" \
@@ -798,9 +797,8 @@ function createQuickVersions() {
   # Get ontologies for Prod
   #
   log "Merging all prod ontologies into one RDF file"
-  ${ONTOVIEWER_TOOLKIT_JAVA} \
+  ${ONTOVIEWER_TOOLKIT_JAVA_CALL} \
     --goal merge-imports \
-    Xmx16G \
     --data "${source_family_root}/${PROD_SPEC}" $(test -s "${source_family_root}/catalog-v001.xml" && echo "--ontology-mapping \"${source_family_root}/catalog-v001.xml\"") \
     --ontology-iri "${product_root_url}/Quick${ONTPUB_FAMILY^^}Prod/" --ontology-version-iri "${tag_root_url}/Quick${ONTPUB_FAMILY^^}Prod/" \
     --output "${tag_root}/Quick${ONTPUB_FAMILY^^}Prod.rdf" &>/dev/null
