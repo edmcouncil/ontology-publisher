@@ -149,23 +149,6 @@ pipeline {
       }
     }
 
-    stage('Test image') {
-      agent {
-        docker {
-          image "${env.ONTOLOGY_BUILDER_IMAGE}:${env.GIT_HASH_BUILDER}"
-        }
-      }
-      environment {
-        PATH = "$PATH:/usr/bin"
-      }
-      //
-      // Everything that happens below is done inside the container
-      //
-      steps {
-        sh 'export | grep GIT_ ; cd /publisher && ./publish.sh index'
-      }
-    }
-
     stage('Publish Image') {
       agent {
         label 'docker'

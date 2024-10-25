@@ -27,12 +27,6 @@ if [ -f ${SCRIPT_DIR}/product/ontology/build.sh ] ; then
 else
   source product/ontology/build.sh # This line is only there to make the IntelliJ Bash plugin see product/ontology/build.sh
 fi
-if [ -f ${SCRIPT_DIR}/product/index/build.sh ] ; then
-  # shellcheck source=product/index/build.sh
-  source ${SCRIPT_DIR}/product/index/build.sh
-else
-  source product/index/build.sh # This line is only there to make the IntelliJ Bash plugin see product/index/build.sh
-fi
 if [ -f ${SCRIPT_DIR}/product/datadictionary/build.sh ] ; then
   # shellcheck source=product/datadictionary/build.sh
   source ${SCRIPT_DIR}/product/datadictionary/build.sh
