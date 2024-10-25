@@ -40,7 +40,6 @@ function publishProductOntology() {
   ontologyCopyRdfToTarget || return $?
   ontologySearchAndReplaceStuff || return $?
   ontologyBuildCatalogs  || return $?
-  ontologyBuildIndex  || return $?
   ontologyCreateAboutFiles || return $?
   createQuickVersions || return $?
   ontologyConvertRdfToAllFormats || return $?
@@ -448,38 +447,6 @@ function ontologyAddIsDefinedBy () {
   ${SCRIPT_DIR}/utils/convertRdfFile.sh turtle "${file/.rdf/.ttl}" "rdf-xml"
 
   return $?
-}
-
-#
-# The "index" is a list of all the ontology files, in their
-# directory structure.  This is an attempt to automatically produce
-# this.
-#
-function ontologyBuildIndex () {
-
-  require tag_root || return $?
-  require tag_root_url || return $?
-  require GIT_TAG_NAME || return $?
-
-  (
-  	cd ${tag_root:?} || return $?
-  	while read directory ; do
-  	  #log "Directory is ${directory}"
-  	  (
-  	    cd "${directory}" || return $?
-  	    ${TREE} -P '*.rdf|*.html' -T "Directory Tree" -H "${tag_root_url:?}/${directory/.\//}" --noreport --charset=UTF8 -N | \
-          ${SED} \
-            -e 's/.VERSION { font-size: small;/.VERSION { display: none; font-size: small;/g' \
-            -e 's/BODY {.*}/BODY { font-family : "Courier New"; font-size: 12pt ; line-height: 0.90}/g' \
-            -e 's/ariel/"Courier New"/g' \
-            -e 's/<hr>//g' \
-            -e "s@>Directory Tree<@>Ontology file directory ${directory/.\//}<@g" \
-            -e 's@h1>\n<p>@h1><p>This is the directory structure of ontology; you can download individual files this way.</a>.<p/>@' > tree.html
-  	  )
-  	done < <(${FIND} . -type d)
-	)
-
-	return $?
 }
 
 function ontologyCreateMergedFiles() {
