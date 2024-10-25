@@ -703,10 +703,9 @@ function initRepoBasedTools() {
     return 1
   fi
 
-  ONTOVIEWER_TOOLKIT_JAVA="java -Dlogging.level.org.edmcouncil.spec.ontoviewer=INFO -Dlogging.level.org.edmcouncil.spec.ontoviewer.toolkit=DEBUG -Dlogging.level.org.springframework=INFO -jar ${ONTOVIEWER_TOOLKIT_JAR}"
-  export ONTOVIEWER_TOOLKIT_JAVA
-  #echo "ONTOVIEWER_TOOLKIT_JAVA = ${ONTOVIEWER_TOOLKIT_JAVA}"
-
+  ONTOVIEWER_TOOLKIT_JAVA_CALL="java -Xmx24G -Dlogging.level.org.edmcouncil.spec.ontoviewer=INFO -Dlogging.level.org.edmcouncil.spec.ontoviewer.toolkit=DEBUG -Dlogging.level.org.springframework=INFO -jar ${ONTOVIEWER_TOOLKIT_JAR}"
+  export ONTOVIEWER_TOOLKIT_JAVA_CALL
+  
   return 0
 }
 
