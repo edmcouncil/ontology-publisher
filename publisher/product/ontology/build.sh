@@ -644,8 +644,8 @@ function ontologyZipFiles () {
     local zipjsonldFile="${tag_root}/prod.jsonld.zip"
     export ziptmpDir="$(mktemp -d 2>/dev/null)"
 
-    # create PROD zipFiles based on: 1) PROD_SPEC 2) source ontologies from file "ontology_config.yaml" except DEV_SPEC
-    for ontologies in "${PROD_SPEC}" $(yq '.ontologies.source[].url' 2>/dev/null < "${source_family_root}/etc/onto-viewer-web-app/config/ontology_config.yaml" | getUris "${family_product_branch_tag}/catalog-v001.xml" 2>/dev/null) ; do
+    # create PROD zipFiles based on PROD_SPEC
+    for ontologies in "${PROD_SPEC}" ; do
         test -n "${ontologies}" && test -f "${family_product_branch_tag}/${ontologies}" && \
             test "$(realpath "${family_product_branch_tag}/${ontologies}" 2>/dev/null)" != "$(realpath "${family_product_branch_tag}/${DEV_SPEC}" 2>/dev/null)" && \
             copyOntologies "${ontologies}"
